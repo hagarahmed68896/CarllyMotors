@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
+
+class allUsersModel extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable;
+
+    protected $table = 'allusers';
+    protected $guarded = [];
+    protected $hidden = ['password'];
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
+
+    public function getImageAttribute($val) {
+        return asset($val);
+    }
+
+    public function dealer() {
+        return $this->hasOne(CarDealer::class,'user_id');
+    }
+
+    public function spareParts() {
+        return $this->hasMany(SparePart::class,'user_id');
+    }
+
+    public function cars() {
+        return $this->hasMany(carListingModel::class,'user_id');
+    }
+
+    public function getCreatedAtAttribute($val)
+    {
+        return Carbon::parse($val)->format('d M, Y H:i');
+    }
+}
