@@ -56,7 +56,7 @@ class HomeController extends Controller
         $maxYear = CarListingModel::max('listing_year');
 
                                                  // Pagination and sorting
-        $perPage = request('perPage', 8);        // Default to 8 if no value is selected
+        $perPage = request('perPage', 9);        // Default to 8 if no value is selected
         $sortBy  = request('sortBy', 'default'); // Default to 'default' if no sorting is selected
 
         // Start the base query
@@ -86,6 +86,7 @@ class HomeController extends Controller
         $cylinders = CarListingModel::select('features_cylinders')->distinct()->orderby('features_cylinders', 'asc')->pluck('features_cylinders');
         $colors    = CarListingModel::select('car_color')->distinct()->orderby('car_color', 'asc')->pluck('car_color');
 
+        
         // Return view with filter data
         return view('cars.homeSection', compact(
             'carlisting',
@@ -305,7 +306,7 @@ class HomeController extends Controller
             $query->where('features_speed', '<=', $request->distance);
         }
                                                  // Pagination and sorting
-        $perPage = request('perPage', 8);        // Default to 8 if no value is selected
+        $perPage = request('perPage',9);        // Default to 8 if no value is selected
         $sortBy  = request('sortBy', 'default'); // Default to 'default' if no sorting is selected
 
         // Apply sorting based on the selected option

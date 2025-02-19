@@ -271,23 +271,6 @@ use Illuminate\Support\Str;
     <div class="tab-content" id="bodyTypeTabsContent">
         <div class="container main-car-list-sec">
             <div class="row">
-                @php
-                $userAgent = request()->header('User-Agent');
-                $os = '';
-                if (stripos($userAgent, 'Windows') !== false) {
-                $os = 'Windows';
-                } elseif (stripos($userAgent, 'Macintosh') !== false || stripos($userAgent, 'Mac OS') !== false) {
-                $os = 'Mac';
-                } elseif (stripos($userAgent, 'Linux') !== false) {
-                $os = 'Linux';
-                } elseif (stripos($userAgent, 'Android') !== false) {
-                $os = 'Android';
-                } elseif (stripos($userAgent, 'iPhone') !== false || stripos($userAgent, 'iPad') !== false) {
-                $os = 'iOS';
-                } else {
-                $os = 'Unknown';
-                }
-                @endphp
 
                 @foreach ($dealers as $key => $dealer)
                 <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-4">
@@ -327,28 +310,33 @@ use Illuminate\Support\Str;
                                 </a>
                             </div>
                             <div class="actions">
-                                @if($os == 'Windows' || $os == 'Linux' )
                                 <a href="https://wa.me/{{ $dealer->user->phone }}" target="_blank">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
                                         <i class="fab fa-whatsapp"></i> WhatsApp
                                     </button>
                                 </a>
+                                @if($os == 'Windows' || $os == 'Linux' )
+                                <a href="https://wa.me/{{ $dealer->user->phone }}" target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-phone"></i> Call
+                                    </button>
+                                </a>
                                 @elseif($os == 'Mac')
                                 <a href={{ 'https://faceapp.com?phone=' . urlencode($dealer->user->phone) }}>
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fab fa-phone"></i> faceApp
+                                        <i class="fa fa-phone"></i> faceApp
                                     </button>
                                 </a>
                                 @elseif($os == 'Android' || $os='iOS')
                                 <a href="tel:{{ $dealer->user->phone }}">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fab fa-phone"></i> Make Call
+                                        <i class="fa fa-phone"></i> Make Call
                                     </button>
                                 </a>
                                 @else
                                 No OS Detected
                                 @endif
-                                
+
                                 <a href="">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;"
                                         onclick="copyUrl()">

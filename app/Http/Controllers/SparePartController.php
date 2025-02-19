@@ -170,7 +170,7 @@ class SparePartController extends Controller
         if ($spareParts->isEmpty()) {
             $dealers = collect(); // Return an empty collection
         } else {
-            $dealers = CarDealer::whereIn('user_id', $spareParts)->paginate(10);
+            $dealers = CarDealer::whereIn('user_id', $spareParts)->paginate(9);
         }
         return view('spareparts.index', compact('dealers', 'spareParts', 'cities', 'makes', 'models', 'years', 'categories', 'conditions'));
 

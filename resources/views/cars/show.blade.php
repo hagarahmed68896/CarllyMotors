@@ -261,6 +261,33 @@
                             <i class="fab fa-whatsapp"></i> WhatsApp
                         </button>
                     </a>
+                    @if($os == 'Windows' || $os == 'Linux' )
+                    <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
+                        <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                            <i class="fa fa-phone"></i> Call
+                        </button>
+                    </a>
+                    @elseif($os == 'Mac')
+                    <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user->phone) }}>
+                        <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                            <i class="fa fa-phone"></i> faceApp
+                        </button>
+                    </a>
+                    @elseif($os == 'Android' || $os='iOS')
+                    <a href="tel:{{ $car->user->phone }}">
+                        <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                            <i class="fa fa-phone"></i> Make Call
+                        </button>
+                    </a>
+                    @else
+                    No OS Detected
+                    @endif
+                    <a href="">
+                        <button class="btn btn-outline-danger" style="border-radius: 25px;" onclick="copyUrl()">
+                            <i class="fa fa-share"></i>
+                            Share
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -316,11 +343,21 @@ function copyUrl() {
 }
 </script>
 
-<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg11eAiAzKB6kMmJXfRbElSfK96RkDVq4&callback=console.debug&libraries=maps,marker&v=beta">
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg11eAiAzKB6kMmJXfRbElSfK96RkDVq4&callback=console.debug&libraries=maps,marker&v=beta">
 </script>
 <script>
+function copyUrl() {
+    const url = window.location.href; // Get current URL
+    navigator.clipboard.writeText(url).then(() => {
+        alert('URL copied : ' + url);
+    }).catch(err => {
+        console.error('Failed to copy URL: ', err);
+    });
+}
 var latitude = {{$car->lat}}
 var longitude = {{$car->lng}}
+
 // Initialize Small Map
 function initSmallMap() {
     var location = {

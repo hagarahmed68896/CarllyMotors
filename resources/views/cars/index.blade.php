@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 
 
 <style>
-
 .main-home-filter-sec {
     margin-top: 11px !important;
     z-index: 1;
@@ -332,6 +331,27 @@ use Illuminate\Support\Str;
                                         <i class="fab fa-whatsapp"></i> WhatsApp
                                     </button>
                                 </a>
+                                @if($os == 'Windows' || $os == 'Linux' )
+                                <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-phone"></i> Call
+                                    </button>
+                                </a>
+                                @elseif($os == 'Mac')
+                                <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user->phone) }}>
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-phone"></i> faceApp
+                                    </button>
+                                </a>
+                                @elseif($os == 'Android' || $os='iOS')
+                                <a href="tel:{{ $car->user->phone }}">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-phone"></i> Make Call
+                                    </button>
+                                </a>
+                                @else
+                                No OS Detected
+                                @endif
                                 <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)])  }}">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
                                         View Details

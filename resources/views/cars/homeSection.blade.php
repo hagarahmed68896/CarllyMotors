@@ -134,6 +134,8 @@
 </style>
 
 @section('page')
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
 <div class="filter-bar mt-4">
     <form class="form-row" id="filterForm" action="{{route('cars.index')}}" method="get">
 
@@ -286,15 +288,35 @@
                                     <i class="fab fa-whatsapp"></i> WhatsApp
                                 </button>
                             </a>
+                            @if($os == 'Windows' || $os == 'Linux' )
+                            <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
+                                <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <i class="fa fa-phone"></i> Call
+                                </button>
+                            </a>
+                            @elseif($os == 'Mac')
+                            <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user->phone) }}>
+                                <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <i class="fa fa-phone"></i> faceApp
+                                </button>
+                            </a>
+                            @elseif($os == 'Android' || $os='iOS')
+                            <a href="tel:{{ $car->user->phone }}">
+                                <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <i class="fa fa-phone"></i> Make Call
+                                </button>
+                            </a>
+                            @else
+                            No OS Detected
+                            @endif
+
                             <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)])  }}">
                                 <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                    View Details
+                                    Details
                                 </button>
                             </a>
                         </div>
                     </div>
-
-
                 </div>
             </div>
             @endforeach
@@ -310,6 +332,8 @@
 @push('carlistingscript')
 {{-- Script related filters on carlisting page --}}
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 <script>
 function submitFilterForm() {

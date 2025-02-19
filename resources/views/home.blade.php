@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 @endphp
+
 @section('content')
 <style>
     .carousel-item img{
