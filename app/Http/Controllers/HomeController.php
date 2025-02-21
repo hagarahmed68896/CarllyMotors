@@ -56,7 +56,7 @@ class HomeController extends Controller
         $maxYear = CarListingModel::max('listing_year');
 
                                                  // Pagination and sorting
-        $perPage = request('perPage', 9);        // Default to 8 if no value is selected
+        $perPage = request('perPage', 9);        // Default to 9 if no value is selected
         $sortBy  = request('sortBy', 'default'); // Default to 'default' if no sorting is selected
 
         // Start the base query
@@ -88,7 +88,7 @@ class HomeController extends Controller
 
         
         // Return view with filter data
-        return view('cars.homeSection', compact(
+        return view('home', compact(
             'carlisting',
             'cities',
             'makes',
@@ -136,7 +136,7 @@ class HomeController extends Controller
         }
 
         // Initialize the query
-        $query = CarListingModel::with('user')->latest()->limit(8);
+        $query = CarListingModel::with('user')->latest()->limit(9);
 
         // Apply dynamic filters
         foreach ($filterColumns as $column) {
@@ -153,7 +153,7 @@ class HomeController extends Controller
             ->groupBy('body_type');
 
         // Return the view with data
-        return view('cars.homeSection', [
+        return view('home', [
             'carlisting'    => $carlisting,
             'brands'        => $brands,
             'cities'        => $filters['city'] ?? collect(),
@@ -186,7 +186,7 @@ class HomeController extends Controller
         $maxYear = CarListingModel::max('listing_year');
 
                                                  // Pagination and sorting
-        $perPage = request('perPage', 8);        // Default to 8 if no value is selected
+        $perPage = request('perPage', 9);        // Default to 9 if no value is selected
         $sortBy  = request('sortBy', 'default'); // Default to 'default' if no sorting is selected
 
         // Start the base query
@@ -306,7 +306,7 @@ class HomeController extends Controller
             $query->where('features_speed', '<=', $request->distance);
         }
                                                  // Pagination and sorting
-        $perPage = request('perPage',9);        // Default to 8 if no value is selected
+        $perPage = request('perPage',9);        // Default to 9 if no value is selected
         $sortBy  = request('sortBy', 'default'); // Default to 'default' if no sorting is selected
 
         // Apply sorting based on the selected option

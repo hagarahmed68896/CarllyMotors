@@ -354,7 +354,7 @@ use Illuminate\Support\Str;
                                 @endif
                                 <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)])  }}">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        View Details
+                                        Details
                                     </button>
                                 </a>
                             </div>
