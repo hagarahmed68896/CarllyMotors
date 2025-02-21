@@ -278,6 +278,7 @@ use Illuminate\Support\Str;
         <div class="container main-car-list-sec">
             <div class="row">
                 @foreach ($carlisting as $key => $car)
+
                 <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                     <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
@@ -291,16 +292,19 @@ use Illuminate\Support\Str;
                         align-items: center;
                         justify-content: center;">
 
-                            <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
-                                alt="Car Image" style="
-                              height: 100%; !important;
-                              width: 100%; !important;
-                                object-fit: cover;
-                                object-position: center;
-                                transition: transform 0.3s ease-in-out;
-                                aspect-ratio: 16/9;" loading="lazy"
-                                onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
-
+                            <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}"
+                                style="width: 100%; height: 100%; display: block;">
+                                <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
+                                    alt="Car Image" style="
+            height: 100% !important;
+            width: 100% !important;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.3s ease-in-out;
+            aspect-ratio: 16/9;
+            cursor: pointer;" loading="lazy"
+                                    onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
+                            </a>
                             <!-- Badges -->
                             <div class="badge-year">{{ $car->listing_year }}</div>
                         </div>
@@ -350,11 +354,12 @@ use Illuminate\Support\Str;
                                 @else
                                 No OS Detected
                                 @endif
-                                <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)])  }}">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        Details
-                                    </button>
-                                </a>
+
+                                <button class="btn btn-outline-danger" style="border-radius: 25px;" onclick=copyUrl('{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}')>
+                                    <i class="fa fa-share"></i>
+                                    Share
+                                </button>
+
                             </div>
                         </div>
 
@@ -362,6 +367,7 @@ use Illuminate\Support\Str;
                     </div>
                 </div>
                 @endforeach
+
             </div>
             <div class="pagination-links mb-0 d-flex justify-content-center" style="margin: 0;">
                 {{ $carlisting->appends(['perPage' => request('perPage')])->links('pagination::bootstrap-4') }}
@@ -378,6 +384,14 @@ use Illuminate\Support\Str;
 <script>
 function submitFilterForm() {
     document.getElementById('filterForm').submit();
+}
+
+function copyUrl(carUrl) {
+    navigator.clipboard.writeText(carUrl).then(() => {
+        alert('URL copied: ' + carUrl);
+    }).catch(err => {
+        console.error('Failed to copy URL: ', err);
+    });
 }
 
 $(document).on('change', '#brand', function() {

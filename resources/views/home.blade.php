@@ -295,17 +295,18 @@ use Illuminate\Support\Str;
                         display: flex;
                         align-items: center;
                         justify-content: center;">
-
-                            <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
-                                alt="Car Image" style="
+                            <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}"
+                                style="width: 100%; height: 100%; display: block;">
+                                <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
+                                    alt="Car Image" style="
                               height: 100%; !important;
                               width: 100%; !important;
                                 object-fit: cover;
                                 object-position: center;
                                 transition: transform 0.3s ease-in-out;
                                 aspect-ratio: 16/9;" loading="lazy"
-                                onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
-
+                                    onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
+                            </a>
                             <!-- Badges -->
                             <div class="badge-year">{{ $car->listing_year }}</div>
                         </div>
@@ -356,11 +357,10 @@ use Illuminate\Support\Str;
                                 No OS Detected
                                 @endif
 
-                                <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)])  }}">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        Details
-                                    </button>
-                                </a>
+                                <button class="btn btn-outline-danger" style="border-radius: 25px;" onclick=copyUrl('{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}')>
+                                    <i class="fa fa-share"></i>
+                                    Share
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -488,6 +488,13 @@ function submitFilterForm() {
     document.getElementById('filterForm').submit();
 }
 
+function copyUrl(carUrl) {
+    navigator.clipboard.writeText(carUrl).then(() => {
+        alert('URL copied: ' + carUrl);
+    }).catch(err => {
+        console.error('Failed to copy URL: ', err);
+    });
+}
 $(document).on('change', '#brand', function() {
     let brand = $(this).val();
 

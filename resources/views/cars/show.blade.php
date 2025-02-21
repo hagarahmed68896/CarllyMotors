@@ -231,9 +231,6 @@
                     <div class="icon-group mt-3">
                         <button title="add to fav" class="btn btn-outline-secondary"><i
                                 class="fas fa-heart"></i></button>
-                        <button title="copyUrl" onclick="copyUrl()" class="btn btn-outline-secondary">
-                            <i class="fa fa-copy"></i>
-                        </button>
                     </div>
                 </div>
 
