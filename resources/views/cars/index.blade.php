@@ -168,7 +168,6 @@ use Illuminate\Support\Str;
     </a>
 </div>
 <!-- filter -->
-<!-- Start filter home with items -->
 
 <div class="container my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
     <div class="d-flex flex-wrap justify-content-center gap-3">
@@ -264,7 +263,6 @@ use Illuminate\Support\Str;
             <!-- condition Dropdown -->
             <div class="col-">
                 <select class="form-control" onchange="submitFilterForm()" name="condition">
-                    <option value="" selected>Condition</option>
                     @foreach($conditions as $condition)
                     <option value="{{ $condition }}" {{ request('condition') == $condition ? 'selected' : '' }}>
                         {{ $condition }}

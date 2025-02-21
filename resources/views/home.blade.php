@@ -268,7 +268,6 @@ use Illuminate\Support\Str;
             <!-- condition Dropdown -->
             <div class="col-">
                 <select class="form-control" onchange="submitFilterForm()" name="condition">
-                    <option value="" selected>Condition</option>
                     @foreach($conditions as $condition)
                     <option value="{{ $condition }}" {{ request('condition') == $condition ? 'selected' : '' }}>
                         {{ $condition }}
