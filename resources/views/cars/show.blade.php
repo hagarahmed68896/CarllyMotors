@@ -279,8 +279,9 @@
                     @else
                     No OS Detected
                     @endif
-                    <a href="">
-                        <button class="btn btn-outline-danger" style="border-radius: 25px;" onclick="copyUrl()">
+                    <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', [ Crypt::encrypt($car->id)])) }}"
+                        target="_blank">
+                        <button class="btn btn-outline-danger" style="border-radius: 25px;">
                             <i class="fa fa-share"></i>
                             Share
                         </button>
@@ -352,8 +353,16 @@ function copyUrl() {
         console.error('Failed to copy URL: ', err);
     });
 }
-var latitude = {{$car->lat}}
-var longitude = {{$car->lng}}
+var latitude = {
+    {
+        $car - > lat
+    }
+}
+var longitude = {
+    {
+        $car - > lng
+    }
+}
 
 // Initialize Small Map
 function initSmallMap() {

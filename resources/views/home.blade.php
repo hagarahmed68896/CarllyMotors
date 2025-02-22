@@ -154,24 +154,28 @@ use Illuminate\Support\Str;
         /* Reduce size on smaller screens */
     }
 }
+
 @media (max-width: 670px) {
     .home-slider .carousel-inner {
-        height: 250px; /* Adjust to match the required height */
+        height: 250px;
+        /* Adjust to match the required height */
         border-radius: 10px;
-        overflow: hidden; /* Ensures content fits well */
+        overflow: hidden;
+        /* Ensures content fits well */
     }
 
     .home-slider .carousel-item {
-        height: 250px; /* Ensure all items have the same height */
+        height: 250px;
+        /* Ensure all items have the same height */
     }
 
     .home-slider .carousel-item img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Prevents distortion */
+        object-fit: cover;
+        /* Prevents distortion */
     }
 }
-
 </style>
 <!-- home slider -->
 <div id="demo" class="carousel slide home-slider" data-ride="carousel">
@@ -388,11 +392,13 @@ use Illuminate\Support\Str;
                                 No OS Detected
                                 @endif
 
-                                <button class="btn btn-outline-danger" style="border-radius: 25px;"
-                                    onclick=copyUrl('{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}')>
-                                    <i class="fa fa-share"></i>
-                                    Share
-                                </button>
+                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', [ Crypt::encrypt($car->id)])) }}"
+                                    target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-share"></i>
+                                        Share
+                                    </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -559,8 +565,6 @@ $(document).on('change', '#brand', function() {
         $('#model').empty().append('<option value="">model</option>');
     }
 });
-
-
 </script>
 @endpush
 @endsection

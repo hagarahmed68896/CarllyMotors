@@ -386,11 +386,13 @@ use Illuminate\Support\Str;
                                 No OS Detected
                                 @endif
 
-                                <button class="btn btn-outline-danger" style="border-radius: 25px;"
-                                    onclick=copyUrl('{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}')>
-                                    <i class="fa fa-share"></i>
-                                    Share
-                                </button>
+                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', [ Crypt::encrypt($car->id)])) }}"
+                                    target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-share"></i>
+                                        Share
+                                    </button>
+                                </a>
                             </div>
                         </div>
                     </div>
