@@ -485,10 +485,10 @@ body {
     margin-left: 10px;
 }
 
-.carousel-item img {
+/* .carousel-item img {
     width: 100%;
     object-fit: cover;
-}
+} */
 
 .main-car-list-sec .carousel-item img {
     width: 58%;
@@ -537,17 +537,17 @@ ul.carousel-indicators {
     font-size: 14px;
 }
 
-.filter-bar button {
+/* .filter-bar button {
     background-color: #ed1d26;
     border-color: #ed1d26;
     color: white;
     transition: background-color 0.3s ease;
-}
+} */
 
-.filter-bar button:hover {
+/* .filter-bar button:hover {
     background-color: #ed1d26;
     color: #fff;
-}
+} */
 
 .main-home-filter-sec {
     z-index: 1;

@@ -44,10 +44,6 @@ use Illuminate\Support\Str;
 
 }
 
-.carousel-item img {
-    border-radius: 15px !important;
-}
-
 .price-location {
     display: flex;
     justify-content: space-between;
@@ -122,16 +118,50 @@ use Illuminate\Support\Str;
 }
 
 .carousel-item img {
-    height: 80% !important;
+    height: 80%;
     object-fit: cover;
+    border-radius: 15px;
 }
-
-
 
 .active {
     background-color: #760e13 !important;
     color: #f3f3f3 !important;
     border-color: #760e13 !important;
+}
+
+
+.store-badge {
+    max-width: 150px;
+    /* Control the size of store badges */
+}
+
+@media (max-width: 768px) {
+    .store-badge {
+        max-width: 130px;
+        /* Reduce size on smaller screens */
+    }
+}
+
+@media (max-width: 670px) {
+    .home-slider .carousel-inner {
+        height: 250px !important;
+        /* Adjust to match the required height */
+        border-radius: 10px;
+        overflow: hidden;
+        /* Ensures content fits well */
+    }
+
+    .home-slider .carousel-item {
+        height: 250px;
+        /* Ensure all items have the same height */
+    }
+
+    .home-slider .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* Prevents distortion */
+    }
 }
 </style>
 
@@ -272,6 +302,7 @@ use Illuminate\Support\Str;
             </div>
         </form>
     </div>
+
     <!-- List -->
 
     <div class="tab-content" id="bodyTypeTabsContent">
@@ -342,7 +373,7 @@ use Illuminate\Support\Str;
                                 @elseif($os == 'Mac')
                                 <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user->phone) }}>
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fa fa-phone"></i> faceApp
+                                        <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Android' || $os='iOS')
@@ -355,24 +386,23 @@ use Illuminate\Support\Str;
                                 No OS Detected
                                 @endif
 
-                                <button class="btn btn-outline-danger" style="border-radius: 25px;" onclick=copyUrl('{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}')>
+                                <button class="btn btn-outline-danger" style="border-radius: 25px;"
+                                    onclick=copyUrl('{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}')>
                                     <i class="fa fa-share"></i>
                                     Share
                                 </button>
-
                             </div>
                         </div>
-
-
                     </div>
                 </div>
                 @endforeach
-
             </div>
+
+
             <div class="pagination-links mb-0 d-flex justify-content-center" style="margin: 0;">
-                {{ $carlisting->appends(['perPage' => request('perPage')])->links('pagination::bootstrap-4') }}
-
+                {{ $carlisting->appends(['perPage' => request('perPage')])->links('vendor.pagination.bootstrap-4') }}
             </div>
+
         </div>
     </div>
 </div>

@@ -267,13 +267,13 @@
                     @elseif($os == 'Mac')
                     <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user->phone) }}>
                         <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                            <i class="fa fa-phone"></i> faceApp
+                            <i class="fa fa-phone"></i> Call
                         </button>
                     </a>
                     @elseif($os == 'Android' || $os='iOS')
                     <a href="tel:{{ $car->user->phone }}">
                         <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                            <i class="fa fa-phone"></i> Make Call
+                            <i class="fa fa-phone"></i> Call
                         </button>
                     </a>
                     @else

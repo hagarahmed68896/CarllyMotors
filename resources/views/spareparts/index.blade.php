@@ -45,7 +45,9 @@ use Illuminate\Support\Str;
 }
 
 .carousel-item img {
-    border-radius: 15px !important;
+    height: 80%;
+    object-fit: cover;
+    border-radius: 15px;
 }
 
 .price-location {
@@ -64,9 +66,10 @@ use Illuminate\Support\Str;
 
 .location {
     color: #4a4a4a;
-    font-size: 16px;
+    font-size: 13px;
     display: flex;
     align-items: center;
+
 }
 
 .location i {
@@ -121,12 +124,6 @@ use Illuminate\Support\Str;
     font-size: 16px;
 }
 
-.carousel-item img {
-    height: 80% !important;
-    object-fit: cover;
-}
-
-
 
 .active {
     background-color: #760e13 !important;
@@ -137,6 +134,26 @@ use Illuminate\Support\Str;
 #carImage {
     object-fit: fill !important;
 }
+
+
+@media (max-width: 670px) {
+    .home-slider .carousel-inner {
+        height: 250px !important; /* Adjust to match the required height */
+        border-radius: 10px;
+        overflow: hidden; /* Ensures content fits well */
+    }
+
+    .home-slider .carousel-item {
+        height: 250px; /* Ensure all items have the same height */
+    }
+
+    .home-slider .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Prevents distortion */
+    }
+}
+
 </style>
 
 @section('content')
@@ -261,17 +278,17 @@ use Illuminate\Support\Str;
                 </select>
             </div>
             <div class="col-">
-                <button class="btn btn-block" type="submit" style="border-radius: 25px;">
+                <button class="btn btn-outline-danger active" type="submit" style="border-radius: 25px;">
                     Search
                 </button>
             </div>
         </form>
     </div>
+
     <!-- List -->
     <div class="tab-content" id="bodyTypeTabsContent">
         <div class="container main-car-list-sec">
             <div class="row">
-
                 @foreach ($dealers as $key => $dealer)
                 <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                     <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
@@ -287,6 +304,9 @@ use Illuminate\Support\Str;
                         justify-content: center;">
                             @php
                             $image = Str::after($dealer->company_img, url('/').'/');
+                            $dealerName = ucfirst(strtolower($dealer->company_name));
+                            $dealerName = substr($dealerName,0,25);
+
                             @endphp
                             <img id="cardImage" src="{{ config('app.file_base_url') . $image }}" alt="Car Image" style="
                               height: 100%; !important;
@@ -302,7 +322,9 @@ use Illuminate\Support\Str;
                         <!-- Car Content Section -->
                         <div class="car-card-body">
                             <div class="price-location">
-                                <span style="color: #760e13">{{$dealer->company_name}}</span>
+                                <span style="color: #760e13; font-size:16px;" title="{{$dealer->company_name}}">
+                                    {{$dealerName}}{{strlen($dealer->company_name) >= 25 ? '...' : ''}}
+                                </span>
                                 <a
                                     href={{"https://www.google.com/maps/search/?api=1&query=" . urlencode($dealer->company_address)}}>
 
@@ -324,13 +346,13 @@ use Illuminate\Support\Str;
                                 @elseif($os == 'Mac')
                                 <a href={{ 'https://faceapp.com?phone=' . urlencode($dealer->user->phone) }}>
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fa fa-phone"></i> faceApp
+                                        <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Android' || $os='iOS')
                                 <a href="tel:{{ $dealer->user->phone }}">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fa fa-phone"></i> Make Call
+                                        <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @else
@@ -350,12 +372,12 @@ use Illuminate\Support\Str;
                 </div>
                 @endforeach
             </div>
-            <div class="pagination-links mb-0 d-flex justify-content-center" style="margin: 0;">
+            {{--<div class="pagination-links mb-0 d-flex justify-content-center" style="margin: 0;">
                 {{ $dealers->appends(['perPage' => request('perPage')])->links('pagination::bootstrap-4') }}
 
-            </div>
-        </div>
+        </div>--}}
     </div>
+</div>
 </div>
 
 @push('carlistingscript')

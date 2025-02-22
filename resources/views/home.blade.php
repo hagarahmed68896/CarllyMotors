@@ -7,9 +7,9 @@ use Illuminate\Support\Str;
 @section('content')
 <style>
 .carousel-item img {
-    height: 80% !important;
+    height: 80%;
     object-fit: cover;
-    border-radius: 15px !important;
+    border-radius: 15px;
 }
 
 .main-home-filter-sec {
@@ -108,18 +108,9 @@ use Illuminate\Support\Str;
     margin-top: 15px;
 }
 
-/* .actions button {
-    padding: 10px 15px;
-    
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-} */
+.last-home-sec .custom-card img {
+    height: 100% !important
+}
 
 .call-btn {
     background-color: #760e13;
@@ -142,6 +133,45 @@ use Illuminate\Support\Str;
 .actions i {
     font-size: 16px;
 }
+
+.custom-card {
+    background: #222;
+    /* Dark card background */
+    color: #fff;
+    /* White text */
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.store-badge {
+    max-width: 150px;
+    /* Control the size of store badges */
+}
+
+@media (max-width: 768px) {
+    .store-badge {
+        max-width: 130px;
+        /* Reduce size on smaller screens */
+    }
+}
+@media (max-width: 670px) {
+    .home-slider .carousel-inner {
+        height: 250px; /* Adjust to match the required height */
+        border-radius: 10px;
+        overflow: hidden; /* Ensures content fits well */
+    }
+
+    .home-slider .carousel-item {
+        height: 250px; /* Ensure all items have the same height */
+    }
+
+    .home-slider .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Prevents distortion */
+    }
+}
+
 </style>
 <!-- home slider -->
 <div id="demo" class="carousel slide home-slider" data-ride="carousel">
@@ -278,6 +308,7 @@ use Illuminate\Support\Str;
         </form>
     </div>
 
+
     <div class="tab-content" id="bodyTypeTabsContent">
         <div class="container main-car-list-sec">
             <div class="row">
@@ -344,20 +375,21 @@ use Illuminate\Support\Str;
                                 @elseif($os == 'Mac')
                                 <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user->phone) }}>
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fa fa-phone"></i> faceApp
+                                        <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Android' || $os='iOS')
                                 <a href="tel:{{ $car->user->phone }}">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fa fa-phone"></i> Make Call
+                                        <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @else
                                 No OS Detected
                                 @endif
 
-                                <button class="btn btn-outline-danger" style="border-radius: 25px;" onclick=copyUrl('{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}')>
+                                <button class="btn btn-outline-danger" style="border-radius: 25px;"
+                                    onclick=copyUrl('{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}')>
                                     <i class="fa fa-share"></i>
                                     Share
                                 </button>
@@ -409,6 +441,9 @@ use Illuminate\Support\Str;
     <h2 class="mb-4">Popular Brands</h2>
     <div class="row">
         @foreach ($brands as $brand)
+        @if($brand->name == 'Honda' || $brand->name == 'Dodge' ||$brand->name == 'Mazda')
+        @continue
+        @endif
         <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4">
             <div class="brand-card text-center">
                 {{--<img class="img-fluid" src="{{ $brand->logo_url }}" alt="{{ $brand->name }}">--}}
@@ -420,57 +455,51 @@ use Illuminate\Support\Str;
     </div>
 </div>
 
-<div class="container our-partner-sec mb-5">
-    <h1 class="text-center mb-5">Our Partner</h1>
-    <div class="row">
-        @foreach ([1, 2, 3, 4, 5, 6] as $index)
-        <div class="col-6 col-sm-4 col-md-2 mb-4">
-            <img src="https://carllymotors.com/demo/images/{{$index}}.png" alt="" class="img-fluid w-100">
-        </div>
-        @endforeach
-    </div>
-</div>
-
 <div class="container py-5 last-home-sec">
     <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="custom-card dark-card d-flex flex-column flex-md-row">
-                <img class="img-fluid mb-3 mb-md-0" src="{{asset('carllyProvider.webp')}}" alt="App Screenshot">
-                <div class="ml-3">
-                    <h5>Download Carlly Providers App</h5>
+        <!-- Providers App Section -->
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div
+                class="custom-card dark-card d-flex flex-column flex-md-row align-items-center text-center text-md-start">
+                <div class="px-3">
+                    <h5 class="fw-bold">Providers App</h5>
                     <p>Connect with customers and manage your services efficiently.</p>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center justify-content-md-start">
                         <a href="https://apps.apple.com/us/app/carlly-provider/id6478307755">
-                            <img class="img-fluid"
-                                src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" />
+                            <img class="img-fluid store-badge"
+                                src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                                alt="App Store">
                         </a>
-
                         <a href="https://play.google.com/store/apps/details?id=com.carllymotors.carllyprovider">
-                            <img class="img-fluid"
+                            <img class="img-fluid store-badge"
                                 src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
                                 alt="Google Play">
                         </a>
-
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-4">
-            <div class="custom-card dark-card d-flex flex-column flex-md-row">
-                <img class="img-fluid mb-3 mb-md-0" src="{{asset('carllyCustomer.webp')}}" alt="Car Image">
-                <div class="ml-3">
-                    <h5>Download Carlly Customers App</h5>
-                    <p>Access car buying, selling, and maintenance services effortlessly.</p>
-                    <a href="https://apps.apple.com/us/app/carlly-motors/id6478306259">
-                        <img class="img-fluid"
-                            src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" />
-                    </a>
-                    <a href="https://play.google.com/store/apps/details?id=com.carllymotors.carllyuser">
-                        <img class="img-fluid"
-                            src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
-                            alt="Google Play">
-                    </a>
 
+        <!-- Customers App Section -->
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div
+                class="custom-card dark-card d-flex flex-column flex-md-row align-items-center text-center text-md-start">
+                <div class="px-3">
+                    <h5 class="fw-bold">Customers App</h5>
+                    <p>Access car buying, selling, and maintenance services effortlessly.</p>
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center justify-content-md-start">
+                        <a href="https://apps.apple.com/us/app/carlly-motors/id6478306259"
+                            style="background-color:transparent">
+                            <img class="img-fluid store-badge"
+                                src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                                alt="App Store">
+                        </a>
+                        <a href="https://play.google.com/store/apps/details?id=com.carllymotors.carllyuser">
+                            <img class="img-fluid store-badge"
+                                src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                                alt="Google Play">
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -530,6 +559,8 @@ $(document).on('change', '#brand', function() {
         $('#model').empty().append('<option value="">model</option>');
     }
 });
+
+
 </script>
 @endpush
 @endsection
