@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 <style>
 #priceModal {
-    height: 35% ;
+    height: 35%;
     position: fixed;
     margin-top: 30%;
     margin-left: 50%;
@@ -40,11 +40,10 @@ use Illuminate\Support\Str;
     margin-top: 10%;
 
 }
-input[type="number"]{
-    
-}
 
-    #priceModal input[type="number"] {
+input[type="number"] {}
+
+#priceModal input[type="number"] {
     width: 40%;
     padding: 5px;
     border: none;
@@ -282,6 +281,27 @@ input[type="number"]{
     }
 }
 
+.home-slider .carousel-inner {
+    height: 700px !important;
+    /* Adjust to match the required height */
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    /* Ensures content fits well */
+}
+
+.home-slider .carousel-item {
+    height: 700px !important;
+    /* Ensure all items have the same height */
+}
+
+.home-slider .carousel-item img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    /* Prevents distortion */
+}
+
+
 @media (max-width: 670px) {
     .home-slider .carousel-inner {
         height: 250px !important;
@@ -433,13 +453,15 @@ input[type="number"]{
                 <span class="close" onclick="closeModal()">&times;</span>
                 <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>
 
-                <div class="price-range">
-                    <input type="number" id="minPrice" name="priceFrom"  min="{{$minPrice}}" max="{{$maxPrice}}" value="{{request('priceFrom') != '' ? request('priceFrom') :$minPrice}}">
-                    <span>to</span>
-                    <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}"  value="{{request('priceTo') != '' ? request('priceTo') :$maxPrice}}">
-                </div>
+                    <div class="price-range">
+                        <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}"
+                            value="{{request('priceFrom') != '' ? request('priceFrom') :$minPrice}}">
+                        <span>to</span>
+                        <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}"
+                            value="{{request('priceTo') != '' ? request('priceTo') :$maxPrice}}">
+                    </div>
 
-                <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
+                    <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
             </div>
         </form>
     </div>

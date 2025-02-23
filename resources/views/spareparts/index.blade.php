@@ -138,23 +138,27 @@ use Illuminate\Support\Str;
 
 @media (max-width: 670px) {
     .home-slider .carousel-inner {
-        height: 250px !important; /* Adjust to match the required height */
+        height: 250px !important;
+        /* Adjust to match the required height */
         border-radius: 10px;
-        overflow: hidden; /* Ensures content fits well */
+        overflow: hidden;
+        /* Ensures content fits well */
     }
 
     .home-slider .carousel-item {
-        height: 250px; /* Ensure all items have the same height */
+        height: 250px;
+        /* Ensure all items have the same height */
     }
 
     .home-slider .carousel-item img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Prevents distortion */
+        object-fit: cover;
+        /* Prevents distortion */
     }
 }
-
 </style>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
 @section('content')
 <!-- home slider -->
@@ -200,7 +204,7 @@ use Illuminate\Support\Str;
             Spare Parts
         </a>
     </div>
-
+    @if(request()->path() == "spareParts")
     <div class="filter-bar mt-4">
         <form class="form-row" id="filterForm" action="{{route('filter.spareParts')}}" method="get">
             <!-- Make Dropdown -->
@@ -284,7 +288,28 @@ use Illuminate\Support\Str;
             </div>
         </form>
     </div>
+    @else
+    <div class="max-w-lg mx-auto p-4 bg-white shadow-md rounded-2xl mt-3">
+        <div class="text-center font-bold text-xl mb-4">Your Car</div>
+        <div class="grid grid-cols-2 gap-2 text-sm">
+            <div class="font-semibold">Car Type:</div>
+            <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->make ?? '--'}}</div>
 
+            <div class="font-semibold">Car Model:</div>
+            <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->model ?? '--'}}</div>
+
+            <div class="font-semibold">Car Year:</div>
+            <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->year ?? '--'}}</div>
+
+            <div class="font-semibold">Category:</div>
+            <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->category ?? '--'}}</div>
+
+            <div class="font-semibold">Sub-category:</div>
+            <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->subCategory ?? '--'}}</div>
+        </div>
+    </div>
+
+    @endif
     <!-- List -->
     <div class="tab-content" id="bodyTypeTabsContent">
         <div class="container main-car-list-sec">
@@ -358,14 +383,23 @@ use Illuminate\Support\Str;
                                 @else
                                 No OS Detected
                                 @endif
-
-                                <a href="">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;"
-                                        onclick="copyUrl()">
+                                @if(request()->path() == 'spareParts')
+                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this Store ' . request()->url() . '?dealer_id='. $dealer->id)}}"
+                                    target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
                                         <i class="fa fa-share"></i>
                                         Share
                                     </button>
                                 </a>
+                                @else
+                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this Store ' . request()->fullUrl() . '&dealer_id='. $dealer->id)}}"
+                                    target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-share"></i>
+                                        Share
+                                    </button>
+                                </a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -386,6 +420,7 @@ use Illuminate\Support\Str;
 <script>
 function copyUrl() {
     const url = window.location.href; // Get current URL
+
     navigator.clipboard.writeText(url).then(() => {
         alert('URL copied : ' + url);
     }).catch(err => {

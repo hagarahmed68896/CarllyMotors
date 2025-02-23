@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 <style>
 /* Modal Styling */
 .modal {
-    height:35% !important;
+    height: 35% !important;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -38,8 +38,8 @@ use Illuminate\Support\Str;
     gap: 10px;
     font-size: 16px;
     font-weight: bold;
-    margin-top:10%;
-    
+    margin-top: 10%;
+
 }
 
 .modal input[type="number"] {
@@ -96,6 +96,7 @@ use Illuminate\Support\Str;
     margin-top: -7px;
     /* Adjust thumb position */
 }
+
 /* Filter Button */
 .filter-btn {
     width: 100% !important;
@@ -144,12 +145,6 @@ use Illuminate\Support\Str;
 .button-like-select:active {
     background-color: #e0e0e0 !important;
 
-}
-
-.carousel-item img {
-    height: 80%;
-    object-fit: cover;
-    border-radius: 15px;
 }
 
 .main-home-filter-sec {
@@ -297,7 +292,7 @@ use Illuminate\Support\Str;
 
 @media (max-width: 670px) {
     .home-slider .carousel-inner {
-        height: 250px;
+        height: 250px !important;
         /* Adjust to match the required height */
         border-radius: 10px;
         overflow: hidden;
@@ -442,13 +437,15 @@ use Illuminate\Support\Str;
                 <span class="close" onclick="closeModal()">&times;</span>
                 <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>
 
-                <div class="price-range">
-                    <input type="number" id="minPrice" name="priceFrom"  min="{{$minPrice}}" max="{{$maxPrice}}" value="{{$minPrice}}">
-                    <span>to</span>
-                    <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}" value="{{$maxPrice}}">
-                </div>
+                    <div class="price-range">
+                        <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}"
+                            value="{{$minPrice}}">
+                        <span>to</span>
+                        <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}"
+                            value="{{$maxPrice}}">
+                    </div>
 
-                <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
+                    <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
             </div>
 
 

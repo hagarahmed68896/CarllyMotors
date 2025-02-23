@@ -14,16 +14,21 @@ class SparePartController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage    = request('perPage', 8);
+        $perPage    = request('perPage', 9);
         $currentUrl = url()->current();
 
         $users = SparePart::select('user_id')
             ->distinct()
             ->inRandomOrder()
-            ->limit(8)
+            ->limit(9)
             ->pluck('user_id');
-        $dealers = CarDealer::whereIn('user_id', $users)->paginate(8);
+            
+        if ($request->has('dealer_id')) {
+            $dealers = CarDealer::where('id', $request->dealer_id)->get();
+        } else {
+            $dealers = CarDealer::whereIn('user_id', $users)->paginate(9);
 
+        }
         // Fetch distinct values for filters
         $makes      = SparePart::select('brand')->distinct()->orderBy('brand')->pluck('brand');
         $models     = SparePart::select('model')->distinct()->orderBy('model')->pluck('model');
@@ -101,7 +106,7 @@ class SparePartController extends Controller
             $spareParts->where('price', $request->price);
         }
 
-        $spareParts = $spareParts->orderBy('id', 'DESC')->take(8)->get();
+        $spareParts = $spareParts->orderBy('id', 'DESC')->take(9)->get();
         // Return view with grouped data and other filter data
         return view('spareparts.homeSection', compact('spareParts', 'cities', 'makes', 'models', 'years', 'categories', 'prices', 'brands'));
 
@@ -148,29 +153,33 @@ class SparePartController extends Controller
             $query->where('brand', $request->make);
         }
         if ($request->has('model') && $request->model != '') {
-            $query->where('car_model', 'like', '%"'.$request->model.'"%');
-
+            $query->where('car_model', 'like', '%' . $request->model . '%');
         }
-        
+
         if ($request->has('city') && $request->city != '') {
             $query->where('city', $request->city);
         }
-        
+
         if ($request->has('subCategory') && $request->subCategory != '') {
             $subCategory = SparePartCategory::select('id')->where(['name' => $request->subCategory])->first();
+            // dd($subCategory->id);
             $query->where('category_id', $subCategory->id);
         }
-        
+
         if ($request->has('year') && $request->year != '') {
-            $query->whereJsonContains('year', $request->year);
+            $query->where('year', 'like', '%' . $request->year . '%');
         }
-       
         // final result of the filter
         $spareParts = $query->select('user_id')->distinct()->pluck('user_id');
+
         if ($spareParts->isEmpty()) {
             $dealers = collect(); // Return an empty collection
         } else {
-            $dealers = CarDealer::whereIn('user_id', $spareParts)->paginate(9);
+            if ($request->has('dealer_id')) {
+                $dealers = CarDealer::where('id', $request->dealer_id)->whereIn('user_id', $spareParts)->get();
+            } else {
+                $dealers = CarDealer::whereIn('user_id', $spareParts)->paginate(9);
+            }
         }
         return view('spareparts.index', compact('dealers', 'spareParts', 'cities', 'makes', 'models', 'years', 'categories', 'conditions'));
 
