@@ -353,17 +353,8 @@ function copyUrl() {
         console.error('Failed to copy URL: ', err);
     });
 }
-var latitude = {
-    {
-        $car - > lat
-    }
-}
-var longitude = {
-    {
-        $car - > lng
-    }
-}
-
+var latitude = {{$car->lat}}
+var longitude = {{$car->lng}}
 // Initialize Small Map
 function initSmallMap() {
     var location = {

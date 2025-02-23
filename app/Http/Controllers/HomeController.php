@@ -44,8 +44,8 @@ class HomeController extends Controller
         $years         = CarListingModel::select('listing_year')->distinct()->orderBy('listing_year', 'desc')->pluck('listing_year');
         $bodyTypes     = CarListingModel::select('body_type')->distinct()->orderBy('body_type')->pluck('body_type');
         $regionalSpecs = CarListingModel::select('regional_specs')->distinct()->orderBy('regional_specs')->pluck('regional_specs');
-        $prices        = CarListingModel::select('listing_price')->distinct()->orderBy('listing_price')->pluck('listing_price');
-        $conditions = CarListingModel::select('car_type')->distinct()->orderBy('car_type')->pluck('car_type');
+        $minPrice = CarListingModel::min('listing_price');
+        $maxPrice = CarListingModel::max('listing_price');
 
         // Get min and max price
         $minPrice = CarListingModel::min('listing_price');
@@ -96,8 +96,9 @@ class HomeController extends Controller
             'years',
             'bodyTypes',
             'regionalSpecs',
-            'conditions',
-            'prices',
+            
+            'minPrice',
+            'maxPrice',
             'fueltypes',
             'gears',
             'doors',
@@ -252,7 +253,6 @@ class HomeController extends Controller
         $doors         = CarListingModel::select('features_door')->distinct()->orderby('features_door', 'asc')->pluck('features_door');
         $cylinders     = CarListingModel::select('features_cylinders')->distinct()->orderby('features_cylinders', 'asc')->pluck('features_cylinders');
         $colors        = CarListingModel::select('car_color')->distinct()->orderby('car_color', 'asc')->pluck('car_color');
-        $conditions = CarListingModel::select('car_type')->distinct()->orderBy('car_type')->pluck('car_type');
 
         // Get min and max price
         $minPrice = CarListingModel::min('listing_price');
@@ -270,12 +270,20 @@ class HomeController extends Controller
             $query->where('listing_type', $request->make);
         }
 
+        if ($request->has('car_type') && $request->car_type != '') {
+            if($request->car_type == "UsedOrNew"){
+                $query->where('car_type', "Used")->orWhere('car_type', "New");
+            }else{
+                $query->where('car_type', $request->make);
+            }
+        }
+
         if ($request->has('model') && $request->model != '') {
             $query->where('listing_model', $request->model);
         }
 
-        if ($request->has('price') && $request->price != '') {
-            $query->where('listing_price', $request->price); // Fix typo: $request->rice to $request->price
+        if ($request->has('priceFrom') && $request->has('priceTo')) {
+            $query->whereBetween('listing_price', [$request->priceFrom, $request->priceTo]); // Fix typo: $request->rice to $request->price
         }
 
         if ($request->has('fuel_type') && $request->fuel_type != '') {

@@ -10,8 +10,10 @@ body {
 
 .navbar-brand {
     font-weight: bold;
-    color: #ff6600;
+    color: #760e13;
 }
+
+
 
 .header-section {
     text-align: center;
@@ -135,7 +137,7 @@ body {
 }
 
 .footer-links ul li a:hover {
-    color: #ff6600;
+    color: #760e13;
 }
 
 .newsletter input {
@@ -157,7 +159,7 @@ body {
 }
 
 .btn-send:hover {
-    background: #e65c00;
+    background: #760e13;
 }
 
 .social-icons a {
@@ -167,7 +169,7 @@ body {
 }
 
 .social-icons a:hover {
-    color: #ff6600;
+    color: #760e13;
 }
 
 .footer-bottom {
@@ -324,7 +326,7 @@ body {
 }
 
 .home-slider .carousel-control-prev {
-    /* background: #ed1d26; */
+    /* background: #760e13; */
     height: 39px;
     width: 40px;
     left: 4%;
@@ -334,7 +336,7 @@ body {
 }
 
 .carousel-control-next {
-    /* background: #ed1d26; */
+    /* background: #760e13; */
     height: 39px;
     width: 40px;
     right: 4%;
@@ -355,7 +357,7 @@ body {
 
 .main-car-list-sec .badge-featured,
 .badge-year {
-    background-color: orange;
+    background-color: #760e13;
     color: white;
     border-radius: 15px;
     padding: 5px 15px;
@@ -364,7 +366,7 @@ body {
 }
 
 .badge-featured {
-    background-color: orange;
+    background-color: #760e13;
     color: white;
     border-radius: 15px;
     padding: 5px 15px;
@@ -405,7 +407,7 @@ body {
 
 .custom-checkbox .custom-control-input:checked~.custom-control-label {
     color: #fff;
-    background-color: orange;
+    background-color: #760e13;
     border: 0px;
 }
 
@@ -423,7 +425,7 @@ body {
 }
 
 .custom-checkbox .custom-control-input:checked~.custom-control-label::before {
-    border-color: orange;
+    border-color: #760e13;
 }
 
 .custom-control-label::before {
@@ -519,9 +521,9 @@ ul.carousel-indicators {
 }
 
 .nav-btn.active {
-    background-color: #ed1d26;
+    background-color: #760e13;
     color: white;
-    border-color: #ed1d26;
+    border-color: #760e13;
 }
 
 .filter-bar {
@@ -530,24 +532,6 @@ ul.carousel-indicators {
     border-radius: 8px;
     margin-top: 16px;
 }
-
-.filter-bar select,
-.filter-bar button {
-    border-radius: 7px;
-    font-size: 14px;
-}
-
-/* .filter-bar button {
-    background-color: #ed1d26;
-    border-color: #ed1d26;
-    color: white;
-    transition: background-color 0.3s ease;
-} */
-
-/* .filter-bar button:hover {
-    background-color: #ed1d26;
-    color: #fff;
-} */
 
 .main-home-filter-sec {
     z-index: 1;
@@ -567,12 +551,12 @@ ul.carousel-indicators {
 }
 
 .body-type-btn.active {
-    color: #ed1d26;
-    border-bottom: 2px solid #ed1d26;
+    color: #760e13;
+    border-bottom: 2px solid #760e13;
 }
 
 .sort-btn {
-    background-color: #ed1d26;
+    background-color: #760e13;
     /* Dark red */
     color: white;
     border: none;
@@ -661,7 +645,7 @@ ul.carousel-indicators {
 }
 
 .btn-orange {
-    background-color: #ff6600;
+    background-color: #760e13;
     color: white;
     border: none;
     border-radius: 50px;
@@ -670,7 +654,7 @@ ul.carousel-indicators {
 }
 
 .btn-orange:hover {
-    background-color: #e55b00;
+    background-color: #760e13;
 }
 
 .section-title {
@@ -744,7 +728,7 @@ ul.carousel-indicators {
 }
 
 .last-home-sec .orange-card {
-    background-color: #FF7F00;
+    background-color: #760e13;
     color: #fff;
 }
 

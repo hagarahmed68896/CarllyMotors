@@ -9,7 +9,7 @@ body {
     
   margin-top: 0px !important;
 }
-.price { color: orange; font-size: 28px; font-weight: bold; }
+.price { color: #760e13; font-size: 28px; font-weight: bold; }
 .dealer-badge { background: #28a745; color: white; padding: 5px 10px; border-radius: 5px; font-size: 14px; }
 .contact-btn { width: 100%; font-size: 16px; }
 .carousel-inner img { height: 100%; object-fit: cover; }
@@ -146,7 +146,7 @@ body {
     margin-top: 10px;
 }
 .btn-send:hover {
-    background: #e65c00;
+    background: #760e13;
 }
 .social-icons a {
     color: white;
@@ -331,7 +331,7 @@ font-size: 16px;
 font-weight: bold;
 }
 .btn-primary:hover {
-background-color: #E55C00;
+background-color: #760e13;
 }
 .listing-overview-location ul {
 list-style: none;
@@ -341,7 +341,7 @@ padding: 0px;
 .listing-overview-location ul li i{
 margin-right: 10px;
 }
-.rating { font-size: 24px; color: #ff9800; }
+.rating { font-size: 24px; color: #760e13; }
 .review-card { border: 1px solid #ddd; padding: 15px; border-radius: 8px;  }
 .profile-circle { width: 50px; height: 50px; background: #ccc; border-radius: 50%; }
 .gray-box { width: 100px; height: 70px; background: #ddd; border-radius: 8px; display: inline-block; margin-right: 5px; }
@@ -349,7 +349,7 @@ margin-right: 10px;
 .view-more-review {
       display: inline-flex;
       align-items: center;
-      color: #ff7300;
+      color: #760e13;
       font-size: 16px;
       font-weight: bold;
       text-decoration: none;
@@ -360,12 +360,12 @@ margin-top: 15px;
   }
   .view-more-review:hover{
     text-decoration: none;
-    color: #ff7300;
+    color: #760e13;
   }
 
   .view-more-review i {
       margin-left: 5px;
-      background: #ff7300;
+      background: #760e13;
       color: #fff;
       border-radius: 50%;
       padding: 5px;
@@ -378,13 +378,13 @@ margin-top: 15px;
 .comment-form .form-control {
 margin-bottom: 15px;
 }
-.btn-orange {
+.btn-760e13 {
 background-color: #760e13;
 color: white;
 border: none;
 }
-.btn-orange:hover {
-background-color: #e65c00;
+.btn-760e13:hover {
+background-color: #760e13;
 }
 .right-listing-detail-section .card {
 border-radius: 10px;
@@ -534,7 +534,7 @@ align-items: center;
 justify-content: center;
 width: 32px;
 height: 32px;
-background-color: #ff5722;
+background-color: #760e13;
 color: #ffffff;
 font-size: 14px;
 font-weight: bold;
@@ -599,7 +599,7 @@ padding: 0;
 }
 
 .car-list-details-breadcrums .breadcrumb-item a {
-color: #760e13; /* Orange color for active links */
+color: #760e13; /* 760e13 color for active links */
 text-decoration: none;
 }
 
@@ -621,13 +621,13 @@ height: auto;
 margin: 15px;
 }
 
-.grid-view-filter .btn-orange {
+.grid-view-filter .btn-760e13 {
 background-color: #770e13;
 color: white;
 border-color: #770e13;
 }
 
-.grid-view-filter .btn-orange:hover {
+.grid-view-filter .btn-760e13:hover {
 background-color: #770e13;
 border-color: #770e13;
 }
@@ -653,12 +653,12 @@ margin-left: 0.5rem;
 .grid-view-filter h4 {
 font-weight: bold;
 }
-.map-view-grid-carousul .badge-orange {
+.map-view-grid-carousul .badge-760e13 {
 background-color: #770e13;
 color: white;
 }
 
-.map-view-grid-carousul .text-orange {
+.map-view-grid-carousul .text-760e13 {
 color: #770e13;
 }
 .map-view-grid-carousul .badge-warning {
@@ -707,7 +707,7 @@ margin: 0 auto;
 position: absolute;
 width: 20px;
 height: 20px;
-background: #ffa500;
+background: #760e13;
 border-radius: 50%;
 z-index: 0; /* Behind the card */
 opacity: 0.6;
@@ -808,7 +808,7 @@ width:100%;
 border-radius: 14px;
 height: auto;
 }
-.dealer-detail-sec .btn-orange {
+.dealer-detail-sec .btn-760e13 {
 background: #760e13;;
 color: #fff;
 border: none;
@@ -830,12 +830,12 @@ text-align: center;
 border: none;
 }
 .card .price {
-color: #ff6f00;
+color: #760e13;
 font-size: 1.5rem;
 font-weight: bold;
 }
 .featured-tag {
-background-color: orange;
+background-color: #760e13;
 color: white;
 font-size: 0.8rem;
 padding: 2px 6px;
@@ -876,7 +876,7 @@ height: 50px;
 width: 50px;
 border-radius: 50px;
 }
-.carousel-container-dealer .card-body .text-orange{
+.carousel-container-dealer .card-body .text-760e13{
 color: #760e13;
 font-weight: 600;
 }
@@ -909,7 +909,7 @@ left: 24px;
 .carousel-container-dealer .under-item-bages .spna-one{
 
 width: 33.33%;
-background-color: orange;
+background-color: #760e13;
 color: white;
 border-radius: 15px;
 padding: 5px 15px;
@@ -932,7 +932,7 @@ height: 20px;
 }
 .carousel-container-dealer .under-item-bages .spna-three {
 width: 33.33%;
-background-color: orange;
+background-color: #760e13;
 color: white;
 border-radius: 15px;
 padding: 5px 15px;
@@ -959,7 +959,7 @@ transition: opacity .15s ease;
 
 .container-appointment-sec .rating {
 font-size: 3rem;
-color: #ff9800;
+color: #760e13;
 }
 .container-appointment-sec .appointment-box {
 background-color: #fff7ed;
@@ -1051,7 +1051,7 @@ font-size: 13px;
 color: #888;
 }
 .profile-list-review-sec .review-rating {
-color: #f39c12;
+color: #760e13;
 }
 .profile-list-review-sec .btn-yes-no {
 font-size: 12px;
@@ -1067,7 +1067,7 @@ background-color: #f1f1f1;
 .profile-list-review-sec .view-more {
 text-align: center;
 font-weight: bold;
-color: #f39c12;
+color: #760e13;
 cursor: pointer;
 }
 
@@ -1119,7 +1119,7 @@ border-radius: 5px;
 border: none;
 }
 .leave-comment-form-sec .btn-post-comment:hover {
-background-color: #e68a00;
+background-color: #760e13;
 }
 
 

@@ -4,11 +4,151 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
 @endphp
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 
 <style>
+#priceModal {
+    height: 35% ;
+    position: fixed;
+    margin-top: 30%;
+    margin-left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    background: #fbecea;
+    /* Light pink background */
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Title */
+#priceModal h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Price Input Fields */
+.price-range {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10%;
+
+}
+input[type="number"]{
+    
+}
+
+    #priceModal input[type="number"] {
+    width: 40%;
+    padding: 5px;
+    border: none;
+    border-bottom: 2px solid #7b4b40;
+    background: transparent;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    outline: none;
+}
+
+/* Range Slider Wrapper */
+.range-slider {
+    position: relative;
+    width: 100%;
+    margin: 20px 0;
+    height: 6px;
+    background: #e3c5b5;
+    /* Light brown background */
+    border-radius: 5px;
+}
+
+/* Range Inputs */
+.range-slider input[type="range"] {
+    position: absolute;
+    width: 100%;
+    appearance: none;
+    background: transparent;
+    pointer-events: none;
+    /* Makes the background clickable */
+}
+
+/* Styling the Track */
+.range-slider input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    background: transparent;
+    border-radius: 5px;
+}
+
+/* Styling the Thumbs */
+.range-slider input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #7b4b40;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    /* Allows interaction */
+    margin-top: -7px;
+    /* Adjust thumb position */
+}
+
+/* Filter Button */
+.filter-btn {
+    width: 100% !important;
+    padding: 12px !important;
+    background: #9b3128 !important;
+    color: white !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    margin-top: 20px !important;
+}
+
+.filter-btn:hover {
+    background: #80251e;
+}
+
+.close {
+    cursor: pointer;
+}
+
+.button-like-select {
+    height: 45px !important;
+    /* Match your select height */
+    width: 125px !important;
+    color: #495057 !important;
+    font-size: 14px !important;
+    padding: 8px 16px !important;
+    /* Adjust padding */
+    border: 1px solid #ccc !important;
+    /* Match select border */
+    border-radius: 5px !important;
+    /* Match select rounded corners */
+    background-color: white !important;
+    /* Neutral background */
+    cursor: pointer !important;
+}
+
+/* Optional: Hover effect similar to select */
+.button-like-select:hover {
+    background-color: #f0f0f0 !important;
+}
+
+/* Optional: Active effect */
+.button-like-select:active {
+    background-color: #e0e0e0 !important;
+
+}
+
 .main-home-filter-sec {
     margin-top: 11px !important;
     z-index: 1;
@@ -210,6 +350,15 @@ use Illuminate\Support\Str;
     <div class="filter-bar mt-4">
         <form class="form-row" id="filterForm" action="{{route('cars.index')}}" method="get">
 
+            <!-- car_type Dropdown -->
+            <div class="col-">
+                <select class="form-control" onchange="submitFilterForm()" name="car_type">
+                    <option value="UsedOrNew">Used/New</option>
+                    <option value="Imported">Imported</option>
+                    <option value="Auction">Auction</option>
+                </select>
+            </div>
+
             <!-- City Dropdown -->
             <div class="col-">
                 <select class="form-control" onchange="submitFilterForm()" name="city" style="width:80px;">
@@ -279,30 +428,21 @@ use Illuminate\Support\Str;
             </div>
 
             <!-- Price Dropdown -->
-            <div class="col-">
-                <select class="form-control" onchange="submitFilterForm()" name="price">
-                    <option value="" selected>Price</option>
-                    @foreach($prices as $price)
-                    <option value="{{ $price }}" {{ request('price') == $price ? 'selected' : '' }}>
-                        {{ $price }}
-                    </option>
-                    @endforeach
-                </select>
-            </div>
+            <button type="button" class="button-like-select" onclick="openModal()">Price</button>
+            <div id="priceModal" class="modal">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>
 
-            <!-- condition Dropdown -->
-            <div class="col-">
-                <select class="form-control" onchange="submitFilterForm()" name="condition">
-                    @foreach($conditions as $condition)
-                    <option value="{{ $condition }}" {{ request('condition') == $condition ? 'selected' : '' }}>
-                        {{ $condition }}
-                    </option>
-                    @endforeach
-                </select>
+                <div class="price-range">
+                    <input type="number" id="minPrice" name="priceFrom"  min="{{$minPrice}}" max="{{$maxPrice}}" value="{{request('priceFrom') != '' ? request('priceFrom') :$minPrice}}">
+                    <span>to</span>
+                    <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}"  value="{{request('priceTo') != '' ? request('priceTo') :$maxPrice}}">
+                </div>
+
+                <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
             </div>
         </form>
     </div>
-
     <!-- List -->
 
     <div class="tab-content" id="bodyTypeTabsContent">
@@ -342,6 +482,7 @@ use Illuminate\Support\Str;
 
                         <!-- Car Content Section -->
                         <div class="car-card-body">
+
                             <div class="price-location">
                                 <span class="price">AED {{$car->listing_price}}</span>
                                 <a href="https://www.google.com/maps?q={{$car->user->lat}},{{$car->user->lng}}">
@@ -414,6 +555,16 @@ use Illuminate\Support\Str;
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
+function openModal() {
+    document.getElementById("priceModal").style.display = "block";
+}
+
+// Close Modal
+function closeModal() {
+    document.getElementById("priceModal").style.display = "none";
+}
+
+
 function submitFilterForm() {
     document.getElementById('filterForm').submit();
 }
