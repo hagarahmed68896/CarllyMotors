@@ -341,7 +341,6 @@ use Illuminate\Support\Str;
                                 transition: transform 0.3s ease-in-out;
                                 aspect-ratio: 16/9;" loading="lazy"
                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
-
                         </div>
 
                         <!-- Car Content Section -->

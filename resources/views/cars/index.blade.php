@@ -280,28 +280,6 @@ input[type="number"] {}
         /* Reduce size on smaller screens */
     }
 }
-
-.home-slider .carousel-inner {
-    height: 700px !important;
-    /* Adjust to match the required height */
-    border-radius: 10px !important;
-    overflow: hidden !important;
-    /* Ensures content fits well */
-}
-
-.home-slider .carousel-item {
-    height: 700px !important;
-    /* Ensure all items have the same height */
-}
-
-.home-slider .carousel-item img {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    /* Prevents distortion */
-}
-
-
 @media (max-width: 670px) {
     .home-slider .carousel-inner {
         height: 250px !important;
