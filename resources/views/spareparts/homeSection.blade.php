@@ -14,7 +14,7 @@
 
 @section('page')
 
-<div class="filter-bar mt-4">
+<div class="filter-bar my-2">
     <form class="form-row" method="get">
         <!-- City Dropdown -->
         <div class="col-">

@@ -6,28 +6,6 @@ use Illuminate\Support\Str;
 @endphp
 
 <style>
-#priceModal {
-    height: 35%;
-    position: fixed;
-    margin-top: 30%;
-    margin-left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 400px;
-    background: #fbecea;
-    /* Light pink background */
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-/* Title */
-#priceModal h2 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    color: #333;
-}
 
 /* Price Input Fields */
 .price-range {
@@ -42,19 +20,6 @@ use Illuminate\Support\Str;
 }
 
 input[type="number"] {}
-
-#priceModal input[type="number"] {
-    width: 40%;
-    padding: 5px;
-    border: none;
-    border-bottom: 2px solid #7b4b40;
-    background: transparent;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    outline: none;
-}
 
 /* Range Slider Wrapper */
 .range-slider {
@@ -121,20 +86,11 @@ input[type="number"] {}
 }
 
 .button-like-select {
-    height: 45px !important;
-    /* Match your select height */
-    width: 125px !important;
-    color: #495057 !important;
-    font-size: 14px !important;
-    padding: 8px 16px !important;
+    background-color: #80251e;
+
     /* Adjust padding */
     border: 1px solid #ccc !important;
-    /* Match select border */
-    border-radius: 5px !important;
-    /* Match select rounded corners */
-    background-color: white !important;
-    /* Neutral background */
-    cursor: pointer !important;
+
 }
 
 /* Optional: Hover effect similar to select */
@@ -157,18 +113,6 @@ input[type="number"] {}
 .main-car-list-sec .badge-featured,
 .badge-year {
     background-color: #760e13 !important;
-}
-
-.btn-outline-danger {
-    /* background-color: #760e13 !important; */
-    color: #760e13 !important;
-    border-color: #760e13 !important;
-}
-
-.btn-outline-danger:hover {
-    background-color: #5a0b0f !important;
-    border-color: #5a0b0f !important;
-    color: #f3f3f3 !important;
 }
 
 
@@ -256,75 +200,30 @@ input[type="number"] {}
     font-size: 16px;
 }
 
-.carousel-item img {
-    height: 80%;
-    object-fit: cover;
-    border-radius: 15px;
-}
-
 .active {
     background-color: #760e13 !important;
     color: #f3f3f3 !important;
     border-color: #760e13 !important;
 }
-
-
-.store-badge {
-    max-width: 150px;
-    /* Control the size of store badges */
-}
-
-@media (max-width: 768px) {
-    .store-badge {
-        max-width: 130px;
-        /* Reduce size on smaller screens */
-    }
-}
-@media (max-width: 670px) {
-    .home-slider .carousel-inner {
-        height: 250px !important;
-        /* Adjust to match the required height */
-        border-radius: 10px;
-        overflow: hidden;
-        /* Ensures content fits well */
-    }
-
-    .home-slider .carousel-item {
-        height: 250px;
-        /* Ensure all items have the same height */
-    }
-
-    .home-slider .carousel-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        /* Prevents distortion */
-    }
-}
 </style>
 
 @section('content')
 <!-- home slider -->
-<div id="demo" class="carousel slide home-slider" data-ride="carousel">
-    <!-- Indicators -->
-    <ul class="carousel-indicators">
-        <li data-target="#demo" data-slide-to="0"></li>
-        <li data-target="#demo" data-slide-to="1"></li>
-        <li data-target="#demo" data-slide-to="2" class="active"></li>
-    </ul>
+<div id="demo" class="carousel slide home-slider" data-bs-interval="false">
+
     <!-- The slideshow -->
     <div class="carousel-inner">
         <div class="carousel-item">
-            <img class="img-fluid w-100" src="{{asset('1.jpg')}}" alt="Los Angeles">
+            <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
         </div>
         <div class="carousel-item">
-            <img class="img-fluid w-100" src="{{asset('2.jpg')}}" alt="Chicago">
+            <img class="img-fluid w-100 mx-auto" src="{{asset('2.jpg')}}" alt="Chicago">
         </div>
         <div class="carousel-item">
-            <img class="img-fluid w-100" src="{{asset('3.jpg')}}" alt="Chicago">
+            <img class="img-fluid w-100 mx-auto" src="{{asset('3.jpg')}}" alt="Chicago">
         </div>
         <div class="carousel-item active">
-            <img class="img-fluid w-100" src="{{asset('4.jpg')}}" alt="New York">
+            <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
         </div>
     </div>
     <!-- Left and right controls -->
@@ -345,8 +244,8 @@ input[type="number"] {}
             class="nav-btn {{request()->path() == 'spareparts' ?  'active' : ''}}">Spare Parts</a>
     </div>
 
-    <div class="filter-bar mt-4">
-        <form class="form-row" id="filterForm" action="{{route('cars.index')}}" method="get">
+    <div class="filter-bar my-2">
+        <form class="form-row mb-0" id="filterForm" action="{{route('cars.index')}}" method="get">
 
             <!-- car_type Dropdown -->
             <div class="col-">
@@ -359,7 +258,7 @@ input[type="number"] {}
 
             <!-- City Dropdown -->
             <div class="col-">
-                <select class="form-control" onchange="submitFilterForm()" name="city" style="width:80px;">
+                <select class="form-control" onchange="submitFilterForm()" name="city">
                     <option value="" selected>City</option>
                     @foreach($cities as $city)
                     <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
@@ -426,20 +325,22 @@ input[type="number"] {}
             </div>
 
             <!-- Price Dropdown -->
-            <button type="button" class="button-like-select" onclick="openModal()">Price</button>
-            <div id="priceModal" class="modal">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>
+            <div class="col-">
+                <button type="button" class="btn button-like-select" onclick="openModal()">Price</button>
+                <div id="priceModal" class="modal">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>
 
-                    <div class="price-range">
-                        <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}"
-                            value="{{request('priceFrom') != '' ? request('priceFrom') :$minPrice}}">
-                        <span>to</span>
-                        <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}"
-                            value="{{request('priceTo') != '' ? request('priceTo') :$maxPrice}}">
-                    </div>
+                        <div class="price-range">
+                            <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}"
+                                value="{{request('priceFrom') != '' ? request('priceFrom') :$minPrice}}">
+                            <span>to</span>
+                            <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}"
+                                value="{{request('priceTo') != '' ? request('priceTo') :$maxPrice}}">
+                        </div>
 
-                    <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
+                        <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
+                </div>
             </div>
         </form>
     </div>

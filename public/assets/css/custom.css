@@ -1,0 +1,323 @@
+.pagination .page-item .page-link {
+    color: #760e13;
+    border-color: #760e13;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #760e13;
+    border-color: #760e13;
+    color: #fff;
+}
+
+.pagination .page-item:hover .page-link {
+    background-color: #760e13;
+    border-color: #760e13;
+    color: #fff ;
+}
+.form-row {
+   flex-wrap: nowrap;
+}
+
+/* Modal Styling */
+.modal {
+    height: 50% !important;
+    max-height: 200px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    background: #fbecea;
+    /* Light pink background */
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Title */
+.modal h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Price Input Fields */
+.price-range {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10%;
+
+}
+
+.modal input[type="number"] {
+    width: 40%;
+    padding: 5px;
+    border: none;
+    border-bottom: 2px solid #7b4b40;
+    background: transparent;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    outline: none;
+}
+
+/* Range Slider Wrapper */
+.range-slider {
+    position: relative;
+    width: 100%;
+    margin: 20px 0;
+    height: 6px;
+    background: #e3c5b5;
+    /* Light brown background */
+    border-radius: 5px;
+}
+
+/* Range Inputs */
+.range-slider input[type="range"] {
+    position: absolute;
+    width: 100%;
+    appearance: none;
+    background: transparent;
+    pointer-events: none;
+    /* Makes the background clickable */
+}
+
+/* Styling the Track */
+.range-slider input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    background: transparent;
+    border-radius: 5px;
+}
+
+/* Styling the Thumbs */
+.range-slider input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #7b4b40;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    /* Allows interaction */
+    margin-top: -7px;
+    /* Adjust thumb position */
+}
+
+/* Filter Button */
+.filter-btn {
+    width: 100% !important;
+    padding: 12px !important;
+    background: #9b3128 !important;
+    color: white !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    margin-top: 20px !important;
+}
+
+.filter-btn:hover {
+    background: #80251e;
+}
+
+.close {
+    cursor: pointer;
+}
+
+.button-like-select {
+
+    border: 1px solid #ccc !important;
+
+}
+
+/* Optional: Hover effect similar to select */
+.button-like-select:hover {
+    background-color: #f0f0f0 !important;
+}
+
+/* Optional: Active effect */
+.button-like-select:active {
+    background-color: #e0e0e0 !important;
+
+}
+
+.main-home-filter-sec {
+    margin-top: 11px !important;
+}
+
+.active {
+    background-color: #760e13 !important;
+    color: #f3f3f3 !important;
+    border-color: #760e13 !important;
+}
+
+.main-car-list-sec .badge-featured,
+.badge-year {
+    background-color: #760e13 !important;
+}
+
+.btn-outline-danger {
+    /* background-color: #760e13 !important; */
+    border-color: #760e13 !important;
+    color: #760e13 !important;
+}
+
+.btn-outline-danger:hover {
+    background-color: #5a0b0f !important;
+    border-color: #5a0b0f !important;
+    color: #f3f3f3 !important;
+}
+
+
+.car-card-body {
+    background-color: #f3f3f3;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    color: #4a4a4a;
+    /* border-top: 5px solid #760e13; */
+
+}
+
+.price-location {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.price {
+    color: #760e13;
+    font-size: 22px;
+}
+
+.location {
+    color: #4a4a4a;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.location i {
+    margin-right: 5px;
+    color: #760e13;
+}
+
+.showroom-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.car-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    font-size: 14px;
+
+    color: #6b6b6b;
+}
+
+.car-details p {
+    margin: 5px 0;
+}
+
+.car-details strong {
+    color: #4a4a4a;
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.last-home-sec .custom-card img {
+    height: 100% !important
+}
+
+.call-btn {
+    background-color: #760e13;
+    color: white;
+    border-color: #760e13;
+}
+
+.share-btn {
+    background-color: #f3f3f3;
+    color: #760e13;
+    border-color: #760e13;
+}
+
+.whatsapp-btn:hover,
+.call-btn:hover,
+.share-btn:hover {
+    opacity: 0.8;
+}
+
+.actions i {
+    font-size: 16px;
+}
+
+.custom-card {
+    background: #222;
+    /* Dark card background */
+    color: #fff;
+    /* White text */
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.store-badge {
+    max-width: 150px;
+    /* Control the size of store badges */
+}
+
+
+@media (max-width: 430px) {
+    .store-badge {
+        max-width: 130px;
+        /* Reduce size on smaller screens */
+    }
+
+    .home-slider .carousel-inner {
+        max-height: 200px;
+    }
+
+    .home-slider .carousel-item {
+        height: 100%;
+    }
+    .form-row {
+        flex-wrap: wrap;
+     }
+}
+
+/* // X-Small devices (portrait phones, less than 576px)
+// No media query for `xs` since this is the default in Bootstrap
+
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) { ... }
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) { ... }
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) { ... }
+
+// X-Large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) { ... }
+
+// XX-Large devices (larger desktops, 1400px and up)
+@media (min-width: 1400px) { ... } */

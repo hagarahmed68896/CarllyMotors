@@ -44,12 +44,6 @@ use Illuminate\Support\Str;
 
 }
 
-.carousel-item img {
-    height: 80%;
-    object-fit: cover;
-    border-radius: 15px;
-}
-
 .price-location {
     display: flex;
     justify-content: space-between;
@@ -131,14 +125,18 @@ use Illuminate\Support\Str;
     border-color: #760e13 !important;
 }
 
-#carImage {
-    object-fit: fill !important;
-}
-
-
-@media (max-width: 670px) {
-    .home-slider .carousel-inner {
-        height: 250px !important;
+.home-slider .carousel-inner img {
+        height: 83% !important;
+        width: 75% !important;
+        /* Adjust to match the required height */
+        border-radius: 10px;
+        overflow: hidden;
+        /* Ensures content fits well */
+    }
+@media (max-width: 572px) {
+    .home-slider .carousel-inner img{
+        height: 100% !important;
+        width: 100% !important;
         /* Adjust to match the required height */
         border-radius: 10px;
         overflow: hidden;
@@ -146,8 +144,12 @@ use Illuminate\Support\Str;
     }
 
     .home-slider .carousel-item {
-        height: 250px;
+        height: 60%;
         /* Ensure all items have the same height */
+    }
+
+    .home-slider .carousel-inner{
+        height:30%;
     }
 
     .home-slider .carousel-item img {
@@ -161,41 +163,36 @@ use Illuminate\Support\Str;
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
 @section('content')
-<!-- home slider -->
-<div id="demo" class="carousel slide home-slider" data-ride="carousel">
-    <!-- Indicators -->
-    <ul class="carousel-indicators">
-        <li data-target="#demo" data-slide-to="0"></li>
-        <li data-target="#demo" data-slide-to="1"></li>
-        <li data-target="#demo" data-slide-to="2" class="active"></li>
-    </ul>
-    <!-- The slideshow -->
-    <div class="carousel-inner">
-        <div class="carousel-item">
-            <img class="img-fluid w-100" src="{{asset('1.jpg')}}" alt="Los Angeles">
+    <!-- home slider -->
+    <div id="demo" class="carousel slide home-slider"  data-bs-interval="false">
+
+        <!-- The slideshow -->
+        <div class="carousel-inner">
+            <div class="carousel-item">
+                <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
+            </div>
+            <div class="carousel-item">
+                <img class="img-fluid w-100 mx-auto" src="{{asset('2.jpg')}}" alt="Chicago">
+            </div>
+            <div class="carousel-item">
+                <img class="img-fluid w-100 mx-auto" src="{{asset('3.jpg')}}" alt="Chicago">
+            </div>
+            <div class="carousel-item active">
+                <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
+            </div>
         </div>
-        <div class="carousel-item">
-            <img class="img-fluid w-100" src="{{asset('2.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item">
-            <img class="img-fluid w-100" src="{{asset('3.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item active">
-            <img class="img-fluid w-100" src="{{asset('4.jpg')}}" alt="New York">
-        </div>
+        <!-- Left and right controls -->
+        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#demo" data-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </a>
     </div>
-    <!-- Left and right controls -->
-    <a class="carousel-control-prev" href="#demo" data-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </a>
-    <a class="carousel-control-next" href="#demo" data-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </a>
-</div>
 <!-- filter -->
 <!-- Start filter home with items -->
 
-<div class="container my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
+<div class="container my-6 main-home-filter-sec text-center">
     <div class="d-flex flex-wrap justify-content-center gap-3">
         <a href="{{route('cars.index')}}" class="nav-btn">
             All Car
@@ -205,8 +202,8 @@ use Illuminate\Support\Str;
         </a>
     </div>
     @if(request()->path() == "spareParts")
-    <div class="filter-bar mt-4">
-        <form class="form-row" id="filterForm" action="{{route('filter.spareParts')}}" method="get">
+    <div class="filter-bar my-2">
+        <form class="form-row mb-0" id="filterForm" action="{{route('filter.spareParts')}}" method="get">
             <!-- Make Dropdown -->
             <div class="col-">
                 <select class="form-control" id="brand" name="make">
@@ -315,7 +312,7 @@ use Illuminate\Support\Str;
         <div class="container main-car-list-sec">
             <div class="row">
                 @foreach ($dealers as $key => $dealer)
-                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                <div class="col-sm-3 col-md-6 col-lg-4 col-xl-4">
                     <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
                         <div class="car-image position-relative" style="

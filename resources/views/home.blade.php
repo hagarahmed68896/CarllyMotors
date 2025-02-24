@@ -3,168 +3,9 @@
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 @endphp
-
-@section('content')
 <style>
-/* Modal Styling */
-.modal {
-    height: 35% !important;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 400px;
-    background: #fbecea;
-    /* Light pink background */
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-/* Title */
-.modal h2 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    color: #333;
-}
-
-/* Price Input Fields */
-.price-range {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 10%;
-
-}
-
-.modal input[type="number"] {
-    width: 40%;
-    padding: 5px;
-    border: none;
-    border-bottom: 2px solid #7b4b40;
-    background: transparent;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    outline: none;
-}
-
-/* Range Slider Wrapper */
-.range-slider {
-    position: relative;
-    width: 100%;
-    margin: 20px 0;
-    height: 6px;
-    background: #e3c5b5;
-    /* Light brown background */
-    border-radius: 5px;
-}
-
-/* Range Inputs */
-.range-slider input[type="range"] {
-    position: absolute;
-    width: 100%;
-    appearance: none;
-    background: transparent;
-    pointer-events: none;
-    /* Makes the background clickable */
-}
-
-/* Styling the Track */
-.range-slider input[type="range"]::-webkit-slider-runnable-track {
-    height: 6px;
-    background: transparent;
-    border-radius: 5px;
-}
-
-/* Styling the Thumbs */
-.range-slider input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #7b4b40;
-    border-radius: 50%;
-    cursor: pointer;
-    pointer-events: auto;
-    /* Allows interaction */
-    margin-top: -7px;
-    /* Adjust thumb position */
-}
-
-/* Filter Button */
-.filter-btn {
-    width: 100% !important;
-    padding: 12px !important;
-    background: #9b3128 !important;
-    color: white !important;
-    font-size: 16px !important;
-    font-weight: bold !important;
-    border: none !important;
-    border-radius: 8px !important;
-    cursor: pointer !important;
-    margin-top: 20px !important;
-}
-
-.filter-btn:hover {
-    background: #80251e;
-}
-
-.close {
-    cursor: pointer;
-}
-
-.button-like-select {
-    height: 45px !important;
-    /* Match your select height */
-    width: 125px !important;
-    color: #495057 !important;
-    font-size: 14px !important;
-    padding: 8px 16px !important;
-    /* Adjust padding */
-    border: 1px solid #ccc !important;
-    /* Match select border */
-    border-radius: 5px !important;
-    /* Match select rounded corners */
-    background-color: white !important;
-    /* Neutral background */
-    cursor: pointer !important;
-}
-
-/* Optional: Hover effect similar to select */
-.button-like-select:hover {
-    background-color: #f0f0f0 !important;
-}
-
-/* Optional: Active effect */
-.button-like-select:active {
-    background-color: #e0e0e0 !important;
-
-}
-
-.main-home-filter-sec {
-    margin-top: 11px !important;
-}
-
-.active {
-    background-color: #760e13 !important;
-    color: #f3f3f3 !important;
-    border-color: #760e13 !important;
-}
-
-.main-car-list-sec .badge-featured,
-.badge-year {
-    background-color: #760e13 !important;
-}
-
-.btn-outline-danger {
+    .btn-outline-danger {
     /* background-color: #760e13 !important; */
-    color: #760e13 !important;
     border-color: #760e13 !important;
 }
 
@@ -174,175 +15,35 @@ use Illuminate\Support\Str;
     color: #f3f3f3 !important;
 }
 
-
-.car-card-body {
-    background-color: #f3f3f3;
-    border-radius: 15px;
-    padding: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: Arial, sans-serif;
-    color: #4a4a4a;
-    /* border-top: 5px solid #760e13; */
-
-}
-
-.price-location {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.price {
-    color: #760e13;
-    font-size: 22px;
-}
-
-.location {
-    color: #4a4a4a;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-}
-
-.location i {
-    margin-right: 5px;
-    color: #760e13;
-}
-
-.showroom-name {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 12px;
-    color: #333;
-}
-
-.car-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
-    font-size: 14px;
-
-    color: #6b6b6b;
-}
-
-.car-details p {
-    margin: 5px 0;
-}
-
-.car-details strong {
-    color: #4a4a4a;
-    font-weight: bold;
-}
-
-.actions {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 15px;
-}
-
-.last-home-sec .custom-card img {
-    height: 100% !important
-}
-
-.call-btn {
-    background-color: #760e13;
-    color: white;
-    border-color: #760e13;
-}
-
-.share-btn {
-    background-color: #f3f3f3;
-    color: #760e13;
-    border-color: #760e13;
-}
-
-.whatsapp-btn:hover,
-.call-btn:hover,
-.share-btn:hover {
-    opacity: 0.8;
-}
-
-.actions i {
-    font-size: 16px;
-}
-
-.custom-card {
-    background: #222;
-    /* Dark card background */
-    color: #fff;
-    /* White text */
-    padding: 20px;
-    border-radius: 12px;
-}
-
-.store-badge {
-    max-width: 150px;
-    /* Control the size of store badges */
-}
-
-@media (max-width: 768px) {
-    .store-badge {
-        max-width: 130px;
-        /* Reduce size on smaller screens */
-    }
-}
-
-@media (max-width: 670px) {
-    .home-slider .carousel-inner {
-        height: 250px !important;
-        /* Adjust to match the required height */
-        border-radius: 10px;
-        overflow: hidden;
-        /* Ensures content fits well */
-    }
-
-    .home-slider .carousel-item {
-        height: 250px;
-        /* Ensure all items have the same height */
-    }
-
-    .home-slider .carousel-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        /* Prevents distortion */
-    }
-}
 </style>
-<!-- home slider -->
-<div id="demo" class="carousel slide home-slider" data-ride="carousel">
-    <!-- Indicators -->
-    <ul class="carousel-indicators">
-        <li data-target="#demo" data-slide-to="0"></li>
-        <li data-target="#demo" data-slide-to="1"></li>
-        <li data-target="#demo" data-slide-to="2" class="active"></li>
-    </ul>
-    <!-- The slideshow -->
-    <div class="carousel-inner">
-        <div class="carousel-item">
-            <img class="img-fluid w-100" src="{{asset('1.jpg')}}" alt="Los Angeles">
+@section('content')
+
+    <!-- home slider -->
+    <div id="demo" class="carousel slide home-slider"  data-bs-interval="false">
+
+        <!-- The slideshow -->
+        <div class="carousel-inner">
+            <div class="carousel-item">
+                <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
+            </div>
+            <div class="carousel-item">
+                <img class="img-fluid w-100 mx-auto" src="{{asset('2.jpg')}}" alt="Chicago">
+            </div>
+            <div class="carousel-item">
+                <img class="img-fluid w-100 mx-auto" src="{{asset('3.jpg')}}" alt="Chicago">
+            </div>
+            <div class="carousel-item active">
+                <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
+            </div>
         </div>
-        <div class="carousel-item">
-            <img class="img-fluid w-100" src="{{asset('2.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item">
-            <img class="img-fluid w-100" src="{{asset('3.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item active">
-            <img class="img-fluid w-100" src="{{asset('4.jpg')}}" alt="New York">
-        </div>
+        <!-- Left and right controls -->
+        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#demo" data-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </a>
     </div>
-    <!-- Left and right controls -->
-    <a class="carousel-control-prev" href="#demo" data-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </a>
-    <a class="carousel-control-next" href="#demo" data-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </a>
-</div>
 
 <!-- Start filter home with items -->
 <div class="container my-5 main-home-filter-sec text-center">
@@ -351,8 +52,8 @@ use Illuminate\Support\Str;
         <a href="{{route('spareParts.index')}}"
             class="nav-btn {{request()->route() == 'spareParts.index' ?  'active' : ''}}">Spare Parts</a>
     </div>
-    <div class="filter-bar mt-4">
-        <form class="form-row" id="filterForm" action="{{route('cars.index')}}" method="get">
+    <div class="filter-bar my-2">
+        <form class="form-row mb-0" id="filterForm" action="{{route('cars.index')}}" method="get">
 
             <!-- car_type Dropdown -->
             <div class="col-">
@@ -365,7 +66,7 @@ use Illuminate\Support\Str;
 
             <!-- City Dropdown -->
             <div class="col-">
-                <select class="form-control" onchange="submitFilterForm()" name="city" style="width:80px;">
+                <select class="form-control" onchange="submitFilterForm()" name="city">
                     <option value="" selected>City</option>
                     @foreach($cities as $city)
                     <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
@@ -432,20 +133,22 @@ use Illuminate\Support\Str;
             </div>
 
             <!-- Price Dropdown -->
-            <button type="button" class="button-like-select" onclick="openModal()">Price</button>
-            <div id="priceModal" class="modal">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>
+            <div class="col-">
+            <button type="button" class="btn button-like-select w-100" onclick="openModal()">Price</button>
+                <div id="priceModal" class="modal">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>
 
-                    <div class="price-range">
-                        <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}"
-                            value="{{$minPrice}}">
-                        <span>to</span>
-                        <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}"
-                            value="{{$maxPrice}}">
-                    </div>
+                        <div class="price-range">
+                            <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}"
+                                value="{{$minPrice}}">
+                            <span>to</span>
+                            <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}"
+                                value="{{$maxPrice}}">
+                        </div>
 
-                    <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
+                        <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
+                </div>
             </div>
 
 
