@@ -57,7 +57,7 @@
             <li class="breadcrumb-item">
                 <a href="#">Home</a>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">
+            <li class="breadcrumb-item" aria-current="page">
                 Used cars for sale
             </li>
         </ol>
@@ -100,7 +100,7 @@
                         </a>
                     </div>
                     <ul class="nav nav-tabs mt-3" id="carTabs" role="tablist">
-                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#overview" role="tab"
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#overview" role="tab"
                                 aria-selected="true">Overview</a></li>
 
                     </ul>

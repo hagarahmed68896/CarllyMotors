@@ -6,7 +6,6 @@ use Illuminate\Support\Str;
 @endphp
 
 <style>
-
 /* Price Input Fields */
 .price-range {
     display: flex;
@@ -198,12 +197,6 @@ input[type="number"] {}
 
 .actions i {
     font-size: 16px;
-}
-
-.active {
-    background-color: #760e13 !important;
-    color: #f3f3f3 !important;
-    border-color: #760e13 !important;
 }
 </style>
 

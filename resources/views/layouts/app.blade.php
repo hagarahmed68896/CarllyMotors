@@ -64,7 +64,7 @@
     <footer class="footer py-4">
         <div class="container">
             <!-- Top Icons -->
-            <div class="row text-center g-4">
+            <div class="row g-4">
                 <div class="col-6 col-md-3">
                     <div class="d-flex align-items-center justify-content-center">
                         <i class="fas fa-trophy me-3 fs-3"></i>
@@ -104,7 +104,7 @@
             </div>
 
             <!-- Footer Links -->
-            <div class="row footer-links mt-4 g-4 text-center text-md-start">
+            <div class="row footer-links mt-4 g-4 text-md-start">
                 <div class="col-12 col-md-3">
                     <h5>About Auto Decar</h5>
                     <ul class="list-unstyled">
@@ -126,16 +126,18 @@
                 <div class="col-12 col-md-3">
                     <h5>Newsletter</h5>
                     <p>Stay on top of the latest car trends, tips, and tricks for selling your car.</p>
+
                     <div class="input-group">
-                        <input type="email" class="form-control" placeholder="Your email address">
-                        <button class="btn btn-primary">Send</button>
+                        <input type="email" class="form-control" placeholder="Your email address"
+                            aria-label="Your email address">
+                        <button class="btn bg-carlly" type="button">Send</button>
                     </div>
                 </div>
             </div>
 
             <!-- Footer Bottom -->
             <div class="footer-bottom mt-4">
-                <div class="row text-center text-md-start align-items-center">
+                <div class="row">
                     <div class="col-md-6 mb-3 mb-md-0">
                         <a href="#" class="footer-logo">
                             <img src="{{asset('carllymotorsmainlogo_dark.png')}}" alt="AutoDecar" class="img-fluid"

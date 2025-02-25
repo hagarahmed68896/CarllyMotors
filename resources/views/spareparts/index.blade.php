@@ -22,7 +22,7 @@ use Illuminate\Support\Str;
 
 .btn-outline-danger {
     /* background-color: #760e13 !important; */
-    color: #760e13 !important;
+    /* color: #760e13 !important; */
     border-color: #760e13 !important;
 }
 
@@ -116,13 +116,6 @@ use Illuminate\Support\Str;
 
 .actions i {
     font-size: 16px;
-}
-
-
-.active {
-    background-color: #760e13 !important;
-    color: #f3f3f3 !important;
-    border-color: #760e13 !important;
 }
 
 .home-slider .carousel-inner img {
@@ -279,7 +272,7 @@ use Illuminate\Support\Str;
                 </select>
             </div>
             <div class="col-">
-                <button class="btn btn-outline-danger active" type="submit" style="border-radius: 25px;">
+                <button class="btn btn-outline-danger bg-carlly" type="submit" style="border-radius: 25px;">
                     Search
                 </button>
             </div>
