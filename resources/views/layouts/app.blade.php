@@ -110,6 +110,7 @@
                     <h5>About Auto Decar</h5>
                     <ul class="list-unstyled">
                         <li><a href="{{route('aboutus')}}">About us</a></li>
+                        <li><a href="{{route('contacts.index')}}">Contact us</a></li>
                         <li><a href="{{route('terms')}}">Terms & Conditions</a></li>
                         <li><a href="{{route('privacy')}}">Privacy Policy</a></li>
                         {{--<li><a href="{{route('faqs')}}">FAQs</a></li>--}}
