@@ -112,7 +112,7 @@
                         <li><a href="{{route('aboutus')}}">About us</a></li>
                         <li><a href="{{route('terms')}}">Terms & Conditions</a></li>
                         <li><a href="{{route('privacy')}}">Privacy Policy</a></li>
-                        <li><a href="{{route('faqs')}}">FAQs</a></li>
+                        {{--<li><a href="{{route('faqs')}}">FAQs</a></li>--}}
                     </ul>
                 </div>
                 <div class="col-12 col-md-3">

@@ -38,6 +38,15 @@ body {
     <div class="row justify-content-center">
         <div class="col-lg-9">
             <h1 class="mb-3">Contact Us</h1>
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+            </div>
+            @elseif(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+            </div>
+            @endif
             <form action="{{route('contacts.store')}}" method="post">
                 @csrf
                 <div class="row g-3">
@@ -59,14 +68,13 @@ body {
                     </div>
                     <div class="col-12">
                         <label for="body" class="form-label">Your Message</label>
-                        <textarea class="form-control" id="body" name="body" rows="5"
-                            required></textarea>
+                        <textarea class="form-control" id="body" name="body" rows="5" required></textarea>
                     </div>
                     <div class="col-12">
                         <div class="row">
                             <div class="col-md-6">
                                 <a href="https://wa.me/971566350025">
-                                    <button type="submit" class="btn btn-success w-100 fw-bold">
+                                    <button type="button" class="btn btn-success w-100 fw-bold">
                                         <i class="fab fa-whatsapp fs-4"></i>
                                         WhatsApp</button>
                                 </a>

@@ -67,4 +67,5 @@ Route::post('getSubCategories', [SparePartController::class, 'getSubCategories']
 Route::post('contact-us', [ContactController::class, 'store'])->name('contacts.store');
 Route::get('/contact-us', [ContactController::class, 'index'])->name('contacts.index');
 
-
+Route::get('/terms', [SettingController::class, 'terms'])->name('terms');
+Route::get('/privacy_policy', [SettingController::class, 'privacy'])->name('privacy');
