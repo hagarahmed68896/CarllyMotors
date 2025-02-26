@@ -38,7 +38,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{route('cars.index')}}">Cars</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{route('spareParts.index')}}">Spare Parts</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{route('aboutus')}}">About us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{route('contactus')}}">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{route('contacts.index')}}">Contact</a></li>
                 </ul>
 
                 <!-- Icons & Buttons -->
@@ -47,7 +47,8 @@
                     <i class="fav-icon fas fa-heart"></i>
                     <i class="login-icon fas fa-user"></i>
                     @guest
-                    <a class="nav-link login-nav" href="{{route('login')}}">Login / Register</a>
+                    <a class="nav-link login-nav" href="{{route('login')}}">Login</a> / 
+                    <a class="nav-link login-nav" href="{{route('register')}}">Register</a>
                     @else
                     <a href="#" class="btn btn-add-listing">Add listing</a>
                     @endguest
@@ -64,7 +65,7 @@
     <footer class="footer py-4">
         <div class="container">
             <!-- Top Icons -->
-            <div class="row g-4">
+            {{--<div class="row g-4">
                 <div class="col-6 col-md-3">
                     <div class="d-flex align-items-center justify-content-center">
                         <i class="fas fa-trophy me-3 fs-3"></i>
@@ -101,7 +102,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>--}}
 
             <!-- Footer Links -->
             <div class="row footer-links mt-4 g-4 text-md-start">

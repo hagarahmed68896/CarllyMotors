@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\SparePartController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ContactController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,9 +28,6 @@ Route::get('/try', function () {
 })->name('try');
 
 
-Route::get('/contact-us', function () {
-    return view('/contactus');
-})->name('contactus');
 
 Route::get('/about-us', function () {
     return view('/aboutus');
@@ -63,3 +62,9 @@ Route::resource('spareParts', SparePartController::class);
 Route::get('spareparts/homeSection', [SparePartController::class, 'homeSection'])->name('spareparts.homeSection');
 Route::get('filter-sparePart', [SparePartController::class, 'filter'])->name('filter.spareParts');
 Route::post('getSubCategories', [SparePartController::class, 'getSubCategories'])->name('getSubCategories');
+
+// Setting
+Route::post('contact-us', [ContactController::class, 'store'])->name('contacts.store');
+Route::get('/contact-us', [ContactController::class, 'index'])->name('contacts.index');
+
+
