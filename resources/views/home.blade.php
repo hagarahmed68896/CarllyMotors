@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 @endphp
 <style>
-    .btn-outline-danger {
+.btn-outline-danger {
     /* background-color: #760e13 !important; */
     border-color: #760e13 !important;
 }
@@ -14,36 +14,35 @@ use Illuminate\Support\Str;
     border-color: #5a0b0f !important;
     color: #f3f3f3 !important;
 }
-
 </style>
 @section('content')
 
-    <!-- home slider -->
-    <div id="demo" class="carousel slide home-slider"  data-bs-interval="false">
+<!-- home slider -->
+<div id="demo" class="carousel slide home-slider" data-bs-interval="false">
 
-        <!-- The slideshow -->
-        <div class="carousel-inner">
-            <div class="carousel-item">
-                <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
-            </div>
-            <div class="carousel-item">
-                <img class="img-fluid w-100 mx-auto" src="{{asset('2.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item">
-                <img class="img-fluid w-100 mx-auto" src="{{asset('3.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item active">
-                <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
-            </div>
+    <!-- The slideshow -->
+    <div class="carousel-inner">
+        <div class="carousel-item">
+            <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
         </div>
-        <!-- Left and right controls -->
-        <a class="carousel-control-prev" href="#demo" data-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </a>
-        <a class="carousel-control-next" href="#demo" data-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </a>
+        <div class="carousel-item">
+            <img class="img-fluid w-100 mx-auto" src="{{asset('2.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item">
+            <img class="img-fluid w-100 mx-auto" src="{{asset('3.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item active">
+            <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
+        </div>
     </div>
+    <!-- Left and right controls -->
+    <a class="carousel-control-prev" href="#demo" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </a>
+    <a class="carousel-control-next" href="#demo" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </a>
+</div>
 
 <!-- Start filter home with items -->
 <div class="container my-5 main-home-filter-sec text-center">
@@ -58,9 +57,9 @@ use Illuminate\Support\Str;
             <!-- car_type Dropdown -->
             <div class="col-">
                 <select class="form-control" onchange="submitFilterForm()" name="car_type">
-                    <option value="UsedOrNew">Used/New</option>
-                    <option value="Imported">Imported</option>
-                    <option value="Auction">Auction</option>
+                    <option value="UsedOrNew" {{request('car_type') == 'UsedOrNew' ? 'selected' : ''}}>Used/New</option>
+                    <option value="Imported" {{request('car_type') == 'Imported' ? 'selected' : ''}}>Imported</option>
+                    <option value="Auction" {{request('car_type') == 'Auction' ? 'selected' : ''}}>Auction</option>
                 </select>
             </div>
 
@@ -134,7 +133,7 @@ use Illuminate\Support\Str;
 
             <!-- Price Dropdown -->
             <div class="col-">
-            <button type="button" class="btn button-like-select w-100" onclick="openModal()">Price</button>
+                <button type="button" class="btn button-like-select w-100" onclick="openModal()">Price</button>
                 <div id="priceModal" class="modal">
                     <span class="close" onclick="closeModal()">&times;</span>
                     <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>

@@ -62,7 +62,7 @@ class CarController extends Controller
             if ($request->car_type == "UsedOrNew") {
                 $carlisting->where('car_type', "Used")->orWhere('car_type', "New");
             } else {
-                $carlisting->where('car_type', $request->make);
+                $carlisting->where('car_type', $request->car_type);
             }
         }
 

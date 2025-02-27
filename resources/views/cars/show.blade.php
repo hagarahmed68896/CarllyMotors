@@ -340,10 +340,8 @@ function copyUrl() {
     });
 }
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg11eAiAzKB6kMmJXfRbElSfK96RkDVq4&callback=initMap&libraries=maps,marker" async defer></script>
 
-<script async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg11eAiAzKB6kMmJXfRbElSfK96RkDVq4&callback=console.debug&libraries=maps,marker&v=beta">
-</script>
 <script>
 function copyUrl() {
     const url = window.location.href; // Get current URL

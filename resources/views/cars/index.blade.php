@@ -243,9 +243,9 @@ input[type="number"] {}
             <!-- car_type Dropdown -->
             <div class="col-">
                 <select class="form-control" onchange="submitFilterForm()" name="car_type">
-                    <option value="UsedOrNew">Used/New</option>
-                    <option value="Imported">Imported</option>
-                    <option value="Auction">Auction</option>
+                    <option value="UsedOrNew" {{request('car_type') == 'UsedOrNew' ? 'selected' : ''}}>Used/New</option>
+                    <option value="Imported" {{request('car_type') == 'Imported' ? 'selected' : ''}}>Imported</option>
+                    <option value="Auction" {{request('car_type') == 'Auction' ? 'selected' : ''}}>Auction</option>
                 </select>
             </div>
 
@@ -379,12 +379,14 @@ input[type="number"] {}
 
                             <div class="price-location">
                                 <span class="price">AED {{$car->listing_price}}</span>
+                                @if($car->user?->lat && $car->user?->lng)
                                 <a href="https://www.google.com/maps?q={{$car->user->lat}},{{$car->user->lng}}">
                                     <span class="location"><i class="fas fa-map-marker-alt"></i> {{$car->city}}</span>
                                 </a>
+                                @endif
                             </div>
 
-                            <h4 class="showroom-name">{{$car->user->fname}} {{$car->user->lname}}</h4>
+                            <h4 class="showroom-name">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
 
                             <div class="car-details">
                                 <p><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
@@ -394,19 +396,19 @@ input[type="number"] {}
                             </div>
 
                             <div class="actions">
-                                <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
+                                <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
                                         <i class="fab fa-whatsapp"></i> WhatsApp
                                     </button>
                                 </a>
                                 @if($os == 'Windows' || $os == 'Linux' )
-                                <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
+                                <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Mac')
-                                <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user->phone) }}>
+                                <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user?->phone) }}>
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
