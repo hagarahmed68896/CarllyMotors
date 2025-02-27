@@ -6,6 +6,8 @@ use App\Http\Controllers\CarController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -69,3 +71,9 @@ Route::get('/contact-us', [ContactController::class, 'index'])->name('contacts.i
 
 Route::get('/terms', [SettingController::class, 'terms'])->name('terms');
 Route::get('/privacy_policy', [SettingController::class, 'privacy'])->name('privacy');
+
+
+Route::post('/verify-token', [AuthController::class, 'verifyToken']);
+Route::get('/dashboard', function () {
+    return "Welcome to your dashboard!";
+})->middleware('auth');
