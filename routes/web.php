@@ -79,13 +79,5 @@ Route::get('/dashboard', function () {
     return "Welcome to your dashboard!";
 })->middleware('auth');
 
-Route::post('/check-phone', function (Request $request) {
-    $phone = $request->input('phone');
-    $user = AllUsersModel::where('phone', $phone)->first();
+Route::get('/phone-check/{phone}', [AuthController::class, 'phone_check'])->name('phone_check');
 
-    if ($user) {
-        return response()->json(['exists' => true, 'message' => 'Phone number already existed.'], 200);
-    } else {
-        return response()->json(['exists' => false, 'message' => 'Phone number available. '], 200);
-    }
-})->name('phone_check');

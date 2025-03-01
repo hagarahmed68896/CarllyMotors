@@ -104,8 +104,7 @@
     </div>
     <div class="step-container d-flex justify-content-between">
         <div class="step-circle" onclick="displayStep(1)">1</div>
-        <div class="step-circle" onclick="displayStep(2)">2</div>
-        <div class="step-circle" onclick="displayStep(3)">3</div>
+
     </div>
 
     <div id="multi-step-form">
@@ -115,120 +114,22 @@
             <div class="mb-3">
                 <label for="phone" class="form-label">Phone:</label>
                 <input type="text" class="form-control" id="phone" name="phone">
-                <button class="btn btn-sm btn-secondary " style="float:right" onclick="sendOTP()">Send OTP</button>
+                <button tybe="button" class="btn btn-sm btn-secondary " style="float:right" onclick="sendOTP()">Send
+                    OTP</button>
 
                 <div id="recaptcha-container"></div>
                 <p id="otp-timer">OTP expires in <span id="countdown">60</span> seconds</p>
-                <button class="btn btn-sm btn-secondary" id="resend-otp" onclick="sendOTP()" disabled>Resend
+                <button tybe="button" class="btn btn-sm btn-secondary" id="resend-otp" onclick="sendOTP()"
+                    disabled>Resend
                     OTP</button>
 
                 <input type="text" id="otp" class="form-control" placeholder="Enter OTP">
-                <button class="btn btn-sm btn-secondary" style="float:right" onclick="verifyOTP()">Verify OTP</button>
+                <button tybe="button" class="btn btn-sm btn-secondary" style="float:right" onclick="verifyOTP()">Verify
+                    OTP</button>
 
                 <div id="recaptcha-container"></div>
-            </div><br>
-            <button type="button" class="btn btn-sm  next-step"
-                style="float:right; background-color: #760e13; color:white;">Next</button>
-        </div>
-
-        <div class="step step-2">
-            <!-- Step 2 form fields here -->
-            <h3>Sign Up</h3>
-            <form>
-                <div class="row">
-                    <div class="mb-1 col-6">
-                        <label for="fname" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="fname" name="fname" required>
-                    </div>
-
-                    <div class="mb-1 col-6">
-                        <label for="lname" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="lname" name="lname" required>
-                    </div>
-
-                    <div class="mb-1 col-6">
-                        <label for="phone" class="form-label">Phone</label>
-                        <input type="number" class="form-control" id="phone" name="phone" required>
-                    </div>
-
-                    <div class="mb-1 col-6">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" autocomplete="off" required>
-                    </div>
-
-                    <div class="mb-1 col-6">
-                        <label for="image" class="form-label">Image</label>
-                        <input type="file" class="form-control" id="image" name="image">
-                    </div>
-
-                    <div class="mb-1 col-6">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" autocomplete="new-password"
-                            name="password" required>
-                    </div>
-                    <div class="mb-1 col-12">
-                        <label for="location" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="location" name="location" required>
-                    </div>
-
-                    <div class="mb-1 col-6">
-                        <label class="form-label">User Type</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="user" value="user" checked>
-                            <label class="form-check-label" for="user">User</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="dealer" value="dealer">
-                            <label class="form-check-label" for="dealer">Dealer</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="shop_dealer"
-                                value="shop_dealer">
-                            <label class="form-check-label" for="shop_dealer">Shop Dealer</label>
-                        </div>
-                    </div>
-
-                    <!-- Google Maps Location Picker -->
-                    <div class="mb-3">
-                        <label class="form-label">Pick Location</label>
-                        <div id="map"></div>
-                    </div>
-
-                    <!-- Latitude & Longitude Fields -->
-                    <div class="mb-3">
-                        <label for="latitude" class="form-label">Latitude</label>
-                        <input type="text" class="form-control" id="latitude" name="latitude" readonly required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="longitude" class="form-label">Longitude</label>
-                        <input type="text" class="form-control" id="longitude" name="longitude" readonly required>
-                    </div>
-
-
-                </div>
-                <button type="submit" class="btn btn-sm  next-step"
-                    style="float:right; background-color: #760e13; color:white;">Submit</button>
-            </form>
-        </div>
-        <div class="step step-3">
-            <!-- Step 3 form fields here -->
-
-            <div class="mb-3">
-                <section class="login-main-wrapper">
-                    <div class="main-container">
-                        <div class="login-process">
-                            <div class="login-main-container">
-                                <div class="thankyou-wrapper">
-                                    <h1>Thanks</h1>
-                                    <p>Welcome To Carlly Motors</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
             </div>
+
         </div>
     </div>
 </div>
@@ -239,9 +140,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmZpIyIU0nsjNEzzOL4VnrH2YclPvBfpo&callback=initMap&libraries=maps,marker&loading=async">
-</script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
@@ -312,6 +210,8 @@ function startCountdown(seconds) {
         }
     }, 1000);
 }
+let verifiedPhoneNumber = null; // Global variable to store verified number
+
 
 function verifyOTP() {
     const otp = document.getElementById("otp").value;
@@ -321,8 +221,6 @@ function verifyOTP() {
         .then((result) => {
             alert("Phone number verified!");
 
-            // Make AJAX request to Laravel backend
-            checkPhoneExists(phoneNumber);
         })
         .catch((error) => {
             if (error.code === "auth/code-expired") {
@@ -332,37 +230,8 @@ function verifyOTP() {
                 alert(error.message);
             }
         });
+
 }
-
-function checkPhoneExists(phoneNumber) {
-    $.ajax({
-        url: "{{ route('phone_check') }}", // Adjust this route as needed
-        method: "POST",
-        data: {
-            phone: phoneNumber,
-            _token: $('meta[name="csrf-token"]').attr(
-                'content') // CSRF token for security
-        },
-        success: function(response) {
-            console.log(response);
-
-            // Populate the child select box
-            // $('#model').empty().append('<option value="">Select Model</option>');
-
-            // response.models.forEach(function(model) {
-            //     let modelName = model ?? 'No Parent';
-
-            //     $('#model').append('<option value="' + modelName + '">' +
-            //         modelName +
-            //         '</option>');
-            // });
-        },
-        error: function(xhr) {
-            console.error("Error fetching models:", xhr.responseText);
-        }
-    });
-}
-
 
 
 function sendTokenToServer(token) {
@@ -432,90 +301,6 @@ $(document).ready(function() {
         $(".progress-bar").css("background-color", '#760e13');
     }
 
-    let map;
-    let marker;
-
-    // Ensure initMap is globally accessible
-    window.initMap = async function() {
-        try {
-            console.log("Initializing Google Maps...");
-
-            // Load Google Maps JavaScript API
-            const {
-                Map
-            } = await google.maps.importLibrary("maps");
-            const {
-                AdvancedMarkerElement
-            } = await google.maps.importLibrary("marker");
-
-            // Default location (Cairo, Egypt)
-            const defaultLocation = {
-                lat: 30.0444,
-                lng: 31.2357
-            };
-
-            // Create the map with the correct Map ID
-            map = new Map(document.getElementById("map"), {
-                center: defaultLocation,
-                zoom: 10,
-                mapId: "5f199e2b6387d3af"
-
-            });
-            // Create an Advanced Marker
-            marker = new AdvancedMarkerElement({
-                map,
-                position: defaultLocation,
-                title: "Drag to select location",
-                draggable: true // Correct draggable property
-            });
-            // Get User's Current Location
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const userLocation = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude,
-                        };
-
-                        console.log("📍 User location found:", userLocation);
-
-                        // Update map and marker position
-                        map.setCenter(userLocation);
-                        marker.position = userLocation;
-
-                        // Update form fields
-                        updateLatLng(userLocation);
-                    },
-                    (error) => {
-                        console.warn("Geolocation failed:", error.message);
-                    }
-                );
-            } else {
-                console.warn("Geolocation is not supported by this browser.");
-            }
-
-            // Listen for marker position changes
-            marker.addEventListener("position_changed", () => {
-                updateLatLng(marker.position);
-            });
-
-            // Listen for map clicks to move the marker
-            map.addListener("click", (event) => {
-                marker.position = event.latLng;
-                updateLatLng(event.latLng);
-            });
-
-        } catch (error) {
-            console.error("Google Maps failed to load:", error);
-        }
-    };
-
-    // ✅ Ensure lat/lng updates correctly
-    function updateLatLng(latLng) {
-        if (!latLng) return;
-        document.getElementById("latitude").value = latLng.lat;
-        document.getElementById("longitude").value = latLng.lng;
-    }
 });
 </script>
 @endsection

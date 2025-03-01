@@ -37,4 +37,9 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'error' => 'Invalid Token']);
         }
     }
+
+    public function phone_check(Request $request){
+        dd($request->query('phone'));
+
+    }   
 }
