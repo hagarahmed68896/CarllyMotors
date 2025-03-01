@@ -7,6 +7,7 @@ use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AuthController;
+use App\Models\AllUsersModel;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,3 +78,14 @@ Route::post('/verify-token', [AuthController::class, 'verifyToken']);
 Route::get('/dashboard', function () {
     return "Welcome to your dashboard!";
 })->middleware('auth');
+
+Route::post('/check-phone', function (Request $request) {
+    $phone = $request->input('phone');
+    $user = AllUsersModel::where('phone', $phone)->first();
+
+    if ($user) {
+        return response()->json(['exists' => true, 'message' => 'Phone number already existed.'], 200);
+    } else {
+        return response()->json(['exists' => false, 'message' => 'Phone number available. '], 200);
+    }
+})->name('phone_check');

@@ -86,14 +86,15 @@
     color: #760e13;
     padding: 5px 10px 10px;
 }
+
 #map {
     width: 100%;
-    height: 400px; /* ✅ Ensures map is visible */
+    height: 400px;
+    /* ✅ Ensures map is visible */
     min-height: 300px;
     border: 2px solid #760e13;
     border-radius: 5px;
 }
-
 </style>
 
 <div id="container" class="container mt-5">
@@ -113,7 +114,7 @@
             <h3>Verify Phone Number</h3>
             <div class="mb-3">
                 <label for="phone" class="form-label">Phone:</label>
-                <input type="number" class="form-control" id="phone" name="phone">
+                <input type="text" class="form-control" id="phone" name="phone">
                 <button class="btn btn-sm btn-secondary " style="float:right" onclick="sendOTP()">Send OTP</button>
 
                 <div id="recaptcha-container"></div>
@@ -238,7 +239,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmZpIyIU0nsjNEzzOL4VnrH2YclPvBfpo&callback=initMap&libraries=maps,marker&loading=async"></script>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmZpIyIU0nsjNEzzOL4VnrH2YclPvBfpo&callback=initMap&libraries=maps,marker&loading=async">
+</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -277,14 +281,11 @@ function setupReCaptcha() {
 
 function sendOTP() {
     setupReCaptcha(); // Ensure reCAPTCHA is properly set up
-
     const phoneNumber = document.getElementById("phone").value;
-
     firebase.auth().signInWithPhoneNumber(phoneNumber, recaptchaVerifier)
         .then((confirmationResult) => {
             window.confirmationResult = confirmationResult;
             alert("OTP sent successfully!");
-
             // Start the countdown timer
             startCountdown(60);
         })
@@ -314,10 +315,14 @@ function startCountdown(seconds) {
 
 function verifyOTP() {
     const otp = document.getElementById("otp").value;
+    const phoneNumber = document.getElementById("phone").value;
 
     window.confirmationResult.confirm(otp)
         .then((result) => {
             alert("Phone number verified!");
+
+            // Make AJAX request to Laravel backend
+            checkPhoneExists(phoneNumber);
         })
         .catch((error) => {
             if (error.code === "auth/code-expired") {
@@ -328,6 +333,36 @@ function verifyOTP() {
             }
         });
 }
+
+function checkPhoneExists(phoneNumber) {
+    $.ajax({
+        url: "{{ route('phone_check') }}", // Adjust this route as needed
+        method: "POST",
+        data: {
+            phone: phoneNumber,
+            _token: $('meta[name="csrf-token"]').attr(
+                'content') // CSRF token for security
+        },
+        success: function(response) {
+            console.log(response);
+
+            // Populate the child select box
+            // $('#model').empty().append('<option value="">Select Model</option>');
+
+            // response.models.forEach(function(model) {
+            //     let modelName = model ?? 'No Parent';
+
+            //     $('#model').append('<option value="' + modelName + '">' +
+            //         modelName +
+            //         '</option>');
+            // });
+        },
+        error: function(xhr) {
+            console.error("Error fetching models:", xhr.responseText);
+        }
+    });
+}
+
 
 
 function sendTokenToServer(token) {
@@ -401,23 +436,30 @@ $(document).ready(function() {
     let marker;
 
     // Ensure initMap is globally accessible
-    window.initMap = async function () {
+    window.initMap = async function() {
         try {
             console.log("Initializing Google Maps...");
 
             // Load Google Maps JavaScript API
-            const { Map } = await google.maps.importLibrary("maps");
-            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+            const {
+                Map
+            } = await google.maps.importLibrary("maps");
+            const {
+                AdvancedMarkerElement
+            } = await google.maps.importLibrary("marker");
 
             // Default location (Cairo, Egypt)
-            const defaultLocation = { lat: 30.0444, lng: 31.2357 };
+            const defaultLocation = {
+                lat: 30.0444,
+                lng: 31.2357
+            };
 
             // Create the map with the correct Map ID
             map = new Map(document.getElementById("map"), {
                 center: defaultLocation,
                 zoom: 10,
-                mapId: "5f199e2b6387d3af" 
-                
+                mapId: "5f199e2b6387d3af"
+
             });
             // Create an Advanced Marker
             marker = new AdvancedMarkerElement({
@@ -426,8 +468,8 @@ $(document).ready(function() {
                 title: "Drag to select location",
                 draggable: true // Correct draggable property
             });
-// Get User's Current Location
-if (navigator.geolocation) {
+            // Get User's Current Location
+            if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const userLocation = {
