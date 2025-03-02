@@ -8,6 +8,9 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AuthController;
 use App\Models\AllUsersModel;
+use Kreait\Firebase\Factory;
+use Illuminate\Support\Facades\Auth;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,8 +33,6 @@ Route::get('/try', function () {
     return view('/try');
 })->name('try');
 
-
-
 Route::get('/about-us', function () {
     return view('/aboutus');
 })->name('aboutus');
@@ -47,7 +48,6 @@ Route::get('/privacy', function () {
 Route::get('/faqs', function () {
     return view('/faqs');
 })->name('faqs');
-
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('filters', [HomeController::class, 'filters'])->name('home.filters');
@@ -75,9 +75,9 @@ Route::get('/privacy_policy', [SettingController::class, 'privacy'])->name('priv
 
 
 Route::post('/verify-token', [AuthController::class, 'verifyToken']);
-Route::get('/dashboard', function () {
-    return "Welcome to your dashboard!";
-})->middleware('auth');
+//Route::get('/', function () {
+  //  return "Welcome to your dashboard!";
+//})->middleware('auth');
 
 Route::get('/phone-check/{phone}', [AuthController::class, 'phone_check'])->name('phone_check');
 

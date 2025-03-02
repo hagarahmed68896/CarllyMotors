@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 #container {
@@ -221,6 +221,14 @@ function verifyOTP() {
         .then((result) => {
             alert("Phone number verified!");
 
+            // Retrieve Firebase authentication token
+            firebase.auth().currentUser.getIdToken(true)
+                .then((token) => {
+                    sendTokenToServer(token); // Send token to Laravel backend
+                })
+                .catch((error) => {
+                    console.error("Error getting token:", error);
+                });
         })
         .catch((error) => {
             if (error.code === "auth/code-expired") {
@@ -230,30 +238,36 @@ function verifyOTP() {
                 alert(error.message);
             }
         });
-
 }
+
 
 
 function sendTokenToServer(token) {
     fetch("/verify-token", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                token: token
-            })
-        }).then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.href = "/dashboard";
-            } else {
-                alert("Authentication failed");
-            }
-        });
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ token: token })
+    })
+    .then(response => response.json()) // Ensure the response is JSON
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/';
+        } else {
+            alert("Authentication failed: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Error sending token:", error);
+    });
 }
 
+
+
+
+// Wizard Form
 var currentStep = 1;
 var updateProgressBar;
 

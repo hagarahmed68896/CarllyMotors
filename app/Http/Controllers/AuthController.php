@@ -4,39 +4,54 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Auth;
 use Kreait\Firebase\Exception\Auth\FailedToVerifyToken;
-use App\Models\User;
+use App\Models\allUsersModel;
 use Illuminate\Support\Facades\Auth as LaravelAuth;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Auth as FirebaseAuth;
 
 class AuthController extends Controller
 {
     protected $firebaseAuth;
 
-    public function __construct(Auth $firebaseAuth)
+    public function __construct()
     {
-        $this->firebaseAuth = $firebaseAuth;
+        $this->firebaseAuth = (new Factory)
+            ->withServiceAccount(base_path('storage/app/firebase/firebase_credentials.json'))
+            ->createAuth();
     }
 
-    public function verifyToken(Request $request)
-    {
-        $idTokenString = $request->token;
+public function verifyToken(Request $request)
+{
+    $idTokenString = $request->token;
 
-        try {
-            $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idTokenString);
-            $uid = $verifiedIdToken->claims()->get('sub');
-            $user = User::firstOrCreate(['firebase_uid' => $uid], [
-                'name' => 'Firebase User',
-                'email' => $uid . '@firebase.com',
-                'password' => bcrypt('random_password')
-            ]);
+    try {
+        // Verify Firebase token
+        $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idTokenString);
+        $uid = $verifiedIdToken->claims()->get('sub');
 
-            LaravelAuth::login($user);
+        // Find or create the user
+        $user = allUsersModel::firstOrCreate(
+            ['firebase_uid' => $uid], // Search by Firebase UID
+            [
+                'fname' => 'Firebase User',
+                'email' => $uid . '@firebase.com', // Dummy email (Firebase doesn’t provide an email for phone auth)
+                'password' => bcrypt('random_password') // Not used but required in Laravel
+            ]
+        );
 
-            return response()->json(['success' => true, 'redirect' => route('dashboard')]);
+        // Log in the user
+        Auth::login($user);
 
-        } catch (FailedToVerifyToken $e) {
-            return response()->json(['success' => false, 'error' => 'Invalid Token']);
-        }
+        return response()->json([
+            'success' => true,
+            'uid' => $uid,
+            'redirect' => route('dashboard')
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()], 401);
     }
+}
 
     public function phone_check(Request $request){
         dd($request->query('phone'));
