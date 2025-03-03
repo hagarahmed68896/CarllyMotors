@@ -1,13 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Kreait\Firebase\Auth;
-use Kreait\Firebase\Exception\Auth\FailedToVerifyToken;
 use App\Models\allUsersModel;
-use Illuminate\Support\Facades\Auth as LaravelAuth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Kreait\Firebase\Factory;
-use Kreait\Firebase\Auth as FirebaseAuth;
 
 class AuthController extends Controller
 {
@@ -20,41 +17,60 @@ class AuthController extends Controller
             ->createAuth();
     }
 
-public function verifyToken(Request $request)
-{
-    $idTokenString = $request->token;
+    public function verifyToken(Request $request)
+    {
+        $idTokenString = $request->token;
 
-    try {
-        // Verify Firebase token
-        $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idTokenString);
-        $uid = $verifiedIdToken->claims()->get('sub');
+        try {
+            // Verify Firebase token
+            $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idTokenString);
+            $uid = $verifiedIdToken->claims()->get('sub'); // Get Firebase UID
 
-        // Find or create the user
-        $user = allUsersModel::firstOrCreate(
-            ['firebase_uid' => $uid], // Search by Firebase UID
-            [
-                'fname' => 'Firebase User',
-                'email' => $uid . '@firebase.com', // Dummy email (Firebase doesn’t provide an email for phone auth)
-                'password' => bcrypt('random_password') // Not used but required in Laravel
-            ]
-        );
+            // Find the user in the database
+            $user = allUsersModel::where('firebase_uid', $uid)->first();
 
-        // Log in the user
-        Auth::login($user);
+            if (!$user) {
+                // Create a new user if not found
+                $user = new allUsersModel();
+                $user->fname = 'Firebase User';
+                $user->email = $uid . '@firebase.com';
+                $user->password = bcrypt('12345678'); // Temporary password
+                $user->firebase_uid = $uid;
+                $user->userType = 'user';
+                $user->save();
+            }
 
-        return response()->json([
-            'success' => true,
-            'uid' => $uid,
-            'redirect' => route('dashboard')
-        ]);
+            // Double-check if user is saved
+            $user = allUsersModel::where('firebase_uid', $uid)->first();
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'User was not created in the database!'
+                ]);
+            }
 
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'error' => $e->getMessage()], 401);
+            // Authenticate the user
+            Auth::guard('web')->login($user);
+
+            // Check if authentication is successful
+            if (!Auth::check()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'User authentication failed!',
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'uid' => $uid,
+                'redirect' => route('home'),
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 401);
+        }
     }
-}
-
-    public function phone_check(Request $request){
-        dd($request->query('phone'));
-
-    }   
 }

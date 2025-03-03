@@ -43,14 +43,13 @@
 
                 <!-- Icons & Buttons -->
                 <div class="d-flex align-items-center right-sidebar-nav">
-                    <i class="search-icon fas fa-search"></i>
-                    <i class="fav-icon fas fa-heart"></i>
-                    <i class="login-icon fas fa-user"></i>
                     @guest
                     <a class="nav-link login-nav" href="{{route('login')}}">Login</a> / 
                     <a class="nav-link login-nav" href="{{route('register')}}">Register</a>
                     @else
-                    <a href="#" class="btn btn-add-listing">Add listing</a>
+                    <i class="search-icon fas fa-search"></i>
+                    <i class="fav-icon fas fa-heart"></i>
+                    <i class="login-icon fas fa-user"></i>
                     @endguest
                 </div>
             </div>
