@@ -7,10 +7,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Carbon\Carbon;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class allUsersModel extends Authenticatable
+class allUsersModel extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, InteractsWithMedia;
 
     protected $table = 'allusers';
     protected $guarded = [];
@@ -33,6 +35,11 @@ class allUsersModel extends Authenticatable
 
     public function cars() {
         return $this->hasMany(carListingModel::class,'user_id');
+    }
+
+    public function favCars() {
+        return $this->belongsToMany(CarListingModel::class, 'carlisting_allusers', 'user_id', 'carlisting_id')
+                    ->withTimestamps();
     }
 
     public function getCreatedAtAttribute($val)

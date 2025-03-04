@@ -375,6 +375,7 @@ class HomeController extends Controller
             ->where('id', '!=', $car->id)
             ->take(5)
             ->get();
+             
         return view('cars.show', compact('car', 'recommendedCars'));
     }
 }

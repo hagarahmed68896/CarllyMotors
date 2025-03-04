@@ -98,78 +98,51 @@
 </style>
 
 <div id="container" class="container mt-5">
-    <div class="progress px-1" style="height: 3px;">
-        <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0"
-            aria-valuemax="100"></div>
-    </div>
-    <div class="step-container d-flex justify-content-between">
-        <!-- <div class="step-circle" onclick="displayStep(1)">1</div> -->
-        <div class="step-circle" onclick="displayStep(2)">2</div>
-        <!-- <div class="step-circle" onclick="displayStep(3)">3</div> -->
-    </div>
 
     <div id="multi-step-form">
         <div class="step step-2">
             <!-- Step 2 form fields here -->
-            <h3>Sign Up</h3>
-            <form action="{{route('register')}}" method="POST" enctype="multipart/form-data" id="myFo">
+            <form action="{{route('users.update', auth()->user()->id)}}" method="POST" enctype="multipart/form-data" id="myFo">
                 @csrf
+                @method('PUT')
                 <div class="row">
                     <div class="mb-1 col-6">
                         <label for="fname" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="fname" name="fname" required>
+                        <input type="text" class="form-control" id="fname" value="{{$user->fname != 'user' ? $user->fname : ''}}" name="fname" required>
                     </div>
 
                     <div class="mb-1 col-6">
                         <label for="lname" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="lname" name="lname" required>
+                        <input type="text" class="form-control" id="lname" value="{{$user->fname != 'user' ? $user->lname : ''}}" name="lname" required>
                     </div>
 
                     <div class="mb-1 col-6">
                         <label for="phone" class="form-label">Phone</label>
-                        <input type="number" class="form-control" id="phone" name="phone" required>
+                        <input type="number" class="form-control" id="phone" value="{{$user->fname != 'user' ? $user->phone : ''}}" name="phone" required>
                     </div>
 
                     <div class="mb-1 col-6">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" autocomplete="off" required>
+                        <input type="email" class="form-control" id="email" name="email" value="{{$user->fname != 'user' ? $user->email : ''}}" autocomplete="off" required>
+                    </div>
+
+                    <div class="mb-1 col-6">
+                        <label for="city" class="form-label">City</label>
+                        <input type="city" class="form-control" id="city" name="city" value="{{$user->city}}" autocomplete="off" required>
                     </div>
 
                     <div class="mb-1 col-6">
                         <label for="image" class="form-label">Image</label>
                         <input type="file" class="form-control" id="image" name="image">
                     </div>
-
-                    <div class="mb-1 col-6">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" autocomplete="new-password"
-                            name="password" required>
-                    </div>
-                    <div class="mb-1 col-12">
+                    
+                    <div class="mb-1 col-12" style="padding-bottom:10px;">
                         <label for="location" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="location" name="location" required>
-                    </div>
-
-                    <div class="mb-1 col-6">
-                        <label class="form-label">User Type</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="user" value="user" checked>
-                            <label class="form-check-label" for="user">User</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="dealer" value="dealer">
-                            <label class="form-check-label" for="dealer">Dealer</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="shop_dealer"
-                                value="shop_dealer">
-                            <label class="form-check-label" for="shop_dealer">Shop Dealer</label>
-                        </div>
+                        <input type="text" class="form-control" id="location" value="{{$user->location}}" name="location" required>
                     </div>
 
                     <!-- Google Maps Location Picker -->
                     <div class="mb-3">
-                        <label class="form-label">Pick Location</label>
                         <div id="map"></div>
                     </div>
 
@@ -204,53 +177,7 @@
 
 <script>
 
-var currentStep = 2;
-var updateProgressBar;
-
-function displayStep(stepNumber) {
-    if (stepNumber >= 1 && stepNumber <= 3) {
-        $(".step-" + currentStep).hide();
-        $(".step-" + stepNumber).show();
-        currentStep = stepNumber;
-        updateProgressBar();
-    }
-}
-
 $(document).ready(function() {
-    $('#multi-step-form').find('.step').slice(1).hide();
-
-    $(".next-step").click(function() {
-        if (currentStep < 3) {
-            $(".step-" + currentStep).addClass("animate__animated animate__fadeOutLeft");
-            currentStep++;
-            setTimeout(function() {
-                $(".step").removeClass("animate__animated animate__fadeOutLeft").hide();
-                $(".step-" + currentStep).show().addClass(
-                    "animate__animated animate__fadeInRight");
-                updateProgressBar();
-            }, 500);
-        }
-    });
-
-    $(".prev-step").click(function() {
-        if (currentStep > 1) {
-            $(".step-" + currentStep).addClass("animate__animated animate__fadeOutRight");
-            currentStep--;
-            setTimeout(function() {
-                $(".step").removeClass("animate__animated animate__fadeOutRight").hide();
-                $(".step-" + currentStep).show().addClass(
-                    "animate__animated animate__fadeInLeft");
-                updateProgressBar();
-            }, 500);
-        }
-    });
-
-    updateProgressBar = function() {
-        var progressPercentage = ((currentStep - 1) / 2) * 100;
-        $(".progress-bar").css("width", progressPercentage + "%");
-        $(".progress-bar").css("background-color", '#760e13');
-    }
-
     let map;
     let marker;
 

@@ -22,7 +22,7 @@ class CarController extends Controller
         $years         = CarListingModel::select('listing_year')->distinct()->orderBy('listing_year', 'desc')->pluck('listing_year');
         $bodyTypes     = CarListingModel::select('body_type')->distinct()->orderBy('body_type')->pluck('body_type');
         $regionalSpecs = CarListingModel::select('regional_specs')->distinct()->orderBy('regional_specs')->pluck('regional_specs');
-// Get min and max price
+        // Get min and max price
         $minPrice = CarListingModel::min('listing_price');
         $maxPrice = CarListingModel::max('listing_price');
 
@@ -110,5 +110,28 @@ class CarController extends Controller
     public function destroy(CarListingModel $carListingModel)
     {
         //
+    }
+
+    public function addTofav(Request $request, $carId)
+    {
+        try {
+            $user = auth()->user();
+            $favList = $user->favCars->pluck('id')->toArray();
+
+            if (in_array($carId, $favList)) {
+                $user->favCars()->detach($carId);
+            }else{
+                $user->favCars()->attach($carId);
+            }
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function favList(){
+        $user = auth()->user();
+        $carlisting = $user->favCars;
+        return view('cars.favList', compact('carlisting'));
     }
 }

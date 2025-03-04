@@ -228,10 +228,19 @@
                         {{$car->user->fname}} {{$car->user->lname}}
                     </p>
                     <p class="price" style="color:#760e13">AED {{$car->listing_price}}</p>
+                    @if(auth()->check())
+                    @php
+                        $favCars = auth()->user()->favCars()->pluck('id')->toArray();
+                    @endphp
                     <div class="icon-group mt-3">
-                        <button title="add to fav" class="btn btn-outline-secondary"><i
-                                class="fas fa-heart"></i></button>
+                        <form action="{{route('cars.addTofav', $car->id)}}" method="post">
+                            @csrf
+                            <button title="add to fav" class="btn btn-sm"  type="submit">
+                                <i class="fas fa-heart" style="color:{{in_array($car->id, $favCars) ? '#760e13' : 'gray'}}"></i>
+                            </button>
+                        </form>
                     </div>
+                    @endif
                 </div>
 
                 <!-- Dealer Details Section -->
@@ -340,7 +349,9 @@ function copyUrl() {
     });
 }
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg11eAiAzKB6kMmJXfRbElSfK96RkDVq4&callback=initMap&libraries=maps,marker" async defer></script>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg11eAiAzKB6kMmJXfRbElSfK96RkDVq4&callback=initMap&libraries=maps,marker"
+    async defer></script>
 
 <script>
 function copyUrl() {
@@ -351,8 +362,16 @@ function copyUrl() {
         console.error('Failed to copy URL: ', err);
     });
 }
-var latitude = {{$car->lat}}
-var longitude = {{$car->lng}}
+var latitude = {
+    {
+        $car - > lat
+    }
+}
+var longitude = {
+    {
+        $car - > lng
+    }
+}
 // Initialize Small Map
 function initSmallMap() {
     var location = {

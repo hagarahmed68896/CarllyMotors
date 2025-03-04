@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Auth::routes();
 
 Route::get('/upcomming', function () {
     return view('/upcomming');
@@ -54,6 +53,8 @@ Route::get('filters', [HomeController::class, 'filters'])->name('home.filters');
 Route::get('listing', [HomeController::class, 'carListing'])->name('carlisting');
 Route::get('filter-cars', [HomeController::class, 'filter'])->name('filter.cars');
 Route::get('grid',[HomeController::class,'carListing'])->name('listing.grid');
+Route::post('/addTofav/{carId}', [CarController::class, 'addTofav'])->name('cars.addTofav')->middleware('auth');;
+Route::get('/favList', [CarController::class, 'favList'])->name('cars.favList')->middleware('auth');;
 Route::get('/car/{id}', [HomeController::class, 'detail'])->name('car.detail');
 
 Route::resource('cars', CarController::class);
@@ -69,15 +70,17 @@ Route::post('getSubCategories', [SparePartController::class, 'getSubCategories']
 // Setting
 Route::post('contact-us', [ContactController::class, 'store'])->name('contacts.store');
 Route::get('/contact-us', [ContactController::class, 'index'])->name('contacts.index');
+// 
+
 
 Route::get('/terms', [SettingController::class, 'terms'])->name('terms');
 Route::get('/privacy_policy', [SettingController::class, 'privacy'])->name('privacy');
 
-
+// User
+Auth::routes();
 Route::post('/verify-token', [AuthController::class, 'verifyToken']);
-//Route::get('/', function () {
-  //  return "Welcome to your dashboard!";
-//})->middleware('auth');
+Route::get('/profile/{id}', [AuthController::class, 'profile'])->name('profile')->middleware('auth');
+Route::get('/users/edit/{id}', [AuthController::class, 'edit'])->name('users.edit')->middleware('auth');
+Route::put('/users/{id}', [AuthController::class, 'update'])->name('users.update')->middleware('auth');;
 
-Route::get('/phone-check/{phone}', [AuthController::class, 'phone_check'])->name('phone_check');
-
+// Route::post('/cars/{carId}/addTofav', [CarController::class, 'addTofav'])->name('cars.addTofav');

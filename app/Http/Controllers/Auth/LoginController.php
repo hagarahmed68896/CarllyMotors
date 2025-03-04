@@ -51,27 +51,24 @@ class LoginController extends Controller
     {
         // Validate the login request
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
+            'phone' => 'required',
         ]);
 
         // Attempt to find the user in the `allusers` table
-        $user = allUsersModel::where('email', $request->email)->first();
+        $user = allUsersModel::where(['phone'=> $request->phone, 'userType' => 'user'])->first();
 
         // Check if user exists and the password matches
-        if ($user && Hash::check($request->password, $user->password)) {
+        if ($user) {
             // Log the user in
-            Auth::login($user);
+            Auth::guard('web')->login($user);
 
             // Redirect to the intended page or home
-            return redirect()->intended($this->redirectTo)
+            return redirect()->route('home')
                 ->with('success', 'Logged in successfully.');
         }
 
         // If authentication fails, redirect back with an error
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->withInput();
+        return back()->with('error' , 'Wrong Phone Number');
     }
 
     /**

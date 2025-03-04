@@ -16,6 +16,55 @@
     <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}">
 
 </head>
+<style>
+.navbar-nav .nav-link {
+    color: #fff;
+}
+
+.dropend .dropdown-toggle {
+    color: #760e13;
+    margin-left: 1em;
+}
+
+.dropdown-toggle::after {
+    color: #760e13;
+}
+
+.dropdown-item:hover {
+    background-color: #760e13;
+    color: #fff;
+}
+
+.dropdown .dropdown-menu {
+    display: none;
+}
+.dropdown-menu a:hover{
+    text-decoration-color: #760e13;
+    border-color: #760e13;
+}
+.dropdown-menu a:focus{
+    border-color: #760e13;
+}
+
+.dropdown:hover>.dropdown-menu,
+.dropend:hover>.dropdown-menu {
+    display: block;
+    margin-top: 0.125em;
+    margin-left: 0.125em;
+}
+
+@media screen and (min-width: 769px) {
+    .dropend:hover>.dropdown-menu {
+        position: absolute;
+        top: 0;
+        left: 100%;
+    }
+
+    .dropend .dropdown-toggle {
+        margin-left: 0.5em;
+    }
+}
+</style>
 
 <body>
     <!-- Navbar -->
@@ -43,14 +92,36 @@
 
                 <!-- Icons & Buttons -->
                 <div class="d-flex align-items-center right-sidebar-nav">
-                    @guest
-                    <a class="nav-link login-nav" href="{{route('login')}}">Login</a> / 
-                    <a class="nav-link login-nav" href="{{route('register')}}">Register</a>
+                    @if(auth()->check() == false)
+                    <a class="nav-link login-nav" href="{{route('login')}}">Login</a> 
                     @else
-                    <i class="search-icon fas fa-search"></i>
-                    <i class="fav-icon fas fa-heart"></i>
-                    <i class="login-icon fas fa-user"></i>
-                    @endguest
+                    <a href="{{route('cars.favList')}}">
+                        <i class="fav-icon fas fa-heart"></i>
+                    </a>
+                    <i class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="login-icon fas fa-user"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="{{route('profile', auth()->user()->id)}}" >
+                                    <button class="dropdown-item">
+                                        Profile
+                                    </button>
+                                </a>
+                            </li>
+                            {{--<li><a class="dropdown-item" href="{{route('my-listings')}}">My Listings</a></li>--}}
+
+                            <li>
+                                <form method="post" action="{{route('logout')}}">
+                                    @csrf
+                                    <button class="dropdown-item" type="submit">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </i>
+                    @endif
                 </div>
             </div>
         </div>

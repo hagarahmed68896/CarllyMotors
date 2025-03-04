@@ -284,6 +284,11 @@
     color: #f3f3f3;
 }
 
+.bg-carlly:hover{
+    color:#f3f3f3;
+    text-decoration: underline;
+
+}
 .carousel-item.active {
     background-color: #760e13 !important;
     color: #f3f3f3 !important;

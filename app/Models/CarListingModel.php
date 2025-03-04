@@ -35,6 +35,12 @@ class CarListingModel extends Model
         return $this->belongsTo(allUsersModel::class,'user_id');
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(allUsersModel::class, 'carlisting_allusers', 'carlisting_id', 'user_id')
+                    ->withTimestamps(); // Keeps track of created_at & updated_at
+    }
+
     // public function getCreatedAtAttribute($val)
     // {
     //     return Carbon::parse($val)->format('d M, Y H:i');
