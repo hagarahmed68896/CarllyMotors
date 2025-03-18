@@ -172,7 +172,7 @@ use Illuminate\Support\Str;
                         display: flex;
                         align-items: center;
                         justify-content: center;">
-                            <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}"
+                            <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">
                                 <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
                                     alt="Car Image" style="
@@ -234,7 +234,7 @@ use Illuminate\Support\Str;
                                 No OS Detected
                                 @endif
 
-                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', [ Crypt::encrypt($car->id)])) }}"
+                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', $car->id)) }}"
                                     target="_blank">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
                                         <i class="fa fa-share"></i>

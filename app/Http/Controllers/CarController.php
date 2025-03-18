@@ -2,7 +2,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\CarBrand;
+use App\Models\BodyType;
+use App\Models\RegionalSpec;
 use App\Models\CarListingModel;
+use App\Models\Color;
 use Illuminate\Http\Request;
 
 class CarController extends Controller
@@ -97,9 +100,68 @@ class CarController extends Controller
         ));
     }
 
+    
+    public function create(){
+        $brands = CarBrand::pluck('name')->toArray();
+        $bodyTypes = BodyType::pluck('name')->toArray();
+        $regionalSpecs = RegionalSpec::pluck('name')->toArray();
+        $colors = Color::get();
+
+        return view('cars.create', compact('brands','bodyTypes','regionalSpecs', 'colors'));
+    }
+
+   public function store(Request $request){
+        try {   
+        $car = new CarListingModel();
+        $car->user_id = $request->user_id;
+        $car->listing_type = $request->make;
+        $car->listing_model = $request->model;
+        $car->listing_year = $request->year;
+        $car->body_type = $request->bodyType;
+        $car->regional_specs = $request->regionalSpec;
+        $car->city = $request->city;
+        $car->features_others = $request->features;
+        $car->vin_number = $request->vin_number;
+        $car->features_gear = $request->gear;
+        $car->features_speed = $request->mileage;
+        $car->car_color = $request->color;
+        $car->features_climate_zone = $request->warranty;
+        $car->features_fuel_type = $request->fuelType; 
+        $car->features_seats = $request->seats; 
+        $car->listing_title = $request->name; 
+        $car->wa_number = '+971'.$request->phone;
+        $car->listing_price = $request->price;
+        $car->lat = $request->latitude;
+        $car->lng = $request->longitude;
+        // $car->save();
+
+        // if($request->hasFile('images')){
+        //     if(count($request->images) <= 5){
+        //         for($i = 1; $i < count($request->images); $i++)
+        //         {
+        //             $imgStr = 'listing_img'.$i;
+        //             // dd($imgStr);
+        //             $car->listing_img.$i = $request->images[$i];
+        //             $car->save();
+        //         }
+        //     }else{
+        //         for($i = 1; $i < 6; $i++){
+        //             $imgStr = 'listing_img'.$i;
+        //             // dd($imgStr);
+        //             $car->listing_img.$i = $request->images[$i];
+        //             $car->save();
+        //         }
+        //     }
+        // }
+        return redirect()->route('cars.index')->with('success', 'Car Added successfully');
+    } catch (\Exception $e) {
+        dd($e->getMessage());
+    }
+    }
+
     public function getModels(Request $request)
     {
-        // dd($request);
+        // dd(gettype($request->brand));
         $brand = CarBrand::where('name', $request->brand)->first();
         // dd($brand);
         $brand_models = $brand->models()->pluck('name');
@@ -134,4 +196,5 @@ class CarController extends Controller
         $carlisting = $user->favCars;
         return view('cars.favList', compact('carlisting'));
     }
+
 }
