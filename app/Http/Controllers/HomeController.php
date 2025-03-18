@@ -359,13 +359,14 @@ class HomeController extends Controller
     {
 
         // Decrypt the ID
-        $id = Crypt::decrypt($id);
+        // $id = Crypt::decrypt($id);
 
         // Convert listing_modal back to original format
         // $formattedModal = str_replace('-', ' ', $slug);
 
         // Find the car
         $car             = CarListingModel::where('id', $id)->with('user')->firstOrFail();
+        // dd($car->color);
         $recommendedCars = CarListingModel::where('listing_type', $car->listing_type)
             ->where(function ($query) use ($car) {
                 $query->where('listing_model', $car->listing_model)

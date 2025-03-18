@@ -40,12 +40,12 @@
 }
 </style>
 <div class="card" style="width: 18rem;">
-    {{--@if(count($user->getMedia('profile')) == 0)--}}
+    @if(count($user->getMedia('profile')) == 0)
     <img src="{{asset('user.png')}}" class="card-img-top" alt="...">
-    {{--@else
+    @else
     <img src="{{asset(parse_url($user->getMedia('profile')[0]->getUrl(), PHP_URL_PATH))}}" class="card-img-top"
         alt="...">
-    @endif--}}
+    @endif
     <div class="card-body">
         @if($user->fname != 'user')
         <h5 class="card-title">{{$user->fname . ' ' . $user->lname}}</h5>

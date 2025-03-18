@@ -160,7 +160,7 @@
                                     <div class="overview-item">
                                         <i class="fas fa-palette"></i>
                                         <span>Color:</span>
-                                        <span class="value">{{$car->car_color}}</span>
+                                        <span class="value">{{$car->color?->name}}</span>
                                     </div>
                                     <div class="overview-item">
                                         <i class="fas fa-cog"></i>
@@ -225,7 +225,7 @@
                         <i class="fas fa-cogs"></i>
                         {{$car->features_gear}} &nbsp;
                         <i class="fas fa-user"></i>
-                        {{$car->user->fname}} {{$car->user->lname}}
+                        {{$car->user?->fname}} {{$car->user?->lname}}
                     </p>
                     <p class="price" style="color:#760e13">AED {{$car->listing_price}}</p>
                     @if(auth()->check())
@@ -254,7 +254,7 @@
                         <span class="verified-badge">Verified dealer</span>
                     </div>
                 </div>
-                <p class="text-muted"> {{$car->user->location}}</p>
+                <p class="text-muted"> {{$car->user?->location}}</p>
                 <div class="bg-light rounded mb-3" id="map" onclick="openFullMap()" style="height: 100px;"></div>
                 <div id="fullMapModal">
                     <span class="close-btn" onclick="closeFullMap()">&times;</span>
@@ -262,25 +262,25 @@
                 </div>
                 <h6 class="mb-3">Contact dealer</h6>
                 <div class="d-flex justify-content-between">
-                    <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
+                    <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
                         <button class="btn btn-outline-danger" style="border-radius: 25px;">
                             <i class="fab fa-whatsapp"></i> WhatsApp
                         </button>
                     </a>
                     @if($os == 'Windows' || $os == 'Linux' )
-                    <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
+                    <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
                         <button class="btn btn-outline-danger" style="border-radius: 25px;">
                             <i class="fa fa-phone"></i> Call
                         </button>
                     </a>
                     @elseif($os == 'Mac')
-                    <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user->phone) }}>
+                    <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user?->phone) }}>
                         <button class="btn btn-outline-danger" style="border-radius: 25px;">
                             <i class="fa fa-phone"></i> Call
                         </button>
                     </a>
                     @elseif($os == 'Android' || $os='iOS')
-                    <a href="tel:{{ $car->user->phone }}">
+                    <a href="tel:{{ $car->user?->phone }}">
                         <button class="btn btn-outline-danger" style="border-radius: 25px;">
                             <i class="fa fa-phone"></i> Call
                         </button>
@@ -362,16 +362,9 @@ function copyUrl() {
         console.error('Failed to copy URL: ', err);
     });
 }
-var latitude = {
-    {
-        $car - > lat
-    }
-}
-var longitude = {
-    {
-        $car - > lng
-    }
-}
+var latitude = {{$car->lat}}
+var longitude = {{$car->lng}}
+
 // Initialize Small Map
 function initSmallMap() {
     var location = {

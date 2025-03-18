@@ -41,6 +41,12 @@ class CarListingModel extends Model
                     ->withTimestamps(); // Keeps track of created_at & updated_at
     }
 
+
+    public function color(){
+        return $this->belongsTo(Color::class, 'car_color', 'uid');
+    }
+
+   
     // public function getCreatedAtAttribute($val)
     // {
     //     return Carbon::parse($val)->format('d M, Y H:i');

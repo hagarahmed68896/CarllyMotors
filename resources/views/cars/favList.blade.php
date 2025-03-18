@@ -227,11 +227,9 @@ input[type="number"] {}
         <span class="carousel-control-next-icon"></span>
     </a>
 </div>
+
 <div class="container my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
-
-
     <!-- List -->
-
     <div class="tab-content" id="bodyTypeTabsContent">
         <div class="container main-car-list-sec">
             <div class="row">
@@ -338,7 +336,6 @@ input[type="number"] {}
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
-
 function copyUrl(carUrl) {
     navigator.clipboard.writeText(carUrl).then(() => {
         alert('URL copied: ' + carUrl);
@@ -346,7 +343,6 @@ function copyUrl(carUrl) {
         console.error('Failed to copy URL: ', err);
     });
 }
-
 </script>
 @endpush
 @endsection

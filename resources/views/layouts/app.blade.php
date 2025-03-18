@@ -38,11 +38,13 @@
 .dropdown .dropdown-menu {
     display: none;
 }
-.dropdown-menu a:hover{
+
+.dropdown-menu a:hover {
     text-decoration-color: #760e13;
     border-color: #760e13;
 }
-.dropdown-menu a:focus{
+
+.dropdown-menu a:focus {
     border-color: #760e13;
 }
 
@@ -66,7 +68,7 @@
 }
 </style>
 
-<body>
+<body class="relative h-screen bg-gray-100">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
@@ -93,8 +95,11 @@
                 <!-- Icons & Buttons -->
                 <div class="d-flex align-items-center right-sidebar-nav">
                     @if(auth()->check() == false)
-                    <a class="nav-link login-nav" href="{{route('login')}}">Login</a> 
+                    <a class="nav-link login-nav" href="{{route('login')}}">Login</a>
                     @else
+                    <a href="{{route('cars.create')}}">
+                        <i class="fav-icon fas fa-plus"></i>
+                    </a>
                     <a href="{{route('cars.favList')}}">
                         <i class="fav-icon fas fa-heart"></i>
                     </a>
@@ -105,7 +110,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="{{route('profile', auth()->user()->id)}}" >
+                                <a href="{{route('profile', auth()->user()->id)}}">
                                     <button class="dropdown-item">
                                         Profile
                                     </button>
@@ -239,6 +244,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     @stack('carlistingscript')
     {{-- Script related listing-details page --}}
     <script>
