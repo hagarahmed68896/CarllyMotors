@@ -172,7 +172,7 @@ use Illuminate\Support\Str;
                         display: flex;
                         align-items: center;
                         justify-content: center;">
-                            <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}"
+                            <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">
                                 <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
                                     alt="Car Image" style="
@@ -197,8 +197,9 @@ use Illuminate\Support\Str;
                                 </a>
                             </div>
 
-                            <h4 class="showroom-name">{{$car->user->fname}} {{$car->user->lname}}</h4>
-
+                            <!-- <h4 class="showroom-name">{{$car->user->fname}} {{$car->user->lname}}</h4> -->
+                             
+                            <h4 class="showroom-name">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
                             <div class="car-details">
                                 <p><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
                                 <p><strong>Model:</strong> <span>{{$car->listing_model}}</span></p>
@@ -209,7 +210,7 @@ use Illuminate\Support\Str;
                             <div class="actions">
                                 <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fab fa-whatsapp"></i> WhatsApp
+                                        <i class="fab fa-whatsapp "  style="color: #198754; "></i> WhatsApp
                                     </button>
                                 </a>
                                 @if($os == 'Windows' || $os == 'Linux' )
@@ -234,7 +235,7 @@ use Illuminate\Support\Str;
                                 No OS Detected
                                 @endif
 
-                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', [ Crypt::encrypt($car->id)])) }}"
+                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', $car->id)) }}"
                                     target="_blank">
                                     <button class="btn btn-outline-danger" style="border-radius: 25px;">
                                         <i class="fa fa-share"></i>
