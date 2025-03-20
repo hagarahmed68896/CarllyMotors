@@ -234,7 +234,6 @@ input[type="number"] {}
         <div class="container main-car-list-sec">
             <div class="row">
                 @foreach ($carlisting as $key => $car)
-
                 <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                     <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
@@ -248,7 +247,7 @@ input[type="number"] {}
                         align-items: center;
                         justify-content: center;">
 
-                            <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}"
+                            <a href="{{ route('car.detail',$car->id)}}"
                                 style="width: 100%; height: 100%; display: block;">
                                 <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
                                     alt="Car Image" style="

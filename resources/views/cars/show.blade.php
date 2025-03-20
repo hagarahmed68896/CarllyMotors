@@ -84,8 +84,9 @@
                             @endphp
 
                             @foreach ($images as $index => $image)
+                            {{-- @dd(config('app.file_base_url') . $image ) --}}
                             <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                                <img src="{{ asset(env("FILE_BASE_URL").$image) }}" class="d-block w-100"
+                                <img src="{{ config('app.file_base_url') . $image }}" class="d-block w-100"
                                     alt="Car Image">
 
                             </div>

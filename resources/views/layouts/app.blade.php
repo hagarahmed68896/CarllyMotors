@@ -17,55 +17,55 @@
 
 </head>
 <style>
-.navbar-nav .nav-link {
-    color: #fff;
-}
-
-.dropend .dropdown-toggle {
-    color: #760e13;
-    margin-left: 1em;
-}
-
-.dropdown-toggle::after {
-    color: #760e13;
-}
-
-.dropdown-item:hover {
-    background-color: #760e13;
-    color: #fff;
-}
-
-.dropdown .dropdown-menu {
-    display: none;
-}
-
-.dropdown-menu a:hover {
-    text-decoration-color: #760e13;
-    border-color: #760e13;
-}
-
-.dropdown-menu a:focus {
-    border-color: #760e13;
-}
-
-.dropdown:hover>.dropdown-menu,
-.dropend:hover>.dropdown-menu {
-    display: block;
-    margin-top: 0.125em;
-    margin-left: 0.125em;
-}
-
-@media screen and (min-width: 769px) {
-    .dropend:hover>.dropdown-menu {
-        position: absolute;
-        top: 0;
-        left: 100%;
+    .navbar-nav .nav-link {
+        color: #fff;
     }
 
     .dropend .dropdown-toggle {
-        margin-left: 0.5em;
+        color: #760e13;
+        margin-left: 1em;
     }
-}
+
+    .dropdown-toggle::after {
+        color: #760e13;
+    }
+
+    .dropdown-item:hover {
+        background-color: #760e13;
+        color: #fff;
+    }
+
+    .dropdown .dropdown-menu {
+        display: none;
+    }
+
+    .dropdown-menu a:hover {
+        text-decoration-color: #760e13;
+        border-color: #760e13;
+    }
+
+    .dropdown-menu a:focus {
+        border-color: #760e13;
+    }
+
+    .dropdown:hover>.dropdown-menu,
+    .dropend:hover>.dropdown-menu {
+        display: block;
+        margin-top: 0.125em;
+        margin-left: 0.125em;
+    }
+
+    @media screen and (min-width: 769px) {
+        .dropend:hover>.dropdown-menu {
+            position: absolute;
+            top: 0;
+            left: 100%;
+        }
+
+        .dropend .dropdown-toggle {
+            margin-left: 0.5em;
+        }
+    }
 </style>
 
 <body class="relative h-screen bg-gray-100">
@@ -95,37 +95,35 @@
                 <!-- Icons & Buttons -->
                 <div class="d-flex align-items-center right-sidebar-nav">
                     @if(auth()->check() == false)
-                    <a class="nav-link login-nav" href="{{route('login')}}">Login</a>
+                        <a class="nav-link login-nav" href="{{route('login')}}">Login</a>
                     @else
-                    <a href="{{route('cars.create')}}">
-                        <i class="fav-icon fas fa-plus"></i>
-                    </a>
-                    <a href="{{route('cars.favList')}}">
-                        <i class="fav-icon fas fa-heart"></i>
-                    </a>
-                    <i class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="login-icon fas fa-user"></i>
+                        <a href="{{route('cars.create')}}">
+                            <i class="fav-icon fas fa-plus"></i>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="{{route('profile', auth()->user()->id)}}">
-                                    <button class="dropdown-item">
+                        <a href="{{route('cars.favList')}}">
+                            <i class="fav-icon fas fa-heart"></i>
+                        </a>
+                        <i class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <i class="login-icon fas fa-user"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{{route('profile', auth()->user()->id)}}">
                                         Profile
-                                    </button>
-                                </a>
-                            </li>
-                            {{--<li><a class="dropdown-item" href="{{route('my-listings')}}">My Listings</a></li>--}}
+                                    </a>
+                                </li>
+                                <li><a class="dropdown-item" href="{{route('myCarListing')}}">My Listings</a></li>
 
-                            <li>
-                                <form method="post" action="{{route('logout')}}">
-                                    @csrf
-                                    <button class="dropdown-item" type="submit">Logout</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </i>
+                                <li>
+                                    <form method="post" action="{{route('logout')}}">
+                                        @csrf
+                                        <button class="dropdown-item" type="submit">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </i>
                     @endif
                 </div>
             </div>
@@ -249,21 +247,21 @@
     @stack('carlistingscript')
     {{-- Script related listing-details page --}}
     <script>
-    $(document).ready(function() {
-        // Toggle the icon when accordion is expanded/collapsed
-        $('.accordion-button').on('click', function() {
-            const icon = $(this).find('.icon');
-            const isExpanded = $(this).attr('aria-expanded') === 'true';
+        $(document).ready(function () {
+            // Toggle the icon when accordion is expanded/collapsed
+            $('.accordion-button').on('click', function () {
+                const icon = $(this).find('.icon');
+                const isExpanded = $(this).attr('aria-expanded') === 'true';
 
-            // Remove rotate class from all icons
-            $('.icon').removeClass('rotate');
+                // Remove rotate class from all icons
+                $('.icon').removeClass('rotate');
 
-            // Add rotate class if this item is expanded
-            if (!isExpanded) {
-                icon.addClass('rotate');
-            }
+                // Add rotate class if this item is expanded
+                if (!isExpanded) {
+                    icon.addClass('rotate');
+                }
+            });
         });
-    });
     </script>
 
 </body>

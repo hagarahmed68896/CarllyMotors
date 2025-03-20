@@ -21,6 +21,7 @@ use Illuminate\Support\Str;
 <div id="demo" class="carousel slide home-slider" data-bs-interval="false">
 
     <!-- The slideshow -->
+    
     <div class="carousel-inner">
         <div class="carousel-item">
             <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
