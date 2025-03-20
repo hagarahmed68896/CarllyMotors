@@ -15,11 +15,14 @@ body {
 
 
 .home-slider .carousel-inner img {
-    height: 83% !important;
-    width: 75% !important;
+    height: 87% !important;
+    width: 78% !important;
+    margin: auto;
     /* Adjust to match the required height */
     border-radius: 10px;
     overflow: hidden;
+    background-color: #760e13 !important;
+    color: #f3f3f3 !important;
     /* Ensures content fits well */
 }
 
@@ -27,6 +30,7 @@ body {
     .home-slider .carousel-inner img {
         height: 100% !important;
         width: 100% !important;
+        
         /* Adjust to match the required height */
         border-radius: 10px;
         overflow: hidden;
@@ -46,6 +50,7 @@ body {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        
         /* Prevents distortion */
     }
 }
@@ -70,8 +75,11 @@ body {
     background: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: block;
+    transition: all 0.3s ease-in-out
 }
-
+.car-card :hover {
+    transform: scale(1.1);
+}
 .car-img {
     width: 200px;
     height: 130px;
@@ -424,6 +432,10 @@ body {
     top: 10px;
     left: 53%;
     transform: translateX(-50%);
+    transition: all 0.3s ease-in-out
+}
+.main-car-list-sec .badge-images :hover {
+    transform: scale(1.1);
 }
 
 .badge-year {
@@ -860,6 +872,8 @@ ul.carousel-indicators {
     width: 100%;
     overflow: hidden;
     height: 400px;
+    background-color: #760e13 !important;
+    color: #f3f3f3 !important;
 }
  .home-slider .carousel-inner .carousel-inner img {
 height:100%;

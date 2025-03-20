@@ -304,6 +304,8 @@
 
     .home-slider .carousel-inner {
         max-height: 200px;
+          background-color: #760e13 !important;
+    color: #f3f3f3 !important;
     }
 
     .home-slider .carousel-item {

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 @endphp
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <style>
 .btn-outline-danger {
     /* background-color: #760e13 !important; */
@@ -14,14 +16,36 @@ use Illuminate\Support\Str;
     border-color: #5a0b0f !important;
     color: #f3f3f3 !important;
 }
+.carousel-control-prev, .carousel-control-next {
+            width: 8%;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            
+        }
+
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            padding: 5px;
+            border-radius: 50%;
+            /* color: rgba(0, 0, 0, 0.5) !important; */
+        }
+
+        /* تخصيص النقاط */
+        .carousel-indicators [data-bs-target] {
+            background-color: #fff;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-bottom: 4px;
+        }
 </style>
 @section('content')
 
 <!-- home slider -->
-<div id="demo" class="carousel slide home-slider" data-bs-interval="false">
+<div id="demo" class="carousel slide home-slider" data-bs-ride="carousel" data-bs-interval="2000">
+
 
     <!-- The slideshow -->
-    <div class="carousel-inner">
+    <!-- <div class="carousel-inner rounded-bottom">
         <div class="carousel-item">
             <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
         </div>
@@ -34,25 +58,69 @@ use Illuminate\Support\Str;
         <div class="carousel-item active">
             <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
         </div>
-    </div>
+    </div> -->
     <!-- Left and right controls -->
-    <a class="carousel-control-prev" href="#demo" data-slide="prev">
+    <!-- <a class="carousel-control-prev" href="#demo" data-slide="prev">
         <span class="carousel-control-prev-icon"></span>
     </a>
     <a class="carousel-control-next" href="#demo" data-slide="next">
         <span class="carousel-control-next-icon"></span>
     </a>
+</div> -->
+
+
+
+
+<div id="carouselExampleIndicators" class="carousel-inner rounded-bottom
+          " data-bs-ride="carousel">
+        <!-- النقاط -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"></button>
+        </div>
+
+        <!-- الصور -->
+        <div class="carousel-inner rounded-bottom">
+            <div class="carousel-item active">
+                <img class="d-block w-100"src="{{asset('1.jpg')}}" alt="Los Angeles">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{{asset('2.jpg')}}" alt="Chicago">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{{asset('3.jpg')}}" alt="Chicago">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{{asset('4.jpg')}}" alt="New York">
+            </div>
+        </div>
+
+        <!-- أزرار التنقل -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+   
 </div>
 
-<!-- Start filter home with items -->
-<div class="container my-5 main-home-filter-sec text-center">
-    <div class="d-flex flex-wrap justify-content-center gap-3">
-        <a href="{{route('cars.index')}}" class="nav-btn {{Request::url() == url('/') ?  'active' : ''}}">All Car</a>
-        <a href="{{route('spareParts.index')}}"
-            class="nav-btn {{request()->route() == 'spareParts.index' ?  'active' : ''}}">Spare Parts</a>
+<!-- Start filter home with items  
+ 
+-->
+<div class=" my-6 main-home-filter-sec text-center">
+    <div class="d-flex flex-wrap justify-content-center gap-3 ">
+        <a href="{{route('cars.index')}}" class="nav-btn">
+            All Car
+        </a>
+        <a href="{{route('spareParts.index')}}" class="nav-btn active">
+            Spare Parts
+        </a>
     </div>
-    <div class="filter-bar my-2">
-        <form class="form-row mb-0" id="filterForm" action="{{route('cars.index')}}" method="get">
+    <div class="container filter-bar my-2  text-center">
+        <form class="form-row mb-0  text-center" id="filterForm" action="{{route('cars.index')}}" method="get">
 
             <!-- car_type Dropdown -->
             <div class="col-">
@@ -155,15 +223,15 @@ use Illuminate\Support\Str;
     </div>
 
 
-    <div class="tab-content" id="bodyTypeTabsContent">
-        <div class="container main-car-list-sec">
+    <div class="tab-content  text-center" id="bodyTypeTabsContent">
+        <div class="mr-10 main-car-list-sec" style="margin-right:50px; margin-left:50px;">
             <div class="row">
                 @foreach ($carlisting as $key => $car)
 
-                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3 ">
                     <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
-                        <div class="car-image position-relative" style="
+                        <div class="car-image position-relative " style="
                         width: 100%;
                         height: 220px;
                         background-color: #f0f0f0;
@@ -175,8 +243,10 @@ use Illuminate\Support\Str;
                             <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">
                                 <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
-                                    alt="Car Image" style="
-                              height: 100%; !important;
+                                    alt="Car Image"
+                                    class="rounded-bottom"
+                                    style="
+                              height: 90%; !important;
                               width: 100%; !important;
                                 object-fit: cover;
                                 object-position: center;
@@ -209,25 +279,25 @@ use Illuminate\Support\Str;
 
                             <div class="actions">
                                 <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
                                         <i class="fab fa-whatsapp "  style="color: #198754; "></i> WhatsApp
                                     </button>
                                 </a>
                                 @if($os == 'Windows' || $os == 'Linux' )
                                 <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px; margin-left:2px; margin-right:2px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Mac')
                                 <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user->phone) }}>
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px; margin-left:2px; margin-right:2px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Android' || $os='iOS')
                                 <a href="tel:{{ $car->user->phone }}">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
@@ -237,7 +307,7 @@ use Illuminate\Support\Str;
 
                                 <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', $car->id)) }}"
                                     target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
                                         <i class="fa fa-share"></i>
                                         Share
                                     </button>
@@ -272,7 +342,8 @@ use Illuminate\Support\Str;
             </div>
         </div>
         <div class="col-md-4 col-sm-6 mb-4 d-flex align-items-center justify-content-center">
-            <img class="img-fluid w-100" src="https://www.car-mart.com/wp-content/uploads/2024/06/red-chevy-sedan.png"
+            <img class="img-fluid car w-100 " style="    transition: all 0.3s ease-in-out;"
+         src="https://www.car-mart.com/wp-content/uploads/2024/06/red-chevy-sedan.png"
                 alt="">
         </div>
         <div class="col-md-4 col-sm-6 mb-4">
@@ -305,16 +376,18 @@ use Illuminate\Support\Str;
 </div>
 
 <div class="container py-5 last-home-sec">
-    <div class="row">
+    <div class="row justify-content-center">
         <!-- Providers App Section -->
         <div class="col-lg-6 col-md-12 mb-4">
-            <div
-                class="custom-card dark-card d-flex flex-column flex-md-row align-items-center text-center text-md-start">
+            <div class="custom-card dark-card d-flex flex-column flex-md-row align-items-center text-center text-md-start">
+                <div class="icon-wrapper">
+                    <i class="fas fa-user-cog"></i>
+                </div>
                 <div class="px-3">
                     <h5 class="fw-bold">Providers App</h5>
-                    <p>Connect with customers and manage your services efficiently.</p>
+                    <p class="text-muted">Connect with customers and manage your services efficiently.</p>
                     <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center justify-content-md-start">
-                        <a href="https://apps.apple.com/us/app/carlly-provider/id6478307755">
+                        <a href="https://apps.apple.com/us/app/carlly-provider/id6478307755" style="margin-left:12px; margin-right:15px;">
                             <img class="img-fluid store-badge"
                                 src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
                                 alt="App Store">
@@ -331,14 +404,15 @@ use Illuminate\Support\Str;
 
         <!-- Customers App Section -->
         <div class="col-lg-6 col-md-12 mb-4">
-            <div
-                class="custom-card dark-card d-flex flex-column flex-md-row align-items-center text-center text-md-start">
+            <div class="custom-card dark-card d-flex flex-column flex-md-row align-items-center text-center text-md-start">
+                <div class="icon-wrapper">
+                    <i class="fas fa-car"></i>
+                </div>
                 <div class="px-3">
                     <h5 class="fw-bold">Customers App</h5>
-                    <p>Access car buying, selling, and maintenance services effortlessly.</p>
+                    <p class="text-muted">Access car buying, selling, and maintenance services effortlessly.</p>
                     <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center justify-content-md-start">
-                        <a href="https://apps.apple.com/us/app/carlly-motors/id6478306259"
-                            style="background-color:transparent">
+                        <a href="https://apps.apple.com/us/app/carlly-motors/id6478306259" class="text-center" style="margin-left:12px; margin-right:15px;">
                             <img class="img-fluid store-badge"
                                 src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
                                 alt="App Store">
@@ -354,6 +428,61 @@ use Illuminate\Support\Str;
         </div>
     </div>
 </div>
+
+<style>
+    /* تحسين تصميم الكارد */
+    .custom-card {
+        background: linear-gradient(to right, #5a0b0f, #760e13 );
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* تأثير التحويم */
+    .custom-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    /* أيقونات */
+    .icon-wrapper {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 15px;
+        border-radius: 50%;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+    }
+
+    /* الأزرار */
+    .store-badge {
+        width: 150px;
+        transition: transform 0.2s ease-in-out;
+    }
+.car{
+    transition: transform 0.2s ease-in-out;
+}
+.car:hover{
+    transform: scale(1.1);
+}
+    .store-badge:hover {
+        transform: scale(1.1);
+    }
+
+    /* تحسين النصوص */
+    .text-muted {
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+</style>
+
 
 @push('carlistingscript')
 {{-- Script related filters on carlisting page --}}

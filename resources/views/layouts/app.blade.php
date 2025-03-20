@@ -70,70 +70,81 @@
 
 <body class="relative h-screen bg-gray-100">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container-fluid">
-            <!-- Logo -->
-            <a class="navbar-brand" href="#">
-                <img src="{{asset('carllymotorsmainlogo_dark.png')}}" alt="AutoDecar">
-            </a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2 ">
+    <div class="container">
+        <!-- Logo -->
+        <a class="navbar-brand" href="#">
+            <img src="{{asset('carllymotorsmainlogo_dark.png')}}" alt="AutoDecar" class="img-fluid" style="height: 50px;">
+        </a>
 
-            <!-- Mobile Toggle Button -->
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+         <!-- Mobile Toggle Button -->
+         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Navbar Links -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{route('home')}}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{route('cars.index')}}">Cars</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{route('spareParts.index')}}">Spare Parts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{route('aboutus')}}">About us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{route('contacts.index')}}">Contact</a></li>
-                </ul>
+        <!-- Navbar Links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{route('home')}}">Home</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{route('cars.index')}}">Cars</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{route('spareParts.index')}}">Spare Parts</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{route('aboutus')}}">About us</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{route('contacts.index')}}">Contact</a></li>
+            </ul>
 
-                <!-- Icons & Buttons -->
-                <div class="d-flex align-items-center right-sidebar-nav">
-                    @if(auth()->check() == false)
-                    <a class="nav-link login-nav" href="{{route('login')}}">Login</a>
-                    @else
-                    <a href="{{route('cars.create')}}">
-                        <i class="fav-icon fas fa-plus"></i>
+            <!-- Icons & Buttons -->
+            <div class="d-flex align-items-center gap-3">
+                @if(auth()->check() == false)
+                <a class="btn" href="{{route('login')}}" style="background-color: #760e13; color: white;">Login</a>
+                @else
+                <a href="{{route('cars.create')}}" class="btn btn-success text-white">
+                    <i class="fas fa-plus"></i>
+                </a>
+                <a href="{{route('cars.favList')}}" class="btn btn-danger text-white">
+                    <i class="fas fa-heart"></i>
+                </a>
+                <div class="dropdown">
+                    <a class="btn btn-light border dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="fas fa-user"></i>
                     </a>
-                    <a href="{{route('cars.favList')}}">
-                        <i class="fav-icon fas fa-heart"></i>
-                    </a>
-                    <i class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="login-icon fas fa-user"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="{{route('profile', auth()->user()->id)}}">
-                                    <button class="dropdown-item">
-                                        Profile
-                                    </button>
-                                </a>
-                            </li>
-                            {{--<li><a class="dropdown-item" href="{{route('my-listings')}}">My Listings</a></li>--}}
-
-                            <li>
-                                <form method="post" action="{{route('logout')}}">
-                                    @csrf
-                                    <button class="dropdown-item" type="submit">Logout</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </i>
-                    @endif
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a href="{{route('profile', auth()->user()->id)}}" class="dropdown-item">Profile</a>
+                        </li>
+                        <li>
+                            <form method="post" action="{{route('logout')}}">
+                                @csrf
+                                <button class="dropdown-item" type="submit">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
+                @endif
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
+
+<style>
+    .nav-link:hover, .nav-link:focus, .nav-link.active {
+        color: #760e13 !important;
+    }
+
+   
+</style>
+
+<style>
+    .nav-link:hover, .nav-link:focus, .nav-link.active {
+        color: #760e13 !important;
+        font-weight: bold !important;
+    }
+</style>
+
+
     <!-- breadcrumd-listting -->
 
-
+<!-- jjjkjjkh jjjj jjjk jjnjn jjjk jiojjjjjj jjjjj ppipo jh;l kljkjkkj kjk-->
 
     @yield('content')
 
@@ -261,6 +272,14 @@
             // Add rotate class if this item is expanded
             if (!isExpanded) {
                 icon.addClass('rotate');
+            }
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        let currentUrl = window.location.href;
+        document.querySelectorAll(".nav-link").forEach(link => {
+            if (link.href === currentUrl) {
+                link.classList.add("active");
             }
         });
     });
