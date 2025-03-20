@@ -7,12 +7,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Carbon\Carbon;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 
-class allUsersModel extends Authenticatable implements HasMedia
+
+class allUsersModel extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, InteractsWithMedia;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'allusers';
     protected $guarded = [];

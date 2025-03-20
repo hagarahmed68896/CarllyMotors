@@ -70,7 +70,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-body">
-                    <div id="carCarousel" class="carousel slide" data-ride="carousel">
+                    <div id="carCarousel" class="carousel slide rounded-2" data-ride="carousel">
                         <div class="carousel-inner">
                             @php
                             $images = [
@@ -86,7 +86,11 @@
                             @foreach ($images as $index => $image)
                             {{-- @dd(config('app.file_base_url') . $image ) --}}
                             <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+<<<<<<< HEAD
                                 <img src="{{ config('app.file_base_url') . $image }}" class="d-block w-100"
+=======
+                                <img src="{{ asset(env("FILE_BASE_URL").$image) }}" class="d-block w-100 h-40"
+>>>>>>> 40c51fb1792c22b2e60575443ef8c26b8dd671c0
                                     alt="Car Image">
 
                             </div>
@@ -100,12 +104,12 @@
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         </a>
                     </div>
-                    <ul class="nav nav-tabs mt-3" id="carTabs" role="tablist">
+                    <ul class="nav nav-tabs mt-3" id="carTabs" role="tablist" >
                         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#overview" role="tab"
                                 aria-selected="true">Overview</a></li>
 
                     </ul>
-                    <div class="tab-content mt-3">
+                    <!-- <div class="tab-content mt-3" style="margin-left:5px; margin-right:5px;">
                         <div class="tab-pane fade active show" id="overview" role="tabpanel">
                             <h5 class="mt-3">Description</h5>
                             <p>{{$car->listing_desc}}</p>
@@ -208,7 +212,61 @@
                             @endif
 
                         </div>
+                    </div> -->
+
+     <div class="container mt-4" style="margin-top:10px;">
+                       <div class="tab-content " style="margin-bottom:10px;">
+              <div class="tab-pane fade active show" id="overview" role="tabpanel">
+                            <h3 class="overview-title mt-3">Description</h3>
+                            <p>{{$car->listing_desc}}</p>
+
+            <h4 class="mt-4 overview-title">Car Overview</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item  overview-item" ><i class="fas fa-car "></i> <strong>Condition:</strong><span class="fs-3 pl-2"> {{$car->car_type}}</span> </li>
+                        <li class="list-group-item  overview-item"><i class="fas fa-barcode"></i> <strong>VIN number:</strong><span class="fs-3 pl-2"> {{$car->vin_number}}</span>  </li>
+                        <li class="list-group-item  overview-item"><i class="fas fa-calendar-alt"></i> <strong>Year:</strong><span class="fs-3 pl-2"> {{$car->listing_year}}</span></li>
+                        <li class="list-group-item  overview-item"><i class="fas fa-users"></i> <strong>Seats:</strong><span class="fs-3 pl-2">{{$car->features_seats}}</span> </li>
+                        <li class="list-group-item  overview-item"><i class="fas fa-city"></i> <strong>City:</strong><span class="fs-3 pl-3"> {{$car->city}} </span></li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item  overview-item"><i class="fas fa-cogs"></i> <strong>Cylinders:</strong><span class="fs-3 pl-2">  {{$car->features_cylinders}} </span></li>
+                        <li class="list-group-item  overview-item"><i class="fas fa-gas-pump"></i> <strong>Fuel Type:</strong><span class="fs-3 pl-2"> {{$car->features_fuel_type}}</span></li>
+                        <li class="list-group-item  overview-item"><i class="fas fa-door-closed"></i> <strong>Doors:</strong> <span class="fs-3 pl-2"> {{$car->features_door}} </span></li>
+                        <li class="list-group-item  overview-item"><i class="fas fa-palette"></i> <strong>Color:</strong> <span class="fs-3 pl-2">  {{$car->color?->name}} </span></li>
+                        <li class="list-group-item  overview-item"><i class="fas fa-cog"></i> <strong>Transmission:</strong><span class="fs-3 pl-2">  {{$car->features_gear}} </span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <h4 class="mt-4">Features</h4>
+            @if (!empty($car->features_others))
+                @php $features = json_decode($car->features_others, true); @endphp
+                @if (is_array($features) && count($features) > 0)
+                    <div class="row">
+                        @foreach (array_chunk($features, ceil(count($features) / 3)) as $column)
+                            <div class="col-md-4">
+                                <ul class="list-group list-group-flush">
+                                    @foreach ($column as $feature)
+                                        <li class="list-group-item"><i class="fas fa-check-circle text-success"></i> {{ trim($feature) }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endforeach
                     </div>
+                @else
+                    <p>No features available.</p>
+                @endif
+            @else
+                <p>No features available.</p>
+            @endif
+        </div>
+    </div>
+</div>
+
                 </div>
             </div>
         </div>

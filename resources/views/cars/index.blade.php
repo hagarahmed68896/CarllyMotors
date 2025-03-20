@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
 @endphp
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <style>
 /* Price Input Fields */
 .price-range {
@@ -198,38 +198,69 @@ input[type="number"] {}
 .actions i {
     font-size: 16px;
 }
+.carousel-control-prev, .carousel-control-next {
+            width: 8%;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            
+        }
+
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            padding: 5px;
+            border-radius: 50%;
+            /* color: rgba(0, 0, 0, 0.5) !important; */
+        }
+
+        /* تخصيص النقاط */
+        .carousel-indicators [data-bs-target] {
+            background-color: #fff;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
 </style>
 
 @section('content')
-<!-- home slider -->
-<div id="demo" class="carousel slide home-slider" data-bs-interval="false">
+<!-- home slider --><div id="demo" class="carousel slide home-slider" data-bs-ride="carousel" data-bs-interval="2000">
+<div id="carouselExampleIndicators" class="carousel-inner rounded-bottom
+          " data-bs-ride="carousel">
+        <!-- النقاط -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"></button>
+        </div>
 
-    <!-- The slideshow -->
-    <div class="carousel-inner">
-        <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
+        <!-- الصور -->
+        <div class="carousel-inner rounded-bottom">
+            <div class="carousel-item active">
+                <img class="d-block w-100"src="{{asset('1.jpg')}}" alt="Los Angeles">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{{asset('2.jpg')}}" alt="Chicago">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{{asset('3.jpg')}}" alt="Chicago">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{{asset('4.jpg')}}" alt="New York">
+            </div>
         </div>
-        <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('2.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('3.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item active">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
-        </div>
-    </div>
-    <!-- Left and right controls -->
-    <a class="carousel-control-prev" href="#demo" data-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </a>
-    <a class="carousel-control-next" href="#demo" data-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </a>
+
+        <!-- أزرار التنقل -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+   
 </div>
+    </div>
 <!-- filter -->
 
-<div class="container my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
+<div class=" my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
     <div class="d-flex flex-wrap justify-content-center gap-3">
         <a href="{{route('cars.index')}}" class="nav-btn {{request()->path() == 'cars' ?  'active' : ''}}">All
             Car</a>
@@ -237,7 +268,7 @@ input[type="number"] {}
             class="nav-btn {{request()->path() == 'spareparts' ?  'active' : ''}}">Spare Parts</a>
     </div>
 
-    <div class="filter-bar my-2">
+    <div class="container filter-bar my-2">
         <form class="form-row mb-0" id="filterForm" action="{{route('cars.index')}}" method="get">
 
             <!-- car_type Dropdown -->
@@ -340,11 +371,11 @@ input[type="number"] {}
     <!-- List -->
 
     <div class="tab-content" id="bodyTypeTabsContent">
-        <div class="container main-car-list-sec">
+    <div class="mr-10 main-car-list-sec" style="margin-right:50px; margin-left:50px;">
             <div class="row">
                 @foreach ($carlisting as $key => $car)
 
-                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-3">
                     <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
                         <div class="car-image position-relative" style="
@@ -355,13 +386,19 @@ input[type="number"] {}
                         overflow: hidden;
                         display: flex;
                         align-items: center;
-                        justify-content: center;">
+                        justify-content: center;
+                     
+                        "
+                        
+                        >
 
                             <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">
                                 <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
-                                    alt="Car Image" style="
-            height: 100% !important;
+                                    alt="Car Image"
+                                       class="rounded-bottom"
+                                     style="
+            height: 90% !important;
             width: 100% !important;
             object-fit: cover;
             object-position: center;
@@ -397,25 +434,25 @@ input[type="number"] {}
 
                             <div class="actions">
                                 <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fab fa-whatsapp"></i> WhatsApp
+                                <button class="btn btn-outline-danger" style="border-radius: 15px;">
+                                        <i class="fab fa-whatsapp "  style="color: #198754; "></i> WhatsApp
                                     </button>
                                 </a>
                                 @if($os == 'Windows' || $os == 'Linux' )
                                 <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px; margin-left:2px; margin-right:2px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Mac')
                                 <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user?->phone) }}>
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Android' || $os='iOS')
                                 <a href="tel:{{ $car->user->phone }}">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
                                         <i class="fa fa-phone"></i> Make Call
                                     </button>
                                 </a>
@@ -425,7 +462,7 @@ input[type="number"] {}
 
                                 <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', $car->id)) }}"
                                     target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
                                         <i class="fa fa-share"></i>
                                         Share
                                     </button>

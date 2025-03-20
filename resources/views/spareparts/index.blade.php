@@ -126,6 +126,26 @@ use Illuminate\Support\Str;
         overflow: hidden;
         /* Ensures content fits well */
     }
+    .carousel-control-prev, .carousel-control-next {
+            width: 8%;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            
+        }
+
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            padding: 5px;
+            border-radius: 50%;
+            /* color: rgba(0, 0, 0, 0.5) !important; */
+        }
+
+        /* تخصيص النقاط */
+        .carousel-indicators [data-bs-target] {
+            background-color: #fff;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
 @media (max-width: 572px) {
     .home-slider .carousel-inner img{
         height: 100% !important;
@@ -151,41 +171,54 @@ use Illuminate\Support\Str;
         object-fit: cover;
         /* Prevents distortion */
     }
+   
 }
 </style>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
 @section('content')
-    <!-- home slider -->
-    <div id="demo" class="carousel slide home-slider"  data-bs-interval="false">
+ <!-- home slider -->
+<div id="demo" class="carousel slide home-slider" data-bs-ride="carousel" data-bs-interval="2000">
+   <div id="carouselExampleIndicators" class="carousel-inner rounded-bottom
+          " data-bs-ride="carousel">
+        <!-- النقاط -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"></button>
+        </div>
 
-        <!-- The slideshow -->
-        <div class="carousel-inner">
-            <div class="carousel-item">
-                <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
-            </div>
-            <div class="carousel-item">
-                <img class="img-fluid w-100 mx-auto" src="{{asset('2.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item">
-                <img class="img-fluid w-100 mx-auto" src="{{asset('3.jpg')}}" alt="Chicago">
-            </div>
+        <!-- الصور -->
+        <div class="carousel-inner rounded-bottom">
             <div class="carousel-item active">
-                <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
+                <img class="d-block w-100"src="{{asset('1.jpg')}}" alt="Los Angeles">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{{asset('2.jpg')}}" alt="Chicago">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{{asset('3.jpg')}}" alt="Chicago">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{{asset('4.jpg')}}" alt="New York">
             </div>
         </div>
-        <!-- Left and right controls -->
-        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+
+        <!-- أزرار التنقل -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
             <span class="carousel-control-prev-icon"></span>
-        </a>
-        <a class="carousel-control-next" href="#demo" data-slide="next">
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
             <span class="carousel-control-next-icon"></span>
-        </a>
+        </button>
+   
+</div>
     </div>
 <!-- filter -->
 <!-- Start filter home with items -->
 
-<div class="container my-6 main-home-filter-sec text-center">
+<div class=" my-6 main-home-filter-sec text-center">
     <div class="d-flex flex-wrap justify-content-center gap-3">
         <a href="{{route('cars.index')}}" class="nav-btn">
             All Car
@@ -195,7 +228,7 @@ use Illuminate\Support\Str;
         </a>
     </div>
     @if(request()->path() == "spareParts")
-    <div class="filter-bar my-2">
+    <div class="container filter-bar my-2">
         <form class="form-row mb-0" id="filterForm" action="{{route('filter.spareParts')}}" method="get">
             <!-- Make Dropdown -->
             <div class="col-">
@@ -302,21 +335,25 @@ use Illuminate\Support\Str;
     @endif
     <!-- List -->
     <div class="tab-content" id="bodyTypeTabsContent">
-        <div class="container main-car-list-sec">
+    <div class="mr-10 main-car-list-sec" style="margin-right:50px; margin-left:50px;">
             <div class="row">
                 @foreach ($dealers as $key => $dealer)
-                <div class="col-sm-3 col-md-6 col-lg-4 col-xl-4">
+                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-3">
                     <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
                         <div class="car-image position-relative" style="
                         width: 100%;
-                        height: 182px;
+                        height: 220px;
                         background-color: #f0f0f0;
                         border-radius: 10px;
                         overflow: hidden;
                         display: flex;
                         align-items: center;
-                        justify-content: center;">
+                        justify-content: center;
+                     
+                        "
+                        
+                        >
                             @php
                             $image = Str::after($dealer->company_img, url('/').'/');
                             $dealerName = ucfirst(strtolower($dealer->company_name));
@@ -347,13 +384,13 @@ use Illuminate\Support\Str;
                             </div>
                             <div class="actions">
                                 <a href="https://wa.me/{{ $dealer->user->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fab fa-whatsapp"></i> WhatsApp
+                                <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fab fa-whatsapp "  style="color: #198754; "></i> WhatsApp
                                     </button>
                                 </a>
                                 @if($os == 'Windows' || $os == 'Linux' )
                                 <a href="https://wa.me/{{ $dealer->user->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px; margin-left:2px; margin-right:2px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
