@@ -20,4 +20,9 @@ class WorkshopCategory extends Model
     {
         return ($val) ? asset($val) : asset('icon/workshop.jpg');
     }
+
+    public function providers()
+    {
+        return $this->belongsToMany(WorkshopProvider::class, 'workshop_category_provider');
+    }
 }

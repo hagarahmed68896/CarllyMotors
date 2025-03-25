@@ -7,6 +7,7 @@ use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\WorkshopController;
 use App\Models\AllUsersModel;
 use Kreait\Firebase\Factory;
 use Illuminate\Support\Facades\Auth;
@@ -86,3 +87,7 @@ Route::get('/users/edit/{id}', [AuthController::class, 'edit'])->name('users.edi
 Route::put('/users/{id}', [AuthController::class, 'update'])->name('users.update')->middleware('auth');;
 
 // Route::post('/cars/{carId}/addTofav', [CarController::class, 'addTofav'])->name('cars.addTofav');
+
+// Workshops
+Route::resource('workshops', WorkshopController::class);
+

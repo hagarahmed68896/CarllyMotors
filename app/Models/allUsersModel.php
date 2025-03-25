@@ -8,7 +8,6 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Carbon\Carbon;
 
-
 class allUsersModel extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -16,10 +15,12 @@ class allUsersModel extends Authenticatable
     protected $table = 'allusers';
     protected $guarded = [];
     protected $hidden = ['password'];
-    protected $casts = [
-        'created_at' => 'datetime',
-    ];
 
+    protected $casts = [
+        'lat' => 'float',
+        'lng' => 'float',
+    ];
+    
     public function getImageAttribute($val) {
         return asset($val);
     }
@@ -28,21 +29,24 @@ class allUsersModel extends Authenticatable
         return $this->hasOne(CarDealer::class,'user_id');
     }
 
-    public function spareParts() {
-        return $this->hasMany(SparePart::class,'user_id');
+    public function workshop_provider() {
+        return $this->hasOne(WorkshopProvider::class,'user_id');
     }
 
     public function cars() {
         return $this->hasMany(carListingModel::class,'user_id');
     }
 
-    public function favCars() {
-        return $this->belongsToMany(CarListingModel::class, 'carlisting_allusers', 'user_id', 'carlisting_id')
-                    ->withTimestamps();
-    }
-
     public function getCreatedAtAttribute($val)
     {
         return Carbon::parse($val)->format('d M, Y H:i');
+    }
+
+    public function ads(){
+        return $this->hasMany(Ad::class,'brand_id');
+    }
+
+    public function package(){
+        return $this->belongsTo(Package::class,'package_id');
     }
 }

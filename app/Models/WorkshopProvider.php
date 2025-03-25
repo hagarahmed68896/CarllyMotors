@@ -11,7 +11,6 @@ use Carbon\Carbon;
 
 class WorkshopProvider extends Authenticatable
 {
-   
     use HasFactory, HasApiTokens;
 
     protected $guarded = [];
@@ -20,6 +19,7 @@ class WorkshopProvider extends Authenticatable
     protected $hidden = [
         "password",
     ];
+
 
     // public function getWorkshopLogoAttribute($val)
     // {
