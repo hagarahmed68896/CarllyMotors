@@ -183,8 +183,7 @@
 @section('content')
     <!-- home slider -->
     <div id="demo" class="carousel slide home-slider" data-bs-ride="carousel" data-bs-interval="2000">
-        <div id="carouselExampleIndicators" class="carousel-inner rounded-bottom
-              " data-bs-ride="carousel">
+        <div id="carouselExampleIndicators" class="carousel-inner rounded-bottom" data-bs-ride="carousel">
             <!-- النقاط -->
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
@@ -235,36 +234,27 @@
                 Work Shops
             </a>
         </div>
-        {{-- @if(request()->path() == "spareParts")
         <div class="container filter-bar my-2">
-            <form class="form-row mb-0" id="filterForm" action="{{route('filter.spareParts')}}" method="get">
+            <form class="form-row mb-0" id="filterForm" method="get">
                 <!-- Make Dropdown -->
                 <div class="col-">
-                    <select class="form-control" id="brand" name="make">
+                    <select class="form-control" id="brand" name="brand_id">
                         <option value="" selected>Make</option>
-                        @foreach($makes as $make)
-                        <option value="{{ $make }}" {{ request('make')==$make ? 'selected' : '' }}>
-                            {{ $make }}
+                        @foreach($brands as $key => $brand)
+                        <option value="{{ $key }}" {{ request('brand_id')==$key ? 'selected' : '' }}>
+                            {{ $brand }}
                         </option>
                         @endforeach
                     </select>
                 </div>
 
-                <!-- Model Dropdown -->
+                <!-- Workshop Dropdown -->
                 <div class="col-">
-                    <select class="form-control" id="model" name="model">
-                        <option value="" selected>Model</option>
-                    </select>
-                </div>
-
-                <!-- Year Dropdown -->
-                <div class="col-">
-                    <select class="form-control" name="year">
-                        <option value="" selected>Year</option>
-                        @foreach($years as $year)
-
-                        <option value="{{ $year }}" {{ request('year')==$year ? 'selected' : '' }}>
-                            {{ $year }}
+                    <select class="form-control" id="brand" name="workshop_id">
+                        <option value="" selected>Category</option>
+                        @foreach($categories as $key => $category)
+                        <option value="{{ $key }}" {{ request('category_id')==$key ? 'selected' : '' }}>
+                            {{ $category }}
                         </option>
                         @endforeach
                     </select>
@@ -284,34 +274,6 @@
                     </select>
                 </div>
 
-                <!-- Make Dropdown -->
-                <div class="col-">
-                    <select class="form-control" id="category" name="category">
-                        <option value="" selected>category</option>
-                        @foreach($categories as $category)
-                        <option value="{{ $category }}" {{ request('category')==$category ? 'selected' : '' }}>
-                            {{ $category }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Model Dropdown -->
-                <div class="col-">
-                    <select class="form-control" id="subCategory" name="subCategory">
-                        <option value="" selected>Sub-Category</option>
-                    </select>
-                </div>
-
-                <div class="col-">
-                    <select class="form-control" name="condition">
-                        @foreach($conditions as $condition)
-                        <option value="{{ $condition }}" {{ request('condition')==$condition ? 'selected' : '' }}>
-                            {{ $condition }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
                 <div class="col-">
                     <button class="btn btn-outline-danger bg-carlly" type="submit" style="border-radius: 25px;">
                         Search
@@ -319,28 +281,7 @@
                 </div>
             </form>
         </div>
-        @else
-        <div class="max-w-lg mx-auto p-4 bg-white shadow-md rounded-2xl mt-3">
-            <div class="text-center font-bold text-xl mb-4">Your Car</div>
-            <div class="grid grid-cols-2 gap-2 text-sm">
-                <div class="font-semibold">Car Type:</div>
-                <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->make ?? '--'}}</div>
-
-                <div class="font-semibold">Car Model:</div>
-                <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->model ?? '--'}}</div>
-
-                <div class="font-semibold">Car Year:</div>
-                <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->year ?? '--'}}</div>
-
-                <div class="font-semibold">Category:</div>
-                <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->category ?? '--'}}</div>
-
-                <div class="font-semibold">Sub-category:</div>
-                <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->subCategory ?? '--'}}</div>
-            </div>
-        </div>
-
-        @endif --}}
+        
         <!-- List -->
         <div class="tab-content" id="bodyTypeTabsContent">
             <div class="mr-10 main-car-list-sec" style="margin-right:50px; margin-left:50px;">

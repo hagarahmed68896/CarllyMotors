@@ -17,7 +17,7 @@ class WorkshopController extends Controller
         // Fetch distinct values for filters
         $cities = WorkshopProvider::select('branch')->distinct()->orderBy('branch')->pluck('branch');
         $brands   = DB::table('car_brand_workshop_provider')->distinct()->pluck('car_brand_id')->toArray();
-        $brands = CarBrand::select('id', 'name')->whereIn('id', $brands)->distinct()->pluck('name')->toArray();
+        $brands = CarBrand::select('id', 'name')->whereIn('id', $brands)->distinct()->pluck('name', 'id')->toArray();
 
         $categories = DB::table('workshop_category_provider')->distinct()->pluck('workshop_category_id')->toArray();
         $categories = WorkshopCategory::select('id', 'name')->whereIn('id', $categories)->distinct()->pluck('name')->toArray();
@@ -43,10 +43,8 @@ class WorkshopController extends Controller
             $query->whereIn('id', $workshop_ids);
         }
 
-
         // Paginate the results
         $workshops = $query->paginate($perPage);
-
         // foreach($workshops as $workshop){
         //     dd($workshop);
         // }
