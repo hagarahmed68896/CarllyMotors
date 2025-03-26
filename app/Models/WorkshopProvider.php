@@ -13,19 +13,37 @@ class WorkshopProvider extends Authenticatable
 {
     use HasFactory, HasApiTokens;
 
-    protected $guarded=[];
+    protected $guarded = [];
 
 
-    protected $hidden=[
+    protected $hidden = [
         "password",
     ];
 
 
-    public function getWorkshopLogoAttribute($val)
+    // public function getWorkshopLogoAttribute($val)
+    // {
+    //     return asset($val);
+    // }
+
+
+    public function categories()
     {
-        return asset($val);
+        return $this->belongsToMany(WorkshopCategory::class, 'workshop_category_provider');
     }
 
-   
- 
+    public function brands()
+    {
+        return $this->belongsToMany(CarBrand::class, 'car_brand_workshop_provider');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(allUsersModel::class);
+    }
+
+    public function days()
+    {
+        return $this->hasMany(WorkshopDay::class, 'workshop_provider_id');
+    }
 }

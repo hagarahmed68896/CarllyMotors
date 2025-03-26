@@ -287,6 +287,8 @@ input[type="number"] {}
             Car</a>
         <a href="{{route('spareParts.index')}}"
             class="nav-btn {{request()->path() == 'spareparts' ?  'active' : ''}}">Spare Parts</a>
+            <a href="{{route('workshops.index')}}"
+            class="nav-btn {{request()->path() == 'workshops' ?  'active' : ''}}">Work Shops</a>
     </div>
 
     <div class="container filter-bar my-2">

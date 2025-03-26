@@ -84,6 +84,7 @@
                             @endphp
 
                             @foreach ($images as $index => $image)
+                            {{-- @dd(config('app.file_base_url') . $image ) --}}
                             <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
                                 <img src="{{ asset(env("FILE_BASE_URL").$image) }}" class="d-block w-100 h-40"
                                     alt="Car Image">
@@ -357,7 +358,15 @@
             <ul>
                 <li>
                     <a href="#"><i class="fa fa-light fa-flag"></i>Report this listing</a>
-                </li>
+                </li>public function cars()
+                {
+                    return $this->hasMany(CarListingModel::class, 'listing_type', 'name');
+                }
+            
+                public function models()
+                {
+                    return $this->hasMany(BrandModel::class, 'brand_id');
+                }
             </ul>
         </div>
         <div class="container my-4 recmended-used-car-section px-0">

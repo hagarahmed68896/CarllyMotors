@@ -129,11 +129,15 @@ use Illuminate\Support\Str;
 -->
 <div class=" my-6 main-home-filter-sec text-center">
     <div class="d-flex flex-wrap justify-content-center gap-3 ">
-        <a href="{{route('cars.index')}}" class="nav-btn">
+        <a href="{{route('cars.index')}}" class="nav-btn active">
             All Car
         </a>
-        <a href="{{route('spareParts.index')}}" class="nav-btn active">
+        <a href="{{route('spareParts.index')}}" class="nav-btn">
             Spare Parts
+        </a>
+
+        <a href="{{route('workshops.index')}}" class="nav-btn">
+            Work shops
         </a>
     </div>
     <div class="container filter-bar my-2  text-center">
@@ -257,9 +261,10 @@ use Illuminate\Support\Str;
                         display: flex;
                         align-items: center;
                         justify-content: center;">
+                        {{-- @dd(env('FILE_BASE_URL') . $car->listing_img1) --}}
                             <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">
-                                <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
+                                <img id="cardImage" src={{ env('FILE_BASE_URL') . $car->listing_img1 }}
                                     alt="Car Image"
                                     class="rounded-bottom"
                                     style="

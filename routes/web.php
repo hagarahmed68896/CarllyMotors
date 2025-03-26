@@ -7,6 +7,7 @@ use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\WorkshopController;
 use App\Models\AllUsersModel;
 use Kreait\Firebase\Factory;
 use Illuminate\Support\Facades\Auth;
@@ -49,19 +50,21 @@ Route::get('/faqs', function () {
 })->name('faqs');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+//Cars
 Route::get('filters', [HomeController::class, 'filters'])->name('home.filters');
 Route::get('listing', [HomeController::class, 'carListing'])->name('carlisting');
 Route::get('filter-cars', [HomeController::class, 'filter'])->name('filter.cars');
 Route::get('grid',[HomeController::class,'carListing'])->name('listing.grid');
+Route::resource('cars', CarController::class);
+Route::get('/car/{id}', [HomeController::class, 'detail'])->name('car.detail');
 Route::post('/addTofav/{carId}', [CarController::class, 'addTofav'])->name('cars.addTofav')->middleware('auth');;
 Route::get('/favList', [CarController::class, 'favList'])->name('cars.favList')->middleware('auth');;
-Route::get('/car/{id}', [HomeController::class, 'detail'])->name('car.detail');
-
-Route::resource('cars', CarController::class);
+Route::get('/myCarListing', [CarController::class, 'myCarListing'])->name('myCarListing')->middleware('auth');
 Route::get('cars/homeSection', [CarController::class, 'homeSection'])->name('cars.homeSection');
 Route::post('getModels', [CarController::class, 'getModels'])->name('getModels');
 
-
+// SpareParts
 Route::resource('spareParts', SparePartController::class);
 Route::get('spareparts/homeSection', [SparePartController::class, 'homeSection'])->name('spareparts.homeSection');
 Route::get('filter-sparePart', [SparePartController::class, 'filter'])->name('filter.spareParts');
@@ -84,3 +87,7 @@ Route::get('/users/edit/{id}', [AuthController::class, 'edit'])->name('users.edi
 Route::put('/users/{id}', [AuthController::class, 'update'])->name('users.update')->middleware('auth');;
 
 // Route::post('/cars/{carId}/addTofav', [CarController::class, 'addTofav'])->name('cars.addTofav');
+
+// Workshops
+Route::resource('workshops', WorkshopController::class);
+

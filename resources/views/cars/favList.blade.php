@@ -248,7 +248,7 @@ input[type="number"] {}
                         align-items: center;
                         justify-content: center;">
 
-                            <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}"
+                            <a href="{{ route('car.detail',$car->id)}}"
                                 style="width: 100%; height: 100%; display: block;">
                                 <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
                                     alt="Car Image" style="

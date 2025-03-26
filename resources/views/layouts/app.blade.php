@@ -17,57 +17,55 @@
 
 </head>
 <style>
-.navbar-nav .nav-link {
-    color: #fff;
-}
-
-.dropend .dropdown-toggle {
-    color: #760e13;
-    margin-left: 1em;
-}
-
-.dropdown-toggle::after {
-    color: #760e13;
-}
-
-.dropdown-item:hover {
-    background-color: #760e13;
-    color: #fff;
-    border-radius: 20%;
- 
-}
-
-.dropdown .dropdown-menu {
-    display: none;
-}
-
-.dropdown-menu a:hover {
-    text-decoration-color: #760e13;
-    border-color: #760e13;
-}
-
-.dropdown-menu a:focus {
-    border-color: #760e13;
-}
-
-.dropdown:hover>.dropdown-menu,
-.dropend:hover>.dropdown-menu {
-    display: block;
-    margin-top: 0.125em;
-    margin-left: 0.125em;
-}
-
-@media screen and (min-width: 769px) {
-    .dropend:hover>.dropdown-menu {
-        position: absolute;
-        top: 0;
-        left: 100%;
+    .navbar-nav .nav-link {
+        color: #fff;
     }
 
     .dropend .dropdown-toggle {
-        margin-left: 0.5em;
+        color: #760e13;
+        margin-left: 1em;
     }
-}
+
+    .dropdown-toggle::after {
+        color: #760e13;
+    }
+
+    .dropdown-item:hover {
+        background-color: #760e13;
+        color: #fff;
+    }
+
+    .dropdown .dropdown-menu {
+        display: none;
+    }
+
+    .dropdown-menu a:hover {
+        text-decoration-color: #760e13;
+        border-color: #760e13;
+    }
+
+    .dropdown-menu a:focus {
+        border-color: #760e13;
+    }
+
+    .dropdown:hover>.dropdown-menu,
+    .dropend:hover>.dropdown-menu {
+        display: block;
+        margin-top: 0.125em;
+        margin-left: 0.125em;
+    }
+
+    @media screen and (min-width: 769px) {
+        .dropend:hover>.dropdown-menu {
+            position: absolute;
+            top: 0;
+            left: 100%;
+        }
+
+        .dropend .dropdown-toggle {
+            margin-left: 0.5em;
+        }
+    }
 </style>
 
 <body class="relative h-screen bg-gray-100">
@@ -283,19 +281,20 @@
     @stack('carlistingscript')
     {{-- Script related listing-details page --}}
     <script>
-    $(document).ready(function() {
-        // Toggle the icon when accordion is expanded/collapsed
-        $('.accordion-button').on('click', function() {
-            const icon = $(this).find('.icon');
-            const isExpanded = $(this).attr('aria-expanded') === 'true';
+        $(document).ready(function () {
+            // Toggle the icon when accordion is expanded/collapsed
+            $('.accordion-button').on('click', function () {
+                const icon = $(this).find('.icon');
+                const isExpanded = $(this).attr('aria-expanded') === 'true';
 
-            // Remove rotate class from all icons
-            $('.icon').removeClass('rotate');
+                // Remove rotate class from all icons
+                $('.icon').removeClass('rotate');
 
-            // Add rotate class if this item is expanded
-            if (!isExpanded) {
-                icon.addClass('rotate');
-            }
+                // Add rotate class if this item is expanded
+                if (!isExpanded) {
+                    icon.addClass('rotate');
+                }
+            });
         });
     });
     document.addEventListener("DOMContentLoaded", function() {

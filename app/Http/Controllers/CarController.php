@@ -1,12 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\CarBrand;
 use App\Models\BodyType;
-use App\Models\RegionalSpec;
+use App\Models\CarBrand;
 use App\Models\CarListingModel;
 use App\Models\Color;
+use App\Models\RegionalSpec;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Client;
+
 
 class CarController extends Controller
 {
@@ -164,63 +167,79 @@ class CarController extends Controller
             'fueltypes', 'gears', 'doors', 'cylinders', 'colors', 'conditions'
         ));
     }
-    
-    public function create(){
-        $brands = CarBrand::pluck('name')->toArray();
-        $bodyTypes = BodyType::pluck('name')->toArray();
+
+    public function create()
+    {
+        $brands        = CarBrand::pluck('name')->toArray();
+        $bodyTypes     = BodyType::pluck('name')->toArray();
         $regionalSpecs = RegionalSpec::pluck('name')->toArray();
-        $colors = Color::get();
+        $colors        = Color::get();
 
-        return view('cars.create', compact('brands','bodyTypes','regionalSpecs', 'colors'));
+        return view('cars.create', compact('brands', 'bodyTypes', 'regionalSpecs', 'colors'));
     }
 
-   public function store(Request $request){
-        try {   
-        $car = new CarListingModel();
-        $car->user_id = $request->user_id;
-        $car->listing_type = $request->make;
-        $car->listing_model = $request->model;
-        $car->listing_year = $request->year;
-        $car->body_type = $request->bodyType;
-        $car->regional_specs = $request->regionalSpec;
-        $car->city = $request->city;
-        $car->features_others = $request->features;
-        $car->vin_number = $request->vin_number;
-        $car->features_gear = $request->gear;
-        $car->features_speed = $request->mileage;
-        $car->car_color = $request->color;
-        $car->features_climate_zone = $request->warranty;
-        $car->features_fuel_type = $request->fuelType; 
-        $car->features_seats = $request->seats; 
-        $car->listing_title = $request->name; 
-        $car->wa_number = '+971'.$request->phone;
-        $car->listing_price = $request->price;
-        $car->lat = $request->latitude;
-        $car->lng = $request->longitude;
-        // $car->save();
+    public function store(Request $request)
+    {
+        try {
+            $car                        = new CarListingModel();
+            $car->user_id               = $request->user_id;
+            $car->listing_type          = $request->make;
+            $car->listing_model         = $request->model;
+            $car->listing_year          = $request->year;
+            $car->body_type             = $request->bodyType;
+            $car->regional_specs        = $request->regionalSpec;
+            $car->city                  = $request->city;
+            $car->features_others       = $request->features;
+            $car->vin_number            = $request->vin_number;
+            $car->features_gear         = $request->gear;
+            $car->features_speed        = $request->mileage;
+            $car->car_color             = $request->color;
+            $car->features_climate_zone = $request->warranty;
+            $car->features_fuel_type    = $request->fuelType;
+            $car->features_seats        = $request->seats;
+            $car->listing_title         = $request->name;
+            $car->wa_number             = '+971' . $request->phone;
+            $car->listing_price         = $request->price;
+            $car->lat                   = $request->latitude;
+            $car->lng                   = $request->longitude;
+            $car->save();
 
-        // if($request->hasFile('images')){
-        //     if(count($request->images) <= 5){
-        //         for($i = 1; $i < count($request->images); $i++)
-        //         {
-        //             $imgStr = 'listing_img'.$i;
-        //             // dd($imgStr);
-        //             $car->listing_img.$i = $request->images[$i];
-        //             $car->save();
-        //         }
-        //     }else{
-        //         for($i = 1; $i < 6; $i++){
-        //             $imgStr = 'listing_img'.$i;
-        //             // dd($imgStr);
-        //             $car->listing_img.$i = $request->images[$i];
-        //             $car->save();
-        //         }
-        //     }
-        // }
-        return redirect()->route('cars.index')->with('success', 'Car Added successfully');
+            // uploading Image
+            $carId = $car->id;
+            $images = $request->file('images');
+
+            $multipartData = [
+                [
+                    'name'     => 'car_id',
+                    'contents' => $car->id,
+                ]
+            ];
+            
+            foreach ($images as $image) {
+                $multipartData[] = [
+                    'name'     => 'imgs[]',  // <--- Use imgs[] for multiple
+                    'contents' => fopen($image->getPathname(), 'r'),
+                    'filename' => $image->getClientOriginalName(),
+                ];
+            }
+            
+            $client = new Client();
+            
+            $response = $client->post('https://backend.carllymotors.com/api/uploadImg', [
+                'multipart' => $multipartData,
+            ]);
+
+        // Optionally, decode the API response
+        $body = json_decode($response->getBody(), true);
+
+        // Do something with $body if needed or return it
+        dd(response()->json($body));
+    // }
+        // return redirect()->route('car.detail', $car->id)->with('success', 'Car Added successfully');
+        
     } catch (\Exception $e) {
-        dd($e->getMessage());
-    }
+            dd($e->getMessage());
+        }
     }
 
     public function getModels(Request $request)
@@ -249,12 +268,12 @@ class CarController extends Controller
     public function addTofav(Request $request, $carId)
     {
         try {
-            $user = auth()->user();
+            $user    = auth()->user();
             $favList = $user->favCars->pluck('id')->toArray();
 
             if (in_array($carId, $favList)) {
                 $user->favCars()->detach($carId);
-            }else{
+            } else {
                 $user->favCars()->attach($carId);
             }
             return redirect()->back();
@@ -263,11 +282,18 @@ class CarController extends Controller
         }
     }
 
-    public function favList(){
-        $user = auth()->user();
+    public function favList()
+    {
+        $user       = auth()->user();
         $carlisting = $user->favCars;
         return view('cars.favList', compact('carlisting'));
     }
-    
+
+    public function myCarListing()
+    {
+        $user       = auth()->user();
+        $carlisting = $user->cars;
+        return view('cars.favList', compact('carlisting'));
+    }
 
 }
