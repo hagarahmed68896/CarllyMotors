@@ -150,11 +150,11 @@ body {
 }
 .social-icons a {
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     margin-right: 10px;
 }
 .social-icons a:hover {
-    color: #760e13;
+    color: #760e13 !important;
 }
 .footer-bottom {
     border-top: 1px solid #333;
@@ -163,6 +163,7 @@ body {
 }
 .footer-logo img {
     height: 40px;
+    
 }
 .filter-bar {
     display: flex;
@@ -934,10 +935,11 @@ border-radius: 15px;
 padding: 5px 15px;
 font-size: 14px;
 }
-.carousel-container-dealer .carousel-control-next, .carousel-control-prev {
+.carousel-container-dealer .carousel-control-next , .carousel-control-prev {
 position: absolute;
 top: 50%;
 bottom: 50%;
+left: 2%;
 z-index: 1;
 display: -ms-flexbox;
 display: flex;
@@ -945,11 +947,13 @@ display: flex;
 align-items: center;
 -ms-flex-pack: center;
 justify-content: center;
-width: 15%;
+width: 3%;
+height: 8%;
 color: #fff;
 text-align: center;
 opacity: .5;
 transition: opacity .15s ease;
+border-radius: 10px;
 }
 
 
@@ -1344,7 +1348,7 @@ margin-top: 10px;
 
 }
 #carCarousel .carousel-inner {
-height: 494px;
+height: 594px;
 }
 
 .car-list-item .text-list-para {

@@ -10,7 +10,7 @@ body {
 
 .navbar-brand {
     font-weight: bold;
-    color: #760e13;
+    color: #ddb0b2;
 }
 
 
@@ -121,6 +121,7 @@ body {
 .navbar-brand img {
     width: 180px;
     height: auto;
+    
 
 }
 
@@ -208,7 +209,7 @@ body {
 .social-icons a {
     color: white;
     font-size: 16px;
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
 .social-icons a:hover {
@@ -362,8 +363,8 @@ body {
 
 .carousel-item {
     text-align: center;
-    background-color: #e0e0e0;
-    border-radius: 10px;
+    /* background-color: #e0e0e0; */
+    border-radius: 3px;
     height: 500px;
     position: relative;
 }
@@ -782,8 +783,8 @@ ul.carousel-indicators {
 .last-home-sec .custom-card img {
     width: 120px;
     height: auto;
-    background-color: #e0e0e0;
-    border-radius: 10px;
+    /* background-color: #e0e0e0; */
+    /* border-radius: 10px; */
 }
 
 .last-home-sec .app-badges img {

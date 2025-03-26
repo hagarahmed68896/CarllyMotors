@@ -1,10 +1,3 @@
-@extends('layouts.app')
-@php
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Str;
-
-@endphp
-
 <style>
 /* Price Input Fields */
 .price-range {
@@ -198,45 +191,19 @@ input[type="number"] {}
 .actions i {
     font-size: 16px;
 }
+
 </style>
 
-@section('content')
-<!-- home slider -->
-<div id="demo" class="carousel slide home-slider" data-bs-interval="false">
 
-    <!-- The slideshow -->
-    <div class="carousel-inner">
-        <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
-        </div>
-        <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('2.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('3.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item active">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
-        </div>
-    </div>
-    <!-- Left and right controls -->
-    <a class="carousel-control-prev" href="#demo" data-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </a>
-    <a class="carousel-control-next" href="#demo" data-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </a>
-</div>
+    
 
-<div class="container my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
-    <!-- List -->
-    <div class="tab-content" id="bodyTypeTabsContent">
-        <div class="container main-car-list-sec">
+
+<div class="" id="bodyTypeTabsContent">
+    <div class="">
             <div class="row">
                 @foreach ($carlisting as $key => $car)
-
                 <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                    <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
+                <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
                         <div class="car-image position-relative" style="
                         width: 100%;
@@ -246,22 +213,26 @@ input[type="number"] {}
                         overflow: hidden;
                         display: flex;
                         align-items: center;
-                        justify-content: center;">
-
-                            <a href="{{ route('car.detail', [ Crypt::encrypt($car->id)]) }}"
+                        justify-content: center;
+                     
+                        "
+                        
+                        >
+                         <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">
                                 <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
-                                    alt="Car Image" style="
-            height: 100% !important;
-            width: 100% !important;
-            object-fit: cover;
-            object-position: center;
-            transition: transform 0.3s ease-in-out;
-            aspect-ratio: 16/9;
-            cursor: pointer;" loading="lazy"
+                                    alt="Car Image"
+                                       class="rounded-bottom"
+                                     style="
+                                         height: 90% !important;
+                                            width: 100% !important;
+                                            object-fit: cover;
+                                           object-position: center;
+                                           transition: transform 0.3s ease-in-out;
+                                            aspect-ratio: 16/9;
+                                            cursor: pointer;" loading="lazy"
                                     onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
                             </a>
-                            <!-- Badges -->
                             <div class="badge-year">{{ $car->listing_year }}</div>
                         </div>
 
@@ -288,25 +259,25 @@ input[type="number"] {}
 
                             <div class="actions">
                                 <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fab fa-whatsapp"></i> WhatsApp
+                                <button class="btn btn-outline-danger" style="border-radius: 15px;">
+                                        <i class="fab fa-whatsapp "  style="color: #198754; "></i> WhatsApp
                                     </button>
                                 </a>
                                 @if($os == 'Windows' || $os == 'Linux' )
                                 <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px; margin-left:2px; margin-right:2px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Mac')
                                 <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user?->phone) }}>
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Android' || $os='iOS')
                                 <a href="tel:{{ $car->user->phone }}">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
                                         <i class="fa fa-phone"></i> Make Call
                                     </button>
                                 </a>
@@ -314,35 +285,16 @@ input[type="number"] {}
                                 No OS Detected
                                 @endif
 
-                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', [ Crypt::encrypt($car->id)])) }}"
+                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', $car->id)) }}"
                                     target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
                                         <i class="fa fa-share"></i>
                                         Share
                                     </button>
                                 </a>
-                            </div>
+                                </div>
                         </div>
                     </div>
                 </div>
                 @endforeach
             </div>
-        </div>
-    </div>
-</div>
-
-@push('carlistingscript')
-{{-- Script related filters on carlisting page --}}
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-<script>
-function copyUrl(carUrl) {
-    navigator.clipboard.writeText(carUrl).then(() => {
-        alert('URL copied: ' + carUrl);
-    }).catch(err => {
-        console.error('Failed to copy URL: ', err);
-    });
-}
-</script>
-@endpush
-@endsection

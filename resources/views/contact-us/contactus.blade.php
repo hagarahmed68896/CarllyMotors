@@ -5,12 +5,52 @@
 body {
     background: #fafbfb;
 }
+.carousel-item img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        min-width: 100vw !important; 
+        height: 100vh;
+        object-fit: cover ;
+    }
+
+    .carousel-inner {
+        height: 70vh;
+        background-color: #5a0b0f !important;
+    }
+
+    .carousel {
+        position: relative;
+    }
+    .carousel-control-prev, .carousel-control-next {
+            width: 3%;
+            padding: 5px;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            
+        }
+
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            padding: 5px;
+            width: 8%;
+            border-radius: 50%;
+            /* color: rgba(0, 0, 0, 0.5) !important; */
+        }
+
+        /* تخصيص النقاط */
+        .carousel-indicators [data-bs-target] {
+            background-color: #fff;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-bottom: 4px;
+        }
 </style>
 
 <!-- home slider -->
-<div id="demo" class="carousel slide home-slider" data-bs-interval="false">
+<!-- <div id="demo" class="carousel slide home-slider" data-bs-interval="false">
 
-    <!-- The slideshow -->
+    
     <div class="carousel-inner">
         <div class="carousel-item">
             <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
@@ -25,13 +65,47 @@ body {
             <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
         </div>
     </div>
-    <!-- Left and right controls -->
+    
     <a class="carousel-control-prev" href="#demo" data-slide="prev">
         <span class="carousel-control-prev-icon"></span>
     </a>
     <a class="carousel-control-next" href="#demo" data-slide="next">
         <span class="carousel-control-next-icon"></span>
     </a>
+</div> -->
+
+<div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+    <!-- النقاط -->
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="3"></button>
+    </div>
+
+    <!-- الصور -->
+    <div class="carousel-inner">
+    <div class="carousel-item active">
+            <img class="d-block   "   src="{{asset('1.jpg')}}" alt="Los Angeles">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('2.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('3.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('4.jpg')}}" alt="New York">
+        </div>
+    </div>
+
+    <!-- أزرار التنقل -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
 </div>
 
 <div class="container my-5">
@@ -71,18 +145,19 @@ body {
                         <textarea class="form-control" id="body" name="body" rows="5" required></textarea>
                     </div>
                     <div class="col-12">
-                        <div class="row">
-                            <div class="col-md-6">
+                        <div class="row" style="margin-top:4px;">
+                            <div class="col-md-4 flex flex-row">
                                 <a href="https://wa.me/971566350025">
-                                    <button type="button" class="btn btn-success w-100 fw-bold">
+                                    <button type="button" class="btn btn-success w-40 fw-bold">
                                         <i class="fab fa-whatsapp fs-4"></i>
                                         WhatsApp</button>
                                 </a>
-                            </div>
-                            <div class="col-md-6">
+                                <!-- <div class=""> -->
                                 <button type="submit"
-                                    class="btn btn-outline-danger bg-carlly  w-100 fw-bold">Send</button>
+                                    class="btn btn-outline-danger bg-carlly  w-80 fw-bold text-decoration-none">Send</button>
+                            <!-- </div> -->
                             </div>
+                            
                         </div>
                     </div>
                 </div>

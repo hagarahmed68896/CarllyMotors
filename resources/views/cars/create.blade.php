@@ -6,11 +6,13 @@
 
 <style>
 #container {
-    max-width: 550px;
+    max-width: 750px;
 }
 
 .card {
     border-radius: 10px;
+    margin-right: 60px !important;
+    margin-left: 60px !important;
 }
 
 .form-check-input {
@@ -105,20 +107,19 @@ button[type='submit']:hover{
 }
 </style>
 
-<div id="container" class="container mt-5">
+<div id="" class="container mt-5 mr-6">
     @php
     $user = auth()->user();
     @endphp
     <!-- Step 2 form fields here -->
 
-    <div class="card" style="">
-        <!-- Clickable Image Header -->
-        <div class="position-relative d-flex align-items-center justify-content-center fileInput"
-            onclick="document.getElementById('imageInput').click()">
-            <img id="imagePreview" class="w-100 h-100 object-fit-cover d-none" />
-            <span id="placeholderText" class="text-white fw-bold">Click to Upload</span>
-        </div>
-
+    <div class="card shadow-sm p-3">
+    <!-- Clickable Image Header -->
+    <div class="position-relative d-flex align-items-center justify-content-center fileInput border rounded bg-light" 
+        style="height: 200px; cursor: pointer;" onclick="document.getElementById('imageInput').click()">
+        <img id="imagePreview" class="w-100 h-100 object-fit-cover d-none" />
+        <span id="placeholderText" class="text-muted fw-bold">Click to Upload</span>
+    </div>
         <!-- Hidden File Input -->
         <!-- Card Body -->
         <div class="card-body">
@@ -133,7 +134,7 @@ button[type='submit']:hover{
                             <option value="">Select Brand</option>
                             @foreach($brands as $brand)
                             <option value="{{ $brand }}">
-                                {{ $brand }}
+                                {{ $brand }} 
                             </option>
                             @endforeach
                         </select>
@@ -247,15 +248,17 @@ button[type='submit']:hover{
                             name="name" placeholder="name" required>
                     </div>
 
-                    <div class="input-group mt-3">
+                    <div class="row mt-3">
+
+                    <div  class="col-6 mb-2 input-group mt-3">
                         <span class="input-group-text">🇦🇪 +971</span>
                         <input type="tel" class="form-control" placeholder="Phone Number" name="phone" value="{{auth()->user()->phone}}" required>
                     </div>
-                    <div class="input-group mt-3">
+                    <div  class="col-6 mb-2 input-group mt-3">
                         <span class="input-group-text">🇦🇪 +971</span>
                         <input type="tel" class="form-control" placeholder="Phone Number" value="{{auth()->user()->phone}}">
                     </div>
-
+                    </div>
                     <div class="mb-1 mt-3 col-12" style="padding-bottom:10px;">
                         <textarea id="description" class="form-control" placeholder="Description"></textarea>
                     </div>
@@ -285,7 +288,7 @@ button[type='submit']:hover{
                         <input type="hidden" class="form-control" id="longitude" name="longitude">
                     </div>
 
-                    <button type="submit" class="btn btn-md" style="border-radius: 10px;border: 2px solid #ced4da;">
+                    <button type="submit" class="btn btn-md w-80" style="border-radius: 10px;border: 2px solid #ced4da;">
                         Submit
                     </button>
                 </div>

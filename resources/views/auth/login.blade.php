@@ -54,11 +54,11 @@ input[type="text"],
                             <input type="text" class="form-control" id="phone" name="phone" required>
                         </div>
 
-                        <button type="submit" class="btn bg-carlly w-100">Submit</button>
+                        <button type="submit" class="btn bg-carlly w-100 text-decoration-none">Submit</button>
                         <div class="sign-up mt-4">
                             Don't have an account? <a href="{{route('register')}}" style="color:#760e13">Create One</a>
                         </div>
-                    </form>
+                    </form> 
                 </div>
             </div>
         </div>

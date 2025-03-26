@@ -56,7 +56,7 @@ class HomeController extends Controller
         $maxYear = CarListingModel::max('listing_year');
 
                                                  // Pagination and sorting
-        $perPage = request('perPage', 9);        // Default to 9 if no value is selected
+        $perPage = request('perPage', 8);        // Default to 9 if no value is selected
         $sortBy  = request('sortBy', 'default'); // Default to 'default' if no sorting is selected
 
         // Start the base query
@@ -137,7 +137,7 @@ class HomeController extends Controller
         }
 
         // Initialize the query
-        $query = CarListingModel::with('user')->latest()->limit(9);
+        $query = CarListingModel::with('user')->latest()->limit(12);
 
         // Apply dynamic filters
         foreach ($filterColumns as $column) {
@@ -187,7 +187,7 @@ class HomeController extends Controller
         $maxYear = CarListingModel::max('listing_year');
 
                                                  // Pagination and sorting
-        $perPage = request('perPage', 9);        // Default to 9 if no value is selected
+        $perPage = request('perPage', 12);        // Default to 9 if no value is selected
         $sortBy  = request('sortBy', 'default'); // Default to 'default' if no sorting is selected
 
         // Start the base query
@@ -314,7 +314,7 @@ class HomeController extends Controller
             $query->where('features_speed', '<=', $request->distance);
         }
                                                  // Pagination and sorting
-        $perPage = request('perPage',9);        // Default to 9 if no value is selected
+        $perPage = request('perPage',8);        // Default to 9 if no value is selected
         $sortBy  = request('sortBy', 'default'); // Default to 'default' if no sorting is selected
 
         // Apply sorting based on the selected option

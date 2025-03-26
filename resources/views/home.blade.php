@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 }
 .carousel-control-prev, .carousel-control-next {
             width: 8%;
+            padding: 5px;
             background-color: rgba(0, 0, 0, 0.5) !important;
             
         }
@@ -25,6 +26,7 @@ use Illuminate\Support\Str;
         .carousel-control-prev-icon, .carousel-control-next-icon {
             background-color: rgba(0, 0, 0, 0.5) !important;
             padding: 5px;
+            width: 8%;
             border-radius: 50%;
             /* color: rgba(0, 0, 0, 0.5) !important; */
         }
@@ -41,10 +43,8 @@ use Illuminate\Support\Str;
 @section('content')
 
 <!-- home slider -->
-<div id="demo" class="carousel slide home-slider" data-bs-ride="carousel" data-bs-interval="2000">
 
-
-    <!-- The slideshow -->
+ <!-- The slideshow -->
     <!-- <div class="carousel-inner rounded-bottom">
         <div class="carousel-item">
             <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
@@ -68,43 +68,60 @@ use Illuminate\Support\Str;
     </a>
 </div> -->
 
+<style>
+    .carousel-item img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        min-width: 100vw !important; 
+        height: 100vh;
+        object-fit: cover ;
+    }
 
+    .carousel-inner {
+        height: 70vh;
+        background-color: #5a0b0f !important;
 
+    }
 
-<div id="carouselExampleIndicators" class="carousel-inner rounded-bottom
-          " data-bs-ride="carousel">
-        <!-- النقاط -->
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"></button>
+    .carousel {
+        position: relative;
+    }
+    
+</style>
+
+<div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+    <!--  النقاط -->
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="3"></button>
+    </div>
+
+    <!-- الصور -->
+    <div class="carousel-inner">
+    <div class="carousel-item active">
+            <img class="d-block   "   src="{{asset('1.jpg')}}" alt="Los Angeles">
         </div>
-
-        <!-- الصور -->
-        <div class="carousel-inner rounded-bottom">
-            <div class="carousel-item active">
-                <img class="d-block w-100"src="{{asset('1.jpg')}}" alt="Los Angeles">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('2.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('3.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('4.jpg')}}" alt="New York">
-            </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('2.jpg')}}" alt="Chicago">
         </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('3.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('4.jpg')}}" alt="New York">
+        </div>
+    </div>
 
-        <!-- أزرار التنقل -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-   
+    <!-- أزرار التنقل -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
 </div>
 
 <!-- Start filter home with items  
@@ -357,7 +374,7 @@ use Illuminate\Support\Str;
     </div>
 </div>
 
-<div class="container py-5">
+<!-- <div class="container py-5">
     <h2 class="mb-4">Popular Brands</h2>
     <div class="row">
         @foreach ($brands as $brand)
@@ -373,7 +390,22 @@ use Illuminate\Support\Str;
         </div>
         @endforeach
     </div>
+</div> -->
+<div class="container py-5">
+        <h2 class="mb-4">Popular Brands</h2>
+    <div class="row">
+        @foreach ($brands->reject(fn($brand) => in_array($brand->name, ['Honda', 'Dodge', 'Mazda']))->take(12) as $brand)
+        <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4">
+            <div class="brand-card text-center">
+                {{--<img class="img-fluid" src="{{ $brand->logo_url }}" alt="{{ $brand->name }}">--}}
+                <p class="brand-title">{{ $brand->name }}</p>
+                <p class="brand-subtitle">{{ $brand->cars_count ?? 'N/A' }} Cars</p>
+            </div>
+        </div>
+        @endforeach
+    </div>
 </div>
+
 
 <div class="container py-5 last-home-sec">
     <div class="row justify-content-center">
@@ -429,10 +461,11 @@ use Illuminate\Support\Str;
     </div>
 </div>
 
+
 <style>
     /* تحسين تصميم الكارد */
     .custom-card {
-        background: linear-gradient(to right, #5a0b0f, #760e13 );
+        /* background: linear-gradient(to right, #5a0b0f, #760e13 ); */
         color: white;
         padding: 20px;
         border-radius: 10px;

@@ -1,6 +1,7 @@
 .pagination .page-item .page-link {
     color: #760e13;
     border-color: #760e13;
+    
 }
 
 .pagination .page-item.active .page-link {
@@ -290,8 +291,8 @@
 
 }
 .carousel-item.active {
-    background-color: #760e13 !important;
-    color: #f3f3f3 !important;
+    /* background-color: #760e13 !important; */
+    /* color: #f3f3f3 !important; */
     border-color: #760e13 !important;
 }
 
@@ -304,8 +305,8 @@
 
     .home-slider .carousel-inner {
         max-height: 200px;
-          background-color: #760e13 !important;
-    color: #f3f3f3 !important;
+          /* background-color: #760e13 !important; */
+    /* color: #f3f3f3 !important; */
     }
 
     .home-slider .carousel-item {

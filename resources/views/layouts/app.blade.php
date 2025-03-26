@@ -33,6 +33,8 @@
 .dropdown-item:hover {
     background-color: #760e13;
     color: #fff;
+    border-radius: 20%;
+ 
 }
 
 .dropdown .dropdown-menu {
@@ -70,8 +72,8 @@
 
 <body class="relative h-screen bg-gray-100">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2 ">
-    <div class="container">
+<nav class=" navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2 ">
+    <div class="container "> 
         <!-- Logo -->
         <a class="navbar-brand" href="#">
             <img src="{{asset('carllymotorsmainlogo_dark.png')}}" alt="AutoDecar" class="img-fluid" style="height: 50px;">
@@ -100,7 +102,7 @@
                 <a href="{{route('cars.create')}}" class="btn btn-success text-white">
                     <i class="fas fa-plus"></i>
                 </a>
-                <a href="{{route('cars.favList')}}" class="btn btn-danger text-white">
+                <a href="{{route('cars.favList')}}" class="btn btn-danger text-white " style="margin-right:4px ; margin-left:4px ;" >
                     <i class="fas fa-heart"></i>
                 </a>
                 <div class="dropdown">
@@ -139,12 +141,15 @@
         color: #760e13 !important;
         font-weight: bold !important;
     }
+    .icons:hover{
+        color: #760e13 !important;
+    }
 </style>
 
 
     <!-- breadcrumd-listting -->
 
-<!-- jjjkjjkh jjjj jjjk jjnjn jjjk jiojjjjjj jjjjj ppipo jh;l kljkjkkj kjk-->
+<!-- -->
 
     @yield('content')
 
@@ -192,6 +197,24 @@
 
             <!-- Footer Links -->
             <div class="row footer-links mt-4 g-4 text-md-start">
+                <div class='col-12 col-md-3'>
+                <a href="#" class="footer-logo">
+                            <img src="{{asset('carllymotors_logo_white-2048x526.png')}}" alt="AutoDecar" class="img-fluid"
+                                style="max-width: 150px;">
+                        </a>
+ <div class="col-md-6 text-md-end">
+                        <div class="icons social-icons  d-flex justify-content-center justify-content-md-end gap-3 mt-3">
+                            <a href="https://www.instagram.com/carllymotors?igsh=N3F5aHVpajd0ZnNk&utm_source=qr"><i
+                                    class="fab fa-instagram fs-4" style="color:#fff ;"></i></a>
+                            <a href="https://www.tiktok.com/@carllymotors"><i class="fab fa-tiktok fs-4"
+                                    style="color:#fff"></i></a>
+                            <a href="https://x.com/carllymotors?s=11&mx=2"><i class="fab fa-twitter fs-4"
+                                    style="color:#fff"></i></a>
+                            <a href="https://wa.me/971566350025"><i class="fab fa-whatsapp fs-4"
+                                    style="color:#fff"></i></a>
+                        </div>
+            </div>
+                </div>
                 <div class="col-12 col-md-3">
                     <h5>About Auto Decar</h5>
                     <ul class="list-unstyled">
@@ -226,15 +249,15 @@
             <!-- Footer Bottom -->
             <div class="footer-bottom mt-4">
                 <div class="row">
-                    <div class="col-md-6 mb-3 mb-md-0">
-                        <a href="#" class="footer-logo">
+                    <div class="col-md-12 mb-3 mb-md-0">
+                        <!-- <a href="#" class="footer-logo">
                             <img src="{{asset('carllymotorsmainlogo_dark.png')}}" alt="AutoDecar" class="img-fluid"
                                 style="max-width: 150px;">
-                        </a>
-                        <p class="mt-2">© 2025 Carlly Motors. All rights reserved</p>
+                        </a> -->
+                        <p class="mt-2 d-flex justify-content-center">© 2025 Carlly Motors. All rights reserved</p>
                     </div>
-                    <div class="col-md-6 text-md-end">
-                        <div class="d-flex justify-content-center justify-content-md-end gap-3">
+                    <!-- <div class="col-md-6 text-md-end">
+                        <div class="d-flex justify-content-center justify-content-md-end gap-5">
                             <a href="https://www.instagram.com/carllymotors?igsh=N3F5aHVpajd0ZnNk&utm_source=qr"><i
                                     class="fab fa-instagram fs-4" style="color:#fff"></i></a>
                             <a href="https://www.tiktok.com/@carllymotors"><i class="fab fa-tiktok fs-4"
@@ -243,7 +266,7 @@
                                     style="color:#fff"></i></a>
                             <a href="https://wa.me/971566350025"><i class="fab fa-whatsapp fs-4"
                                     style="color:#fff"></i></a>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
