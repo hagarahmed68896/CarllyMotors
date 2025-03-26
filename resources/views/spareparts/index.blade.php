@@ -226,6 +226,7 @@ use Illuminate\Support\Str;
         <a href="{{route('spareParts.index')}}" class="nav-btn active">
             Spare Parts
         </a>
+        <a href="{{route('workshops.index')}}" class="nav-btn">Work Shops</a>
     </div>
     @if(request()->path() == "spareParts")
     <div class="container filter-bar my-2">

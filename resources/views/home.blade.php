@@ -42,35 +42,6 @@ use Illuminate\Support\Str;
 
 <!-- home slider -->
 <div id="demo" class="carousel slide home-slider" data-bs-ride="carousel" data-bs-interval="2000">
-
-
-    <!-- The slideshow -->
-    <!-- <div class="carousel-inner rounded-bottom">
-        <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
-        </div>
-        <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('2.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('3.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item active">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
-        </div>
-    </div> -->
-    <!-- Left and right controls -->
-    <!-- <a class="carousel-control-prev" href="#demo" data-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </a>
-    <a class="carousel-control-next" href="#demo" data-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </a>
-</div> -->
-
-
-
-
 <div id="carouselExampleIndicators" class="carousel-inner rounded-bottom
           " data-bs-ride="carousel">
         <!-- النقاط -->
@@ -112,11 +83,15 @@ use Illuminate\Support\Str;
 -->
 <div class=" my-6 main-home-filter-sec text-center">
     <div class="d-flex flex-wrap justify-content-center gap-3 ">
-        <a href="{{route('cars.index')}}" class="nav-btn">
+        <a href="{{route('cars.index')}}" class="nav-btn active">
             All Car
         </a>
-        <a href="{{route('spareParts.index')}}" class="nav-btn active">
+        <a href="{{route('spareParts.index')}}" class="nav-btn">
             Spare Parts
+        </a>
+
+        <a href="{{route('workshops.index')}}" class="nav-btn">
+            Work shops
         </a>
     </div>
     <div class="container filter-bar my-2  text-center">
@@ -240,9 +215,10 @@ use Illuminate\Support\Str;
                         display: flex;
                         align-items: center;
                         justify-content: center;">
+                        {{-- @dd(env('FILE_BASE_URL') . $car->listing_img1) --}}
                             <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">
-                                <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
+                                <img id="cardImage" src={{ env('FILE_BASE_URL') . $car->listing_img1 }}
                                     alt="Car Image"
                                     class="rounded-bottom"
                                     style="
