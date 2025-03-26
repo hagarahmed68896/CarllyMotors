@@ -96,11 +96,7 @@
         font-weight: bold;
     }
 
-    .actions {
-        display: flex;
-        justify-content: space-around;
-        margin-top: 15px;
-    }
+
 
     .call-btn {
         background-color: #760e13;
@@ -114,9 +110,7 @@
         border-color: #760e13;
     }
 
-    .actions i {
-        font-size: 16px;
-    }
+ 
 
     .home-slider .carousel-inner img {
         height: 83% !important;
@@ -149,6 +143,28 @@
         height: 12px;
         border-radius: 50%;
     }
+    .actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.call-btn {
+    background-color: #760e13;
+    color: white;
+    border-color: #760e13;
+}
+
+.share-btn {
+    background-color: #f3f3f3;
+    color: #760e13;
+    border-color: #760e13;
+}
+
+.actions i {
+    font-size: 16px;
+}
+
 
     @media (max-width: 572px) {
         .home-slider .carousel-inner img {
@@ -342,121 +358,91 @@
 
         @endif --}}
         <!-- List -->
-        <div class="tab-content" id="bodyTypeTabsContent">
-            <div class="mr-10 main-car-list-sec" style="margin-right:50px; margin-left:50px;">
-                <div class="row">
-                    @foreach ($workshops as $key => $workshop)
-                                    <div class="col-sm-3 col-sm-12 col-md-6 col-lg-3">
-                                        <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
-                                            <!-- Car Image Section with Consistent Aspect Ratio -->
-                                            <div class="car-image position-relative" style="
-                                            width: 100%;
-                                            height: 220px;
-                                            background-color: #f0f0f0;
-                                            border-radius: 10px;
-                                            overflow: hidden;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;">
-                                                @php
-                                                    $image = Str::after($workshop->image, url('/') . '/');
-                                                    $workshopName = ucfirst(strtolower($workshop->workshop_name));
-                                                    $workshopName = substr($workshopName, 0, 25);
+        <div class="mr-10 main-car-list-sec my-4" style="margin-right:50px; margin-left:50px;">
+    <div class="row">
+        @foreach ($workshops as $workshop)
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card shadow border-0" style="border-radius: 12px; overflow: hidden;">
+                    
+                    <div class="position-relative" style="height: 220px; background-color: #f0f0f0; border-radius: 10px; overflow: hidden;">
+                        @php
+                            $image = $workshop->image ? env('FILE_BASE_URL') . $workshop->image : env('FILE_BASE_URL') . '/icons/notfound.png';
+                        @endphp
+                        <img src="{{ $image }}" alt="Workshop Image"
+                             class="w-100 h-100" style="object-fit: cover; transition: transform 0.3s ease-in-out;"
+                             onerror="this.onerror=null; this.src='{{ env('FILE_BASE_URL') . '/icons/notfound.png' }}'">
+                    </div>
 
-                                                @endphp
-                                                @if($workshop->image == null || $workshop->image == '')
-                                                <img id="cardImage" src={{'https://' . env('FILE_BASE_URL') .'/icons/notfound.png' }} alt="workshop Image"
-                                                    style="
-                                                          height: 100%; !important;
-                                                          width: 100%; !important;
-                                                            object-fit: cover;
-                                                            object-position: center;
-                                                            transition: transform 0.3s ease-in-out;
-                                                            aspect-ratio: 16/9;" loading="lazy"
-                                                    onerror="this.onerror=null; this.src='{{env('FILE_BASE_URL') . '/icons/notfound.png' }}">
-                                                @else
-                                                <img id="cardImage" src="{{ env('FILE_BASE_URL') . $workshop->image }}" alt="workshop Image"
-                                                    style="
-                                                          height: 100%; !important;
-                                                          width: 100%; !important;
-                                                            object-fit: cover;
-                                                            object-position: center;
-                                                            transition: transform 0.3s ease-in-out;
-                                                            aspect-ratio: 16/9;" loading="lazy"
-                                                    onerror="this.onerror=null; this.src='{{env('FILE_BASE_URL') . '/icons/notfound.png' }}">
-                                                @endif
-                                                </div>
+                    
+                    <div class="car-card-body">
+                        <h5 class="card-title text-danger text-truncate" title="{{ $workshop->workshop_name }}">
+                            {{ Str::limit(ucwords(strtolower($workshop->workshop_name)), 25, '...') }}
+                        </h5>
+                        <p class="card-text mb-1">
+                            <i class="fas fa-star text-warning"></i> 4.5
+                        </p>
+                        <p class="card-text text-muted mb-1">
+                            <i class="fas fa-map-marker-alt"></i> {{ $workshop->address }}
+                        </p>
+                        <p class="card-text text-muted">
+                            <i class="fas fa-clock"></i> Mon-Fri: 9am - 6pm
+                        </p>
 
-                                            <!-- Car Content Section -->
-                                            <div class="car-card-body">
-                                                <div class="price-location">
-                                                    <span style="color: #760e13; font-size:16px;" title="{{$workshop->workshop_name}}">
-                                                        {{$workshopName}}{{strlen($workshop->workshop_name) >= 25 ? '...' : ''}}
-                                                    </span>
-                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ $workshop->latitude && $workshop->longitude ? $workshop->latitude . ',' . $workshop->longitude : urlencode($workshop->address) }}"
-                                                        target="_blank">
+                        
+                        <div class="actions">
+                            <a href="https://wa.me/{{ $workshop->user->phone }}" target="_blank">
+                                <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <i class="fab fa-whatsapp" style="color: #198754;"></i> WhatsApp
+                                </button>
+                            </a>
 
-                                                        <span class="location"><i class="fas fa-map-marker-alt"></i>Location</span>
-                                                    </a>
-                                                </div>
-                                                <div class="actions">
-                                                    <a href="https://wa.me/{{ $workshop->user->phone }}" target="_blank">
-                                                        <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                                            <i class="fab fa-whatsapp " style="color: #198754; "></i> WhatsApp
-                                                        </button>
-                                                    </a>
-                                                    @if($os == 'Windows' || $os == 'Linux')
-                                                        <a href="https://wa.me/{{ $workshop->user->phone }}" target="_blank">
-                                                            <button class="btn btn-outline-danger"
-                                                                style="border-radius: 25px; margin-left:2px; margin-right:2px;">
-                                                                <i class="fa fa-phone"></i> Call
-                                                            </button>
-                                                        </a>
-                                                    @elseif($os == 'Mac')
-                                                        <a href={{ 'https://faceapp.com?phone=' . urlencode($workshop->user->phone) }}>
-                                                            <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                                                <i class="fa fa-phone"></i> Call
-                                                            </button>
-                                                        </a>
-                                                    @elseif($os == 'Android' || $os = 'iOS')
-                                                        <a href="tel:{{ $workshop->user->phone }}">
-                                                            <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                                                <i class="fa fa-phone"></i> Call
-                                                            </button>
-                                                        </a>
-                                                    @else
-                                                        No OS Detected
-                                                    @endif
-                                                    @if(request()->path() == 'spareParts')
-                                                        <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this Store ' . request()->url() . '?workshop_id=' . $workshop->id)}}"
-                                                            target="_blank">
-                                                            <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                                                <i class="fa fa-share"></i>
-                                                                Share
-                                                            </button>
-                                                        </a>
-                                                    @else
-                                                        <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this Store ' . request()->fullUrl() . '&workshop_id=' . $workshop->id)}}"
-                                                            target="_blank">
-                                                            <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                                                <i class="fa fa-share"></i>
-                                                                Share
-                                                            </button>
-                                                        </a>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                    @endforeach
+                            @if($os == 'Windows' || $os == 'Linux')
+                                <a href="https://wa.me/{{ $workshop->user->phone }}" target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px; margin-left:2px; margin-right:2px;">
+                                        <i class="fa fa-phone"></i> Call
+                                    </button>
+                                </a>
+                            @elseif($os == 'Mac')
+                                <a href="https://faceapp.com?phone={{ urlencode($workshop->user->phone) }}">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-phone"></i> Call
+                                    </button>
+                                </a>
+                            @elseif($os == 'Android' || $os == 'iOS')
+                                <a href="tel:{{ $workshop->user->phone }}">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-phone"></i> Call
+                                    </button>
+                                </a>
+                            @else
+                                No OS Detected
+                            @endif
+
+                            @if(request()->path() == 'spareParts')
+                                <a href="https://wa.me/?text={{ urlencode('Hello, I recommend you check this Store: ' . request()->url() . '?workshop_id=' . $workshop->id) }}"
+                                    target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-share"></i> Share
+                                    </button>
+                                </a>
+                            @else
+                                <a href="https://wa.me/?text={{ urlencode('Hello, I recommend you check this Store: ' . request()->fullUrl() . '&workshop_id=' . $workshop->id) }}"
+                                    target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                        <i class="fa fa-share"></i> Share
+                                    </button>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
                 </div>
-                {{--<div class="pagination-links mb-0 d-flex justify-content-center" style="margin: 0;">
-                    {{ $workshops->appends(['perPage' => request('perPage')])->links('pagination::bootstrap-4') }}
-
-                </div>--}}
             </div>
-        </div>
+        @endforeach
     </div>
+</div>
+
+    </div>
+    <!--  -->
 
     @push('carlistingscript')
         {{-- Script related filters on spareParts page --}}
