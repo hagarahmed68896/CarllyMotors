@@ -193,246 +193,233 @@
         }
 
     }
+    
+.carousel-control-prev, .carousel-control-next {
+            width: 8%;
+            padding: 5px;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            
+        }
+
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            padding: 5px;
+            width: 8%;
+            border-radius: 50%;
+            /* color: rgba(0, 0, 0, 0.5) !important; */
+        }
+
+        /* تخصيص النقاط */
+        .carousel-indicators [data-bs-target] {
+            background-color: #fff;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-bottom: 4px;
+        }
+</style>
+ <!-- home slider -->
+ <style>
+    .carousel-item img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        /* min-width: 100vw !important;  */
+        height: 100vh;
+        object-fit: cover ;
+    }
+
+    .carousel-inner {
+        height: 70vh;
+         background-color: #5a0b0f !important;
+    }
+
+    .carousel {
+        position: relative;
+    }
+    
 </style>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
 @section('content')
     <!-- home slider -->
-    <div id="demo" class="carousel slide home-slider" data-bs-ride="carousel" data-bs-interval="2000">
-        <div id="carouselExampleIndicators" class="carousel-inner rounded-bottom
-              " data-bs-ride="carousel">
-            <!-- النقاط -->
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
-                    class="active"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"></button>
-            </div>
+    <div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+    <!-- النقاط -->
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="3"></button>
+    </div>
 
-            <!-- الصور -->
-            <div class="carousel-inner rounded-bottom">
-                <div class="carousel-item active">
-                    <img class="d-block w-100" src="{{asset('1.jpg')}}" alt="Los Angeles">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="{{asset('2.jpg')}}" alt="Chicago">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="{{asset('3.jpg')}}" alt="Chicago">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="{{asset('4.jpg')}}" alt="New York">
-                </div>
-            </div>
-
-            <!-- أزرار التنقل -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-            </button>
-
+    <!-- الصور -->
+    <div class="carousel-inner">
+    <div class="carousel-item active">
+            <img class="d-block   "   src="{{asset('1.jpg')}}" alt="Los Angeles">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('2.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('3.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('4.jpg')}}" alt="New York">
         </div>
     </div>
+
+    <!-- أزرار التنقل -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
     <!-- filter -->
     <!-- Start filter home with items -->
 
-    <div class=" my-6 main-home-filter-sec text-center">
-        <div class="d-flex flex-wrap justify-content-center gap-3">
-            <a href="{{route('cars.index')}}" class="nav-btn">
-                All Car
-            </a>
-            <a href="{{route('spareParts.index')}}" class="nav-btn">
-                Spare Parts
-            </a>
-            <a href="{{route('workshops.index')}}" class="nav-btn active">
-                Work Shops
-            </a>
-        </div>
-        {{-- @if(request()->path() == "spareParts")
-        <div class="container filter-bar my-2">
-            <form class="form-row mb-0" id="filterForm" action="{{route('filter.spareParts')}}" method="get">
-                <!-- Make Dropdown -->
-                <div class="col-">
-                    <select class="form-control" id="brand" name="make">
-                        <option value="" selected>Make</option>
-                        @foreach($makes as $make)
-                        <option value="{{ $make }}" {{ request('make')==$make ? 'selected' : '' }}>
-                            {{ $make }}
+    <div class="container my-3">
+    <!-- Navigation Buttons -->
+    <div class="d-flex flex-wrap justify-content-center gap-3 mb-2 ">
+        <a href="{{route('cars.index')}}" class="nav-btn  text-decoration-none">
+            All Car
+        </a>
+        <a href="{{route('spareParts.index')}}" class="nav-btn text-decoration-none">
+            Spare Parts
+        </a>
+
+        <a href="{{route('workshops.index')}}" class="nav-btn active text-decoration-none">
+            Work shops
+        </a>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card shadow-sm p-2">
+        <form class="row g-2 align-items-end" id="filterForm" method="GET">
+            <!-- Make Dropdown -->
+            <div class="col-md-3">
+                <!-- <label for="brand" class="form-label">Make</label> -->
+                <select class="form-select" id="brand" name="brand_id">
+                    <option value="" selected class="text-muted"> Make</option>
+                    @foreach($brands as $key => $brand)
+                        <option value="{{ $key }}" {{ request('brand_id') == $key ? 'selected' : '' }}>
+                            {{ $brand }}
                         </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Model Dropdown -->
-                <div class="col-">
-                    <select class="form-control" id="model" name="model">
-                        <option value="" selected>Model</option>
-                    </select>
-                </div>
-
-                <!-- Year Dropdown -->
-                <div class="col-">
-                    <select class="form-control" name="year">
-                        <option value="" selected>Year</option>
-                        @foreach($years as $year)
-
-                        <option value="{{ $year }}" {{ request('year')==$year ? 'selected' : '' }}>
-                            {{ $year }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-">
-                    <select class="form-control" name="city">
-                        <option value="" selected>city</option>
-                        @foreach($cities as $city)
-                        @if($city == null || $city == '')
-                        @continue
-                        @endif
-                        <option value="{{ $city }}" {{ request('city')==$city ? 'selected' : '' }}>
-                            {{ $city }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Make Dropdown -->
-                <div class="col-">
-                    <select class="form-control" id="category" name="category">
-                        <option value="" selected>category</option>
-                        @foreach($categories as $category)
-                        <option value="{{ $category }}" {{ request('category')==$category ? 'selected' : '' }}>
+                    @endforeach
+                </select>
+            </div>
+            
+            <!-- Workshop Dropdown -->
+            <div class="col-md-3">
+                <!-- <label for="workshop" class="form-label">Category</label> -->
+                <select class="form-select" id="workshop" name="workshop_id">
+                    <option value="" selected class="text-muted"> Category</option>
+                    @foreach($categories as $key => $category)
+                        <option value="{{ $key }}" {{ request('category_id') == $key ? 'selected' : '' }}>
                             {{ $category }}
                         </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Model Dropdown -->
-                <div class="col-">
-                    <select class="form-control" id="subCategory" name="subCategory">
-                        <option value="" selected>Sub-Category</option>
-                    </select>
-                </div>
-
-                <div class="col-">
-                    <select class="form-control" name="condition">
-                        @foreach($conditions as $condition)
-                        <option value="{{ $condition }}" {{ request('condition')==$condition ? 'selected' : '' }}>
-                            {{ $condition }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-">
-                    <button class="btn btn-outline-danger bg-carlly" type="submit" style="border-radius: 25px;">
-                        Search
-                    </button>
-                </div>
-            </form>
-        </div>
-        @else
-        <div class="max-w-lg mx-auto p-4 bg-white shadow-md rounded-2xl mt-3">
-            <div class="text-center font-bold text-xl mb-4">Your Car</div>
-            <div class="grid grid-cols-2 gap-2 text-sm">
-                <div class="font-semibold">Car Type:</div>
-                <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->make ?? '--'}}</div>
-
-                <div class="font-semibold">Car Model:</div>
-                <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->model ?? '--'}}</div>
-
-                <div class="font-semibold">Car Year:</div>
-                <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->year ?? '--'}}</div>
-
-                <div class="font-semibold">Category:</div>
-                <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->category ?? '--'}}</div>
-
-                <div class="font-semibold">Sub-category:</div>
-                <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->subCategory ?? '--'}}</div>
+                    @endforeach
+                </select>
             </div>
-        </div>
+            
+            <!-- City Dropdown -->
+            <div class="col-md-3">
+                <!-- <label for="city" class="form-label">City</label> -->
+                <select class="form-select" id="city" name="city">
+                    <option value="" selected class="text-muted"> City</option>
+                    @foreach($cities as $city)
+                        @if(!empty($city))
+                            <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+                                {{ $city }}
+                            </option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
+            
+            <!-- Search Button -->
+            <div class="col-md-3 text-center ">
+                <button type="submit" class="btn " style="color:white ; background-color: #760e13">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-        @endif --}}
+
+        
         <!-- List -->
         <div class="mr-10 main-car-list-sec my-4" style="margin-right:50px; margin-left:50px;">
     <div class="row">
         @foreach ($workshops as $workshop)
             <div class="col-md-6 col-lg-3 mb-4">
-                <div class="card shadow border-0" style="border-radius: 12px; overflow: hidden;">
+                <div class="card shadow border-0 d-flex flex-column h-100" style="border-radius: 12px; overflow: hidden;">
                     
-                    <div class="position-relative" style="height: 220px; background-color: #f0f0f0; border-radius: 10px; overflow: hidden;">
-                        @php
+                
+             
+                    <div class="car-image position-relative" style="
+                        width: 100%;
+                        height: 220px;
+                        background-color: #f0f0f0;
+                        border-radius: 10px;
+                        overflow: hidden;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                     
+                        "
+                        
+                        >
+                                                @php
                             $image = $workshop->image ? env('FILE_BASE_URL') . $workshop->image : env('FILE_BASE_URL') . '/icons/notfound.png';
                         @endphp
-                        <img src="{{ $image }}" alt="Workshop Image"
-                             class="w-100 h-100" style="object-fit: cover; transition: transform 0.3s ease-in-out;"
-                             onerror="this.onerror=null; this.src='{{ env('FILE_BASE_URL') . '/icons/notfound.png' }}'">
+                        <img id="cardImage" src="{{ config('app.file_base_url') . $image }}" alt="Car Image" style="
+                              height: 100%; !important;
+                              width: 100%; !important;
+                                object-fit: cover;
+                                object-position: center;
+                                transition: transform 0.3s ease-in-out;
+                                aspect-ratio: 16/9;" loading="lazy"
+                                onerror="this.onerror=null; this.src='{{ env('FILE_BASE_URL') . '/icons/notfound.png' }}'">
                     </div>
 
-                    
-                    <div class="car-card-body">
-                        <h5 class="card-title text-danger text-truncate" title="{{ $workshop->workshop_name }}">
-                            {{ Str::limit(ucwords(strtolower($workshop->workshop_name)), 25, '...') }}
-                        </h5>
-                        <p class="card-text mb-1">
-                            <i class="fas fa-star text-warning"></i> 4.5
-                        </p>
-                        <p class="card-text text-muted mb-1">
-                            <i class="fas fa-map-marker-alt"></i> {{ $workshop->address }}
-                        </p>
-                        <p class="card-text text-muted">
-                            <i class="fas fa-clock"></i> Mon-Fri: 9am - 6pm
-                        </p>
+                       
 
-                        
-                        <div class="actions">
+                   
+                    <div class="card-body d-flex flex-column justify-content-between  text-start mx-4 mt-2">
+                        <div>
+                            <h5 class="card-title  text-truncate" title="{{ $workshop->workshop_name }}" style="color:  #760e13; font-weight: bold ">
+                                {{ Str::limit(ucwords(strtolower($workshop->workshop_name)), 25, '...') }}
+                            </h5>
+                            <p class="card-text mb-1">
+                                <i class="fas fa-star text-warning" style="color:#760e13; "></i> 4.5
+                            </p>
+                            <p class="card-text text-muted mb-1">
+                                <i class="fas fa-map-marker-alt" style="color:#760e13; " ></i> {{ $workshop->address }}
+                            </p>
+                            <p class="card-text text-muted">
+                                <i class="fas fa-clock" style="color:#760e13; "></i> Mon-Fri: 9am - 6pm
+                            </p>
+                        </div>
+
+                        <div class="actions mt-auto">
                             <a href="https://wa.me/{{ $workshop->user->phone }}" target="_blank">
-                                <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                <button class="btn btn-outline-danger w-100 mb-2" style="border-radius: 15px;">
                                     <i class="fab fa-whatsapp" style="color: #198754;"></i> WhatsApp
                                 </button>
                             </a>
 
-                            @if($os == 'Windows' || $os == 'Linux')
-                                <a href="https://wa.me/{{ $workshop->user->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px; margin-left:2px; margin-right:2px;">
-                                        <i class="fa fa-phone"></i> Call
-                                    </button>
-                                </a>
-                            @elseif($os == 'Mac')
-                                <a href="https://faceapp.com?phone={{ urlencode($workshop->user->phone) }}">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fa fa-phone"></i> Call
-                                    </button>
-                                </a>
-                            @elseif($os == 'Android' || $os == 'iOS')
-                                <a href="tel:{{ $workshop->user->phone }}">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fa fa-phone"></i> Call
-                                    </button>
-                                </a>
-                            @else
-                                No OS Detected
-                            @endif
+                            <a href="tel:{{ $workshop->user->phone }}">
+                                <button class="btn btn-outline-danger w-100 mb-2" style="border-radius: 15px; margin-left:2px; margin-right:2px">
+                                    <i class="fa fa-phone"></i> Call
+                                </button>
+                            </a>
 
-                            @if(request()->path() == 'spareParts')
-                                <a href="https://wa.me/?text={{ urlencode('Hello, I recommend you check this Store: ' . request()->url() . '?workshop_id=' . $workshop->id) }}"
-                                    target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fa fa-share"></i> Share
-                                    </button>
-                                </a>
-                            @else
-                                <a href="https://wa.me/?text={{ urlencode('Hello, I recommend you check this Store: ' . request()->fullUrl() . '&workshop_id=' . $workshop->id) }}"
-                                    target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fa fa-share"></i> Share
-                                    </button>
-                                </a>
-                            @endif
+                            <a href="https://wa.me/?text={{ urlencode('Hello, I recommend you check this Store: ' . request()->fullUrl() . '&workshop_id=' . $workshop->id) }}" target="_blank">
+                                <button class="btn btn-outline-danger w-100" style="border-radius: 15px;">
+                                    <i class="fa fa-share"></i> Share
+                                </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -441,7 +428,6 @@
     </div>
 </div>
 
-    </div>
     <!--  -->
 
     @push('carlistingscript')

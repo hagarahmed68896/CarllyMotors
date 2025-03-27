@@ -173,16 +173,17 @@ button[type='submit']:hover{
                         </select>
                     </div>
 
-
                     <div class="mb-1 col-12">
                         <select class="form-control form-select" id="city" name="city" required>
                             <option value="">Select City</option>
                             <option value="Dubai">Dubai</option>
-                            {{--@foreach($cities as $city)
-                            <option value="{{ $city }}">
-                            {{ $city }}
-                            </option>
-                            @endforeach--}}
+                            <option value="Abu Dhabi">Abu Dhabi</option>
+                            <option value="Sharjah">Sharjah</option>
+                            <option value="Ras Al Khaimah">Ras Al Khaimah</option>
+                            <option value="Fujairah">Fujairah</option>
+                            <option value="Ajman">Ajman</option>
+                            <option value="Umm Al Quwain">Umm Al Quwain</option>
+                            <option value="Al Ain">Al Ain</option>
                         </select>
                     </div>
 
