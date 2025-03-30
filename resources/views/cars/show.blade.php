@@ -358,15 +358,7 @@
             <ul>
                 <li>
                     <a href="#"><i class="fa fa-light fa-flag"></i>Report this listing</a>
-                </li>public function cars()
-                {
-                    return $this->hasMany(CarListingModel::class, 'listing_type', 'name');
-                }
-            
-                public function models()
-                {
-                    return $this->hasMany(BrandModel::class, 'brand_id');
-                }
+                </li>
             </ul>
         </div>
         <div class="container my-4 recmended-used-car-section px-0">

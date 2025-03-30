@@ -25,6 +25,12 @@ class allUsersModel extends Authenticatable
         return asset($val);
     }
 
+        public function favCars()
+    {
+        return $this->belongsToMany(carListingModel::class, 'carlisting_allusers', 'user_id', 'carlisting_id');
+    }
+
+
     public function dealer() {
         return $this->hasOne(CarDealer::class,'user_id');
     }
