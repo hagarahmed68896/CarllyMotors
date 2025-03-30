@@ -116,8 +116,8 @@ input[type="number"] {}
 
 
 .car-card-body {
-    background-color: #f3f3f3;
-    border-radius: 15px;
+    /* background-color: #f3f3f3; */
+    /* border-radius: 15px; */
     padding: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
@@ -200,6 +200,7 @@ input[type="number"] {}
 }
 .carousel-control-prev, .carousel-control-next {
             width: 8%;
+            padding: 5px;
             background-color: rgba(0, 0, 0, 0.5) !important;
             
         }
@@ -207,6 +208,7 @@ input[type="number"] {}
         .carousel-control-prev-icon, .carousel-control-next-icon {
             background-color: rgba(0, 0, 0, 0.5) !important;
             padding: 5px;
+            width: 8%;
             border-radius: 50%;
             /* color: rgba(0, 0, 0, 0.5) !important; */
         }
@@ -217,57 +219,108 @@ input[type="number"] {}
             width: 12px;
             height: 12px;
             border-radius: 50%;
+            margin-bottom: 4px;
         }
 </style>
 
 @section('content')
-<!-- home slider --><div id="demo" class="carousel slide home-slider" data-bs-ride="carousel" data-bs-interval="2000">
-<div id="carouselExampleIndicators" class="carousel-inner rounded-bottom
-          " data-bs-ride="carousel">
-        <!-- النقاط -->
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"></button>
-        </div>
+<!-- home slider -->
+<style>
+    .custom-container {
+    width: 100%; /* افتراضيًا يكون `container-fluid` */
 
-        <!-- الصور -->
-        <div class="carousel-inner rounded-bottom">
-            <div class="carousel-item active">
-                <img class="d-block w-100"src="{{asset('1.jpg')}}" alt="Los Angeles">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('2.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('3.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('4.jpg')}}" alt="New York">
-            </div>
-        </div>
+}
 
-        <!-- أزرار التنقل -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-   
-</div>
+/* عند تجاوز 1400px، يصبح مثل `container` */
+@media (min-width: 1400px) {
+    .custom-container {
+        max-width: 1250px; /* أو أي عرض مناسب */
+        margin: 0 auto; /* يضمن أن يكون في المنتصف */
+    }
+
+
+}
+.carousel-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;  /* يملأ العرض بالكامل */
+ /* يملأ الارتفاع بالكامل */
+    min-width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain; /* يظهر الصورة بالكامل دون قص */
+  
+}
+.carousel-inner {
+    height: 70vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    background-color: #5a0b0f !important;
+}
+
+.carousel {
+    position: relative;
+}
+
+@media (max-width: 470px) {
+    .carousel-inner {
+    height: 18vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    background-color: #5a0b0f !important;
+}
+} 
+
+@media (min-width: 1600px) {
+    .carousel {
+        max-width: 1250px; 
+        margin: 0 auto;
+    }
+    
+}
+
+    
+</style>
+
+<div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+    <!-- النقاط -->
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="3"></button>
     </div>
+
+    <!-- الصور -->
+    <div class="carousel-inner">
+    <div class="carousel-item active">
+            <img class="d-block   "   src="{{asset('1.jpg')}}" alt="Los Angeles">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('2.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('3.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('4.jpg')}}" alt="New York">
+        </div>
+    </div>
+
+    <!-- أزرار التنقل -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
 <!-- filter -->
 
 <div class=" my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
     <div class="d-flex flex-wrap justify-content-center gap-3">
-        <a href="{{route('cars.index')}}" class="nav-btn {{request()->path() == 'cars' ?  'active' : ''}}">All
-            Car</a>
+        <a href="{{route('cars.index')}}" class="nav-btn active  text-decoration-none }">
+            Cars</a>
         <a href="{{route('spareParts.index')}}"
-            class="nav-btn {{request()->path() == 'spareparts' ?  'active' : ''}}">Spare Parts</a>
+            class="nav-btn  text-decoration-none ">Spare Parts</a>
             <a href="{{route('workshops.index')}}"
-            class="nav-btn {{request()->path() == 'workshops' ?  'active' : ''}}">Work Shops</a>
+            class="nav-btn  text-decoration-none ">WorkShops</a>
     </div>
 
     <div class="container filter-bar my-2">
@@ -325,6 +378,7 @@ input[type="number"] {}
                 </select>
             </div>
 
+           
             <!-- Body Type Dropdown -->
             <div class="col-">
                 <select class="form-control" onchange="submitFilterForm()" name="body_type">
@@ -352,7 +406,7 @@ input[type="number"] {}
 
             <!-- Price Dropdown -->
             <div class="col-">
-                <button type="button" class="btn button-like-select" onclick="openModal()">Price</button>
+                <button type="button" class="btn " onclick="openModal()" style="    border: 1px solid #ccc ;">Price</button>
                 <div id="priceModal" class="modal">
                     <span class="close" onclick="closeModal()">&times;</span>
                     <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>
@@ -372,41 +426,38 @@ input[type="number"] {}
     </div>
     <!-- List -->
 
-    <div class="tab-content" id="bodyTypeTabsContent">
-    <div class="mr-10 main-car-list-sec" style="margin-right:50px; margin-left:50px;">
+<div class="tab-content" id="bodyTypeTabsContent">
+    <div class="custom-container main-car-list-sec">
             <div class="row">
                 @foreach ($carlisting as $key => $car)
 
-                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-3">
+                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3">
                     <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
                         <div class="car-image position-relative" style="
                         width: 100%;
                         height: 220px;
                         background-color: #f0f0f0;
-                        border-radius: 10px;
+                        /* border-radius: 10px; */
                         overflow: hidden;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                     
-                        "
-                        
-                        >
+">
 
                             <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">
                                 <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
                                     alt="Car Image"
-                                       class="rounded-bottom"
+                                       class=""
                                      style="
-            height: 90% !important;
-            width: 100% !important;
-            object-fit: cover;
-            object-position: center;
-            transition: transform 0.3s ease-in-out;
-            aspect-ratio: 16/9;
-            cursor: pointer;" loading="lazy"
+                                         height: 90% !important;
+                                            width: 100% !important;
+                                            object-fit: cover;
+                                           object-position: center;
+                                           transition: transform 0.3s ease-in-out;
+                                            aspect-ratio: 16/9;
+                                            cursor: pointer;" loading="lazy"
                                     onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
                             </a>
                             <!-- Badges -->
@@ -472,22 +523,85 @@ input[type="number"] {}
                             </div>
                         </div>
                     </div>
+                    
                 </div>
+
+
                 @endforeach
             </div>
 
 
-            <div class="pagination-links mb-0 d-flex justify-content-center" style="margin: 0;">
+            <!-- <div class="pagination-links mb-0 d-flex justify-content-center" style="margin: 0;">
                 {{ $carlisting->appends(['perPage' => request('perPage')])->links('vendor.pagination.bootstrap-4') }}
-            </div>
+            </div> -->
+            <div class="">
+    <!-- <h2 class="text-center">السيارات المتاحة</h2> -->
+    <div class="row" id="car-list">
+        @include('cars.load_more') <!-- تحميل القائمة الأساسية -->
+    </div>
+    <div id="loading" class="text-center" style="display: none;">
+        <p>Loading..</p>
+    </div>
+</div>
 
         </div>
     </div>
 </div>
 
+
 @push('carlistingscript')
 {{-- Script related filters on carlisting page --}}
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+
+
+<script>
+   let page = 1;
+let loading = false;
+
+$(window).scroll(function() {
+    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+        if (!loading) {
+            loadMoreData();
+        }
+    }
+});
+
+function loadMoreData() {
+    loading = true;
+    $("#loading").show(); // عرض رسالة التحميل
+
+    $.ajax({
+        url: '?page=' + (page + 1),
+        type: 'GET',
+        success: function(data) {
+            if (data.trim() === '') {
+                $(window).off("scroll");
+                
+                $("#loading").text("لا يوجد المزيد من السيارات");
+            } else {
+                $("#car-list").append(data);
+                page++;
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error loading more cars:", error);
+            $("#loading").text("حدث خطأ، حاول مرة أخرى.");
+        },
+        complete: function() {
+            loading = false;
+            $("#loading").hide();
+        }
+    });
+}
+
+</script>
+
+
+
+
+
 
 <script>
 function openModal() {

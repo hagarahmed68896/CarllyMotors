@@ -35,7 +35,7 @@ use Illuminate\Support\Str;
 
 .car-card-body {
     background-color: #f3f3f3;
-    border-radius: 15px;
+    /* border-radius: 15px; */
     padding: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
@@ -118,16 +118,9 @@ use Illuminate\Support\Str;
     font-size: 16px;
 }
 
-.home-slider .carousel-inner img {
-        height: 83% !important;
-        width: 75% !important;
-        /* Adjust to match the required height */
-        border-radius: 10px;
-        overflow: hidden;
-        /* Ensures content fits well */
-    }
-    .carousel-control-prev, .carousel-control-next {
+.carousel-control-prev, .carousel-control-next {
             width: 8%;
+            padding: 5px;
             background-color: rgba(0, 0, 0, 0.5) !important;
             
         }
@@ -135,6 +128,7 @@ use Illuminate\Support\Str;
         .carousel-control-prev-icon, .carousel-control-next-icon {
             background-color: rgba(0, 0, 0, 0.5) !important;
             padding: 5px;
+            width: 8%;
             border-radius: 50%;
             /* color: rgba(0, 0, 0, 0.5) !important; */
         }
@@ -145,88 +139,113 @@ use Illuminate\Support\Str;
             width: 12px;
             height: 12px;
             border-radius: 50%;
+            margin-bottom: 4px;
         }
-@media (max-width: 572px) {
-    .home-slider .carousel-inner img{
-        height: 100% !important;
-        width: 100% !important;
-        /* Adjust to match the required height */
-        border-radius: 10px;
-        overflow: hidden;
-        /* Ensures content fits well */
-    }
 
-    .home-slider .carousel-item {
-        height: 60%;
-        /* Ensure all items have the same height */
-    }
 
-    .home-slider .carousel-inner{
-        height:30%;
-    }
-
-    .home-slider .carousel-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        /* Prevents distortion */
-    }
-   
-}
 </style>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
 @section('content')
  <!-- home slider -->
-<div id="demo" class="carousel slide home-slider" data-bs-ride="carousel" data-bs-interval="2000">
-   <div id="carouselExampleIndicators" class="carousel-inner rounded-bottom
-          " data-bs-ride="carousel">
-        <!-- النقاط -->
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"></button>
-        </div>
+ <style>
+    .custom-container {
+    width: 100%; /* افتراضيًا يكون `container-fluid` */
 
-        <!-- الصور -->
-        <div class="carousel-inner rounded-bottom">
-            <div class="carousel-item active">
-                <img class="d-block w-100"src="{{asset('1.jpg')}}" alt="Los Angeles">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('2.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('3.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('4.jpg')}}" alt="New York">
-            </div>
-        </div>
+}
 
-        <!-- أزرار التنقل -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-   
-</div>
+/* عند تجاوز 1400px، يصبح مثل `container` */
+@media (min-width: 1400px) {
+    .custom-container {
+        max-width: 1250px; /* أو أي عرض مناسب */
+        margin: 0 auto; /* يضمن أن يكون في المنتصف */
+    }
+
+
+}
+.carousel-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;  /* يملأ العرض بالكامل */
+ /* يملأ الارتفاع بالكامل */
+    min-width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain; /* يظهر الصورة بالكامل دون قص */
+    background-color: #000; /* يجعل الخلفية سوداء لتنسيق المظهر */
+}
+.carousel-inner {
+    height: 70vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    background-color: #5a0b0f !important;
+}
+
+.carousel {
+    position: relative;
+}
+
+@media (max-width: 470px) {
+    .carousel-inner {
+    height: 18vh;
+    background-color: #5a0b0f !important;
+}
+} 
+
+@media (min-width: 1600px) {
+    .carousel {
+        max-width: 1250px; 
+        margin: 0 auto;
+    }
+    
+}
+
+    
+</style>
+
+<div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+    <!-- النقاط -->
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="3"></button>
     </div>
+
+    <!-- الصور -->
+    <div class="carousel-inner">
+    <div class="carousel-item active">
+            <img class="d-block   "   src="{{asset('1.jpg')}}" alt="Los Angeles">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('2.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('3.jpg')}}" alt="Chicago">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('4.jpg')}}" alt="New York">
+        </div>
+    </div>
+
+    <!-- أزرار التنقل -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
 <!-- filter -->
 <!-- Start filter home with items -->
 
 <div class=" my-6 main-home-filter-sec text-center">
     <div class="d-flex flex-wrap justify-content-center gap-3">
-        <a href="{{route('cars.index')}}" class="nav-btn">
-            All Car
+        <a href="{{route('cars.index')}}" class="nav-btn text-decoration-none">
+             Cars
         </a>
-        <a href="{{route('spareParts.index')}}" class="nav-btn active">
+        <a href="{{route('spareParts.index')}}" class="nav-btn active text-decoration-none">
             Spare Parts
         </a>
-        <a href="{{route('workshops.index')}}" class="nav-btn">Work Shops</a>
+        <a href="{{route('workshops.index')}}" class="nav-btn text-decoration-none">WorkShops</a>
     </div>
     @if(request()->path() == "spareParts")
     <div class="container filter-bar my-2">
@@ -311,6 +330,7 @@ use Illuminate\Support\Str;
                 </button>
             </div>
         </form>
+       
     </div>
     @else
     <div class="max-w-lg mx-auto p-4 bg-white shadow-md rounded-2xl mt-3">
@@ -336,10 +356,10 @@ use Illuminate\Support\Str;
     @endif
     <!-- List -->
     <div class="tab-content" id="bodyTypeTabsContent">
-    <div class="mr-10 main-car-list-sec" style="margin-right:50px; margin-left:50px;">
+    <div class="custom-container main-car-list-sec" >
             <div class="row">
                 @foreach ($dealers as $key => $dealer)
-                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-3">
+                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3">
                     <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
                         <div class="car-image position-relative" style="

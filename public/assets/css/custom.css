@@ -1,6 +1,7 @@
 .pagination .page-item .page-link {
     color: #760e13;
     border-color: #760e13;
+    
 }
 
 .pagination .page-item.active .page-link {
@@ -173,7 +174,7 @@
 
 .car-card-body {
     background-color: #f3f3f3;
-    border-radius: 15px;
+    /* border-radius: 15px; */
     padding: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
@@ -290,8 +291,8 @@
 
 }
 .carousel-item.active {
-    background-color: #760e13 !important;
-    color: #f3f3f3 !important;
+    /* background-color: #760e13 !important; */
+    /* color: #f3f3f3 !important; */
     border-color: #760e13 !important;
 }
 
@@ -304,8 +305,8 @@
 
     .home-slider .carousel-inner {
         max-height: 200px;
-          background-color: #760e13 !important;
-    color: #f3f3f3 !important;
+          /* background-color: #760e13 !important; */
+    /* color: #f3f3f3 !important; */
     }
 
     .home-slider .carousel-item {

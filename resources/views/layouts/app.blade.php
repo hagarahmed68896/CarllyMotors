@@ -9,6 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
@@ -17,61 +18,63 @@
 
 </head>
 <style>
-    .navbar-nav .nav-link {
-        color: #fff;
+.navbar-nav .nav-link {
+    color: #fff;
+}
+
+.dropend .dropdown-toggle {
+    color: #760e13;
+    margin-left: 1em;
+}
+
+.dropdown-toggle::after {
+    color: #760e13;
+}
+
+.dropdown-item:hover {
+    background-color: #760e13;
+    color: #fff;
+    border-radius: 20%;
+ 
+}
+
+.dropdown .dropdown-menu {
+    display: none;
+}
+
+.dropdown-menu a:hover {
+    text-decoration-color: #760e13;
+    border-color: #760e13;
+}
+
+.dropdown-menu a:focus {
+    border-color: #760e13;
+}
+
+.dropdown:hover>.dropdown-menu,
+.dropend:hover>.dropdown-menu {
+    display: block;
+    margin-top: 0.125em;
+    margin-left: 0.125em;
+}
+
+@media screen and (min-width: 769px) {
+    .dropend:hover>.dropdown-menu {
+        position: absolute;
+        top: 0;
+        left: 100%;
     }
 
     .dropend .dropdown-toggle {
-        color: #760e13;
-        margin-left: 1em;
+        margin-left: 0.5em;
     }
-
-    .dropdown-toggle::after {
-        color: #760e13;
-    }
-
-    .dropdown-item:hover {
-        background-color: #760e13;
-        color: #fff;
-    }
-
-    .dropdown .dropdown-menu {
-        display: none;
-    }
-
-    .dropdown-menu a:hover {
-        text-decoration-color: #760e13;
-        border-color: #760e13;
-    }
-
-    .dropdown-menu a:focus {
-        border-color: #760e13;
-    }
-
-    .dropdown:hover>.dropdown-menu,
-    .dropend:hover>.dropdown-menu {
-        display: block;
-        margin-top: 0.125em;
-        margin-left: 0.125em;
-    }
-
-    @media screen and (min-width: 769px) {
-        .dropend:hover>.dropdown-menu {
-            position: absolute;
-            top: 0;
-            left: 100%;
-        }
-
-        .dropend .dropdown-toggle {
-            margin-left: 0.5em;
-        }
-    }
+}
 </style>
 
 <body class="relative h-screen bg-gray-100">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2 ">
-    <div class="container">
+<nav class=" navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2 ">
+    <div class="container "> 
         <!-- Logo -->
         <a class="navbar-brand" href="#">
             <img src="{{asset('carllymotorsmainlogo_dark.png')}}" alt="AutoDecar" class="img-fluid" style="height: 50px;">
@@ -100,9 +103,16 @@
                 <a href="{{route('cars.create')}}" class="btn btn-success text-white">
                     <i class="fas fa-plus"></i>
                 </a>
-                <a href="{{route('cars.favList')}}" class="btn btn-danger text-white">
+                <a href="{{route('cars.favList')}}" class="btn btn-danger text-white " style="margin-right:2px ; margin-left:2px ;" >
                     <i class="fas fa-heart"></i>
                 </a>
+
+                <a class="btn btn-danger text-white mr-1 "   href="#"  role="button" 
+                    
+                         >
+                       Place Your AD
+                    </a>
+
                 <div class="dropdown">
                     <a class="btn btn-light border dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
@@ -139,12 +149,15 @@
         color: #760e13 !important;
         font-weight: bold !important;
     }
+    .icons:hover{
+        color: #760e13 !important;
+    }
 </style>
 
 
     <!-- breadcrumd-listting -->
 
-<!-- jjjkjjkh jjjj jjjk jjnjn jjjk jiojjjjjj jjjjj ppipo jh;l kljkjkkj kjk-->
+<!-- -->
 
     @yield('content')
 
@@ -192,6 +205,24 @@
 
             <!-- Footer Links -->
             <div class="row footer-links mt-4 g-4 text-md-start">
+                <div class='col-12 col-md-3'>
+                <a href="#" class="footer-logo">
+                            <img src="{{asset('carllymotors_logo_white-2048x526.png')}}" alt="AutoDecar" class="img-fluid"
+                                style="max-width: 150px;">
+                        </a>
+ <div class="col-md-6 text-md-end">
+                        <div class="icons social-icons  d-flex justify-content-center justify-content-md-end gap-3 mt-3">
+                            <a href="https://www.instagram.com/carllymotors?igsh=N3F5aHVpajd0ZnNk&utm_source=qr"><i
+                                    class="fab fa-instagram fs-4" style="color:#fff ;"></i></a>
+                            <a href="https://www.tiktok.com/@carllymotors"><i class="fab fa-tiktok fs-4"
+                                    style="color:#fff"></i></a>
+                            <a href="https://x.com/carllymotors?s=11&mx=2"><i class="fab fa-twitter fs-4"
+                                    style="color:#fff"></i></a>
+                            <a href="https://wa.me/971566350025"><i class="fab fa-whatsapp fs-4"
+                                    style="color:#fff"></i></a>
+                        </div>
+            </div>
+                </div>
                 <div class="col-12 col-md-3">
                     <h5>About Auto Decar</h5>
                     <ul class="list-unstyled">
@@ -226,15 +257,15 @@
             <!-- Footer Bottom -->
             <div class="footer-bottom mt-4">
                 <div class="row">
-                    <div class="col-md-6 mb-3 mb-md-0">
-                        <a href="#" class="footer-logo">
+                    <div class="col-md-12 mb-3 mb-md-0">
+                        <!-- <a href="#" class="footer-logo">
                             <img src="{{asset('carllymotorsmainlogo_dark.png')}}" alt="AutoDecar" class="img-fluid"
                                 style="max-width: 150px;">
-                        </a>
-                        <p class="mt-2">© 2025 Carlly Motors. All rights reserved</p>
+                        </a> -->
+                        <p class="mt-2 d-flex justify-content-center">© 2025 Carlly Motors. All rights reserved</p>
                     </div>
-                    <div class="col-md-6 text-md-end">
-                        <div class="d-flex justify-content-center justify-content-md-end gap-3">
+                    <!-- <div class="col-md-6 text-md-end">
+                        <div class="d-flex justify-content-center justify-content-md-end gap-5">
                             <a href="https://www.instagram.com/carllymotors?igsh=N3F5aHVpajd0ZnNk&utm_source=qr"><i
                                     class="fab fa-instagram fs-4" style="color:#fff"></i></a>
                             <a href="https://www.tiktok.com/@carllymotors"><i class="fab fa-tiktok fs-4"
@@ -243,7 +274,7 @@
                                     style="color:#fff"></i></a>
                             <a href="https://wa.me/971566350025"><i class="fab fa-whatsapp fs-4"
                                     style="color:#fff"></i></a>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -260,20 +291,19 @@
     @stack('carlistingscript')
     {{-- Script related listing-details page --}}
     <script>
-        $(document).ready(function () {
-            // Toggle the icon when accordion is expanded/collapsed
-            $('.accordion-button').on('click', function () {
-                const icon = $(this).find('.icon');
-                const isExpanded = $(this).attr('aria-expanded') === 'true';
+    $(document).ready(function() {
+        // Toggle the icon when accordion is expanded/collapsed
+        $('.accordion-button').on('click', function() {
+            const icon = $(this).find('.icon');
+            const isExpanded = $(this).attr('aria-expanded') === 'true';
 
-                // Remove rotate class from all icons
-                $('.icon').removeClass('rotate');
+            // Remove rotate class from all icons
+            $('.icon').removeClass('rotate');
 
-                // Add rotate class if this item is expanded
-                if (!isExpanded) {
-                    icon.addClass('rotate');
-                }
-            });
+            // Add rotate class if this item is expanded
+            if (!isExpanded) {
+                icon.addClass('rotate');
+            }
         });
     });
     document.addEventListener("DOMContentLoaded", function() {
