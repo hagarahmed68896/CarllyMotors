@@ -35,7 +35,7 @@ use Illuminate\Support\Str;
 
 .car-card-body {
     background-color: #f3f3f3;
-    border-radius: 15px;
+    /* border-radius: 15px; */
     padding: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
@@ -149,23 +149,55 @@ use Illuminate\Support\Str;
 @section('content')
  <!-- home slider -->
  <style>
-    .carousel-item img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        /* min-width: 100vw !important;  */
-        height: 100vh;
-        object-fit: cover ;
+    .custom-container {
+    width: 100%; /* افتراضيًا يكون `container-fluid` */
+
+}
+
+/* عند تجاوز 1400px، يصبح مثل `container` */
+@media (min-width: 1400px) {
+    .custom-container {
+        max-width: 1250px; /* أو أي عرض مناسب */
+        margin: 0 auto; /* يضمن أن يكون في المنتصف */
     }
 
+
+}
+.carousel-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;  /* يملأ العرض بالكامل */
+ /* يملأ الارتفاع بالكامل */
+    min-width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain; /* يظهر الصورة بالكامل دون قص */
+    background-color: #000; /* يجعل الخلفية سوداء لتنسيق المظهر */
+}
+.carousel-inner {
+    height: 70vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    background-color: #5a0b0f !important;
+}
+
+.carousel {
+    position: relative;
+}
+
+@media (max-width: 470px) {
     .carousel-inner {
-        height: 70vh;
-         background-color: #5a0b0f !important;
-    }
+    height: 18vh;
+    background-color: #5a0b0f !important;
+}
+} 
 
+@media (min-width: 1600px) {
     .carousel {
-        position: relative;
+        max-width: 1250px; 
+        margin: 0 auto;
     }
+    
+}
+
     
 </style>
 
@@ -207,13 +239,13 @@ use Illuminate\Support\Str;
 
 <div class=" my-6 main-home-filter-sec text-center">
     <div class="d-flex flex-wrap justify-content-center gap-3">
-        <a href="{{route('cars.index')}}" class="nav-btn">
-            All Car
+        <a href="{{route('cars.index')}}" class="nav-btn text-decoration-none">
+             Cars
         </a>
-        <a href="{{route('spareParts.index')}}" class="nav-btn active">
+        <a href="{{route('spareParts.index')}}" class="nav-btn active text-decoration-none">
             Spare Parts
         </a>
-        <a href="{{route('workshops.index')}}" class="nav-btn">Work Shops</a>
+        <a href="{{route('workshops.index')}}" class="nav-btn text-decoration-none">WorkShops</a>
     </div>
     @if(request()->path() == "spareParts")
     <div class="container filter-bar my-2">
@@ -324,7 +356,7 @@ use Illuminate\Support\Str;
     @endif
     <!-- List -->
     <div class="tab-content" id="bodyTypeTabsContent">
-    <div class="mr-10 main-car-list-sec" style="margin-right:50px; margin-left:50px;">
+    <div class="custom-container main-car-list-sec" >
             <div class="row">
                 @foreach ($dealers as $key => $dealer)
                 <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3">

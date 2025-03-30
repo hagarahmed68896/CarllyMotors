@@ -9,6 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
@@ -102,9 +103,16 @@
                 <a href="{{route('cars.create')}}" class="btn btn-success text-white">
                     <i class="fas fa-plus"></i>
                 </a>
-                <a href="{{route('cars.favList')}}" class="btn btn-danger text-white " style="margin-right:4px ; margin-left:4px ;" >
+                <a href="{{route('cars.favList')}}" class="btn btn-danger text-white " style="margin-right:2px ; margin-left:2px ;" >
                     <i class="fas fa-heart"></i>
                 </a>
+
+                <a class="btn btn-danger text-white mr-1 "   href="#"  role="button" 
+                    
+                         >
+                       Place Your AD
+                    </a>
+
                 <div class="dropdown">
                     <a class="btn btn-light border dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
@@ -199,7 +207,7 @@
             <div class="row footer-links mt-4 g-4 text-md-start">
                 <div class='col-12 col-md-3'>
                 <a href="#" class="footer-logo">
-                            <img src="{{asset('carllymotorsmainlogo_dark.png')}}" alt="AutoDecar" class="img-fluid"
+                            <img src="{{asset('carllymotors_logo_white-2048x526.png')}}" alt="AutoDecar" class="img-fluid"
                                 style="max-width: 150px;">
                         </a>
  <div class="col-md-6 text-md-end">

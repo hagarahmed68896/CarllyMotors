@@ -117,7 +117,7 @@ input[type="number"] {}
 
 .car-card-body {
     background-color: #f3f3f3;
-    border-radius: 15px;
+    /* border-radius: 15px; */
     padding: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;

@@ -116,8 +116,8 @@ input[type="number"] {}
 
 
 .car-card-body {
-    background-color: #f3f3f3;
-    border-radius: 15px;
+    /* background-color: #f3f3f3; */
+    /* border-radius: 15px; */
     padding: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
@@ -226,23 +226,55 @@ input[type="number"] {}
 @section('content')
 <!-- home slider -->
 <style>
-    .carousel-item img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        min-width: 100vw !important; 
-        height: 100vh;
-        object-fit: cover ;
+    .custom-container {
+    width: 100%; /* افتراضيًا يكون `container-fluid` */
+
+}
+
+/* عند تجاوز 1400px، يصبح مثل `container` */
+@media (min-width: 1400px) {
+    .custom-container {
+        max-width: 1250px; /* أو أي عرض مناسب */
+        margin: 0 auto; /* يضمن أن يكون في المنتصف */
     }
 
+
+}
+.carousel-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;  /* يملأ العرض بالكامل */
+ /* يملأ الارتفاع بالكامل */
+    min-width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain; /* يظهر الصورة بالكامل دون قص */
+  
+}
+.carousel-inner {
+    height: 70vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    background-color: #5a0b0f !important;
+}
+
+.carousel {
+    position: relative;
+}
+
+@media (max-width: 470px) {
     .carousel-inner {
-        height: 70vh;
-        background-color: #5a0b0f !important;
-    }
+    height: 18vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    background-color: #5a0b0f !important;
+}
+} 
 
+@media (min-width: 1600px) {
     .carousel {
-        position: relative;
+        max-width: 1250px; 
+        margin: 0 auto;
     }
+    
+}
+
     
 </style>
 
@@ -283,12 +315,12 @@ input[type="number"] {}
 
 <div class=" my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
     <div class="d-flex flex-wrap justify-content-center gap-3">
-        <a href="{{route('cars.index')}}" class="nav-btn {{request()->path() == 'cars' ?  'active' : ''}}">All
-            Car</a>
+        <a href="{{route('cars.index')}}" class="nav-btn active  text-decoration-none }">
+            Cars</a>
         <a href="{{route('spareParts.index')}}"
-            class="nav-btn {{request()->path() == 'spareparts' ?  'active' : ''}}">Spare Parts</a>
+            class="nav-btn  text-decoration-none ">Spare Parts</a>
             <a href="{{route('workshops.index')}}"
-            class="nav-btn {{request()->path() == 'workshops' ?  'active' : ''}}">Work Shops</a>
+            class="nav-btn  text-decoration-none ">WorkShops</a>
     </div>
 
     <div class="container filter-bar my-2">
@@ -374,7 +406,7 @@ input[type="number"] {}
 
             <!-- Price Dropdown -->
             <div class="col-">
-                <button type="button" class="btn button-like-select" onclick="openModal()">Price</button>
+                <button type="button" class="btn " onclick="openModal()" style="    border: 1px solid #ccc ;">Price</button>
                 <div id="priceModal" class="modal">
                     <span class="close" onclick="closeModal()">&times;</span>
                     <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>
@@ -395,7 +427,7 @@ input[type="number"] {}
     <!-- List -->
 
 <div class="tab-content" id="bodyTypeTabsContent">
-    <div class="mr-10 main-car-list-sec" style="margin-right:50px; margin-left:50px;">
+    <div class="custom-container main-car-list-sec">
             <div class="row">
                 @foreach ($carlisting as $key => $car)
 
@@ -406,21 +438,18 @@ input[type="number"] {}
                         width: 100%;
                         height: 220px;
                         background-color: #f0f0f0;
-                        border-radius: 10px;
+                        /* border-radius: 10px; */
                         overflow: hidden;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                     
-                        "
-                        
-                        >
+">
 
                             <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">
                                 <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
                                     alt="Car Image"
-                                       class="rounded-bottom"
+                                       class=""
                                      style="
                                          height: 90% !important;
                                             width: 100% !important;

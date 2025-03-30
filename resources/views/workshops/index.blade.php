@@ -35,7 +35,7 @@
 
     .car-card-body {
         background-color: #f3f3f3;
-        border-radius: 15px;
+        /* border-radius: 15px; */
         padding: 15px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         font-family: Arial, sans-serif;
@@ -220,23 +220,57 @@
 </style>
  <!-- home slider -->
  <style>
-    .carousel-item img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        /* min-width: 100vw !important;  */
-        height: 100vh;
-        object-fit: cover ;
+        .custom-container {
+    width: 100%; /* افتراضيًا يكون `container-fluid` */
+
+}
+
+/* عند تجاوز 1400px، يصبح مثل `container` */
+@media (min-width: 1400px) {
+    .custom-container {
+        max-width: 1250px; /* أو أي عرض مناسب */
+        margin: 0 auto; /* يضمن أن يكون في المنتصف */
     }
 
+
+}
+    
+.carousel-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;  /* يملأ العرض بالكامل */
+ /* يملأ الارتفاع بالكامل */
+    min-width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain; /* يظهر الصورة بالكامل دون قص */
+    background-color: #000; /* يجعل الخلفية سوداء لتنسيق المظهر */
+}
+.carousel-inner {
+    height: 70vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    background-color: #5a0b0f !important;
+}
+
+.carousel {
+    position: relative;
+}
+
+@media (max-width: 470px) {
     .carousel-inner {
-        height: 70vh;
-         background-color: #5a0b0f !important;
-    }
+    height: 18vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    background-color: #5a0b0f !important;
+}
+} 
 
+@media (min-width: 1600px) {
     .carousel {
-        position: relative;
+        max-width: 1250px; 
+        margin: 0 auto;
     }
+    
+}
+
+    
     
 </style>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -349,10 +383,11 @@
 
         
         <!-- List -->
-        <div class="mr-10 main-car-list-sec my-4" style="margin-right:50px; margin-left:50px;">
+        <div class="custom-container main-car-list-sec my-4" >
     <div class="row">
         @foreach ($workshops as $workshop)
-            <div class="col-md-6 col-lg-3 mb-4">
+                          <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3">
+
                 <div class="card shadow border-0 d-flex flex-column h-100" style="border-radius: 12px; overflow: hidden;">
                     
                 
@@ -410,13 +445,13 @@
                             </a>
 
                             <a href="tel:{{ $workshop->user->phone }}">
-                                <button class="btn btn-outline-danger w-100 mb-2" style="border-radius: 15px; margin-left:2px; margin-right:2px">
+                                <button class="btn btn-outline-danger w-100 mb-2" style="border-radius: 15px; margin-left:1px; margin-right:1px">
                                     <i class="fa fa-phone"></i> Call
                                 </button>
                             </a>
 
                             <a href="https://wa.me/?text={{ urlencode('Hello, I recommend you check this Store: ' . request()->fullUrl() . '&workshop_id=' . $workshop->id) }}" target="_blank">
-                                <button class="btn btn-outline-danger w-100" style="border-radius: 15px;">
+                                <button class="btn btn-outline-danger w-100" style="border-radius: 15px; ">
                                     <i class="fa fa-share"></i> Share
                                 </button>
                             </a>

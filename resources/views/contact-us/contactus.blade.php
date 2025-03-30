@@ -45,6 +45,43 @@ body {
             border-radius: 50%;
             margin-bottom: 4px;
         }
+        
+.carousel-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;  /* يملأ العرض بالكامل */
+ /* يملأ الارتفاع بالكامل */
+    min-width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain; /* يظهر الصورة بالكامل دون قص */
+
+}
+.carousel-inner {
+    height: 70vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+
+}
+
+.carousel {
+    position: relative;
+}
+
+@media (max-width: 470px) {
+    .carousel-inner {
+    height: 18vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    background-color: #5a0b0f !important;
+}
+} 
+
+@media (min-width: 1600px) {
+    .carousel {
+        max-width: 1250px; 
+        margin: 0 auto;
+    }
+    
+}
+
+    
 </style>
 
 <!-- home slider -->
