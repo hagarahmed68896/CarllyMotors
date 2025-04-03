@@ -178,7 +178,7 @@
 
         .home-slider .carousel-item {
             height: 60%;
-            /* Ensure all items have the same height */
+            /* Ensure all items have the same height mnbdm    */
         }
 
         .home-slider .carousel-inner {
