@@ -33,21 +33,22 @@ class WorkshopController extends Controller
 
         if ($request->brand_id) {
             $brand = CarBrand::find($request->brand_id);
-            $workshop_ids = $brand->providers()->pluck('id ')->toArray();
+            $workshop_ids = $brand->providers()->pluck('workshop_provider_id')->toArray();
+            // dd($workshop_ids);
             $query->whereIn('id', $workshop_ids);
+            // dd($query->get());
         }
 
         if ($request->category_id) {
             $category = WorkshopCategory::find($request->category_id);
-            $workshop_ids = $category->providers()->pluck('id ')->toArray();
+            $workshop_ids = $category->providers()->pluck('workshop_provider_id')->toArray();
             $query->whereIn('id', $workshop_ids);
         }
 
         // Paginate the results
         $workshops = $query->paginate($perPage);
-        // foreach($workshops as $workshop){
-        //     dd($workshop);
-        // }
+        // $workshop = $query->first();
+        // dd($workshop->days);
         // Return view with grouped data and other filter data
         return view('workshops.index', compact('cities', 'workshops','brands', 'categories'));
 

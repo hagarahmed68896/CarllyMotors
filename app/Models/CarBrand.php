@@ -31,7 +31,7 @@ class CarBrand extends Model
     
     public function providers()
     {
-        return $this->belongsToMany(WorkshopProvider::class, 'car_brand_workshop_providers');
+        return $this->belongsToMany(WorkshopProvider::class, 'car_brand_workshop_provider');
     }
 
     public function ads(){

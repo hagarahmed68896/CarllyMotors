@@ -347,7 +347,7 @@
             <!-- Workshop Dropdown -->
             <div class="col-md-3">
                 <!-- <label for="workshop" class="form-label">Category</label> -->
-                <select class="form-select" id="workshop" name="workshop_id">
+                <select class="form-select" id="workshop" name="workshop_category_id">
                     <option value="" selected class="text-muted"> Category</option>
                     @foreach($categories as $key => $category)
                         <option value="{{ $key }}" {{ request('category_id') == $key ? 'selected' : '' }}>
@@ -426,15 +426,21 @@
                             <h5 class="card-title  text-truncate" title="{{ $workshop->workshop_name }}" style="color:  #760e13; font-weight: bold ">
                                 {{ Str::limit(ucwords(strtolower($workshop->workshop_name)), 25, '...') }}
                             </h5>
-                            <p class="card-text mb-1">
+                            {{-- <p class="card-text mb-1">
                                 <i class="fas fa-star text-warning" style="color:#760e13; "></i> 4.5
-                            </p>
+                            </p> --}}
                             <p class="card-text text-muted mb-1">
                                 <i class="fas fa-map-marker-alt" style="color:#760e13; " ></i> {{ $workshop->address }}
                             </p>
+                            <br>
+
                             <p class="card-text text-muted">
-                                <i class="fas fa-clock" style="color:#760e13; "></i> Mon-Fri: 9am - 6pm
+                                @foreach($workshop->days as $key => $day)
+                                @if($key > 6) @break @endif
+                                <i class="fas fa-clock" style="color:#760e13; "></i> {{ $day->day }}: {{ $day->from }} - {{ $day->to }} <br>
+                                @endforeach
                             </p>
+                            <br>
                         </div>
 
                         <div class="actions mt-auto">
