@@ -225,17 +225,18 @@ input[type="number"] {}
 
 @section('content')
 <!-- home slider -->
+
 <style>
     .custom-container {
-    width: 100%; /* افتراضيًا يكون `container-fluid` */
+    width: 100%; /* `container-fluid` */
 
 }
 
-/* عند تجاوز 1400px، يصبح مثل `container` */
+/*`container` */
 @media (min-width: 1400px) {
     .custom-container {
-        max-width: 1250px; /* أو أي عرض مناسب */
-        margin: 0 auto; /* يضمن أن يكون في المنتصف */
+        max-width: 1250px; 
+        margin: 0 auto; 
     }
 
 
@@ -244,15 +245,15 @@ input[type="number"] {}
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;  /* يملأ العرض بالكامل */
- /* يملأ الارتفاع بالكامل */
+    width: 100vw;  
+
     min-width: 100vw; 
     /* min-height: 100vh;  */
-    object-fit: contain; /* يظهر الصورة بالكامل دون قص */
-  
+    object-fit: contain;
+
 }
 .carousel-inner {
-    height: 70vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    height: 80vh;
     background-color: #5a0b0f !important;
 }
 
@@ -262,7 +263,7 @@ input[type="number"] {}
 
 @media (max-width: 470px) {
     .carousel-inner {
-    height: 18vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    height: 18vh;
     background-color: #5a0b0f !important;
 }
 } 
@@ -271,8 +272,20 @@ input[type="number"] {}
     .carousel {
         max-width: 1250px; 
         margin: 0 auto;
+        width: 100vw; 
+        /* height: 30vh; */
     }
+    .carousel-inner {
+    height: 40vh; 
+    background-color: #5a0b0f !important;
+}
+.carousel-item img {
     
+    width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain;
+
+}
 }
 
     
@@ -426,7 +439,7 @@ input[type="number"] {}
     </div>
     <!-- List -->
 
-<div class="tab-content" id="bodyTypeTabsContent">
+ <div class="tab-content" id="bodyTypeTabsContent">
     <div class="custom-container main-car-list-sec">
             <div class="row">
                 @foreach ($carlisting as $key => $car)
@@ -443,7 +456,7 @@ input[type="number"] {}
                         display: flex;
                         align-items: center;
                         justify-content: center;
-">
+ ">
 
                             <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">

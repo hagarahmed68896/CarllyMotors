@@ -148,7 +148,7 @@ class CarController extends Controller
         }
     
         
-        $carlisting = $carlisting->has('user')->paginate(12);
+        $carlisting = $carlisting->has('user')->paginate(8);
     
         if ($request->ajax()) {
             return view('cars.load_more', compact('carlisting'))->render();

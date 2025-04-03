@@ -148,17 +148,18 @@ use Illuminate\Support\Str;
 
 @section('content')
  <!-- home slider -->
- <style>
+ 
+<style>
     .custom-container {
-    width: 100%; /* افتراضيًا يكون `container-fluid` */
+    width: 100%; 
 
 }
 
-/* عند تجاوز 1400px، يصبح مثل `container` */
+
 @media (min-width: 1400px) {
     .custom-container {
-        max-width: 1250px; /* أو أي عرض مناسب */
-        margin: 0 auto; /* يضمن أن يكون في المنتصف */
+        max-width: 1250px; 
+        margin: 0 auto; 
     }
 
 
@@ -167,15 +168,15 @@ use Illuminate\Support\Str;
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;  /* يملأ العرض بالكامل */
- /* يملأ الارتفاع بالكامل */
+    width: 100vw;  
+
     min-width: 100vw; 
     /* min-height: 100vh;  */
-    object-fit: contain; /* يظهر الصورة بالكامل دون قص */
-    background-color: #000; /* يجعل الخلفية سوداء لتنسيق المظهر */
+    object-fit: contain;
+
 }
 .carousel-inner {
-    height: 70vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    height: 80vh;
     background-color: #5a0b0f !important;
 }
 
@@ -194,8 +195,20 @@ use Illuminate\Support\Str;
     .carousel {
         max-width: 1250px; 
         margin: 0 auto;
+        width: 100vw; 
+        /* height: 30vh; */
     }
+    .carousel-inner {
+    height: 40vh; 
+    background-color: #5a0b0f !important;
+}
+.carousel-item img {
     
+    width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain;
+
+}
 }
 
     

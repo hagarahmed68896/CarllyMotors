@@ -219,35 +219,35 @@
         }
 </style>
  <!-- home slider -->
- <style>
-        .custom-container {
-    width: 100%; /* افتراضيًا يكون `container-fluid` */
+ 
+<style>
+    .custom-container {
+    width: 100%;
 
 }
 
-/* عند تجاوز 1400px، يصبح مثل `container` */
+
 @media (min-width: 1400px) {
     .custom-container {
-        max-width: 1250px; /* أو أي عرض مناسب */
-        margin: 0 auto; /* يضمن أن يكون في المنتصف */
+        max-width: 1250px;
+        margin: 0 auto;
     }
 
 
 }
-    
 .carousel-item img {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;  /* يملأ العرض بالكامل */
- /* يملأ الارتفاع بالكامل */
+    width: 100vw;  
+
     min-width: 100vw; 
     /* min-height: 100vh;  */
-    object-fit: contain; /* يظهر الصورة بالكامل دون قص */
-    background-color: #000; /* يجعل الخلفية سوداء لتنسيق المظهر */
+    object-fit: contain;
+
 }
 .carousel-inner {
-    height: 70vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    height: 80vh;
     background-color: #5a0b0f !important;
 }
 
@@ -257,7 +257,7 @@
 
 @media (max-width: 470px) {
     .carousel-inner {
-    height: 18vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    height: 18vh;
     background-color: #5a0b0f !important;
 }
 } 
@@ -266,11 +266,22 @@
     .carousel {
         max-width: 1250px; 
         margin: 0 auto;
+        width: 100vw; 
+        /* height: 30vh; */
     }
+    .carousel-inner {
+    height: 40vh; 
+    background-color: #5a0b0f !important;
+}
+.carousel-item img {
     
+    width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain;
+
+}
 }
 
-    
     
 </style>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -278,8 +289,8 @@
 @section('content')
     <!-- home slider -->
     <div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
-    <!-- النقاط -->
-    <div class="carousel-indicators">
+    <!-- النقاط --> 
+    <div class="carousel-indicators"> 
         <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
         <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
         <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
@@ -291,7 +302,7 @@
     <div class="carousel-item active">
             <img class="d-block   "   src="{{asset('1.jpg')}}" alt="Los Angeles">
         </div>
-        <div class="carousel-item">
+        <div class="carousel-item"> 
             <img class="d-block   "  src="{{asset('2.jpg')}}" alt="Chicago">
         </div>
         <div class="carousel-item">
@@ -302,7 +313,7 @@
         </div>
     </div>
 
-    <!-- أزرار التنقل -->
+    <!-- أزرار التنقل --> 
     <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
         <span class="carousel-control-prev-icon"></span>
     </button>
@@ -313,19 +324,27 @@
     <!-- filter -->
     <!-- Start filter home with items -->
 
-    <div class="container my-3">
+    <div class="container ">
     <!-- Navigation Buttons -->
-    <div class="d-flex flex-wrap justify-content-center gap-3 mb-2 ">
+    <!-- <div class="d-flex flex-wrap justify-content-center gap-3 mb-2 ">
         <a href="{{route('cars.index')}}" class="nav-btn  text-decoration-none">
-            All Car
+           Cars
         </a>
         <a href="{{route('spareParts.index')}}" class="nav-btn text-decoration-none">
             Spare Parts
         </a>
 
         <a href="{{route('workshops.index')}}" class="nav-btn active text-decoration-none">
-            Work shops
+            Workshops
         </a>
+    </div> -->
+    <div class="d-flex flex-wrap justify-content-center gap-3 my-2">
+        <a href="{{route('cars.index')}}" class="nav-btn   text-decoration-none }">
+            Cars</a>
+        <a href="{{route('spareParts.index')}}"
+            class="nav-btn  text-decoration-none ">Spare Parts</a>
+            <a href="{{route('workshops.index')}}"
+            class="nav-btn active text-decoration-none ">WorkShops</a>
     </div>
 
     <!-- Filter Bar -->
@@ -344,7 +363,7 @@
                 </select>
             </div>
             
-            <!-- Workshop Dropdown -->
+            <!-- Workshop Dropdown  -->
             <div class="col-md-3">
                 <!-- <label for="workshop" class="form-label">Category</label> -->
                 <select class="form-select" id="workshop" name="workshop_category_id">
@@ -386,9 +405,10 @@
         <div class="custom-container main-car-list-sec my-4" >
     <div class="row">
         @foreach ($workshops as $workshop)
-                          <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3">
+        <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-3">
 
-                <div class="card shadow border-0 d-flex flex-column h-100" style="border-radius: 12px; overflow: hidden;">
+                <!-- <div class="card shadow border-0 d-flex flex-column h-100" style="border-radius: 12px; overflow: hidden;"> -->
+                <div class="car-card border-0 shadow d-flex flex-column h-100 " style="border-radius: 12px; overflow: hidden;">
                     
                 
              

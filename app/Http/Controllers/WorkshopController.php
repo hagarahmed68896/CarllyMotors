@@ -11,7 +11,7 @@ class WorkshopController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage    = request('perPage', 12);
+        $perPage    = request('perPage', 8);
         $currentUrl = url()->current();
 
         // Fetch distinct values for filters

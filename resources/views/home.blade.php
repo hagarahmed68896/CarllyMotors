@@ -118,7 +118,7 @@ use Illuminate\Support\Str;
         /* height: 30vh; */
     }
     .carousel-inner {
-    height: 40vh; 
+    height: 50vh; 
     background-color: #5a0b0f !important;
 }
 .carousel-item img {
@@ -438,6 +438,7 @@ use Illuminate\Support\Str;
         </div>
         @endforeach
     </div>
+
 </div> -->
 <div class="container py-5">
         <h2 class="mb-4">Popular Brands</h2>
