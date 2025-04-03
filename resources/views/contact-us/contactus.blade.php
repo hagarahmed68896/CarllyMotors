@@ -50,15 +50,15 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;  /* يملأ العرض بالكامل */
- /* يملأ الارتفاع بالكامل */
+    width: 100vw;  
+
     min-width: 100vw; 
     /* min-height: 100vh;  */
-    object-fit: contain; /* يظهر الصورة بالكامل دون قص */
+    object-fit: contain;
 
 }
 .carousel-inner {
-    height: 70vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    height: 70vh; 
 
 }
 
@@ -68,7 +68,7 @@ body {
 
 @media (max-width: 470px) {
     .carousel-inner {
-    height: 18vh; /* يجعل الكاروسيل يغطي كامل الشاشة */
+    height: 18vh; 
     background-color: #5a0b0f !important;
 }
 } 
@@ -79,6 +79,71 @@ body {
         margin: 0 auto;
     }
     
+}
+
+    
+</style>
+
+<style>
+    .custom-container {
+    width: 100%; /*`container-fluid` */
+
+}
+
+/*`container` */
+@media (min-width: 1400px) {
+    .custom-container {
+        max-width: 1250px; 
+        margin: 0 auto;
+    }
+
+
+}
+.carousel-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;  
+
+    min-width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain;
+
+}
+.carousel-inner {
+    height: 80vh;
+    background-color: #5a0b0f !important;
+}
+
+.carousel {
+    position: relative;
+}
+
+@media (max-width: 470px) {
+    .carousel-inner {
+    height: 18vh;
+    background-color: #5a0b0f !important;
+}
+} 
+
+@media (min-width: 1600px) {
+    .carousel {
+        max-width: 1250px; 
+        margin: 0 auto;
+        width: 100vw; 
+        /* height: 30vh; */
+    }
+    .carousel-inner {
+    height: 40vh; 
+    background-color: #5a0b0f !important;
+}
+.carousel-item img {
+    
+    width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain;
+
+}
 }
 
     

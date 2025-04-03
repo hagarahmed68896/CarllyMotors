@@ -198,44 +198,140 @@ input[type="number"] {}
 .actions i {
     font-size: 16px;
 }
+.carousel-control-prev, .carousel-control-next {
+            width: 8%;
+            padding: 5px;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            
+        }
+
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            padding: 5px;
+            width: 8%;
+            border-radius: 50%;
+            /* color: rgba(0, 0, 0, 0.5) !important; */
+        }
+
+        
+        .carousel-indicators [data-bs-target] {
+            background-color: #fff;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-bottom: 4px;
+        }
 </style>
 
+<style>
+    .custom-container {
+    width: 100%; /*`container-fluid` */
+
+}
+
+/*`container` */
+@media (min-width: 1400px) {
+    .custom-container {
+        max-width: 1250px;
+        margin: 0 auto;
+    }
+
+
+}
+.carousel-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;  
+
+    min-width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain;
+
+}
+.carousel-inner {
+    height: 80vh;
+    background-color: #5a0b0f !important;
+}
+
+.carousel {
+    position: relative;
+}
+
+@media (max-width: 470px) {
+    .carousel-inner {
+    height: 18vh;
+    background-color: #5a0b0f !important;
+}
+} 
+
+@media (min-width: 1600px) {
+    .carousel {
+        max-width: 1250px; 
+        margin: 0 auto;
+        width: 100vw; 
+        /* height: 30vh; */
+    }
+    .carousel-inner {
+    height: 40vh; 
+    background-color: #5a0b0f !important;
+}
+.carousel-item img {
+    
+    width: 100vw; 
+    /* min-height: 100vh;  */
+    object-fit: contain;
+
+}
+}
+
+    
+</style>
 @section('content')
 <!-- home slider -->
-<div id="demo" class="carousel slide home-slider" data-bs-interval="false">
+<div id="demo" class=" carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+    <!--  النقاط -->
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="3"></button>
+    </div>
 
-    <!-- The slideshow -->
+    <!-- الصور -->
     <div class="carousel-inner">
-        <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('1.jpg')}}" alt="Los Angeles">
+    <div class="carousel-item active">
+            <img class="d-block   "   src="{{asset('1.jpg')}}" alt="Los Angeles">
         </div>
         <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('2.jpg')}}" alt="Chicago">
+            <img class="d-block   "  src="{{asset('2.jpg')}}" alt="Chicago">
         </div>
         <div class="carousel-item">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('3.jpg')}}" alt="Chicago">
+            <img class="d-block   "  src="{{asset('3.jpg')}}" alt="Chicago">
         </div>
-        <div class="carousel-item active">
-            <img class="img-fluid w-100 mx-auto" src="{{asset('4.jpg')}}" alt="New York">
+        <div class="carousel-item">
+            <img class="d-block   "  src="{{asset('4.jpg')}}" alt="New York">
         </div>
     </div>
-    <!-- Left and right controls -->
-    <a class="carousel-control-prev" href="#demo" data-slide="prev">
+
+    <!-- أزرار التنقل -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
         <span class="carousel-control-prev-icon"></span>
-    </a>
-    <a class="carousel-control-next" href="#demo" data-slide="next">
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
         <span class="carousel-control-next-icon"></span>
-    </a>
+    </button>
 </div>
 
-<div class="container my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
+<!-- <div class="container my-6 main-home-filter-sec text-center" style="margin-top: 11px;"> -->
     <!-- List -->
-    <div class="tab-content" id="bodyTypeTabsContent">
-        <div class="container main-car-list-sec">
+    <div class="tab-content  text-center" id="bodyTypeTabsContent">
+        <div class="custom-container main-car-list-sec" >
             <div class="row">
                 @foreach ($carlisting as $key => $car)
 
-                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3">
+              
+                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3 ">
                     <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
                         <div class="car-image position-relative" style="
@@ -287,36 +383,36 @@ input[type="number"] {}
                             </div>
 
                             <div class="actions">
-                                <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fab fa-whatsapp"></i> WhatsApp
+                                <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
+                                        <i class="fab fa-whatsapp "  style="color: #198754; "></i> WhatsApp
                                     </button>
                                 </a>
                                 @if($os == 'Windows' || $os == 'Linux' )
-                                <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                <a href="https://wa.me/{{ $car->user->phone }}" target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px; margin-left:2px; margin-right:2px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Mac')
-                                <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user?->phone) }}>
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user->phone) }}>
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px; margin-left:2px; margin-right:2px;">
                                         <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @elseif($os == 'Android' || $os='iOS')
                                 <a href="tel:{{ $car->user->phone }}">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
-                                        <i class="fa fa-phone"></i> Make Call
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
+                                        <i class="fa fa-phone"></i> Call
                                     </button>
                                 </a>
                                 @else
                                 No OS Detected
                                 @endif
 
-                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', [ Crypt::encrypt($car->id)])) }}"
+                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', $car->id)) }}"
                                     target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 25px;">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
                                         <i class="fa fa-share"></i>
                                         Share
                                     </button>
@@ -329,7 +425,7 @@ input[type="number"] {}
             </div>
         </div>
     </div>
-</div>
+<!-- </div> -->
 
 @push('carlistingscript')
 {{-- Script related filters on carlisting page --}}

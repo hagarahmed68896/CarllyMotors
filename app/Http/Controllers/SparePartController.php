@@ -14,7 +14,7 @@ class SparePartController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage    = request('perPage', 12);
+        $perPage    = request('perPage', 8);
         $currentUrl = url()->current();
 
         $users = SparePart::select('user_id')
@@ -26,7 +26,7 @@ class SparePartController extends Controller
         if ($request->has('dealer_id')) {
             $dealers = CarDealer::where('id', $request->dealer_id)->get();
         } else {
-            $dealers = CarDealer::whereIn('user_id', $users)->paginate(12);
+            $dealers = CarDealer::whereIn('user_id', $users)->paginate(8);
 
         }
         // Fetch distinct values for filters
@@ -106,7 +106,7 @@ class SparePartController extends Controller
             $spareParts->where('price', $request->price);
         }
 
-        $spareParts = $spareParts->orderBy('id', 'DESC')->take(12)->get();
+        $spareParts = $spareParts->orderBy('id', 'DESC')->take(8)->get();
         // Return view with grouped data and other filter data
         return view('spareparts.homeSection', compact('spareParts', 'cities', 'makes', 'models', 'years', 'categories', 'prices', 'brands'));
 
@@ -178,7 +178,7 @@ class SparePartController extends Controller
             if ($request->has('dealer_id')) {
                 $dealers = CarDealer::where('id', $request->dealer_id)->whereIn('user_id', $spareParts)->get();
             } else {
-                $dealers = CarDealer::whereIn('user_id', $spareParts)->paginate(12);
+                $dealers = CarDealer::whereIn('user_id', $spareParts)->paginate(8);
             }
         }
         return view('spareparts.index', compact('dealers', 'spareParts', 'cities', 'makes', 'models', 'years', 'categories', 'conditions'));
