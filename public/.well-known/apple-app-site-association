@@ -1,0 +1,30 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "NDF299S2JC.com.carllymotors.carllyuser"
+        ],
+        "components": [
+          {
+            "/": "/car-listing/*",
+            "comment": "Car listing deep links - matches /car-listing/123"
+          },
+          {
+            "/": "/spare-part/*",
+            "comment": "Spare part deep links - matches /spare-part/456"
+          },
+          {
+            "/": "/workshops/*",
+            "comment": "Workshop deep links - matches /workshops/43"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "NDF299S2JC.com.carllymotors.carllyuser"
+    ]
+  }
+}

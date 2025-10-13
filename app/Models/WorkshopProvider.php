@@ -46,4 +46,9 @@ class WorkshopProvider extends Authenticatable
     {
         return $this->hasMany(WorkshopDay::class, 'workshop_provider_id');
     }
+
+    public function images()
+    {
+        return $this->hasMany(Image::class, 'workshop_provider_id');
+    }
 }

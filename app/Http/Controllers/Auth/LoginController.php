@@ -47,29 +47,31 @@ class LoginController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $request)
-    {
-        // Validate the login request
-        $request->validate([
-            'phone' => 'required',
-        ]);
+public function login(Request $request)
+{
+    $request->validate([
+        'phone' => ['required', 'regex:/^[0-9]{9,15}$/'],
+        'country_code' => ['required'],
+    ]);
 
-        // Attempt to find the user in the `allusers` table
-        $user = allUsersModel::where(['phone'=> $request->phone, 'userType' => 'user'])->first();
+    $fullPhone = $request->input('country_code') . $request->input('phone');
 
-        // Check if user exists and the password matches
-        if ($user) {
-            // Log the user in
-            Auth::guard('web')->login($user);
+    \Log::info('Attempting login with: ' . $fullPhone);
 
-            // Redirect to the intended page or home
-            return redirect()->route('home')
-                ->with('success', 'Logged in successfully.');
-        }
+    $user = allUsersModel::where('phone', $fullPhone)
+                         ->where('userType', 'user')
+                         ->first();
 
-        // If authentication fails, redirect back with an error
-        return back()->with('error' , 'Wrong Phone Number');
+    if ($user) {
+        Auth::login($user);
+        return redirect()->route('home')->with('success', 'Logged in successfully.');
     }
+
+    return back()->with('error', 'Wrong Phone Number');
+}
+
+
+
 
     /**
      * Log the user out of the application.

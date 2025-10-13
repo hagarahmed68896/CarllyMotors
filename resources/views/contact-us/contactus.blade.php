@@ -5,25 +5,8 @@
 body {
     background: #fafbfb;
 }
-.carousel-item img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        min-width: 100vw !important; 
-        height: 100vh;
-        object-fit: cover ;
-    }
-
-    .carousel-inner {
-        height: 70vh;
-        background-color: #5a0b0f !important;
-    }
-
-    .carousel {
-        position: relative;
-    }
-    .carousel-control-prev, .carousel-control-next {
-            width: 3%;
+.carousel-control-prev, .carousel-control-next {
+            width: 8%;
             padding: 5px;
             background-color: rgba(0, 0, 0, 0.5) !important;
             
@@ -86,15 +69,15 @@ body {
 
 <style>
     .custom-container {
-    width: 100%; /*`container-fluid` */
+    width: 100%; /* افتراضيًا يكون `container-fluid` */
 
 }
 
-/*`container` */
+/* عند تجاوز 1400px، يصبح مثل `container` */
 @media (min-width: 1400px) {
     .custom-container {
-        max-width: 1250px; 
-        margin: 0 auto;
+        max-width: 1250px; /* أو أي عرض مناسب */
+        margin: 0 auto; /* يضمن أن يكون في المنتصف */
     }
 
 
@@ -134,8 +117,10 @@ body {
         /* height: 30vh; */
     }
     .carousel-inner {
-    height: 40vh; 
+    height: 70vh; 
     background-color: #5a0b0f !important;
+    object-fit: contain;
+    width: 100%;
 }
 .carousel-item img {
     
@@ -148,6 +133,7 @@ body {
 
     
 </style>
+
 
 <!-- home slider -->
 <!-- <div id="demo" class="carousel slide home-slider" data-bs-interval="false">
@@ -176,8 +162,8 @@ body {
     </a>
 </div> -->
 
-<div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
-    <!-- النقاط -->
+<div id="demo" class=" carousel slide mt-1" data-bs-ride="carousel" data-bs-interval="2000">
+    <!--  النقاط -->
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
         <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>

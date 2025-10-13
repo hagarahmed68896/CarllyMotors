@@ -125,7 +125,7 @@ button[type='submit']:hover{
         <div class="card-body">
             <form action="{{route('cars.store')}}" method="POST" enctype="multipart/form-data" id="myFo">
                 @csrf
-                <input type="file" name="images[]" id="imageInput" class="d-none" accept="image/*" multiple>
+                <input type="file" name="images[]" id="imageInput" class="d-none" max="10" accept="image/*" multiple>
                 <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                 <div class="row">
                     <div class="mb-1 col-12">
@@ -269,6 +269,7 @@ button[type='submit']:hover{
                             name="price" placeholder="price" required>
                     </div>
 
+                    
 
                     <div class="mb-1 col-12" style="padding-bottom:10px;">
                         <input type="text" class="form-control" id="location" value="{{$user->location}}"

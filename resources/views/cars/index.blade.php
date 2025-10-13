@@ -228,15 +228,15 @@ input[type="number"] {}
 
 <style>
     .custom-container {
-    width: 100%; /* `container-fluid` */
+    width: 100%; /* افتراضيًا يكون `container-fluid` */
 
 }
 
-/*`container` */
+/* عند تجاوز 1400px، يصبح مثل `container` */
 @media (min-width: 1400px) {
     .custom-container {
-        max-width: 1250px; 
-        margin: 0 auto; 
+        max-width: 1250px; /* أو أي عرض مناسب */
+        margin: 0 auto; /* يضمن أن يكون في المنتصف */
     }
 
 
@@ -276,8 +276,10 @@ input[type="number"] {}
         /* height: 30vh; */
     }
     .carousel-inner {
-    height: 40vh; 
+    height: 70vh; 
     background-color: #5a0b0f !important;
+    object-fit: contain;
+    width: 100%;
 }
 .carousel-item img {
     
@@ -287,12 +289,19 @@ input[type="number"] {}
 
 }
 }
+.filter-bar .form-row > div {
+    margin-right: 0.75rem; /* مسافة بين العناصر */
+}
+.filter-bar .form-row > div:last-child {
+    margin-right: 0; /* إزالة المسافة من العنصر الأخير */
+}
+
 
     
 </style>
 
-<div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
-    <!-- النقاط -->
+<div id="demo" class=" carousel slide mt-1" data-bs-ride="carousel" data-bs-interval="2000">
+    <!--  النقاط -->
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
         <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
@@ -327,21 +336,29 @@ input[type="number"] {}
 <!-- filter -->
 
 <div class=" my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
-    <div class="d-flex flex-wrap justify-content-center gap-3">
+    <!-- <div class="d-flex flex-wrap justify-content-center gap-3">
         <a href="{{route('cars.index')}}" class="nav-btn active  text-decoration-none }">
             Cars</a>
         <a href="{{route('spareParts.index')}}"
             class="nav-btn  text-decoration-none ">Spare Parts</a>
             <a href="{{route('workshops.index')}}"
             class="nav-btn  text-decoration-none ">WorkShops</a>
-    </div>
+    </div> -->
+    <div class="d-flex flex-wrap justify-content-center gap-3 my-2">
+                <a href="{{route('cars.index')}}" class="nav-btn active  text-decoration-none }">
+                    Cars</a>
+                <a href="{{route('spareParts.index')}}" class="nav-btn  text-decoration-none ">Spare Parts</a>
+                <a href="{{route('workshops.index')}}" class="nav-btn  text-decoration-none ">WorkShops</a>
+            </div>
 
-    <div class="container filter-bar my-2">
-        <form class="form-row mb-0" id="filterForm" action="{{route('cars.index')}}" method="get">
+ <div class="container filter-bar my-2">
+    <!-- Scrollable wrapper -->
+    <div class="d-flex flex-nowrap overflow-auto gap-2 px-2 py-1" style="scroll-snap-type: x mandatory;">
+        <form class="form-row mb-0 d-flex flex-nowrap gap-3  justify-around" id="filterForm" action="{{route('cars.index')}}" method="get">
 
             <!-- car_type Dropdown -->
-            <div class="col-">
-                <select class="form-control" onchange="submitFilterForm()" name="car_type">
+            <div class="flex-shrink-0 me-3">
+                <select class="form-control" onchange="submitFilterForm()" name="car_type" data-placeholder="Select Car Type">
                     <option value="UsedOrNew" {{request('car_type') == 'UsedOrNew' ? 'selected' : ''}}>Used/New</option>
                     <option value="Imported" {{request('car_type') == 'Imported' ? 'selected' : ''}}>Imported</option>
                     <option value="Auction" {{request('car_type') == 'Auction' ? 'selected' : ''}}>Auction</option>
@@ -349,94 +366,99 @@ input[type="number"] {}
             </div>
 
             <!-- City Dropdown -->
-            <div class="col-">
-                <select class="form-control" onchange="submitFilterForm()" name="city">
+            <div class="flex-shrink-0 me-3">
+                <select class="form-control" onchange="submitFilterForm()" name="city" data-placeholder="Select City">
                     <option value="" selected>City</option>
                     @foreach($cities as $city)
-                    <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-                        {{ $city }}
-                    </option>
+                        <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
                     @endforeach
                 </select>
             </div>
 
             <!-- Make Dropdown -->
-            <div class="col-">
-                <select class="form-control" id="brand" name="make">
+            <div class="flex-shrink-0">
+                <select class="form-control" id="brand" name="make" data-placeholder="Select Make">
                     <option value="" selected>Make</option>
                     @foreach($makes as $make)
-                    <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>
-                        {{ $make }}
-                    </option>
+                        <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
                     @endforeach
                 </select>
             </div>
 
             <!-- Model Dropdown -->
-            <div class="col-">
-                <select class="form-control" onchange="submitFilterForm()" id="model" name="model">
+            <div class="flex-shrink-0">
+                <select class="form-control" onchange="submitFilterForm()" id="model" name="model" data-placeholder="Select Model">
                     <option value="" selected>Model</option>
                 </select>
             </div>
 
             <!-- Year Dropdown -->
-            <div class="col-">
-                <select class="form-control" onchange="submitFilterForm()" name="year">
+            <div class="flex-shrink-0">
+                <select class="form-control" onchange="submitFilterForm()" name="year" data-placeholder="Select Year">
                     <option value="" selected>Year</option>
                     @foreach($years as $year)
-                    <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>
-                        {{ $year }}
-                    </option>
+                        <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
                     @endforeach
                 </select>
             </div>
 
-           
             <!-- Body Type Dropdown -->
-            <div class="col-">
-                <select class="form-control" onchange="submitFilterForm()" name="body_type">
+            <div class="flex-shrink-0">
+                <select class="form-control" onchange="submitFilterForm()" name="body_type" data-placeholder="Select BodyType">
                     <option value="" selected>Body Type</option>
                     @foreach($bodyTypes as $bodyType)
-                    <option value="{{ $bodyType }}" {{ request('body_type') == $bodyType ? 'selected' : '' }}>
-                        {{ $bodyType }}
-                    </option>
+                        <option value="{{ $bodyType }}" {{ request('body_type') == $bodyType ? 'selected' : '' }}>{{ $bodyType }}</option>
                     @endforeach
                 </select>
             </div>
 
-            <!-- regionalSpecs Dropdown -->
-            <div class="col-">
-                <select class="form-control" onchange="submitFilterForm()" name="regionalSpecs">
-                    <option value="" selected>regionalSpecs</option>
+            <!-- Regional Specs -->
+            <div class="flex-shrink-0">
+                <select class="form-control" onchange="submitFilterForm()" name="regionalSpecs" data-placeholder="Select regionalSpecs">
+                    <option value="" selected>Regional Specs</option>
                     @foreach($regionalSpecs as $regionalSpec)
-                    <option value="{{ $regionalSpec }}"
-                        {{ request('regionalSpec') == $regionalSpec ? 'selected' : '' }}>
-                        {{ $regionalSpec }}
-                    </option>
+                        <option value="{{ $regionalSpec }}" {{ request('regionalSpec') == $regionalSpec ? 'selected' : '' }}>
+                            {{ $regionalSpec }}
+                        </option>
                     @endforeach
                 </select>
             </div>
 
-            <!-- Price Dropdown -->
-            <div class="col-">
-                <button type="button" class="btn " onclick="openModal()" style="    border: 1px solid #ccc ;">Price</button>
-                <div id="priceModal" class="modal">
-                    <span class="close" onclick="closeModal()">&times;</span>
-                    <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h1>
+            <!-- Price Modal Trigger -->
+            <!-- price -->
+        <!-- Price Modal Trigger -->
+<div class="flex-shrink-0">
+    <button type="button" class="form-control" onclick="openModal()">Price</button>
 
-                        <div class="price-range">
-                            <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}"
-                                value="{{request('priceFrom') != '' ? request('priceFrom') :$minPrice}}">
-                            <span>to</span>
-                            <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}"
-                                value="{{request('priceTo') != '' ? request('priceTo') :$maxPrice}}">
-                        </div>
 
-                        <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
-                </div>
-            </div>
+    <div id="priceModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h2>
+        <div class="price-range">
+            <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}" value="{{request('priceFrom') != '' ? request('priceFrom') : $minPrice}}">
+            <span>to</span>
+            <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}" value="{{request('priceTo') != '' ? request('priceTo') : $maxPrice}}">
+        </div>
+        <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
+    </div>
+</div>
+
         </form>
     </div>
+</div>
+
+<!-- Price Modal (كما هو بدون تغيير كبير) -->
+<!-- <div id="priceModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h2>
+    <div class="price-range">
+        <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}" value="{{request('priceFrom') != '' ? request('priceFrom') :$minPrice}}">
+        <span>to</span>
+        <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}" value="{{request('priceTo') != '' ? request('priceTo') :$maxPrice}}">
+    </div>
+    <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
+</div> -->
+
     <!-- List -->
 
  <div class="tab-content" id="bodyTypeTabsContent">
@@ -460,7 +482,8 @@ input[type="number"] {}
 
                             <a href="{{ route('car.detail', $car->id) }}"
                                 style="width: 100%; height: 100%; display: block;">
-                                <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
+                                @if($car->image != null)
+                                <img id="cardImage" src="{{ env("CLOUDFLARE_R2_URL").$car->images[0]->image}}"
                                     alt="Car Image"
                                        class=""
                                      style="
@@ -471,7 +494,21 @@ input[type="number"] {}
                                            transition: transform 0.3s ease-in-out;
                                             aspect-ratio: 16/9;
                                             cursor: pointer;" loading="lazy"
-                                    onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
+                                    onerror="this.onerror=null; this.src='{{ asset('carNotFound.jpg') }}">
+                                    @else
+                                    <img id="cardImage" src="{{ asset('carNotFound.jpg') }}"
+                                    alt="Car Image"
+                                       class=""
+                                     style="
+                                         height: 90% !important;
+                                            width: 100% !important;
+                                            object-fit: cover;
+                                           object-position: center;
+                                           transition: transform 0.3s ease-in-out;
+                                            aspect-ratio: 16/9;
+                                            cursor: pointer;" loading="lazy"
+                                    onerror="this.onerror=null; this.src='{{ asset('carNotFound.jpg') }}">
+                                    @endif
                             </a>
                             <!-- Badges -->
                             <div class="badge-year">{{ $car->listing_year }}</div>
@@ -548,9 +585,9 @@ input[type="number"] {}
                 {{ $carlisting->appends(['perPage' => request('perPage')])->links('vendor.pagination.bootstrap-4') }}
             </div> -->
             <div class="">
-    <!-- <h2 class="text-center">السيارات المتاحة</h2> -->
+    <!-- <h2 class="text-center">لسيارات المتحة</h2> -->
     <div class="row" id="car-list">
-        @include('cars.load_more') <!-- تحميل القائمة الأساسية -->
+        @include('cars.load_more') <!-- تحيل الائمة الأساية -->
     </div>
     <div id="loading" class="text-center" style="display: none;">
         <p>Loading..</p>
@@ -565,9 +602,46 @@ input[type="number"] {}
 @push('carlistingscript')
 {{-- Script related filters on carlisting page --}}
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+ر<!-- jQuery (مطلوب لـ Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
 
+<script>
+    $(document).ready(function() {
+        // تفعيل select2 على جميع selectات داخل الفورم
+        $('#filterForm select').select2({
+            // placeholder: "Select an option",
+            allowClear: true,
+            width: 'resolve'
+        });
+
+        // تنفيذ الفلترة عند تغيير أي حقل
+        $('#filterForm select').on('change', function () {
+            submitFilterForm();
+        });
+    });
+
+    // دالة إرسال الفورم
+    function submitFilterForm() {
+        document.getElementById("filterForm").submit();
+    }
+
+    // دوال فتح/إغلاق مودال السعر
+    function openModal() {
+        document.getElementById("priceModal").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("priceModal").style.display = "none";
+    }
+</script>
 
 <script>
    let page = 1;
@@ -583,7 +657,7 @@ $(window).scroll(function() {
 
 function loadMoreData() {
     loading = true;
-    $("#loading").show(); // عرض رسالة التحميل
+    $("#loading").show(); // عرض رساة التحمل
 
     $.ajax({
         url: '?page=' + (page + 1),
@@ -592,7 +666,7 @@ function loadMoreData() {
             if (data.trim() === '') {
                 $(window).off("scroll");
                 
-                $("#loading").text("لا يوجد المزيد من السيارات");
+                $("#loading").text("لا يوجد لمزيد من السيارا");
             } else {
                 $("#car-list").append(data);
                 page++;
@@ -600,7 +674,7 @@ function loadMoreData() {
         },
         error: function(xhr, status, error) {
             console.error("Error loading more cars:", error);
-            $("#loading").text("حدث خطأ، حاول مرة أخرى.");
+            $("#loading").text("حدث خطأ، حاول مة أخرى.");
         },
         complete: function() {
             loading = false;

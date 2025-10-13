@@ -198,64 +198,147 @@ input[type="number"] {}
     
 
 
-<div class="" id="bodyTypeTabsContent">
-    <div class="">
+<div class="tab-content" id="bodyTypeTabsContent">
+<div class=" main-car-list-sec">
             <div class="row">
                 @foreach ($carlisting as $key => $car)
+
                 <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
+                    <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
                         <!-- Car Image Section with Consistent Aspect Ratio -->
-                        <div class="car-image position-relative" style="
-                        width: 100%;
-                        height: 220px;
-                        background-color: #f0f0f0;
-                        border-radius: 10px;
-                        overflow: hidden;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                     
-                        "
-                        
-                        >
-                         <a href="{{ route('car.detail', $car->id) }}"
-                                style="width: 100%; height: 100%; display: block;">
-                                <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
-                                    alt="Car Image"
-                                       class="rounded-bottom"
-                                     style="
-                                         height: 90% !important;
-                                            width: 100% !important;
-                                            object-fit: cover;
-                                           object-position: center;
-                                           transition: transform 0.3s ease-in-out;
-                                            aspect-ratio: 16/9;
-                                            cursor: pointer;" loading="lazy"
-                                    onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
-                            </a>
-                            <div class="badge-year">{{ $car->listing_year }}</div>
-                        </div>
+                        <!-- Car Image Section with Consistent Aspect Ratio -->
+<div class="car-image position-relative" style="
+    width: 100%;
+    height: 220px;
+    background-color: #f0f0f0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+">
+
+    <a href="{{ route('car.detail', $car->id) }}" style="width: 100%; height: 100%; display: block;">
+        <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
+            alt="Car Image"
+            style="
+                height: 100% !important;
+                width: 100% !important;
+                object-fit: cover;
+                object-position: center;
+                transition: transform 0.3s ease-in-out;
+                aspect-ratio: 16/9;
+                cursor: pointer;
+            " loading="lazy"
+            onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
+    </a>
+
+    
+    <div style="
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 8px;
+        z-index: 10;
+    ">
+      <!-- زر المفضلة -->
+<div class="icon-group">
+    @if(auth()->check())
+        @php
+            $favCars = auth()->user()->favCars()->pluck('id')->toArray();
+        @endphp
+        <form action="{{ route('cars.addTofav', $car->id) }}" method="post">
+            @csrf
+            <button title="Add to fav" class="btn btn-sm" type="submit">
+                <i class="fas fa-heart fs-4" style="color: {{ in_array($car->id, $favCars) ? '#760e13' : 'gray' }}"></i>
+            </button>
+        </form>
+    @else
+        <a href="{{ route('login') }}" title="Login to add to fav" class="btn btn-sm">
+            <i class="fas fa-heart fs-4" style="color: gray"></i>
+        </a>
+    @endif
+</div>
+
+          
+        <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', $car->id)) }}"
+                                    target="_blank">
+                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
+                                        <i class="fa fa-share"></i>
+                                        
+                                    </button>
+                                </a>
+                                <div class="" style="
+            background: #760e13;
+            border: none;
+            color: #fff;
+            border-radius: 30%;
+            padding: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+        ">{{ $car->listing_year }}</div>
+    </div>
+
+    <!-- السنة -->
+</div>
+
 
                         <!-- Car Content Section -->
                         <div class="car-card-body">
 
                             <div class="price-location">
-                                <span class="price">AED {{$car->listing_price}}</span>
+                                <span class="price ">AED {{$car->listing_price}}</span>
                                 @if($car->user?->lat && $car->user?->lng)
                                 <a href="https://www.google.com/maps?q={{$car->user->lat}},{{$car->user->lng}}">
                                     <span class="location"><i class="fas fa-map-marker-alt"></i> {{$car->city}}</span>
                                 </a>
                                 @endif
                             </div>
+                            <h4 class="showroom-name" style="text-align: start !important;">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
 
-                            <h4 class="showroom-name">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
 
-                            <div class="car-details">
+                            <!-- <div class="car-details">
                                 <p><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
                                 <p><strong>Model:</strong> <span>{{$car->listing_model}}</span></p>
                                 <p><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
                                 <p><strong>Mileage:</strong> <span>215000 Kms</span></p>
-                            </div>
+                            </div> -->
+
+                            <!-- <div class="car-details" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px;">
+    <div>
+        <p><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
+    </div>
+    <div>
+        <p><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
+    </div>
+    <div>
+        <p><strong>Model:</strong> <span>{{$car->listing_model}}</span></p>
+    </div>
+    <div>
+        <p><strong>Mileage:</strong> <span>21..Kms</span></p>
+    </div>
+</div> -->
+
+<div class="car-details container">
+    <div class="row mb-2">
+        <div class="col-6">
+            <p><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
+        </div>
+        <div class="col-6">
+            <p><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <p><strong>Model:</strong> <span>{{$car->listing_model}}</span></p>
+        </div>
+        <div class="col-6">
+            <p><strong>Mileage:</strong> <span>215Kms</span></p>
+        </div>
+    </div>
+</div>
+
+
 
                             <div class="actions">
                                 <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
@@ -285,16 +368,14 @@ input[type="number"] {}
                                 No OS Detected
                                 @endif
 
-                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', $car->id)) }}"
-                                    target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
-                                        <i class="fa fa-share"></i>
-                                        Share
-                                    </button>
-                                </a>
-                                </div>
+                                
+                            </div>
                         </div>
                     </div>
+                    
                 </div>
+
+
                 @endforeach
-            </div>
+</div>
+

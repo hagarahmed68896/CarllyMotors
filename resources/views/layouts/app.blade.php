@@ -10,312 +10,403 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
     
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
-    <link rel="stylesheet" href="{{ url('assets/css/listing-detail.css') }}" />
-    <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}">
-
+    <!-- External Dependencies -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Single Integrated CSS File -->
+    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}?v={{ filemtime(public_path('assets/css/app.css')) }}">
+    
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="Find the best cars, spare parts, and workshops in UAE. Buy and sell cars with AutoDecar - Your trusted automotive partner.">
+    <meta name="keywords" content="cars, automotive, UAE, spare parts, workshops, buy car, sell car">
+    <meta name="author" content="AutoDecar">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="{{ config('app.name', 'AutoDecar') }}">
+    <meta property="og:description" content="Find the best cars, spare parts, and workshops in UAE">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 </head>
-<style>
-.navbar-nav .nav-link {
-    color: #fff;
-}
 
-.dropend .dropdown-toggle {
-    color: #760e13;
-    margin-left: 1em;
-}
+<body>
+    <!-- Enhanced White Header -->
+   @include('partials.navbar')
 
-.dropdown-toggle::after {
-    color: #760e13;
-}
+    <!-- Main Content with Consistent Layout -->
+    <main role="main" class="main-content">
+        @yield('content')
+    </main>
 
-.dropdown-item:hover {
-    background-color: #760e13;
-    color: #fff;
-    border-radius: 20%;
- 
-}
-
-.dropdown .dropdown-menu {
-    display: none;
-}
-
-.dropdown-menu a:hover {
-    text-decoration-color: #760e13;
-    border-color: #760e13;
-}
-
-.dropdown-menu a:focus {
-    border-color: #760e13;
-}
-
-.dropdown:hover>.dropdown-menu,
-.dropend:hover>.dropdown-menu {
-    display: block;
-    margin-top: 0.125em;
-    margin-left: 0.125em;
-}
-
-@media screen and (min-width: 769px) {
-    .dropend:hover>.dropdown-menu {
-        position: absolute;
-        top: 0;
-        left: 100%;
-    }
-
-    .dropend .dropdown-toggle {
-        margin-left: 0.5em;
-    }
-}
-</style>
-
-<body class="relative h-screen bg-gray-100">
-    <!-- Navbar -->
-<nav class=" navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2 ">
-    <div class="container "> 
-        <!-- Logo -->
-        <a class="navbar-brand" href="#">
-            <img src="{{asset('carllymotorsmainlogo_dark.png')}}" alt="AutoDecar" class="img-fluid" style="height: 50px;">
-        </a>
-
-         <!-- Mobile Toggle Button -->
-         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-        <!-- Navbar Links -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{route('home')}}">Home</a></li>
-                <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{route('cars.index')}}">Cars</a></li>
-                <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{route('spareParts.index')}}">Spare Parts</a></li>
-                <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{route('aboutus')}}">About us</a></li>
-                <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{route('contacts.index')}}">Contact</a></li>
-            </ul>
-
-            <!-- Icons & Buttons -->
-            <div class="d-flex align-items-center gap-3">
-                @if(auth()->check() == false)
-                <a class="btn" href="{{route('login')}}" style="background-color: #760e13; color: white;">Login</a>
-                @else
-                <a href="{{route('cars.create')}}" class="btn btn-success text-white">
-                    <i class="fas fa-plus"></i>
-                </a>
-                <a href="{{route('cars.favList')}}" class="btn btn-danger text-white " style="margin-right:2px ; margin-left:2px ;" >
-                    <i class="fas fa-heart"></i>
-                </a>
-
-                <a class="btn btn-danger text-white mr-1 "   href="#"  role="button" 
-                    
-                         >
-                       Place Your AD
-                    </a>
-
-                <div class="dropdown">
-                    <a class="btn btn-light border dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <i class="fas fa-user"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a href="{{route('profile', auth()->user()->id)}}" class="dropdown-item">Profile</a>
-                        </li>
-                        <li>
-                            <form method="post" action="{{route('logout')}}">
-                                @csrf
-                                <button class="dropdown-item" type="submit">Logout</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-                @endif
-            </div>
-        </div>
-    </div>
-</nav>
-
-<style>
-    .nav-link:hover, .nav-link:focus, .nav-link.active {
-        color: #760e13 !important;
-    }
-
-   
-</style>
-
-<style>
-    .nav-link:hover, .nav-link:focus, .nav-link.active {
-        color: #760e13 !important;
-        font-weight: bold !important;
-    }
-    .icons:hover{
-        color: #760e13 !important;
-    }
-</style>
-
-
-    <!-- breadcrumd-listting -->
-
-<!-- -->
-
-    @yield('content')
-
-    <footer class="footer py-4">
+    <!-- Enhanced Footer -->
+    <footer class="footer py-5">
         <div class="container">
-            <!-- Top Icons -->
-            {{--<div class="row g-4">
-                <div class="col-6 col-md-3">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <i class="fas fa-trophy me-3 fs-3"></i>
-                        <div>
-                            <h6 class="mb-0">Top 1 Americas</h6>
-                            <p class="mb-0">Largest Auto portal</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <i class="fas fa-car me-3 fs-3"></i>
-                        <div>
-                            <h6 class="mb-0">Car Sold</h6>
-                            <p class="mb-0">Every 5 minutes</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <i class="fas fa-tags me-3 fs-3"></i>
-                        <div>
-                            <h6 class="mb-0">Offers</h6>
-                            <p class="mb-0">Stay updated, pay less</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <i class="fas fa-balance-scale me-3 fs-3"></i>
-                        <div>
-                            <h6 class="mb-0">Compare</h6>
-                            <p class="mb-0">Decode the right car</p>
-                        </div>
-                    </div>
-                </div>
-            </div>--}}
-
-            <!-- Footer Links -->
-            <div class="row footer-links mt-4 g-4 text-md-start">
-                <div class='col-12 col-md-3'>
-                <a href="#" class="footer-logo">
-                            <img src="{{asset('carllymotors_logo_white-2048x526.png')}}" alt="AutoDecar" class="img-fluid"
-                                style="max-width: 150px;">
+            <!-- Footer Content -->
+            <div class="row footer-links g-4 text-md-start">
+                <!-- Brand Column -->
+                <div class="col-12 col-md-3">
+                    <a href="{{ route('home') }}" class="footer-logo d-block mb-3">
+                        <img src="{{ asset('carllymotors_logo_white-2048x526.png') }}" 
+                             alt="AutoDecar" 
+                             class="img-fluid"
+                             style="max-width: 150px;"
+                             loading="lazy">
+                    </a>
+                    <p class="text-muted mb-3">Your trusted partner for buying and selling cars in the UAE. Find your perfect car or sell your current one with ease.</p>
+                    
+                    <!-- Social Media Links -->
+                    <div class="social-icons d-flex gap-3">
+                        <a href="https://www.instagram.com/carllymotors?igsh=N3F5aHVpajd0ZnNk&utm_source=qr" 
+                           target="_blank" 
+                           rel="noopener"
+                           class="social-link"
+                           title="Follow us on Instagram"
+                           aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
                         </a>
- <div class="col-md-6 text-md-end">
-                        <div class="icons social-icons  d-flex justify-content-center justify-content-md-end gap-3 mt-3">
-                            <a href="https://www.instagram.com/carllymotors?igsh=N3F5aHVpajd0ZnNk&utm_source=qr"><i
-                                    class="fab fa-instagram fs-4" style="color:#fff ;"></i></a>
-                            <a href="https://www.tiktok.com/@carllymotors"><i class="fab fa-tiktok fs-4"
-                                    style="color:#fff"></i></a>
-                            <a href="https://x.com/carllymotors?s=11&mx=2"><i class="fab fa-twitter fs-4"
-                                    style="color:#fff"></i></a>
-                            <a href="https://wa.me/971566350025"><i class="fab fa-whatsapp fs-4"
-                                    style="color:#fff"></i></a>
-                        </div>
-            </div>
-                </div>
-                <div class="col-12 col-md-3">
-                    <h5>About Auto Decar</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{{route('aboutus')}}">About us</a></li>
-                        <li><a href="{{route('contacts.index')}}">Contact us</a></li>
-                        <li><a href="{{route('terms')}}">Terms & Conditions</a></li>
-                        <li><a href="{{route('privacy')}}">Privacy Policy</a></li>
-                        {{--<li><a href="{{route('faqs')}}">FAQs</a></li>--}}
-                    </ul>
-                </div>
-                <div class="col-12 col-md-3">
-                    <h5>Popular Used Cars</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Chevrolet</a></li>
-                        <li><a href="#">Ford</a></li>
-                        <li><a href="#">Toyota</a></li>
-                        <li><a href="#">BMW</a></li>
-                    </ul>
-                </div>
-                <div class="col-12 col-md-3">
-                    <h5>Newsletter</h5>
-                    <p>Stay on top of the latest car trends, tips, and tricks for selling your car.</p>
-
-                    <div class="input-group">
-                        <input type="email" class="form-control" placeholder="Your email address"
-                            aria-label="Your email address">
-                        <button class="btn bg-carlly" type="button">Send</button>
+                        <a href="https://www.tiktok.com/@carllymotors" 
+                           target="_blank" 
+                           rel="noopener"
+                           class="social-link"
+                           title="Follow us on TikTok"
+                           aria-label="TikTok">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="https://x.com/carllymotors?s=11&mx=2" 
+                           target="_blank" 
+                           rel="noopener"
+                           class="social-link"
+                           title="Follow us on Twitter"
+                           aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://wa.me/971566350025" 
+                           target="_blank" 
+                           rel="noopener"
+                           class="social-link"
+                           title="Contact us on WhatsApp"
+                           aria-label="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
+                </div>
+
+                <!-- About Column -->
+                <div class="col-12 col-md-3">
+                    <h5 class="footer-title">About Auto Decar</h5>
+                    <ul class="list-unstyled footer-list">
+                        <li><a href="{{ route('aboutus') }}"><i class="fas fa-chevron-right me-2"></i>About us</a></li>
+                        <li><a href="{{ route('contacts.index') }}"><i class="fas fa-chevron-right me-2"></i>Contact us</a></li>
+                        <li><a href="{{ route('terms') }}"><i class="fas fa-chevron-right me-2"></i>Terms & Conditions</a></li>
+                        <li><a href="{{ route('privacy') }}"><i class="fas fa-chevron-right me-2"></i>Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Popular Cars Column -->
+                <div class="col-12 col-md-3">
+                    <h5 class="footer-title">Popular Used Cars</h5>
+                    <ul class="list-unstyled footer-list">
+                        <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Chevrolet</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Ford</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Toyota</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right me-2"></i>BMW</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter Column -->
+                <div class="col-12 col-md-3">
+                    <h5 class="footer-title">Newsletter</h5>
+                    <p class="text-muted mb-3">Stay on top of the latest car trends, tips, and tricks for selling your car.</p>
+
+                    <form class="newsletter-form" action="#" method="POST">
+                        @csrf
+                        <div class="input-group mb-3">
+                            <input type="email" 
+                                   class="form-control" 
+                                   placeholder="Your email address"
+                                   aria-label="Your email address"
+                                   required>
+                            <button class="btn bg-carlly" type="submit">
+                                <i class="fas fa-paper-plane me-1"></i>Send
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
             <!-- Footer Bottom -->
-            <div class="footer-bottom mt-4">
-                <div class="row">
-                    <div class="col-md-12 mb-3 mb-md-0">
-                        <!-- <a href="#" class="footer-logo">
-                            <img src="{{asset('carllymotorsmainlogo_dark.png')}}" alt="AutoDecar" class="img-fluid"
-                                style="max-width: 150px;">
-                        </a> -->
-                        <p class="mt-2 d-flex justify-content-center">© 2025 Carlly Motors. All rights reserved</p>
-                    </div>
-                    <!-- <div class="col-md-6 text-md-end">
-                        <div class="d-flex justify-content-center justify-content-md-end gap-5">
-                            <a href="https://www.instagram.com/carllymotors?igsh=N3F5aHVpajd0ZnNk&utm_source=qr"><i
-                                    class="fab fa-instagram fs-4" style="color:#fff"></i></a>
-                            <a href="https://www.tiktok.com/@carllymotors"><i class="fab fa-tiktok fs-4"
-                                    style="color:#fff"></i></a>
-                            <a href="https://x.com/carllymotors?s=11&mx=2"><i class="fab fa-twitter fs-4"
-                                    style="color:#fff"></i></a>
-                            <a href="https://wa.me/971566350025"><i class="fab fa-whatsapp fs-4"
-                                    style="color:#fff"></i></a>
-                        </div> -->
+            <div class="footer-bottom mt-5 pt-4 border-top">
+                <div class="row align-items-center">
+                    <div class="col-md-12 text-center">
+                        <p class="mb-0 text-muted">
+                            © {{ date('Y') }} Carlly Motors. All rights reserved. 
+                            <span class="d-none d-md-inline">|</span>
+                            <br class="d-md-none">
+                            Made with <i class="fas fa-heart text-danger"></i> in UAE
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
 
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    @stack('carlistingscript')
-    {{-- Script related listing-details page --}}
+    <!-- JavaScript Dependencies -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
     <script>
-    $(document).ready(function() {
-        // Toggle the icon when accordion is expanded/collapsed
-        $('.accordion-button').on('click', function() {
-            const icon = $(this).find('.icon');
-            const isExpanded = $(this).attr('aria-expanded') === 'true';
+        $(document).ready(function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
 
-            // Remove rotate class from all icons
-            $('.icon').removeClass('rotate');
+            // Enhanced accordion toggle
+            $('.accordion-button').on('click', function() {
+                const icon = $(this).find('.icon');
+                const isExpanded = $(this).attr('aria-expanded') === 'true';
 
-            // Add rotate class if this item is expanded
-            if (!isExpanded) {
-                icon.addClass('rotate');
+                // Remove rotate class from all icons
+                $('.icon').removeClass('rotate');
+
+                // Add rotate class if this item is expanded
+                if (!isExpanded) {
+                    icon.addClass('rotate');
+                }
+            });
+
+            // Active navigation highlighting
+            let currentUrl = window.location.href;
+            document.querySelectorAll(".nav-link").forEach(link => {
+                if (link.href === currentUrl) {
+                    link.classList.add("active");
+                }
+            });
+
+            // Smooth scrolling for anchor links
+            $('a[href^="#"]').on('click', function(event) {
+                var target = $(this.getAttribute('href'));
+                if (target.length) {
+                    event.preventDefault();
+                    $('html, body').stop().animate({
+                        scrollTop: target.offset().top - 80
+                    }, 1000);
+                }
+            });
+
+            // Newsletter form enhancement
+            $('.newsletter-form').on('submit', function(e) {
+                e.preventDefault();
+                const email = $(this).find('input[type="email"]').val();
+                
+                // Add your newsletter subscription logic here
+                console.log('Newsletter subscription for:', email);
+                
+                // Show success message
+                const btn = $(this).find('.btn');
+                const originalText = btn.html();
+                btn.html('<i class="fas fa-check me-1"></i>Sent!');
+                btn.prop('disabled', true);
+                
+                setTimeout(() => {
+                    btn.html(originalText);
+                    btn.prop('disabled', false);
+                    $(this).find('input[type="email"]').val('');
+                }, 2000);
+            });
+
+            // Enhanced dropdown behavior
+            $('.dropdown').hover(
+                function() {
+                    $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(300);
+                },
+                function() {
+                    $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(300);
+                }
+            );
+
+            // Add loading state to buttons
+            $('.btn').on('click', function(e) {
+                if (!$(this).hasClass('no-loading') && !$(this).hasClass('dropdown-toggle')) {
+                    $(this).addClass('loading');
+                    setTimeout(() => {
+                        $(this).removeClass('loading');
+                    }, 1000);
+                }
+            });
+
+            // Navbar scroll effect
+            $(window).scroll(function() {
+                if ($(this).scrollTop() > 50) {
+                    $('.navbar').addClass('scrolled');
+                } else {
+                    $('.navbar').removeClass('scrolled');
+                }
+            });
+
+            // Mobile menu auto-close on link click
+            $('.navbar-nav .nav-link').on('click', function() {
+                if ($('.navbar-toggler').is(':visible')) {
+                    $('.navbar-collapse').collapse('hide');
+                }
+            });
+        });
+
+        // Performance optimization: Lazy load images
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.classList.remove('lazy');
+                            imageObserver.unobserve(img);
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+
+        // Enhanced error handling for images
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('img').forEach(img => {
+                img.addEventListener('error', function() {
+                    this.src = '{{ asset("placeholder-car.jpg") }}';
+                    this.alt = 'Image not available';
+                    this.classList.add('error-image');
+                });
+            });
+        });
+
+        // Accessibility: Skip to main content
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab' && e.target.tagName === 'BODY') {
+                const skipLink = document.createElement('a');
+                skipLink.href = '#main-content';
+                skipLink.textContent = 'Skip to main content';
+                skipLink.className = 'skip-link';
+                skipLink.style.cssText = 'position: absolute; top: -40px; left: 6px; background: #000; color: #fff; padding: 8px; z-index: 1000; text-decoration: none; border-radius: 4px;';
+                skipLink.addEventListener('focus', function() {
+                    this.style.top = '6px';
+                });
+                skipLink.addEventListener('blur', function() {
+                    this.style.top = '-40px';
+                });
+                document.body.insertBefore(skipLink, document.body.firstChild);
             }
         });
-    });
-    document.addEventListener("DOMContentLoaded", function() {
-        let currentUrl = window.location.href;
-        document.querySelectorAll(".nav-link").forEach(link => {
-            if (link.href === currentUrl) {
-                link.classList.add("active");
-            }
+
+        // Service Worker registration for PWA capabilities
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(function(err) {
+                        console.log('ServiceWorker registration failed');
+                    });
+            });
+        }
+
+        // Toast notification system
+        window.showToast = function(message, type = 'info', duration = 3000) {
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                max-width: 300px;
+                word-wrap: break-word;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, duration);
+        };
+
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            // Don't show toast for script errors in production
         });
-    });
+
+        // Add CSS animations for toast and other effects
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            .toast-content {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .error-image {
+                filter: grayscale(100%);
+                opacity: 0.7;
+            }
+            .navbar.scrolled {
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                backdrop-filter: blur(10px);
+            }
+            .skip-link:focus {
+                outline: 3px solid #760e13;
+                outline-offset: 2px;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 
+    <!-- Page-specific scripts -->
+    @stack('carlistingscript')
+    
+    <!-- Analytics (if needed) -->
+    @if(config('app.env') === 'production')
+        <!-- Add your analytics code here -->
+    @endif
 </body>
-
 </html>

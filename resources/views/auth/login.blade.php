@@ -29,6 +29,10 @@ input[type="text"],
 .alert {
     border-radius: 15px;
 }
+   select {
+      font-size: 16px;
+      font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
+    }
 </style>
 
 <body>
@@ -47,18 +51,107 @@ input[type="text"],
                         {{ session('error') }}
                     </div>
                     @endif
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone</label>
-                            <input type="text" class="form-control" id="phone" name="phone" required>
-                        </div>
+                  <form method="POST" action="{{ route('login') }}">
+    @csrf
 
-                        <button type="submit" class="btn bg-carlly w-100 text-decoration-none">Submit</button>
-                        <div class="sign-up mt-4">
-                            Don't have an account? <a href="{{route('register')}}" style="color:#760e13">Create One</a>
-                        </div>
-                    </form> 
+    {{-- Country Code Dropdown + Phone Input --}}
+    <div class="mb-3">
+        <label for="phone" class="form-label">Phone</label>
+       <div class="input-group">
+    <select name="country_code" class="form-select" style="max-width: 120px;" required>
+        <!-- <option value="93"> Afghanistan (+93)</option> -->
+<!-- <option value="355"> Albania (+355)</option>
+<option value="213"> Algeria (+213)</option>
+<option value="54"> Argentina (+54)</option>
+<option value="61"> Australia (+61)</option>
+<option value="43"> Austria (+43)</option>
+<option value="994"> Azerbaijan (+994)</option>
+<option value="880"> Bangladesh (+880)</option>
+<option value="32"> Belgium (+32)</option>
+<option value="591"> Bolivia (+591)</option>
+<option value="55"> Brazil (+55)</option>
+<option value="855"> Cambodia (+855)</option>
+<option value="1"> Canada (+1)</option>
+<option value="86"> China (+86)</option>
+<option value="57"> Colombia (+57)</option>
+<option value="385"> Croatia (+385)</option>
+<option value="420"> Czech Republic (+420)</option> -->
+<!-- <option value="45"> Denmark (+45)</option>
+<option value="20"> Egypt (+20)</option>
+<option value="593"> Ecuador (+593)</option>
+<option value="33"> France (+33)</option>
+<option value="49"> Germany (+49)</option> -->
+<!-- <option value="30"> Greece (+30)</option>
+<option value="91"> India (+91)</option>
+<option value="62"> Indonesia (+62)</option>
+<option value="98"> Iran (+98)</option>
+<option value="964"> Iraq (+964)</option>
+<option value="353"> Ireland (+353)</option>
+<option value="972"> Israel (+972)</option>
+<option value="39"> Italy (+39)</option>
+<option value="81"> Japan (+81)</option>
+<option value="962"> Jordan (+962)</option>
+<option value="254"> Kenya (+254)</option>
+<option value="965"> Kuwait (+965)</option>
+<option value="961"> Lebanon (+961)</option>
+<option value="218"> Libya (+218)</option>
+<option value="60"> Malaysia (+60)</option>
+<option value="212"> Morocco (+212)</option>
+<option value="31"> Netherlands (+31)</option>
+<option value="64"> New Zealand (+64)</option>
+<option value="234"> Nigeria (+234)</option>
+<option value="47"> Norway (+47)</option>
+<option value="968"> Oman (+968)</option>
+<option value="92"> Pakistan (+92)</option>
+<option value="970"> Palestine (+970)</option>
+<option value="507"> Panama (+507)</option>
+<option value="595"> Paraguay (+595)</option>
+<option value="51"> Peru (+51)</option>
+<option value="63"> Philippines (+63)</option>
+<option value="48"> Poland (+48)</option>
+<option value="351"> Portugal (+351)</option>
+<option value="974"> Qatar (+974)</option>
+<option value="40"> Romania (+40)</option>
+<option value="7"> Russia (+7)</option>
+<option value="966"> Saudi Arabia (+966)</option>
+<option value="221"> Senegal (+221)</option>
+<option value="381"> Serbia (+381)</option>
+<option value="65"> Singapore (+65)</option>
+<option value="27"> South Africa (+27)</option>
+<option value="82"> South Korea (+82)</option>
+<option value="34"> Spain (+34)</option>
+<option value="94"> Sri Lanka (+94)</option>
+<option value="963"> Syria (+963)</option>
+<option value="46"> Sweden (+46)</option>
+<option value="41"> Switzerland (+41)</option>
+<option value="66"> Thailand (+66)</option>
+<option value="216"> Tunisia (+216)</option>
+<option value="90"> Turkey (+90)</option> -->
+<option value="971"> UAE (+971)</option>
+<!-- <option value="44"> UK (+44)</option>
+<option value="1"> USA (+1)</option>
+<option value="998"> Uzbekistan (+998)</option>
+<option value="58"> Venezuela (+58)</option>
+<option value="84"> Vietnam (+84)</option>
+<option value="967"> Yemen (+967)</option> -->
+
+    </select>
+    <input type="text" class="form-control" id="phone" name="phone" required placeholder="Please enter phone">
+</div>
+
+
+        {{-- --}}
+        @error('phone')
+            <div class="text-danger mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <button type="submit" class="btn bg-carlly w-100 text-decoration-none">Submit</button>
+    <div class="sign-up mt-4">
+        Don't have an account? <a href="{{ route('register') }}" style="color:#760e13">Create One</a>
+    </div>
+</form>
+
                 </div>
             </div>
         </div>

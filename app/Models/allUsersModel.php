@@ -27,7 +27,7 @@ class allUsersModel extends Authenticatable
 
         public function favCars()
     {
-        return $this->belongsToMany(carListingModel::class, 'carlisting_allusers', 'user_id', 'carlisting_id');
+        return $this->belongsToMany(CarListingModel::class, 'carlisting_allusers', 'user_id', 'carlisting_id');
     }
 
 

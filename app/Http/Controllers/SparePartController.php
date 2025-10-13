@@ -27,13 +27,12 @@ class SparePartController extends Controller
             $dealers = CarDealer::where('id', $request->dealer_id)->get();
         } else {
             $dealers = CarDealer::whereIn('user_id', $users)->paginate(8);
-
         }
+
         // Fetch distinct values for filters
         $makes      = SparePart::select('brand')->distinct()->orderBy('brand')->pluck('brand');
         $models     = SparePart::select('model')->distinct()->orderBy('model')->pluck('model');
         $conditions = SparePart::select('part_type')->distinct()->orderBy('part_type')->pluck('part_type');
-
         $cities = SparePart::select('city')->distinct()->orderBy('city')->pluck('city');
 
         $category_ids = SparePart::distinct()->pluck('category_id')->toArray();
@@ -55,7 +54,6 @@ class SparePartController extends Controller
 
         // Return view with grouped data and other filter data
         return view('spareparts.index', compact('dealers', 'cities', 'makes', 'models', 'years', 'categories', 'conditions'));
-
     }
 
     public function homeSection(Request $request)
@@ -74,7 +72,7 @@ class SparePartController extends Controller
         $models       = SparePart::distinct()->pluck('model')->toArray();
         $years        = SparePart::distinct()->pluck('year')->toArray();
         $category_ids = SparePart::distinct()->pluck('category_id')->toArray();
-        $categories   = SparePartCategory::select('id', 'name')->whereIn('id', $category_ids)->distinct()->pluck('name')->toArray();
+        $categories   = SparepartCategory::select('id', 'name')->whereIn('id', $category_ids)->distinct()->pluck('name')->toArray();
         $prices       = SparePart::distinct()->pluck('price')->toArray();
 
         // city=&make=&model=&year=2020&body_type=&price=
@@ -98,7 +96,7 @@ class SparePartController extends Controller
         }
 
         if ($request->category) {
-            $category = SparePartCategory::select('id')->where('name', $request->category)->first();
+            $category = SparepartCategory::select('id')->where('name', $request->category)->first();
             $spareParts->where('category_id', $category->id);
         }
 
@@ -109,7 +107,6 @@ class SparePartController extends Controller
         $spareParts = $spareParts->orderBy('id', 'DESC')->take(8)->get();
         // Return view with grouped data and other filter data
         return view('spareparts.homeSection', compact('spareParts', 'cities', 'makes', 'models', 'years', 'categories', 'prices', 'brands'));
-
     }
 
     public function show(SparePart $sparePart)
@@ -125,11 +122,10 @@ class SparePartController extends Controller
         $makes      = SparePart::select('brand')->distinct()->orderBy('brand')->pluck('brand');
         $models     = SparePart::select('model')->distinct()->orderBy('model')->pluck('model');
         $conditions = SparePart::select('part_type')->distinct()->orderBy('part_type')->pluck('part_type');
-
         $cities = SparePart::select('city')->distinct()->orderBy('city')->pluck('city');
 
         $category_ids = SparePart::distinct()->pluck('category_id')->toArray();
-        $categories   = SparePartCategory::where('parent_id', null)->whereIn('id', $category_ids)->distinct()->pluck('name')->toArray();
+        $categories   = SparepartCategory::where('parent_id', null)->whereIn('id', $category_ids)->distinct()->pluck('name')->toArray();
 
         $years = SparePart::select('year')
             ->distinct()
@@ -148,12 +144,44 @@ class SparePartController extends Controller
         // Start the base query
         $query = SparePart::query();
 
-        // Apply filters
+        // Apply filters based on your URL parameters
+        if ($request->has('shop_id') && $request->shop_id != '') {
+            $query->where('user_id', $request->shop_id);
+        }
+
+        if ($request->has('car_type') && $request->car_type != '') {
+            $query->where('brand', $request->car_type);
+        }
+
+        if ($request->has('car_model') && $request->car_model != '') {
+            $query->where('model', 'like', '%' . $request->car_model . '%');
+        }
+
+        if ($request->has('year') && $request->year != '') {
+            $query->where('year', 'like', '%' . $request->year . '%');
+        }
+
+        if ($request->has('category') && $request->category != '') {
+            $category = SparepartCategory::select('id')->where('name', $request->category)->first();
+            if ($category) {
+                $query->where('category_id', $category->id);
+            }
+        }
+
+        if ($request->has('sub-category') && $request->input('sub-category') != '') {
+            $subCategory = SparepartCategory::select('id')->where('name', $request->input('sub-category'))->first();
+            if ($subCategory) {
+                $query->where('category_id', $subCategory->id);
+            }
+        }
+
+        // Legacy filters (keeping for backward compatibility)
         if ($request->has('make') && $request->make != '') {
             $query->where('brand', $request->make);
         }
+
         if ($request->has('model') && $request->model != '') {
-            $query->where('car_model', 'like', '%' . $request->model . '%');
+            $query->where('model', 'like', '%' . $request->model . '%');
         }
 
         if ($request->has('city') && $request->city != '') {
@@ -161,14 +189,12 @@ class SparePartController extends Controller
         }
 
         if ($request->has('subCategory') && $request->subCategory != '') {
-            $subCategory = SparePartCategory::select('id')->where(['name' => $request->subCategory])->first();
-            // dd($subCategory->id);
-            $query->where('category_id', $subCategory->id);
+            $subCategory = SparepartCategory::select('id')->where(['name' => $request->subCategory])->first();
+            if ($subCategory) {
+                $query->where('category_id', $subCategory->id);
+            }
         }
 
-        if ($request->has('year') && $request->year != '') {
-            $query->where('year', 'like', '%' . $request->year . '%');
-        }
         // final result of the filter
         $spareParts = $query->select('user_id')->distinct()->pluck('user_id');
 
@@ -181,15 +207,140 @@ class SparePartController extends Controller
                 $dealers = CarDealer::whereIn('user_id', $spareParts)->paginate(8);
             }
         }
-        return view('spareparts.index', compact('dealers', 'spareParts', 'cities', 'makes', 'models', 'years', 'categories', 'conditions'));
 
+        return view('spareparts.index', compact('dealers', 'spareParts', 'cities', 'makes', 'models', 'years', 'categories', 'conditions'));
     }
 
     public function getSubCategories(Request $request)
     {
-        $category      = SparePartCategory::where(['name' => $request->category, 'parent_id' => null])->first();
-        $subCategories = SparePartCategory::where('parent_id', $category->id)->distinct()->pluck('name');
+        $category      = SparepartCategory::where(['name' => $request->category, 'parent_id' => null])->first();
+        $subCategories = SparepartCategory::where('parent_id', $category->id)->distinct()->pluck('name');
 
         return response()->json(['subCategories' => $subCategories], 200);
+    }
+
+    /**
+     * Handle spare part requests with query parameters
+     * This method handles URLs like: /spare-part?id=123 or /spare-part?shop_id=688&car_type=Honda...
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Contracts\View\View
+     */
+    public function showFromQuery(Request $request)
+    {
+        // Check if there's an ID parameter for direct spare part view
+        $id = $request->query('id');
+        if ($id && is_numeric($id)) {
+            return redirect()->route('sparepart.detail', ['id' => $id]);
+        }
+
+        // If no direct ID, but has other filter parameters, show filtered results
+        // This handles URLs like: /spare-part?car_model=Civic&car_type=Honda&category=Engine...
+        if ($request->hasAny(['shop_id', 'car_type', 'car_model', 'year', 'category', 'sub-category', 'make', 'model', 'city', 'subCategory'])) {
+            // Call the existing filter method
+            return $this->filter($request);
+        }
+
+        // If no parameters, redirect to spare parts index/listing page
+        return redirect()->route('spareParts.index');
+    }
+
+    /**
+     * ✅ Deep Linking Spare Parts (Legacy method - keeping for compatibility)
+     */
+    public function deepLinkDetail(Request $request)
+    {
+        $shopId = $request->query('shop_id');
+
+        if (!$shopId || !is_numeric($shopId)) {
+            abort(404); // or return a default view
+        }
+
+        // Redirect to the dealer page or to the spareParts index with filters
+        return redirect()->route('spareparts.index', [
+            'shop_id' => $shopId,
+            'car_type' => $request->query('car_type'),
+            'car_model' => $request->query('car_model'),
+            'year' => $request->query('year'),
+            'category' => $request->query('category'),
+            'sub-category' => $request->query('sub-category'),
+            'vin-number' => $request->query('vin-number'),
+        ]);
+    }
+
+    /**
+     * Create a new spare part (if needed)
+     */
+    public function create()
+    {
+        $categories = SparepartCategory::where('parent_id', null)->get();
+        $brands = CarBrand::orderBy('name')->get();
+        
+        return view('spareparts.create', compact('categories', 'brands'));
+    }
+
+    /**
+     * Store a new spare part (if needed)
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'brand' => 'required|string',
+            'model' => 'required|string',
+            'year' => 'required|integer',
+            'category_id' => 'required|exists:sparepart_categories,id',
+            'part_type' => 'required|string',
+            'city' => 'required|string',
+        ]);
+
+        $sparePart = SparePart::create($request->all());
+
+        return redirect()->route('spareParts.index')->with('success', 'Spare part created successfully.');
+    }
+
+    /**
+     * Edit spare part (if needed)
+     */
+    public function edit(SparePart $sparePart)
+    {
+        $categories = SparepartCategory::where('parent_id', null)->get();
+        $brands = CarBrand::orderBy('name')->get();
+        
+        return view('spareparts.edit', compact('sparePart', 'categories', 'brands'));
+    }
+
+    /**
+     * Update spare part (if needed)
+     */
+    public function update(Request $request, SparePart $sparePart)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'brand' => 'required|string',
+            'model' => 'required|string',
+            'year' => 'required|integer',
+            'category_id' => 'required|exists:sparepart_categories,id',
+            'part_type' => 'required|string',
+            'city' => 'required|string',
+        ]);
+
+        $sparePart->update($request->all());
+
+        return redirect()->route('spareParts.show', $sparePart)->with('success', 'Spare part updated successfully.');
+    }
+
+    /**
+     * Delete spare part (if needed)
+     */
+    public function destroy(SparePart $sparePart)
+    {
+        $sparePart->delete();
+
+        return redirect()->route('spareParts.index')->with('success', 'Spare part deleted successfully.');
     }
 }

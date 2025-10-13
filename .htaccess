@@ -1,21 +1,24 @@
 <IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews
-    </IfModule>
-    
     RewriteEngine On
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-    
-    
-    
-    RewriteCond %{REQUEST_FILENAME} -d [OR]
+    RewriteBase /
+
+    # ✅ Allow direct access to .well-known files only (don't block universal links)
+    RewriteCond %{REQUEST_URI} ^/\.well-known/.*$ [NC]
     RewriteCond %{REQUEST_FILENAME} -f
-    RewriteRule ^ ^$1 [N]
-    
-    RewriteCond %{REQUEST_URI} (\.\w+$) [NC]
-    RewriteRule ^(.*)$ public/$1
-    
-    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule .* - [L]
+
+    # Laravel default
+    RewriteRule ^index\.php$ - [L]
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ server.php
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.php [L]
+</IfModule>
+
+# ✅ Force Content-Type for apple-app-site-association
+<IfModule LiteSpeed>
+    ForceType application/json
+</IfModule>
+
+<FilesMatch "apple-app-site-association">
+    Header set Content-Type "application/json"
+</FilesMatch>

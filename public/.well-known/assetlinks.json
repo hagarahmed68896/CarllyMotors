@@ -1,0 +1,15 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target" : { "namespace": "android_app", "package_name": "com.carllymotors.carllyuser",
+               "sha256_cert_fingerprints": [
+        "10:45:A1:61:3A:18:5E:8B:F9:F4:67:DD:E4:15:60:8A:97:3A:62:D6:53:5A:74:55:3E:4C:7F:70:00:AB:4B:0C",
+        "DD:CE:CB:BE:5E:C5:B0:DD:77:53:7D:A0:4D:0D:AD:95:2A:60:80:09:1C:DB:00:DB:84:85:58:31:79:65:76:1D",
+        "DE:20:AD:41:6D:A7:89:0F:E7:FD:8B:5B:63:98:A5:A3:14:F0:E7:37:FE:B7:0D:7B:AB:C4:B0:D9:23:40:00:41",
+        "D2:B4:82:CC:E3:67:7A:32:D8:09:7E:6C:A4:6C:D9:1A:C6:AD:0B:EB:91:D1:C5:70:AE:30:09:4B:08:A9:7E:1E",
+        "14:7C:2E:50:8C:40:3C:94:D6:D2:25:96:49:9B:85:17:C0:F9:6F:EF:43:38:3D:11:E1:19:A0:45:F8:36:97:A8",
+        "53:99:98:30:C4:8C:28:B1:63:AA:94:76:8C:58:97:CA:F6:9F:05:27:F2:8A:CA:FA:06:9B:AF:AB:2B:ED:DB:F4",
+        "38:C0:93:44:6F:AE:2E:5C:9B:43:BE:F7:30:24:AD:95:28:30:37:DA:F2:1E:F8:8C:D4:48:B1:F7:D3:77:C6:01"
+               
+               
+               ] }
+}]
