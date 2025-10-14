@@ -61,7 +61,7 @@
                              style="max-width: 150px;"
                              loading="lazy">
                     </a>
-                    <p class="text-muted mb-3">Your trusted partner for buying and selling cars in the UAE. Find your perfect car or sell your current one with ease.</p>
+                    <p class=" mb-3">Your trusted partner for buying and selling cars in the UAE. Find your perfect car or sell your current one with ease.</p>
                     
                     <!-- Social Media Links -->
                     <div class="social-icons d-flex gap-3">
@@ -125,7 +125,7 @@
                 <!-- Newsletter Column -->
                 <div class="col-12 col-md-3">
                     <h5 class="footer-title">Newsletter</h5>
-                    <p class="text-muted mb-3">Stay on top of the latest car trends, tips, and tricks for selling your car.</p>
+                    <p class=" mb-3">Stay on top of the latest car trends, tips, and tricks for selling your car.</p>
 
                     <form class="newsletter-form" action="#" method="POST">
                         @csrf
@@ -147,11 +147,11 @@
             <div class="footer-bottom mt-5 pt-4 border-top">
                 <div class="row align-items-center">
                     <div class="col-md-12 text-center">
-                        <p class="mb-0 text-muted">
+                        <p class="mb-0">
                             © {{ date('Y') }} Carlly Motors. All rights reserved. 
-                            <span class="d-none d-md-inline">|</span>
-                            <br class="d-md-none">
-                            Made with <i class="fas fa-heart text-danger"></i> in UAE
+                            {{-- <span class="d-none d-md-inline">|</span> --}}
+                            {{-- <br class="d-md-none"> --}}
+                            {{-- Made with <i class="fas fa-heart text-danger"></i> in UAE --}}
                         </p>
                     </div>
                 </div>

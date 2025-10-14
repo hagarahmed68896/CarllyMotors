@@ -429,17 +429,21 @@
                                                                             justify-content: center;
 
                                                                             ">
-                            @php
-                                $image = $workshop->workshop_logo ? env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo : asset('workshopNotFound.png');
-                            @endphp
-                            <img id="cardImage" src="{{ config('app.file_base_url') . $image }}" alt="Car Image" style="
-                                                                                  height: 100% !important;
-                                                                                  width: 100% !important;
-                                                                                    object-fit: cover;
-                                                                                    object-position: center;
-                                                                                    transition: transform 0.3s ease-in-out;
-                                                                                    aspect-ratio: 16/9;" loading="lazy"
-                                onerror="this.onerror=null; this.src='{{ $image }}'">
+                     @php
+    $image = $workshop->workshop_logo
+        ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
+            ? $workshop->workshop_logo
+            : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
+        : asset('workshopNotFound.png');
+@endphp
+
+<img id="cardImage"
+     src="{{ $image }}"
+     alt="Car Image"
+     style="height: 100% !important; width: 100% !important; object-fit: cover; object-position: center; transition: transform 0.3s ease-in-out; aspect-ratio: 16/9;"
+     loading="lazy"
+     onerror="this.onerror=null; this.src='{{ asset('workshopNotFound.png') }}'">
+
                         </div>
 
 

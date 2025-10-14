@@ -194,7 +194,9 @@
                             <i class="fas fa-user"></i>
                             {{$car->user?->fname}} {{$car->user?->lname}}
                         </p>
-                        <p class="price" style="color:#760e13">AED {{$car->listing_price}}</p>
+                        <p class="price" >
+                             <img style="width:17px; height: 17px;" src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}">
+                            {{$car->listing_price}}</p>
                         @if(auth()->check())
                                             @php
                                                 $favCars = auth()->user()->favCars()->pluck('id')->toArray();

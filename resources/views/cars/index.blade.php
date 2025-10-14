@@ -300,7 +300,7 @@ input[type="number"] {}
     
 </style>
 
-<div id="demo" class=" carousel slide mt-1" data-bs-ride="carousel" data-bs-interval="2000">
+{{-- <div id="demo" class=" carousel slide mt-1" data-bs-ride="carousel" data-bs-interval="2000">
     <!--  النقاط -->
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
@@ -332,422 +332,249 @@ input[type="number"] {}
     <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
         <span class="carousel-control-next-icon"></span>
     </button>
-</div>
+</div> --}}
 <!-- filter -->
 
-<div class=" my-6 main-home-filter-sec text-center" style="margin-top: 11px;">
-    <!-- <div class="d-flex flex-wrap justify-content-center gap-3">
-        <a href="{{route('cars.index')}}" class="nav-btn active  text-decoration-none }">
-            Cars</a>
-        <a href="{{route('spareParts.index')}}"
-            class="nav-btn  text-decoration-none ">Spare Parts</a>
-            <a href="{{route('workshops.index')}}"
-            class="nav-btn  text-decoration-none ">WorkShops</a>
-    </div> -->
-    <div class="d-flex flex-wrap justify-content-center gap-3 my-2">
-                <a href="{{route('cars.index')}}" class="nav-btn active  text-decoration-none }">
-                    Cars</a>
-                <a href="{{route('spareParts.index')}}" class="nav-btn  text-decoration-none ">Spare Parts</a>
-                <a href="{{route('workshops.index')}}" class="nav-btn  text-decoration-none ">WorkShops</a>
-            </div>
-
- <div class="container filter-bar my-2">
-    <!-- Scrollable wrapper -->
-    <div class="d-flex flex-nowrap overflow-auto gap-2 px-2 py-1" style="scroll-snap-type: x mandatory;">
-        <form class="form-row mb-0 d-flex flex-nowrap gap-3  justify-around" id="filterForm" action="{{route('cars.index')}}" method="get">
-
-            <!-- car_type Dropdown -->
-            <div class="flex-shrink-0 me-3">
-                <select class="form-control" onchange="submitFilterForm()" name="car_type" data-placeholder="Select Car Type">
-                    <option value="UsedOrNew" {{request('car_type') == 'UsedOrNew' ? 'selected' : ''}}>Used/New</option>
-                    <option value="Imported" {{request('car_type') == 'Imported' ? 'selected' : ''}}>Imported</option>
-                    <option value="Auction" {{request('car_type') == 'Auction' ? 'selected' : ''}}>Auction</option>
-                </select>
-            </div>
-
-            <!-- City Dropdown -->
-            <div class="flex-shrink-0 me-3">
-                <select class="form-control" onchange="submitFilterForm()" name="city" data-placeholder="Select City">
-                    <option value="" selected>City</option>
-                    @foreach($cities as $city)
-                        <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Make Dropdown -->
-            <div class="flex-shrink-0">
-                <select class="form-control" id="brand" name="make" data-placeholder="Select Make">
-                    <option value="" selected>Make</option>
-                    @foreach($makes as $make)
-                        <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Model Dropdown -->
-            <div class="flex-shrink-0">
-                <select class="form-control" onchange="submitFilterForm()" id="model" name="model" data-placeholder="Select Model">
-                    <option value="" selected>Model</option>
-                </select>
-            </div>
-
-            <!-- Year Dropdown -->
-            <div class="flex-shrink-0">
-                <select class="form-control" onchange="submitFilterForm()" name="year" data-placeholder="Select Year">
-                    <option value="" selected>Year</option>
-                    @foreach($years as $year)
-                        <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Body Type Dropdown -->
-            <div class="flex-shrink-0">
-                <select class="form-control" onchange="submitFilterForm()" name="body_type" data-placeholder="Select BodyType">
-                    <option value="" selected>Body Type</option>
-                    @foreach($bodyTypes as $bodyType)
-                        <option value="{{ $bodyType }}" {{ request('body_type') == $bodyType ? 'selected' : '' }}>{{ $bodyType }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Regional Specs -->
-            <div class="flex-shrink-0">
-                <select class="form-control" onchange="submitFilterForm()" name="regionalSpecs" data-placeholder="Select regionalSpecs">
-                    <option value="" selected>Regional Specs</option>
-                    @foreach($regionalSpecs as $regionalSpec)
-                        <option value="{{ $regionalSpec }}" {{ request('regionalSpec') == $regionalSpec ? 'selected' : '' }}>
-                            {{ $regionalSpec }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Price Modal Trigger -->
-            <!-- price -->
-        <!-- Price Modal Trigger -->
-<div class="flex-shrink-0">
-    <button type="button" class="form-control" onclick="openModal()">Price</button>
-
-
-    <div id="priceModal" class="modal">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h2>
-        <div class="price-range">
-            <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}" value="{{request('priceFrom') != '' ? request('priceFrom') : $minPrice}}">
-            <span>to</span>
-            <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}" value="{{request('priceTo') != '' ? request('priceTo') : $maxPrice}}">
+<div style="margin-left: 70px; margin-right:70px">
+  <div class="row px-6 py-5">
+    <!-- 🧭 Sidebar Filters -->
+    <aside class="col-lg-3 col-md-4 mb-4">
+      <div class="bg-white shadow-sm rounded-4 p-4 sticky-top" style="top: 90px; max-height: calc(100vh - 120px); overflow-y: auto;">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+          <h5 class="fw-bold text-dark mb-0">Filter Cars</h5>
+          <i class="fas fa-sliders-h text-secondary"></i>
         </div>
-        <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
-    </div>
-</div>
 
+        <form id="filterForm" method="GET" action="{{ route('cars.index') }}" class="d-flex flex-column gap-3">
+
+          <!-- Car Type -->
+          <div>
+            <label class="form-label fw-semibold small text-muted">Car Type</label>
+            <select class="form-select rounded-3" name="car_type" onchange="submitFilterForm()">
+              <option value="">All Types</option>
+              <option value="UsedOrNew" {{request('car_type')=='UsedOrNew'?'selected':''}}>Used/New</option>
+              <option value="Imported" {{request('car_type')=='Imported'?'selected':''}}>Imported</option>
+              <option value="Auction" {{request('car_type')=='Auction'?'selected':''}}>Auction</option>
+            </select>
+          </div>
+
+          <!-- City -->
+          <div>
+            <label class="form-label fw-semibold small text-muted">City</label>
+            <select class="form-select rounded-3" name="city" onchange="submitFilterForm()">
+              <option value="">All Cities</option>
+              @foreach($cities as $city)
+                <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
+              @endforeach
+            </select>
+          </div>
+
+          <!-- Make -->
+          <div>
+            <label class="form-label fw-semibold small text-muted">Make</label>
+            <select class="form-select rounded-3" id="brand" name="make" onchange="submitFilterForm()">
+              <option value="">All Makes</option>
+              @foreach($makes as $make)
+                <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
+              @endforeach
+            </select>
+          </div>
+
+          <!-- Model -->
+          <div>
+            <label class="form-label fw-semibold small text-muted">Model</label>
+            <select class="form-select rounded-3" id="model" name="model" onchange="submitFilterForm()">
+              <option value="">All Models</option>
+            </select>
+          </div>
+
+          <!-- Year -->
+          <div>
+            <label class="form-label fw-semibold small text-muted">Year</label>
+            <select class="form-select rounded-3" name="year" onchange="submitFilterForm()">
+              <option value="">All Years</option>
+              @foreach($years as $year)
+                <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
+              @endforeach
+            </select>
+          </div>
+
+          <!-- Body Type -->
+          <div>
+            <label class="form-label fw-semibold small text-muted">Body Type</label>
+            <select class="form-select rounded-3" name="body_type" onchange="submitFilterForm()">
+              <option value="">All Body Types</option>
+              @foreach($bodyTypes as $bodyType)
+                <option value="{{ $bodyType }}" {{ request('body_type') == $bodyType ? 'selected' : '' }}>{{ $bodyType }}</option>
+              @endforeach
+            </select>
+          </div>
+
+          <!-- Regional Specs -->
+          <div>
+            <label class="form-label fw-semibold small text-muted">Regional Specs</label>
+            <select class="form-select rounded-3" name="regionalSpecs" onchange="submitFilterForm()">
+              <option value="">All Specs</option>
+              @foreach($regionalSpecs as $regionalSpec)
+                <option value="{{ $regionalSpec }}" {{ request('regionalSpecs') == $regionalSpec ? 'selected' : '' }}>{{ $regionalSpec }}</option>
+              @endforeach
+            </select>
+          </div>
+
+          <!-- Price Range -->
+          <div class="border-top pt-3 mt-2">
+            <label class="form-label fw-semibold small text-muted">Price Range (AED)</label>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <input type="number" class="form-control rounded-3" name="priceFrom" placeholder="Min"
+                min="{{ $minPrice }}" max="{{ $maxPrice }}"
+                value="{{ request('priceFrom', $minPrice) }}">
+              <span class="fw-bold">–</span>
+              <input type="number" class="form-control rounded-3" name="priceTo" placeholder="Max"
+                min="{{ $minPrice }}" max="{{ $maxPrice }}"
+                value="{{ request('priceTo', $maxPrice) }}">
+            </div>
+<button type="submit" class="btn btn-sm btn-outline-dark w-100 rounded-3 apply-btn">
+  Apply
+</button>
+
+<style>
+.apply-btn {
+  transition: all 0.3s ease;
+  border-color: #760e13;
+  color: #760e13;
+}
+
+.apply-btn:hover {
+  background-color: #760e13;
+  color: #fff;
+  border-color: #760e13;
+}
+</style>
+          </div>
+
+          <!-- Buttons -->
+          <div class="d-flex gap-2 mt-3">
+<button type="submit" class="btn flex-fill rounded-3 text-white" style="background-color: #760e13; border-color: #760e13;">
+  Apply Filters
+</button>
+            <button type="button" onclick="resetFilters()" class="btn btn-light flex-fill rounded-3 border">Reset</button>
+          </div>
         </form>
+      </div>
+    </aside>
+
+  <!-- 🚘 Main Car Listings -->
+<div class="col-lg-9 col-md-8">
+  <div class="row g-4" id="car-list">
+    @foreach ($carlisting as $key => $car)
+<div class="col-sm-6 col-md-4 col-lg-4">
+        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
+          <!-- Image Section -->
+          <div class="position-relative" style="height: 200px;">
+            @php
+              $imageSrc = isset($car->images[0]->image)
+                ? env("CLOUDFLARE_R2_URL") . $car->images[0]->image
+                : asset('carNotFound.jpg');
+            @endphp
+            <a href="{{ route('car.detail', $car->id) }}">
+              <img src="{{ $imageSrc }}" class="card-img-top h-100 w-100" style="object-fit: cover" alt="{{ $car->listing_model }}" onerror="this.src='{{ asset('carNotFound.jpg') }}'">
+            </a>
+
+            <span class="badge bg-danger position-absolute top-0 start-0 m-2 px-3 py-1 rounded-pill">{{ $car->listing_year }}</span>
+
+          <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
+        @if(auth()->check())
+            @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
+            <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
+                @csrf
+                <button title="Add to favorites" 
+                        class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                        type="submit" 
+                        aria-label="Add to favorites"
+                        style="width: 32px; height: 32px; border-radius: 50%;">
+                    <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" 
+               title="Login to add to favorites" 
+               class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+               aria-label="Login to add to favorites"
+               style="width: 32px; height: 32px; border-radius: 50%;">
+                <i class="fas fa-heart" style="color: #6c757d;"></i>
+            </a>
+        @endif
+
+        <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" 
+           target="_blank" 
+           title="Share via WhatsApp"
+           aria-label="Share via WhatsApp"
+           class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+           style="width: 32px; height: 32px; border-radius: 50%;">
+            <i class="fas fa-share-alt" style="color: #25d366;"></i>
+        </a>
     </div>
-</div>
+          </div>
 
-<!-- Price Modal (كما هو بدون تغيير كبير) -->
-<!-- <div id="priceModal" class="modal">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <h2 style="color:#7b4b40; font-weight:bold; font-size: 20px;">Price</h2>
-    <div class="price-range">
-        <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice}}" max="{{$maxPrice}}" value="{{request('priceFrom') != '' ? request('priceFrom') :$minPrice}}">
-        <span>to</span>
-        <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice}}" max="{{$maxPrice}}" value="{{request('priceTo') != '' ? request('priceTo') :$maxPrice}}">
-    </div>
-    <button class="filter-btn" onclick="submitFilterForm()">Filter</button>
-</div> -->
+          <!-- Content Section -->
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between mb-2">
+                <h5 class="mb-0 fw-bold text-dark">
+                  <img src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}" alt="Price" width="14" height="14" class="me-1">
+                  {{ number_format($car->listing_price) }}
+                </h5>
+                @if($car->user?->lat && $car->user?->lng)
+                  <a href="https://www.google.com/maps?q={{ $car->user->lat }},{{ $car->user->lng }}" target="_blank" class="text-muted small text-decoration-none">
+                    <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $car->city }}
+                  </a>
+                @endif
+              </div>
 
-    <!-- List -->
+              <h6 class="fw-semibold mb-2 text-truncate" title="{{ $car->user?->fname }} {{ $car->user?->lname }}">
+                {{ $car->user?->fname }} {{ $car->user?->lname }}
+              </h6>
 
- <div class="tab-content" id="bodyTypeTabsContent">
-    <div class="custom-container main-car-list-sec">
-            <div class="row">
-                @foreach ($carlisting as $key => $car)
-
-                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                    <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
-                        <!-- Car Image Section with Consistent Aspect Ratio -->
-                        <div class="car-image position-relative" style="
-                        width: 100%;
-                        height: 220px;
-                        background-color: #f0f0f0;
-                        /* border-radius: 10px; */
-                        overflow: hidden;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
- ">
-
-                            <a href="{{ route('car.detail', $car->id) }}"
-                                style="width: 100%; height: 100%; display: block;">
-                                @if($car->image != null)
-                                <img id="cardImage" src="{{ env("CLOUDFLARE_R2_URL").$car->images[0]->image}}"
-                                    alt="Car Image"
-                                       class=""
-                                     style="
-                                         height: 90% !important;
-                                            width: 100% !important;
-                                            object-fit: cover;
-                                           object-position: center;
-                                           transition: transform 0.3s ease-in-out;
-                                            aspect-ratio: 16/9;
-                                            cursor: pointer;" loading="lazy"
-                                    onerror="this.onerror=null; this.src='{{ asset('carNotFound.jpg') }}">
-                                    @else
-                                    <img id="cardImage" src="{{ asset('carNotFound.jpg') }}"
-                                    alt="Car Image"
-                                       class=""
-                                     style="
-                                         height: 90% !important;
-                                            width: 100% !important;
-                                            object-fit: cover;
-                                           object-position: center;
-                                           transition: transform 0.3s ease-in-out;
-                                            aspect-ratio: 16/9;
-                                            cursor: pointer;" loading="lazy"
-                                    onerror="this.onerror=null; this.src='{{ asset('carNotFound.jpg') }}">
-                                    @endif
-                            </a>
-                            <!-- Badges -->
-                            <div class="badge-year">{{ $car->listing_year }}</div>
-                        </div>
-
-                        <!-- Car Content Section -->
-                        <div class="car-card-body">
-
-                            <div class="price-location">
-                                <span class="price">AED {{$car->listing_price}}</span>
-                                @if($car->user?->lat && $car->user?->lng)
-                                <a href="https://www.google.com/maps?q={{$car->user->lat}},{{$car->user->lng}}">
-                                    <span class="location"><i class="fas fa-map-marker-alt"></i> {{$car->city}}</span>
-                                </a>
-                                @endif
-                            </div>
-
-                            <h4 class="showroom-name">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
-
-                            <div class="car-details">
-                                <p><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
-                                <p><strong>Model:</strong> <span>{{$car->listing_model}}</span></p>
-                                <p><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
-                                <p><strong>Mileage:</strong> <span>215000 Kms</span></p>
-                            </div>
-
-                            <div class="actions">
-                                <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
-                                <button class="btn btn-outline-danger" style="border-radius: 15px;">
-                                        <i class="fab fa-whatsapp "  style="color: #198754; "></i> WhatsApp
-                                    </button>
-                                </a>
-                                @if($os == 'Windows' || $os == 'Linux' )
-                                <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 15px; margin-left:2px; margin-right:2px;">
-                                        <i class="fa fa-phone"></i> Call
-                                    </button>
-                                </a>
-                                @elseif($os == 'Mac')
-                                <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user?->phone) }}>
-                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
-                                        <i class="fa fa-phone"></i> Call
-                                    </button>
-                                </a>
-                                @elseif($os == 'Android' || $os='iOS')
-                                <a href="tel:{{ $car->user->phone }}">
-                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
-                                        <i class="fa fa-phone"></i> Make Call
-                                    </button>
-                                </a>
-                                @else
-                                No OS Detected
-                                @endif
-
-                                <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', $car->id)) }}"
-                                    target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
-                                        <i class="fa fa-share"></i>
-                                        Share
-                                    </button>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-
-
-                @endforeach
+              <ul class="list-unstyled small text-muted mb-3">
+                <li><strong>Type:</strong> {{ $car->listing_type }}</li>
+                <li><strong>Model:</strong> {{ $car->listing_model }}</li>
+                <li><strong>Year:</strong> {{ $car->listing_year }}</li>
+                <li><strong>Mileage:</strong> {{ $car->mileage ?? 'N/A' }} km</li>
+              </ul>
             </div>
 
-
-            <!-- <div class="pagination-links mb-0 d-flex justify-content-center" style="margin: 0;">
-                {{ $carlisting->appends(['perPage' => request('perPage')])->links('vendor.pagination.bootstrap-4') }}
-            </div> -->
-            <div class="">
-    <!-- <h2 class="text-center">لسيارات المتحة</h2> -->
-    <div class="row" id="car-list">
-        @include('cars.load_more') <!-- تحيل الائمة الأساية -->
-    </div>
-    <div id="loading" class="text-center" style="display: none;">
-        <p>Loading..</p>
-    </div>
-</div>
-
+            <div class="d-flex gap-2">
+              <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="btn btn-outline-success flex-fill rounded-3">
+                <i class="fab fa-whatsapp"></i>
+              </a>
+              <a href="tel:{{ $car->user?->phone }}" class="btn btn-outline-danger flex-fill rounded-3">
+                <i class="fa fa-phone"></i>
+              </a>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
+    @endforeach
+  </div>
+
+</div>
+
+  </div>
 </div>
 
 
-@push('carlistingscript')
-{{-- Script related filters on carlisting page --}}
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-ر<!-- jQuery (مطلوب لـ Select2) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-<!-- Select2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-
-
 <script>
-    $(document).ready(function() {
-        // تفعيل select2 على جميع selectات داخل الفورم
-        $('#filterForm select').select2({
-            // placeholder: "Select an option",
-            allowClear: true,
-            width: 'resolve'
-        });
+function resetFilters() {
+    // امسح كل الحقول في الفورم
+    const form = document.getElementById('filterForm');
+    form.reset();
 
-        // تنفيذ الفلترة عند تغيير أي حقل
-        $('#filterForm select').on('change', function () {
-            submitFilterForm();
-        });
-    });
-
-    // دالة إرسال الفورم
-    function submitFilterForm() {
-        document.getElementById("filterForm").submit();
-    }
-
-    // دوال فتح/إغلاق مودال السعر
-    function openModal() {
-        document.getElementById("priceModal").style.display = "block";
-    }
-
-    function closeModal() {
-        document.getElementById("priceModal").style.display = "none";
-    }
-</script>
-
-<script>
-   let page = 1;
-let loading = false;
-
-$(window).scroll(function() {
-    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
-        if (!loading) {
-            loadMoreData();
-        }
-    }
-});
-
-function loadMoreData() {
-    loading = true;
-    $("#loading").show(); // عرض رساة التحمل
-
-    $.ajax({
-        url: '?page=' + (page + 1),
-        type: 'GET',
-        success: function(data) {
-            if (data.trim() === '') {
-                $(window).off("scroll");
-                
-                $("#loading").text("لا يوجد لمزيد من السيارا");
-            } else {
-                $("#car-list").append(data);
-                page++;
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("Error loading more cars:", error);
-            $("#loading").text("حدث خطأ، حاول مة أخرى.");
-        },
-        complete: function() {
-            loading = false;
-            $("#loading").hide();
-        }
-    });
+    // أرجع المستخدم إلى الصفحة الأصلية بدون أي فلاتر
+    window.location.href = "{{ route('cars.index') }}";
 }
-
 </script>
 
 
 
 
-
-
-<script>
-function openModal() {
-    document.getElementById("priceModal").style.display = "block";
-}
-
-// Close Modal
-function closeModal() {
-    document.getElementById("priceModal").style.display = "none";
-}
-
-
-function submitFilterForm() {
-    document.getElementById('filterForm').submit();
-}
-
-function copyUrl(carUrl) {
-    navigator.clipboard.writeText(carUrl).then(() => {
-        alert('URL copied: ' + carUrl);
-    }).catch(err => {
-        console.error('Failed to copy URL: ', err);
-    });
-}
-
-$(document).on('change', '#brand', function() {
-    let brand = $(this).val();
-
-    if (brand) {
-        $.ajax({
-            url: "{{ route('getModels') }}", // Adjust this route as needed
-            method: "POST",
-            data: {
-                brand: brand,
-                _token: $('meta[name="csrf-token"]').attr(
-                    'content') // CSRF token for security
-            },
-            success: function(response) {
-                // console.log(response);
-
-                // Populate the child select box
-                $('#model').empty().append('<option value="">Select Model</option>');
-
-                response.models.forEach(function(model) {
-                    let modelName = model ?? 'No Parent';
-
-                    $('#model').append('<option value="' + modelName + '">' +
-                        modelName +
-                        '</option>');
-                });
-            },
-            error: function(xhr) {
-                console.error("Error fetching models:", xhr.responseText);
-            }
-        });
-    } else {
-        // Reset the child select box if no item is selected
-        $('#model').empty().append('<option value="">model</option>');
-    }
-});
-</script>
-@endpush
 @endsection

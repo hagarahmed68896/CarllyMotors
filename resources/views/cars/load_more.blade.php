@@ -1,381 +1,293 @@
 <style>
-/* Price Input Fields */
-.price-range {
+.car-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #fff;
+    margin-bottom: 25px;
+}
+
+.car-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.car-image {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: #f8f8f8;
+}
+
+.car-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.car-image:hover img {
+    transform: scale(1.05);
+}
+
+/* Top-right icon area */
+.car-image .icon-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+}
+
+.icon-actions button,
+.icon-actions a {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: background 0.3s;
+}
+
+.icon-actions i {
     font-size: 16px;
-    font-weight: bold;
-    margin-top: 10%;
-
 }
 
-input[type="number"] {}
-
-/* Range Slider Wrapper */
-.range-slider {
-    position: relative;
-    width: 100%;
-    margin: 20px 0;
-    height: 6px;
-    background: #e3c5b5;
-    /* Light brown background */
-    border-radius: 5px;
+.icon-actions button:hover,
+.icon-actions a:hover {
+    background: #fff;
 }
 
-/* Range Inputs */
-.range-slider input[type="range"] {
+/* Year badge */
+.car-year-badge {
     position: absolute;
-    width: 100%;
-    appearance: none;
-    background: transparent;
-    pointer-events: none;
-    /* Makes the background clickable */
+    top: 10px;
+    left: 10px;
+    background: #760e13;
+    color: #fff;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 14px;
 }
 
-/* Styling the Track */
-.range-slider input[type="range"]::-webkit-slider-runnable-track {
-    height: 6px;
-    background: transparent;
-    border-radius: 5px;
-}
-
-/* Styling the Thumbs */
-.range-slider input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #7b4b40;
-    border-radius: 50%;
-    cursor: pointer;
-    pointer-events: auto;
-    /* Allows interaction */
-    margin-top: -7px;
-    /* Adjust thumb position */
-}
-
-/* Filter Button */
-.filter-btn {
-    width: 100% !important;
-    padding: 12px !important;
-    background: #9b3128 !important;
-    color: white !important;
-    font-size: 16px !important;
-    font-weight: bold !important;
-    border: none !important;
-    border-radius: 8px !important;
-    cursor: pointer !important;
-    margin-top: 20px !important;
-}
-
-.filter-btn:hover {
-    background: #80251e;
-}
-
-.close {
-    cursor: pointer;
-}
-
-.button-like-select {
-    background-color: #80251e;
-
-    /* Adjust padding */
-    border: 1px solid #ccc !important;
-
-}
-
-/* Optional: Hover effect similar to select */
-.button-like-select:hover {
-    background-color: #f0f0f0 !important;
-}
-
-/* Optional: Active effect */
-.button-like-select:active {
-    background-color: #e0e0e0 !important;
-
-}
-
-.main-home-filter-sec {
-    margin-top: 11px !important;
-    z-index: 1;
-    position: relative;
-}
-
-.main-car-list-sec .badge-featured,
-.badge-year {
-    background-color: #760e13 !important;
-}
-
-
+/* Content */
 .car-card-body {
-    background-color: #f3f3f3;
-    border-radius: 15px;
+    background: #f9f9f9;
+    border-radius: 0 0 12px 12px;
     padding: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: Arial, sans-serif;
-    color: #4a4a4a;
-    /* border-top: 5px solid #760e13; */
-
 }
 
 .price-location {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 18px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .price {
     color: #760e13;
-    font-size: 22px;
+    font-size: 18px;
 }
 
 .location {
-    color: #4a4a4a;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
+    color: #444;
+    font-size: 14px;
 }
 
 .location i {
-    margin-right: 5px;
     color: #760e13;
+    margin-right: 4px;
 }
 
 .showroom-name {
-    font-size: 20px;
     font-weight: bold;
-    margin-bottom: 12px;
-    color: #333;
+    font-size: 16px;
+    color: #222;
+    margin-bottom: 10px;
+    text-align: left;
 }
 
 .car-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
     font-size: 14px;
-
-    color: #6b6b6b;
+    color: #555;
+    text-align: left;
+    margin-bottom: 12px;
 }
 
 .car-details p {
-    margin: 5px 0;
+    margin: 3px 0;
 }
 
-.car-details strong {
-    color: #4a4a4a;
-    font-weight: bold;
-}
-
+/* Buttons */
 .actions {
     display: flex;
-    justify-content: space-around;
-    margin-top: 15px;
+    justify-content: space-between;
+    gap: 8px;
 }
 
-.call-btn {
-    background-color: #760e13;
-    color: white;
+.actions .btn {
+    flex: 1;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    background: transparent;
+    border-width: 2px;
+    transition: 0.3s;
+}
+
+.actions .btn-outline-success {
+    border-color: #198754;
+    color: #198754;
+}
+
+.actions .btn-outline-success:hover {
+    background: #198754;
+    color: #fff;
+}
+
+.actions .btn-outline-danger {
     border-color: #760e13;
-}
-
-.share-btn {
-    background-color: #f3f3f3;
     color: #760e13;
-    border-color: #760e13;
 }
 
-.actions i {
-    font-size: 16px;
+.actions .btn-outline-danger:hover {
+    background: #760e13;
+    color: #fff;
 }
 
 </style>
 
+{{-- <div class="tab-content" id="bodyTypeTabsContent">
+    <div class="main-car-list-sec">
+        <div class="row"> --}}
+              @foreach ($carlisting as $key => $car)
+<div class="col-sm-6 col-md-4 col-lg-4">
+        <div class="car-card shadow-sm border-0 h-100" style="border-radius: 12px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+            
+       <!-- Image Section -->
+<div class="position-relative" style="width: 100%; height: 200px; background-color: #f9f9f9; overflow: hidden; border-radius: 10px;">
+    <a href="{{ route('car.detail', $car->id) }}" class="d-block h-100 w-100">
+        @php
+            $imageSrc = isset($car->images[0]->image)
+                ? env("CLOUDFLARE_R2_URL") . $car->images[0]->image
+                : asset('carNotFound.jpg');
+        @endphp
 
-    
-
-
-<div class="tab-content" id="bodyTypeTabsContent">
-<div class=" main-car-list-sec">
-            <div class="row">
-                @foreach ($carlisting as $key => $car)
-
-                <div class="col-sm-3 col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                    <div class="car-card border-0 shadow" style="border-radius: 12px; overflow: hidden;">
-                        <!-- Car Image Section with Consistent Aspect Ratio -->
-                        <!-- Car Image Section with Consistent Aspect Ratio -->
-<div class="car-image position-relative" style="
-    width: 100%;
-    height: 220px;
-    background-color: #f0f0f0;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-">
-
-    <a href="{{ route('car.detail', $car->id) }}" style="width: 100%; height: 100%; display: block;">
-        <img id="cardImage" src="{{ config('app.file_base_url') . $car->listing_img1 }}"
-            alt="Car Image"
-            style="
-                height: 100% !important;
-                width: 100% !important;
-                object-fit: cover;
-                object-position: center;
-                transition: transform 0.3s ease-in-out;
-                aspect-ratio: 16/9;
-                cursor: pointer;
-            " loading="lazy"
-            onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';">
+        <img src="{{ $imageSrc }}"
+             alt="{{ $car->listing_model }}"
+             class="img-fluid"
+             style="height: 100%; width: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+             loading="lazy"
+             onerror="this.src='{{ asset('carNotFound.jpg') }}'">
     </a>
 
-    
-    <div style="
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        display: flex;
-        gap: 8px;
-        z-index: 10;
-    ">
-      <!-- زر المفضلة -->
-<div class="icon-group">
-    @if(auth()->check())
-        @php
-            $favCars = auth()->user()->favCars()->pluck('id')->toArray();
-        @endphp
-        <form action="{{ route('cars.addTofav', $car->id) }}" method="post">
-            @csrf
-            <button title="Add to fav" class="btn btn-sm" type="submit">
-                <i class="fas fa-heart fs-4" style="color: {{ in_array($car->id, $favCars) ? '#760e13' : 'gray' }}"></i>
-            </button>
-        </form>
-    @else
-        <a href="{{ route('login') }}" title="Login to add to fav" class="btn btn-sm">
-            <i class="fas fa-heart fs-4" style="color: gray"></i>
+    <!-- Year Badge -->
+    <span class="badge bg-danger position-absolute top-0 start-0 m-2 px-3 py-1" style="border-radius: 10px;">
+        {{ $car->listing_year }}
+    </span>
+
+    <!-- Favorite & Share Buttons -->
+    <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
+        @if(auth()->check())
+            @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
+            <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
+                @csrf
+                <button title="Add to favorites" 
+                        class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                        type="submit" 
+                        aria-label="Add to favorites"
+                        style="width: 32px; height: 32px; border-radius: 50%;">
+                    <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" 
+               title="Login to add to favorites" 
+               class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+               aria-label="Login to add to favorites"
+               style="width: 32px; height: 32px; border-radius: 50%;">
+                <i class="fas fa-heart" style="color: #6c757d;"></i>
+            </a>
+        @endif
+
+        <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" 
+           target="_blank" 
+           title="Share via WhatsApp"
+           aria-label="Share via WhatsApp"
+           class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+           style="width: 32px; height: 32px; border-radius: 50%;">
+            <i class="fas fa-share-alt" style="color: #25d366;"></i>
         </a>
-    @endif
-</div>
-
-          
-        <a href=" https://wa.me/?text={{ urlencode('Hello, i recommend you to check this car ' . route('car.detail', $car->id)) }}"
-                                    target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
-                                        <i class="fa fa-share"></i>
-                                        
-                                    </button>
-                                </a>
-                                <div class="" style="
-            background: #760e13;
-            border: none;
-            color: #fff;
-            border-radius: 30%;
-            padding: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            cursor: pointer;
-        ">{{ $car->listing_year }}</div>
-    </div>
-
-    <!-- السنة -->
-</div>
-
-
-                        <!-- Car Content Section -->
-                        <div class="car-card-body">
-
-                            <div class="price-location">
-                                <span class="price ">AED {{$car->listing_price}}</span>
-                                @if($car->user?->lat && $car->user?->lng)
-                                <a href="https://www.google.com/maps?q={{$car->user->lat}},{{$car->user->lng}}">
-                                    <span class="location"><i class="fas fa-map-marker-alt"></i> {{$car->city}}</span>
-                                </a>
-                                @endif
-                            </div>
-                            <h4 class="showroom-name" style="text-align: start !important;">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
-
-
-                            <!-- <div class="car-details">
-                                <p><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
-                                <p><strong>Model:</strong> <span>{{$car->listing_model}}</span></p>
-                                <p><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
-                                <p><strong>Mileage:</strong> <span>215000 Kms</span></p>
-                            </div> -->
-
-                            <!-- <div class="car-details" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px;">
-    <div>
-        <p><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
-    </div>
-    <div>
-        <p><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
-    </div>
-    <div>
-        <p><strong>Model:</strong> <span>{{$car->listing_model}}</span></p>
-    </div>
-    <div>
-        <p><strong>Mileage:</strong> <span>21..Kms</span></p>
-    </div>
-</div> -->
-
-<div class="car-details container">
-    <div class="row mb-2">
-        <div class="col-6">
-            <p><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
-        </div>
-        <div class="col-6">
-            <p><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-6">
-            <p><strong>Model:</strong> <span>{{$car->listing_model}}</span></p>
-        </div>
-        <div class="col-6">
-            <p><strong>Mileage:</strong> <span>215Kms</span></p>
-        </div>
     </div>
 </div>
 
 
+            <!-- Content Section -->
+            <div class="p-3 d-flex flex-column justify-content-between" style="min-height: 230px;">
+                <div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-bold ">
+                            <img src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}" 
+                                 alt="Price" width="14" height="14" class="me-1">
+                            {{ number_format($car->listing_price) }}
+                        </span>
 
-                            <div class="actions">
-                                <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
-                                <button class="btn btn-outline-danger" style="border-radius: 15px;">
-                                        <i class="fab fa-whatsapp "  style="color: #198754; "></i> WhatsApp
-                                    </button>
-                                </a>
-                                @if($os == 'Windows' || $os == 'Linux' )
-                                <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank">
-                                    <button class="btn btn-outline-danger" style="border-radius: 15px; margin-left:2px; margin-right:2px;">
-                                        <i class="fa fa-phone"></i> Call
-                                    </button>
-                                </a>
-                                @elseif($os == 'Mac')
-                                <a href={{ 'https://faceapp.com?phone=' . urlencode($car->user?->phone) }}>
-                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
-                                        <i class="fa fa-phone"></i> Call
-                                    </button>
-                                </a>
-                                @elseif($os == 'Android' || $os='iOS')
-                                <a href="tel:{{ $car->user->phone }}">
-                                    <button class="btn btn-outline-danger" style="border-radius: 15px;">
-                                        <i class="fa fa-phone"></i> Make Call
-                                    </button>
-                                </a>
-                                @else
-                                No OS Detected
-                                @endif
-
-                                
-                            </div>
-                        </div>
+                        @if($car->user?->lat && $car->user?->lng)
+                            <a href="https://www.google.com/maps?q={{ $car->user->lat }},{{ $car->user->lng }}" 
+                               target="_blank" class="text-muted small text-decoration-none">
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i> {{ $car->city }}
+                            </a>
+                        @endif
                     </div>
-                    
+
+                  <h5 class="text-dark fw-semibold mb-2 text-truncate text-start" 
+    title="{{ $car->user?->fname }} {{ $car->user?->lname }}">
+    {{ $car->user?->fname }} {{ $car->user?->lname }}
+</h5>
+
+<ul class="list-unstyled mb-3 small text-muted text-start">
+    <li><strong>Make:</strong> {{ $car->listing_type }}</li>
+    <li><strong>Model:</strong> {{ $car->listing_model }}</li>
+    <li><strong>Year:</strong> {{ $car->listing_year }}</li>
+    <li><strong>Mileage:</strong> {{ $car->mileage ?? '215K' }} km</li>
+</ul>
+
                 </div>
 
+                <!-- Action Buttons -->
+              <div class="d-flex justify-content-between">
+    <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" 
+       class="btn btn-outline-success flex-fill me-2" 
+       style="border-radius: 10px;">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
-                @endforeach
+    <a href="tel:{{ $car->user?->phone }}" 
+       class="btn btn-outline-danger flex-fill me-2" 
+       style="border-radius: 10px;">
+        <i class="fa fa-phone"></i>
+    </a>
+
+    {{-- <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" 
+       target="_blank" 
+       class="btn btn-outline-primary flex-fill" 
+       style="border-radius: 10px;">
+        <i class="fa fa-share"></i>
+    </a> --}}
 </div>
 
+            </div>
+        </div>
+    </div>
+@endforeach
+        {{-- </div>
+    </div>
+</div> --}}

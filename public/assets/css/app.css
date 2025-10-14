@@ -318,12 +318,28 @@ body {
 
 
 
+
+
+
+
+
+
+
+
 }
 .main-content {
   flex: 1;
   order: 1;
   /* Content on left */
     
+
+
+
+
+
+
+
+
 
 
 
@@ -649,6 +665,14 @@ to {
   */
   
 
+
+
+
+
+
+
+
+
 }
 .location {
   color: #6c757d;
@@ -666,6 +690,7 @@ to {
 }
 .showroom-name {
   font-size: 1.1rem;
+  align-items: start;
   font-weight: 600;
   color: #333;
   margin-bottom: 1rem;
@@ -957,7 +982,7 @@ to {
   
 }
 .footer-list li a:hover {
-  color: var(--primary-color);
+  color: #ffff;
   transform: translateX(5px);
   text-decoration: none;
   

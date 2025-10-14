@@ -11,77 +11,80 @@ use Illuminate\Support\Facades\Storage;
 
 class CarController extends Controller
 {
-    public function index(Request $request)
-    {
+     public function index(Request $request)
+{
+    // Filters
+    $cities        = CarListingModel::select('city')->distinct()->orderBy('city')->pluck('city');
+    $conditions    = CarListingModel::select('car_type')->distinct()->orderBy('car_type')->pluck('car_type');
+    $makes         = CarListingModel::select('listing_type')->distinct()->orderBy('listing_type')->pluck('listing_type');
+    $models        = CarListingModel::select('listing_model')->distinct()->orderBy('listing_model')->pluck('listing_model');
+    $years         = CarListingModel::select('listing_year')->distinct()->orderBy('listing_year', 'desc')->pluck('listing_year');
+    $bodyTypes     = CarListingModel::select('body_type')->distinct()->orderBy('body_type')->pluck('body_type');
+    $regionalSpecs = CarListingModel::select('regional_specs')->distinct()->orderBy('regional_specs')->pluck('regional_specs');
+    $minPrice      = CarListingModel::min('listing_price');
+    $maxPrice      = CarListingModel::max('listing_price');
 
-        $cities        = CarListingModel::select('city')->distinct()->orderBy('city')->pluck('city');
-        $conditions    = CarListingModel::select('car_type')->distinct()->orderBy('car_type')->pluck('car_type');
-        $makes         = CarListingModel::select('listing_type')->distinct()->orderBy('listing_type')->pluck('listing_type');
-        $models        = CarListingModel::select('listing_model')->distinct()->orderBy('listing_model')->pluck('listing_model');
-        $years         = CarListingModel::select('listing_year')->distinct()->orderBy('listing_year', 'desc')->pluck('listing_year');
-        $bodyTypes     = CarListingModel::select('body_type')->distinct()->orderBy('body_type')->pluck('body_type');
-        $regionalSpecs = CarListingModel::select('regional_specs')->distinct()->orderBy('regional_specs')->pluck('regional_specs');
-        $minPrice      = CarListingModel::min('listing_price');
-        $maxPrice      = CarListingModel::max('listing_price');
+    // Base query
+    $carlisting = CarListingModel::with(['user', 'images']);
 
-        $carlisting = CarListingModel::with('user');
+    // Apply filters
+    if ($request->filled('make')) {
+        $carlisting->where('listing_type', $request->make);
+    }
+    if ($request->filled('city')) {
+        $carlisting->where('city', $request->city);
+    }
+    if ($request->filled('body_type')) {
+        $carlisting->where('body_type', $request->body_type);
+    }
+    if ($request->filled('regionalSpec')) {
+        $carlisting->where('regional_specs', $request->regionalSpec);
+    }
+    if ($request->filled('model')) {
+        $carlisting->where('listing_model', $request->model);
+    }
+    if ($request->filled('priceFrom') && $request->filled('priceTo')) {
+        $carlisting->whereBetween('listing_price', [$request->priceFrom, $request->priceTo]);
+    }
+    if ($request->filled('year')) {
+        $carlisting->where('listing_year', $request->year);
+    }
+    if ($request->filled('car_type')) {
+        if ($request->car_type == "UsedOrNew") {
+            $carlisting->whereIn('car_type', ["Used", "New"]);
+        } else {
+            $carlisting->where('car_type', $request->car_type);
+        }
+    }
 
-        if ($request->has('make') && $request->make != '') {
-            $carlisting->where('listing_type', $request->make);
-        }
-        if ($request->has('city') && $request->city != '') {
-            $carlisting->where('city', $request->city);
-        }
-        if ($request->has('body_type') && $request->body_type != '') {
-            $carlisting->where('body_type', $request->body_type);
-        }
-        if ($request->has('regional_specs') && $request->regionalSpec != '') {
-            $carlisting->where('regional_specs', $request->regionalSpec);
-        }
-        if ($request->has('model') && $request->model != '') {
-            $carlisting->where('listing_model', $request->model);
-        }
-        if ($request->has('priceFrom') && $request->has('priceTo')) {
-            $carlisting->whereBetween('listing_price', [$request->priceFrom, $request->priceTo]);
-        }
-        if ($request->has('year') && $request->year != '') {
-            $carlisting->where('listing_year', $request->year);
-        }
-        if ($request->has('car_type') && $request->car_type != '') {
-            if ($request->car_type == "UsedOrNew") {
-                $carlisting->whereIn('car_type', ["Used", "New"]);
-            } else {
-                $carlisting->where('car_type', $request->car_type);
-            }
-        }
+    // Get all results (no pagination)
+    $carlisting = $carlisting->get();
 
-        $carlisting = $carlisting->with(['user', 'images'])->paginate(8);
-
-        if ($request->ajax()) {
-            return view('cars.load_more', compact('carlisting'))->render();
-        }
-
-        $fueltypes = CarListingModel::select('features_fuel_type')->distinct()->orderBy('features_fuel_type')->pluck('features_fuel_type');
-        $gears     = CarListingModel::select('features_gear')->distinct()->orderBy('features_gear')->pluck('features_gear');
-        $doors     = CarListingModel::select('features_door')->distinct()->orderby('features_door', 'asc')->pluck('features_door');
-        $cylinders = CarListingModel::select('features_cylinders')->distinct()->orderby('features_cylinders', 'asc')->pluck('features_cylinders');
-        $colors    = CarListingModel::select('car_color')->distinct()->orderby('car_color', 'asc')->pluck('car_color');
-
-        $carlisting->getCollection()->transform(function ($car) {
-            $firstValidImage = $car->images->first(function ($image) {
-                return Storage::disk('r2')->exists($image->image);
-            });
-        
-            $car->image = $firstValidImage;
-            return $car;
+    // Map first valid image for each car
+    $carlisting = $carlisting->map(function ($car) {
+        $firstValidImage = $car->images->first(function ($image) {
+            return Storage::disk('r2')->exists($image->image);
         });
 
-        return view('cars.index', compact(
-            'carlisting', 'cities', 'makes', 'models', 'years',
-            'bodyTypes', 'regionalSpecs', 'minPrice', 'maxPrice',
-            'fueltypes', 'gears', 'doors', 'cylinders', 'colors', 'conditions'
-        ));
-    }
+        $car->image = $firstValidImage ?? null;
+        return $car;
+    });
+
+    // Other filters
+    $fueltypes = CarListingModel::select('features_fuel_type')->distinct()->orderBy('features_fuel_type')->pluck('features_fuel_type');
+    $gears     = CarListingModel::select('features_gear')->distinct()->orderBy('features_gear')->pluck('features_gear');
+    $doors     = CarListingModel::select('features_door')->distinct()->orderby('features_door', 'asc')->pluck('features_door');
+    $cylinders = CarListingModel::select('features_cylinders')->distinct()->orderby('features_cylinders', 'asc')->pluck('features_cylinders');
+    $colors    = CarListingModel::select('car_color')->distinct()->orderby('car_color', 'asc')->pluck('car_color');
+
+    // Return view
+    return view('cars.index', compact(
+        'carlisting', 'cities', 'makes', 'models', 'years',
+        'bodyTypes', 'regionalSpecs', 'minPrice', 'maxPrice',
+        'fueltypes', 'gears', 'doors', 'cylinders', 'colors', 'conditions'
+    ));
+}
+
 
     public function create()
     {
@@ -167,7 +170,7 @@ class CarController extends Controller
     }
     public function loadMoreCars(Request $request)
     {
-        $cars = CarlistingModel::with(['user', 'images'])->orderBy('id', 'desc')->paginate(8); // تحميل 8 سيارات في كل مرة
+        $cars = CarlistingModel::with(['user', 'images'])->orderBy('id', 'desc')->paginate(9); // تحميل 8 سيارات في كل مرة
 
         $cars->getCollection()->transform(function ($car) {
             $firstValidImage = $car->images->first(function ($image) {
@@ -225,5 +228,6 @@ public function detailFromQuery(Request $request)
 
     return redirect()->route('car.detail', ['id' => $carId]);
 }
+
 
 }

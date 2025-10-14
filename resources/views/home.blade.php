@@ -366,32 +366,39 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <!-- Enhanced Action Icons -->
                                 <div class="year-badge">{{ $car->listing_year }}</div>
                                 
-                                <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 10;">
-                                    <!-- Favorite Button -->
-                                    @if(auth()->check())
-                                        @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
-                                        <form action="{{ route('cars.addTofav', $car->id) }}" method="post">
-                                            @csrf
-                                            <button title="Add to favorites" class="btn btn-sm" type="submit" aria-label="Add to favorites">
-                                                <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
-                                            </button>
-                                        </form>
-                                    @else
-                                        <a href="{{ route('login') }}" title="Login to add to favorites" class="btn btn-sm" aria-label="Login to add to favorites">
-                                            <i class="fas fa-heart" style="color: #6c757d"></i>
-                                        </a>
-                                    @endif
+                              <!-- Favorite & Share Buttons -->
+    <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
+        @if(auth()->check())
+            @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
+            <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
+                @csrf
+                <button title="Add to favorites" 
+                        class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                        type="submit" 
+                        aria-label="Add to favorites"
+                        style="width: 32px; height: 32px; border-radius: 50%;">
+                    <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" 
+               title="Login to add to favorites" 
+               class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+               aria-label="Login to add to favorites"
+               style="width: 32px; height: 32px; border-radius: 50%;">
+                <i class="fas fa-heart" style="color: #6c757d;"></i>
+            </a>
+        @endif
 
-                                    <!-- Share Button -->
-                                    <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" 
-                                       target="_blank" 
-                                       title="Share via WhatsApp"
-                                       aria-label="Share via WhatsApp">
-                                        <button class="btn btn-sm">
-                                            <i class="fas fa-share-alt" style="color: #25d366"></i>
-                                        </button>
-                                    </a>
-                                </div>
+        <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" 
+           target="_blank" 
+           title="Share via WhatsApp"
+           aria-label="Share via WhatsApp"
+           class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+           style="width: 32px; height: 32px; border-radius: 50%;">
+            <i class="fas fa-share-alt" style="color: #25d366;"></i>
+        </a>
+    </div>
                             </div>
 
                             <!-- Enhanced Car Content -->
@@ -412,25 +419,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                 </div>
                                 
-                                <h4 class="showroom-name">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
+<h4 class="text-start mb-2" style="font-size:1.1rem">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
 
                                 <!-- Enhanced Car Details -->
-                                <div class="car-details">
-                                    <div class="row g-2">
-                                        <div class="col-6">
-                                            <p><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
-                                        </div>
-                                        <div class="col-6">
-                                            <p><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
-                                        </div>
-                                        <div class="col-6">
-                                            <p><strong>Model:</strong> <span>{{ Str::limit($car->listing_model, 8) }}</span></p>
-                                        </div>
-                                        <div class="col-6">
-                                            <p><strong>Mileage:</strong> <span>{{ $car->mileage ?? '215K' }} km</span></p>
-                                        </div>
-                                    </div>
-                                </div>
+         <div class="car-details mt-3 text-start">
+  <div class="row g-1">
+    <p class="mb-1"><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
+    <p class="mb-1"><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
+    <p class="mb-1"><strong>Model:</strong> <span>{{ $car->listing_model }}</span></p>
+    <p class="mb-0"><strong>Mileage:</strong> <span>{{ $car->mileage ?? '215K' }} km</span></p>
+  </div>
+</div>
+
+
 
                                 <!-- Enhanced Action Buttons -->
                                 <div class="actions">
@@ -583,13 +584,17 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="car-card animate__animated animate__fadeInUp" style="animation-delay: {{ $key * 0.1 }}s">
                                 <!-- Workshop Image -->
                                 <div class="car-image">
-                                    @php
-                                        $image = $workshop->workshop_logo ? env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo : asset('workshopNotFound.png');
-                                    @endphp
-                                    <img src="{{ config('app.file_base_url') . $image }}" 
-                                         alt="{{ $workshop->workshop_name }}" 
-                                         loading="lazy"
-                                         onerror="this.src='{{ asset('workshopNotFound.png') }}'">
+                                  @php
+    $image = $workshop->workshop_logo
+        ? env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo
+        : asset('workshopNotFound.png');
+@endphp
+
+<img src="{{ $image }}"
+     alt="{{ $workshop->workshop_name }}"
+     loading="lazy"
+     onerror="this.src='{{ asset('workshopNotFound.png') }}'">
+
                                 </div>
 
                                 <!-- Workshop Content -->
@@ -689,7 +694,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <p class="text-muted mb-4">Save time and effort as you no longer need to visit multiple stores to find the right car.</p>
                     <a href="{{route('cars.index')}}">
                         <button class="btn btn-outline-danger btn-lg">
-                            <i class="fas fa-car me-2"></i>Find Cars
+                            Find Cars
                         </button>
                     </a>
                 </div>
@@ -711,7 +716,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <h5 class="fw-bold mb-3">Do you want to sell a car?</h5>
                     <p class="text-muted mb-4">Find your perfect car match and sell your car quickly with our user-friendly online service.</p>
                     <button class="btn btn-outline-danger btn-lg">
-                        <i class="fas fa-dollar-sign me-2"></i>Sell a Car
+                         Sell a Car
                     </button>
                 </div>
             </div>
@@ -719,24 +724,54 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 
     <!-- Enhanced Popular Brands Section -->
-    @if(isset($brands) && count($brands) > 0)
-        <div class="container py-5">
-            <h2 class="section-title">Popular Brands</h2>
-            <div class="row g-4">
-                @foreach ($brands->reject(fn($brand) => in_array($brand->name, ['Honda', 'Dodge', 'Mazda']))->take(12) as $brand)
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <div class="brand-card text-center p-3 h-100">
-                            <div class="mb-2" style="height: 60px; display: flex; align-items: center; justify-content: center;">
+@if(isset($brands) && count($brands) > 0)
+    <div class="container py-5">
+        <h2 class="section-title">Popular Brands</h2>
+        <div class="row g-4">
+            @foreach ($brands->reject(fn($brand) => !in_array($brand->name, [
+                'BMW', 'Chevrolet', 'Ford', 'Hyundai', 'Jeep', 'Kia', 
+                'Land Rover', 'Lexus', 'Mercedes', 'Mitsubishi', 'Nissan', 'Toyota'
+            ]))->take(12) as $brand)
+                <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                    <div class="brand-card text-center p-3 h-100">
+                        <div class="mb-2" style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                            @php
+                                // نخزن أسماء الصور حسب الماركة
+                                $logos = [
+                                    'BMW' => 'bmw-svgrepo-com.svg',
+                                    'Chevrolet' => 'chevrolet-svgrepo-com.svg',
+                                    'Ford' => 'ford-svgrepo-com.svg',
+                                    'Hyundai' => 'hyundai-svgrepo-com.svg',
+                                    'Jeep' => 'jeep-alt-svgrepo-com.svg',
+                                    'Kia' => 'kia-svgrepo-com.svg',
+                                    'Land Rover' => 'land-rover-svgrepo-com.svg',
+                                    'Lexus' => 'lexus-svgrepo-com.svg',
+                                    'Mercedes' => 'mercedes-benz-svgrepo-com.svg',
+                                    'Mitsubishi' => 'mitsubishi-svgrepo-com.svg',
+                                    'Nissan' => 'nissan-svgrepo-com.svg',
+                                    'Toyota' => 'toyota-svgrepo-com.svg',
+                                ];
+
+                                $fileName = $logos[$brand->name] ?? null;
+                            @endphp
+
+                            @if($fileName && file_exists(public_path('images/brands/' . $fileName)))
+                                <img src="{{ asset('images/brands/' . $fileName) }}" 
+                                     alt="{{ $brand->name }}" 
+                                     class="img-fluid" 
+                                     style="max-height: 60px;">
+                            @else
                                 <i class="fas fa-car fa-2x" style="color: var(--primary-color);"></i>
-                            </div>
-                            <p class="fw-bold mb-1 brand-title">{{ $brand->name }}</p>
-                            <p class="text-muted small mb-0 brand-subtitle">{{ $brand->cars_count ?? 'N/A' }} Cars</p>
+                            @endif
                         </div>
+                        {{-- <p class="fw-bold mb-1 ">{{ $brand->name }}</p> --}}
+                        <p class="text-muted small mb-0 brand-subtitle">{{ $brand->cars_count ?? 'N/A' }} Cars</p>
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endforeach
         </div>
-    @endif
+    </div>
+@endif
 
     <!-- Enhanced App Download Section -->
     <div class="container py-5">
