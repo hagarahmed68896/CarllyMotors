@@ -59,29 +59,7 @@ input[type="text"],
         <label for="phone" class="form-label">Phone</label>
        <div class="input-group">
     <select name="country_code" class="form-select" style="max-width: 120px;" required>
-        <!-- <option value="93"> Afghanistan (+93)</option> -->
-<!-- <option value="355"> Albania (+355)</option>
-<option value="213"> Algeria (+213)</option>
-<option value="54"> Argentina (+54)</option>
-<option value="61"> Australia (+61)</option>
-<option value="43"> Austria (+43)</option>
-<option value="994"> Azerbaijan (+994)</option>
-<option value="880"> Bangladesh (+880)</option>
-<option value="32"> Belgium (+32)</option>
-<option value="591"> Bolivia (+591)</option>
-<option value="55"> Brazil (+55)</option>
-<option value="855"> Cambodia (+855)</option>
-<option value="1"> Canada (+1)</option>
-<option value="86"> China (+86)</option>
-<option value="57"> Colombia (+57)</option>
-<option value="385"> Croatia (+385)</option>
-<option value="420"> Czech Republic (+420)</option> -->
-<!-- <option value="45"> Denmark (+45)</option>
-<option value="20"> Egypt (+20)</option>
-<option value="593"> Ecuador (+593)</option>
-<option value="33"> France (+33)</option>
-<option value="49"> Germany (+49)</option> -->
-<!-- <option value="30"> Greece (+30)</option>
+
 <option value="91"> India (+91)</option>
 <option value="62"> Indonesia (+62)</option>
 <option value="98"> Iran (+98)</option>
@@ -128,12 +106,7 @@ input[type="text"],
 <option value="216"> Tunisia (+216)</option>
 <option value="90"> Turkey (+90)</option> -->
 <option value="971"> UAE (+971)</option>
-<!-- <option value="44"> UK (+44)</option>
-<option value="1"> USA (+1)</option>
-<option value="998"> Uzbekistan (+998)</option>
-<option value="58"> Venezuela (+58)</option>
-<option value="84"> Vietnam (+84)</option>
-<option value="967"> Yemen (+967)</option> -->
+
 
     </select>
     <input type="text" class="form-control" id="phone" name="phone" required placeholder="Please enter phone">

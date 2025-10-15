@@ -22,14 +22,15 @@ class SettingController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function privacy()
-    {
-        $privacy = Setting::where('name', 'privacy_policy')->first();
-        $cleanData = preg_replace('/<\/?strong>/', '', $privacy->value);
-        $title = 'Privacy & Policy';
+public function privacy()
+{
+    $privacy = Setting::where('name', 'privacy_policy')->first();
+    $cleanData = $privacy ? preg_replace('/<\/?strong>/', '', $privacy->value) : '';
+    $title = 'Privacy & Policy';
 
-        return view('settings.index', compact('cleanData', 'title'));
-    }
+    return view('settings.index', compact('cleanData', 'title'));
+}
+
 
     /**
      * Store a newly created resource in storage.

@@ -92,7 +92,7 @@ Route::get('/upcomming', fn() => view('upcomming'))->name('upcomming');
 Route::get('/try', fn() => view('try'))->name('try');
 Route::get('/about-us', fn() => view('aboutus'))->name('aboutus');
 Route::get('/terms', fn() => view('terms'))->name('terms');
-Route::get('/privacy', fn() => view('privacy'))->name('privacy');
+// Route::get('/privacy', fn() => view('privacy'))->name('privacy');
 Route::get('/faqs', fn() => view('faqs'))->name('faqs');
 
 // Home
@@ -131,7 +131,7 @@ Route::get('/contact-us', [ContactController::class, 'index'])->name('contacts.i
 
 // Terms and Privacy
 Route::get('/terms', [SettingController::class, 'terms'])->name('terms');
-Route::get('/privacy_policy', [SettingController::class, 'privacy'])->name('privacy_policy');
+Route::get('/privacy', [SettingController::class, 'privacy'])->name('privacy');
 
 // User Authentication
 Auth::routes();
