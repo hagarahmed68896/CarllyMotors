@@ -340,10 +340,9 @@ input[type="number"] {}
     <!-- 🧭 Sidebar Filters -->
     <aside class="col-lg-3 col-md-4 mb-4">
       <div class="bg-white shadow-sm rounded-4 p-4 sticky-top" style="top: 90px; max-height: calc(100vh - 120px); overflow-y: auto;">
-        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-          <h5 class="fw-bold text-dark mb-0">Filter Cars</h5>
-          <i class="fas fa-sliders-h text-secondary"></i>
-        </div>
+         <h5 class="fw-bold mb-3 text-center" style="color: #760e13">
+                        <i class="fas fa-sliders-h me-2"></i>Filter Cars
+                    </h5>
 
         <form id="filterForm" method="GET" action="{{ route('cars.index') }}" class="d-flex flex-column gap-3">
 

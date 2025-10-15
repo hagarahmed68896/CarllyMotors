@@ -144,6 +144,32 @@
         margin-bottom: 4px;
     }
 </style>
+<style>
+    .action-btn {
+    border: 2px solid #760e13;
+    color: #760e13;
+    border-radius: 15px;
+    height: 55px;
+    width: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.action-btn i {
+    font-size: 22px;
+}
+
+.action-btn:hover {
+    background-color: #760e13;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+</style>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
 @section('content')
@@ -224,7 +250,7 @@
         }
     </style>
 
-    <div id="demo" class="carousel slide mt-1" data-bs-ride="carousel" data-bs-interval="2000">
+    {{-- <div id="demo" class="carousel slide mt-1" data-bs-ride="carousel" data-bs-interval="2000">
         <!-- النقاط -->
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
@@ -256,246 +282,220 @@
         <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
             <span class="carousel-control-next-icon"></span>
         </button>
-    </div>
+    </div> --}}
     <!-- filter -->
     <!-- Start filter home with items -->
 
-    <div class=" my-6 main-home-filter-sec text-center">
-        <!-- <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a href="{{route('cars.index')}}" class="nav-btn text-decoration-none">
-                    Cars
-                </a>
-                <a href="{{route('spareParts.index')}}" class="nav-btn active text-decoration-none">
-                    Spare Parts
-                </a>
-                <a href="{{route('workshops.index')}}" class="nav-btn text-decoration-none">WorkShops</a>
-            </div> -->
-        <div class="d-flex flex-wrap justify-content-center gap-3 my-2">
-            <a href="{{route('cars.index')}}" class="nav-btn   text-decoration-none }">
-                Cars</a>
-            <a href="{{route('spareParts.index')}}" class="nav-btn active  text-decoration-none ">Spare Parts</a>
-            <a href="{{route('workshops.index')}}" class="nav-btn  text-decoration-none ">WorkShops</a>
-        </div>
-        @if(request()->path() == "spareParts")
+  <div class="container-fluid my-5 main-home-filter-sec">
+    <div class="row g-4">
 
+        {{-- ================= FILTER SIDEBAR ================= --}}
+        @if(request()->path() == 'spareParts')
+            <div class="col-lg-3 col-md-4">
+                <div class="bg-white border rounded-4 shadow-sm p-4 h-100">
+                    <h5 class="fw-bold mb-3 text-center" style="color: #760e13">
+                        <i class="fas fa-sliders-h me-2"></i>Filter Spare Parts
+                    </h5>
 
-            <div class="container my-2">
-
-                <!-- لف الفورم داخل هذا العنصر لجعل صف الفلاتر قابل للتمرير 
-            -->
-                <div class="d-lg-block d-flex overflow-auto " style="white-space: nowrap;">
-
-                    <form class="d-flex flex-nowrap gap-2 align-items-center " id="filterForm"
-                        action="{{ route('filter.spareParts') }}" method="get">
-
-                        <!-- Make -->
-                        <div class="flex-grow-1" style="min-width: 150px;">
-                            <select class="form-control" id="brand" name="make">
-                                <option value="" selected>Make</option>
+                    <form id="filterForm" method="GET" action="{{ route('filter.spareParts') }}">
+                        {{-- Make --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">Make</label>
+                            <select class="form-select" id="brand" name="make">
+                                <option value="">All Makes</option>
                                 @foreach($makes as $make)
-                                    <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
+                                    <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>
+                                        {{ $make }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- Model -->
-                        <div class="flex-grow-1" style="min-width: 150px;">
-                            <select class="form-control" id="model" name="model">
-                                <option value="" selected>Model</option>
+                        {{-- Model --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">Model</label>
+                            <select class="form-select" id="model" name="model">
+                                <option value="">All Models</option>
                             </select>
                         </div>
 
-                        <!-- Year -->
-                        <div class="flex-grow-1" style="min-width: 100px;">
-                            <select class="form-control" name="year">
-                                <option value="" selected>Year</option>
+                        {{-- Year --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">Year</label>
+                            <select class="form-select" name="year">
+                                <option value="">All Years</option>
                                 @foreach($years as $year)
-                                    <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                                    <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- City -->
-                        <div class="flex-grow-1" style="min-width: 120px;">
-                            <select class="form-control" name="city">
-                                <option value="" selected>City</option>
+                        {{-- City --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">City</label>
+                            <select class="form-select" name="city">
+                                <option value="">All Cities</option>
                                 @foreach($cities as $city)
-                                    @if($city == null || $city == '') @continue @endif
-                                    <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
+                                    @if(!empty($city))
+                                        <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+                                            {{ $city }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- Category -->
-                        <div class="flex-grow-1" style="min-width: 170px;">
-                            <!-- <select class="form-control" id="category" name="category">
-                                <option value="" selected>Category</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>
-                                        {{ $category }}</option>
-                                @endforeach
-                            </select> -->
-
-                            <select class="form-control" id="category" name="category">
-                                <option value="" selected>Category</option>
+                        {{-- Category --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">Category</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">All Categories</option>
                                 @foreach($categories as $category)
                                     <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>
                                         {{ $category }}
                                     </option>
                                 @endforeach
                             </select>
-
                         </div>
 
-                        <!-- Sub-Category -->
-                        <div class="flex-grow-1" style="min-width: 150px;">
-                            <select class="form-control" id="subCategory" name="subCategory">
-                                <option value="" selected>Sub-Category</option>
+                        {{-- Sub-category --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">Sub-Category</label>
+                            <select class="form-select" id="subCategory" name="subCategory">
+                                <option value="">All Sub-Categories</option>
                             </select>
                         </div>
 
-                        <!-- Condition Dropdown -->
-                        <div class="flex-grow-1" style="min-width: 110px;">
-                            <select class="form-control" name="condition" id="condition-select">
-                                <option value="" selected>Condition</option>
-                                <option value="New">New</option>
-                                <option value="Used">Used</option>
+                        {{-- Condition --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">Condition</label>
+                            <select class="form-select" name="condition">
+                                <option value="">All Conditions</option>
+                                <option value="New" {{ request('condition') == 'New' ? 'selected' : '' }}>New</option>
+                                <option value="Used" {{ request('condition') == 'Used' ? 'selected' : '' }}>Used</option>
                             </select>
                         </div>
 
-                        <!-- VIN Number Input (Initially Hidden) -->
-                        <div id="vin-input-container" style="display: none; margin-top: 10px;">
+                        {{-- VIN Input --}}
+                        <div id="vin-input-container" class="mb-3" style="display:none;">
+                            <label class="form-label fw-semibold small text-muted">VIN Number</label>
                             <input type="text" name="vin_number" id="vin-number" class="form-control"
-                                placeholder="Enter VIN Number">
+                                   placeholder="Enter VIN Number">
                         </div>
-                        <!-- Submit -->
-                        <div class="flex-shrink-0">
-                            <button class="btn btn-outline-danger bg-carlly" type="submit"
-                                style="border-radius: 25px; min-width: 100px;">
-                                Search
+
+                        {{-- Buttons --}}
+                        <div class="d-flex gap-2 border-top pt-3">
+                            <button type="submit" class="btn flex-fill text-white fw-semibold"
+                                    style="background-color:#760e13;">
+                                Apply Filters
+                            </button>
+                            <button type="button" onclick="resetFilters()" class="btn btn-outline-secondary flex-fill">
+                                Reset
                             </button>
                         </div>
-
                     </form>
-
                 </div>
             </div>
-
         @else
-            <div class="max-w-lg mx-auto p-4 bg-white shadow-md rounded-2xl mt-3">
-                <div class="text-center font-bold text-xl mb-4">Your Car</div>
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div class="font-semibold">Car Type:</div>
-                    <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->make ?? '--'}}</div>
+            {{-- ================= CAR SUMMARY ================= --}}
+            <div class="col-12">
+                <div class="bg-white shadow-sm rounded-4 p-4 text-start mx-auto" style="max-width: 600px;">
+                    <h5 class="fw-bold text-center text-danger mb-4">Your Car Details</h5>
+                    <div class="row gy-2 small">
+                        <div class="col-6 fw-semibold text-muted">Car Type:</div>
+                        <div class="col-6 bg-light rounded px-2 py-1">{{ request()->make ?? '--' }}</div>
 
-                    <div class="font-semibold">Car Model:</div>
-                    <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->model ?? '--'}}</div>
+                        <div class="col-6 fw-semibold text-muted">Car Model:</div>
+                        <div class="col-6 bg-light rounded px-2 py-1">{{ request()->model ?? '--' }}</div>
 
-                    <div class="font-semibold">Car Year:</div>
-                    <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->year ?? '--'}}</div>
+                        <div class="col-6 fw-semibold text-muted">Car Year:</div>
+                        <div class="col-6 bg-light rounded px-2 py-1">{{ request()->year ?? '--' }}</div>
 
-                    <div class="font-semibold">Category:</div>
-                    <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->category ?? '--'}}</div>
+                        <div class="col-6 fw-semibold text-muted">Category:</div>
+                        <div class="col-6 bg-light rounded px-2 py-1">{{ request()->category ?? '--' }}</div>
 
-                    <div class="font-semibold">Sub-category:</div>
-                    <div class="bg-gray-200 px-2 py-1 rounded-md">{{request()->subCategory ?? '--'}}</div>
+                        <div class="col-6 fw-semibold text-muted">Sub-category:</div>
+                        <div class="col-6 bg-light rounded px-2 py-1">{{ request()->subCategory ?? '--' }}</div>
+                    </div>
                 </div>
             </div>
-
         @endif
-        <!-- List -->
-        <div class="tab-content" id="bodyTypeTabsContent">
-            <div class="custom-container main-car-list-sec">
-                <div class="row g-4">
-                    @foreach ($dealers as $key => $dealer)
-                        @php
-                            $image = Str::after($dealer->company_img, url('/') . '/');
-                            $dealerName = ucfirst(strtolower($dealer->company_name));
-                            $dealerName = substr($dealerName, 0, 25);
-                            $phone = $dealer->user->phone;
-                            $shareUrl = request()->path() == 'spareParts'
-                                ? request()->url() . '?shop_id=' . $dealer->id
-                                : request()->fullUrl() . '&shop_id=' . $dealer->id;
-                        @endphp
 
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-3">
-                            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px; overflow: hidden;">
-                                <!-- Image -->
-                                <div class="position-relative bg-light" style="height: 220px; overflow: hidden;">
-                                    <img src="{{ config('app.file_base_url') . $image }}" alt="Dealer Image"
-                                        class="w-100 h-100 object-fit-cover"
-                                        onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';"
-                                        loading="lazy" />
+        {{-- ================= DEALERS LIST ================= --}}
+        <div class="@if(request()->path() == 'spareParts') col-lg-9 col-md-8 @else col-12 @endif">
+            <div class="row g-4">
+                @foreach ($dealers as $dealer)
+                    @php
+                        $image = Str::after($dealer->company_img, url('/') . '/');
+                        $dealerName = ucfirst(strtolower($dealer->company_name));
+                        $dealerName = substr($dealerName, 0, 25);
+                        $phone = $dealer->user->phone;
+                        $shareUrl = request()->path() == 'spareParts'
+                            ? request()->url() . '?shop_id=' . $dealer->id
+                            : request()->fullUrl() . '&shop_id=' . $dealer->id;
+                        $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
+                    @endphp
+
+                    <div class="col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
+                            {{-- Image --}}
+                            <div class="bg-light position-relative" style="height: 220px; overflow: hidden;">
+                                <img src="{{ config('app.file_base_url') . $image }}" alt="Dealer Image"
+                                     class="w-100 h-100 object-fit-cover"
+                                     onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';"
+                                     loading="lazy">
+                            </div>
+
+                            {{-- Content --}}
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <h6 class="fw-bold text-truncate mb-0" style="color:#760e13" title="{{ $dealer->company_name }}">
+                                        {{ $dealerName }}{{ strlen($dealer->company_name) >= 25 ? '...' : '' }}
+                                    </h6>
+                                    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($dealer->company_address) }}"
+                                       target="_blank" class="text-decoration-none small text-muted">
+                                        <i class="fas fa-map-marker-alt text-danger me-1"></i> Location
+                                    </a>
                                 </div>
 
-                                <!-- Content -->
-                                <div class="card-body d-flex flex-column justify-content-between">
-                                    <div class="d-flex flex-row flex-wrap justify-content-between  mx-2 mb-3">
-                                        <h6 class="fw-bold text-truncate" style="color: #760e13;"
-                                            title="{{ $dealer->company_name }}">
-                                            {{ $dealerName }}{{ strlen($dealer->company_name) >= 25 ? '...' : '' }}
-                                        </h6>
-                                        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($dealer->company_address) }}"
-                                            class="text-muted small d-flex align-items-center text-decoration-none">
-                                            <i class="fas fa-map-marker-alt me-1 text-danger"></i> Location
-                                        </a>
-                                    </div>
+                                {{-- Actions --}}
+                              <div class="actions d-flex justify-content-between align-items-center gap-2 mt-2">
+    <a href="https://wa.me/{{ $phone }}" target="_blank" class="btn btn-outline-success">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
-                                    <!-- Actions -->
-                                    <div class="d-flex flex-nowrap gap-2 mt-2 justify-content-between mb-2">
-                                        <!-- WhatsApp -->
-                                        <a href="https://wa.me/{{ $phone }}" target="_blank" class="flex-grow-1">
-                                            <button class="btn btn-outline-danger w-100" style="border-radius: 15px;">
-                                                <i class="fab fa-whatsapp" style="color: #198754;"></i> WhatsApp
-                                            </button>
-                                        </a>
+    @php
+        $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
+    @endphp
 
-                                        <!-- Call -->
-                                        @if ($os == 'Windows' || $os == 'Linux')
-                                            <a href="https://wa.me/{{ $phone }}" target="_blank" class="flex-grow-1">
-                                                <button class="btn btn-outline-danger w-100" style="border-radius: 15px;">
-                                                    <i class="fa fa-phone"></i> Call
-                                                </button>
-                                            </a>
-                                        @elseif ($os == 'Mac')
-                                            <a href="https://faceapp.com?phone={{ urlencode($phone) }}" class="flex-grow-1">
-                                                <button class="btn btn-outline-danger w-100" style="border-radius: 15px;">
-                                                    <i class="fa fa-phone"></i> Call
-                                                </button>
-                                            </a>
-                                        @elseif ($os == 'Android' || $os == 'iOS')
-                                            <a href="tel:{{ $phone }}" class="flex-grow-1">
-                                                <button class="btn btn-outline-danger w-100" style="border-radius: 15px;">
-                                                    <i class="fa fa-phone"></i> Call
-                                                </button>
-                                            </a>
-                                        @else
-                                            <span class="text-danger flex-grow-1">No OS Detected</span>
-                                        @endif
+    @if($isMobile)
+        <a href="tel:{{ $phone }}" class="btn btn-outline-danger">
+            <i class="fas fa-phone"></i>
+        </a>
+    @else
+        <a href="https://wa.me/{{ $phone }}" target="_blank" class="btn btn-outline-danger">
+            <i class="fas fa-phone"></i>
+        </a>
+    @endif
 
-                                        <!-- Share -->
-                                        <a href="https://wa.me/?text={{ urlencode('Hello, I recommend you to check this Store ' . $shareUrl) }}"
-                                            target="_blank" class="flex-grow-1">
-                                            <button class="btn btn-outline-danger w-100" style="border-radius: 15px;">
-                                                <i class="fa fa-share"></i> Share
-                                            </button>
-                                        </a>
-                                    </div>
+    <a href="https://wa.me/?text={{ urlencode('Check this store: ' . $shareUrl) }}" 
+       target="_blank" class="btn btn-outline-primary">
+        <i class="fa fa-share"></i>
+    </a>
+</div>
 
-
-                                </div>
                             </div>
                         </div>
-                    @endforeach
-                </div>
+                    </div>
+                @endforeach
             </div>
         </div>
 
-        {{--<div class="pagination-links mb-0 d-flex justify-content-center" style="margin: 0;">
-            {{ $dealers->appends(['perPage' => request('perPage')])->links('pagination::bootstrap-4') }}
-
-        </div>--}}
     </div>
+</div>
+
     </div>
     </div>
 
