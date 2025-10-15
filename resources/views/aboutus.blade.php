@@ -1,243 +1,224 @@
 @extends('layouts.app')
 
 @section('content')
+
 <style>
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: #2c3145;
-}
+    /* ==== GLOBAL COLORS ==== */
+    :root {
+        --brand-color: #760e13;
+        --brand-dark: #5a0b0f;
+    }
 
-a,
-a:hover,
-a:focus,
-a:active {
-    text-decoration: none;
-    outline: none;
-}
+    body {
+        background-color: #fafafa;
+        color: #333;
+    }
 
-ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
+    .section-title {
+        font-weight: 700;
+        text-transform: capitalize;
+        margin-bottom: 1rem;
+    }
 
-.section_all {
-    position: relative;
-    padding-top: 80px;
-    padding-bottom: 80px;
-    min-height: 100vh;
-}
+    .text-brand {
+        color: var(--brand-color) !important;
+    }
 
-.section-title {
-    font-weight: 700;
-    text-transform: capitalize;
-    letter-spacing: 1px;
-}
+    .section-subtitle {
+        max-width: 700px;
+        margin: 0 auto 2rem;
+        color: #6c757d;
+        font-size: 1.05rem;
+    }
 
-.section-subtitle {
-    letter-spacing: 0.4px;
-    line-height: 28px;
-    max-width: 550px;
-}
+    /* ==== HERO SECTION ==== */
+    .about-hero {
+        background: linear-gradient(rgba(118, 14, 19, 0.85), rgba(118, 14, 19, 0.85)),
+            url('{{ asset('aboutus.jpg') }}') center/cover no-repeat;
+        color: #fff;
+        text-align: center;
+        padding: 100px 20px;
+        border-radius: 0 0 30px 30px;
+    }
 
-.section-title-border {
-    background-color: #000;
-    height: 1 3px;
-    width: 44px;
-}
+    .about-hero h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+    }
 
-.section-title-border-white {
-    background-color: #fff;
-    height: 2px;
-    width: 100px;
-}
+    .about-hero p {
+        max-width: 800px;
+        margin: 20px auto 0;
+        font-size: 1.1rem;
+        color: #f2f2f2;
+    }
 
-.text_custom {
-    color: #760e13;
-}
+    /* ==== ICON BOX ==== */
+    .feature-box {
+        background: #fff;
+        border-radius: 16px;
+        padding: 40px 25px;
+        transition: 0.3s ease;
+        height: 100%;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
 
-.about_icon i {
-    font-size: 22px;
-    height: 65px;
-    width: 65px;
-    line-height: 65px;
-    display: inline-block;
-    background: #fff;
-    border-radius: 35px;
-    color: #760e13;
-    box-shadow: 0 8px 20px -2px rgba(158, 152, 153, 0.5);
-}
+    .feature-box:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
 
-.about_header_main .about_heading {
-    max-width: 450px;
-    font-size: 24px;
-}
+    .feature-box i {
+        color: var(--brand-color);
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
 
-.about_icon span {
-    position: relative;
-    top: -10px;
-}
+    /* ==== INFO SECTION ==== */
+    .info-image img {
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
 
-.about_content_box_all {
-    padding: 28px;
-}
+    /* ==== STATISTICS ==== */
+    .stats-box {
+        text-align: center;
+        padding: 30px 20px;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        transition: 0.3s ease;
+        height: 100%;
+    }
+
+    .stats-box:hover {
+        transform: translateY(-5px);
+    }
+
+    .stats-box i {
+        color: var(--brand-color);
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    @media (max-width: 767px) {
+        .about-hero {
+            padding: 70px 15px;
+        }
+    }
 </style>
-<section class="section_all bg-light" id="about">
+
+<!-- ==== HERO SECTION ==== -->
+<section class="about-hero">
+    <h1>Welcome to <span class="text-warning">Carlly Motors</span></h1>
+    <p>
+        Driving innovation in the automotive world — connecting car owners and service providers
+        through our modern dual-app ecosystem.
+    </p>
+</section>
+
+<!-- ==== ABOUT CONTENT ==== -->
+<section class="py-5">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="section_title_all text-center">
-                    <h3 class="font-weight-bold">Welcome To <span class="text-custom">Carlly Motors</span></h3>
-                    <p class="section_subtitle mx-auto text-muted">
-                        At Carlly Motors, we understand the complexities
-                        and challenges of car ownership and maintenance. To address these, we have
-                        developed two specialized apps: one for customers looking to buy, sell, or
-                        maintain their vehicles, and another for service providers offering their
-                        skills and services. This dual-app ecosystem ensures a seamless connection
-                        between car owners and service professionals, enhancing the overall user
-                        experience.
-                    </p>
-                    <div class="">
-                        <i class=""></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row vertical_content_manage mt-5">
+        <div class="row align-items-center g-5">
             <div class="col-lg-6">
-                <div class="about_header_main mt-3">
-                    <div class="about_icon_box">
-                        <p class="text_custom font-weight-bold">Driving Innovation in the Automotive World</p>
-                    </div>
-                    <h4 class="about_heading text-capitalize font-weight-bold mt-4">Our Vision and Mission</h4>
-                    <p class="text-muted mt-3">Founded in 2023 in the vibrant city of Dubai,
-                        Carlly Motors has rapidly emerged as a trailblazer in the automotive service
-                        industry.
-                    </p>
-
-                    <p class="text-muted mt-3">
-                        Our mission is to transform the automotive landscape by providing
-                        an all-encompassing platform for both car owners and service providers. We
-                        strive to deliver unparalleled convenience, efficiency, and reliability
-                        through our innovative mobile applications tailored for distinct user
-                        experiences.
-                    </p>
-                </div>
+                <h2 class="section-title text-brand mb-3">Our Vision & Mission</h2>
+                <p>
+                    Founded in 2023 in the vibrant city of Dubai, Carlly Motors has rapidly emerged
+                    as a trailblazer in the automotive service industry. Our mission is to provide
+                    an all-encompassing platform for both car owners and service providers.
+                </p>
+                <p>
+                    We aim to deliver unparalleled convenience, efficiency, and reliability through
+                    our innovative mobile applications tailored for distinct user experiences.
+                </p>
             </div>
+
             <div class="col-lg-6">
-                <div class="img_about mt-3" >
-                    <img src="{{asset('aboutus.jpg')}}" alt=""  style="border-radius:10px" class="img-fluid mx-auto d-block">
+                <div class="info-image">
+                    <img src="{{ asset('aboutus.jpg') }}" class="img-fluid" alt="About Carlly Motors">
                 </div>
             </div>
         </div>
+    </div>
+</section>
 
-        <div class="row">
+<!-- ==== SERVICES ==== -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h2 class="section-title text-brand">Our Services</h2>
+        <p class="section-subtitle">
+            From buying and selling cars to roadside assistance, insurance, and repairs — Carlly
+            Motors is your one-stop platform for all automotive needs.
+        </p>
 
-            <div class="col-md-12 col-sm-12 bg-light text-center border-end border-bottom py-5 px-3">
-                <i class="bi bi-images text-danger fs-1"></i>
-                <h4 class="mb-3 fw-normal text-uppercase">Our Services</h4>
+        <div class="row g-4 mt-4">
+            <div class="col-md-6">
+                <div class="feature-box">
+                    <i class="bi bi-pencil-square"></i>
+                    <h5 class="fw-bold mb-3 text-uppercase">Accessibility</h5>
+                    <p class="text-secondary">
+                        Our apps offer auctions, car parts, transport, insurance, and repair services
+                        in one easy-to-use platform for every car owner.
+                    </p>
+                </div>
             </div>
 
-            <div class="col-md-6 col-sm-6 bg-light text-center border-end py-5 px-3">
-                <i class="bi bi-pencil-square text-danger fs-1"></i>
-                <h4 class="mb-3 fw-normal text-uppercase">Accessibility</h4>
-                <p class="text-secondary">
-                    Carlly Motors offers a wide range of automotive
-                    services accessible through our apps. These include car buying and selling,
-                    auctions, access to both new and used car parts, roadside assistance,
-                    vehicle transportation, comprehensive car insurance, and professional repair
-                    services. Our platform caters to every aspect of vehicle management, making
-                    it a one-stop solution for all automotive needs.
-                </p>
-            </div>
-            <div class="col-md-6 col-sm-6 bg-light text-center border-end py-5 px-3">
-                <i class="bi bi-briefcase text-danger fs-1"></i>
-                <h4 class="mb-3 fw-normal text-uppercase">Quality and Excellence</h4>
-                <p class="text-secondary">
-                    Quality assurance is paramount at Carlly Motors. We
-                    meticulously vet all service providers through a rigorous verification
-                    process, ensuring that only qualified and trustworthy professionals are part
-                    of our network. Our commitment to excellence is unwavering, and we
-                    continuously strive to enhance our services through customer feedback and
-                    technological advancements.
-                </p>
-            </div>
-            <hr>
-            <div class="col-md-12 col-sm-12 bg-light text-center py-5 px-3">
-                <i class="bi bi-book text-danger fs-1"></i>
-                <h4 class="mb-3 fw-normal text-uppercase">Join Us on Our Journey</h4>
-                <p class="text-secondary">
-                    As we continue to grow and expand our services in
-                    Dubai and beyond, we invite you to join us on this exciting journey. Whether
-                    you are a car owner seeking reliable services or a service provider looking
-                    to expand your reach, Carlly Motors provides the tools and platform to meet
-                    your needs. Together, we are setting new standards in the automotive service
-                    industry, driving towards a more connected and efficient future.
-
-                </p>
+            <div class="col-md-6">
+                <div class="feature-box">
+                    <i class="bi bi-briefcase"></i>
+                    <h5 class="fw-bold mb-3 text-uppercase">Quality & Excellence</h5>
+                    <p class="text-secondary">
+                        Every service provider is verified for quality and trustworthiness, ensuring
+                        top-tier performance and customer satisfaction.
+                    </p>
+                </div>
             </div>
         </div>
-        <hr>
+    </div>
+</section>
 
-        <div class="row mt-3">
-            <div class="col-lg-3">
-                <div class="about_content_box_all mt-3">
-                    <div class="about_detail text-center">
-                        <div class="about_icon">
-                        <i class="fas fa-trophy me-3 fs-3"></i>
-                        </div>
-                        <h5 class="text-dark text-capitalize mt-3 font-weight-bold">Top 1 Americas</h5>
-                        <p class="edu_desc mt-3 mb-0 text-muted">
-                        Largest Auto portal
-                        </p>
-                    </div>
+<!-- ==== JOIN US ==== -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="section-title text-brand">Join Us on Our Journey</h2>
+        <p class="section-subtitle">
+            Whether you’re a car owner seeking reliable services or a provider expanding your reach,
+            Carlly Motors gives you the tools to thrive in the automotive industry.
+        </p>
+    </div>
+</section>
+
+<!-- ==== STATISTICS ==== -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3 col-6">
+                <div class="stats-box">
+                    <i class="fas fa-trophy"></i>
+                    <h5 class="fw-bold mt-2">Top 1 Americas</h5>
+                    <p class="text-muted">Largest Auto Portal</p>
                 </div>
             </div>
-
-            <div class="col-lg-3">
-                <div class="about_content_box_all mt-3">
-                    <div class="about_detail text-center">
-                        <div class="about_icon">
-                        <i class="fas fa-car me-3 fs-3"></i>
-                        </div>
-                        <h5 class="text-dark text-capitalize mt-3 font-weight-bold">Car Sold</h5>
-                        <p class="edu_desc mb-0 mt-3 text-muted">
-                        Every 5 minutes
-                        </p>
-                    </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-box">
+                    <i class="fas fa-car"></i>
+                    <h5 class="fw-bold mt-2">Car Sold</h5>
+                    <p class="text-muted">Every 5 minutes</p>
                 </div>
             </div>
-
-            <div class="col-lg-3">
-                <div class="about_content_box_all mt-3">
-                    <div class="about_detail text-center">
-                        <div class="about_icon">
-                        <i class="fas fa-tags me-3 fs-3"></i>
-                        </div>
-                        <h5 class="text-dark text-capitalize mt-3 font-weight-bold">Offers</h5>
-                        <p class="edu_desc mb-0 mt-3 text-muted">
-                            Stay updated, pay less
-                        </p>
-                    </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-box">
+                    <i class="fas fa-tags"></i>
+                    <h5 class="fw-bold mt-2">Offers</h5>
+                    <p class="text-muted">Stay updated, pay less</p>
                 </div>
             </div>
-
-            <div class="col-lg-3">
-                <div class="about_content_box_all mt-3">
-                    <div class="about_detail text-center">
-                        <div class="about_icon">
-                        <i class="fas fa-balance-scale me-3 fs-3"></i>
-                        </div>
-                        <h5 class="text-dark text-capitalize mt-3 font-weight-bold">Compare</h5>
-                        <p class="edu_desc mb-0 mt-3 text-muted">
-                            Decode the right car
-                        </p>
-                    </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-box">
+                    <i class="fas fa-balance-scale"></i>
+                    <h5 class="fw-bold mt-2">Compare</h5>
+                    <p class="text-muted">Find the right car</p>
                 </div>
             </div>
         </div>
