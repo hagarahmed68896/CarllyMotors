@@ -12,29 +12,38 @@ class SparePartController extends Controller
     /**
      * Display a listing of the resource.
      */
- public function index(Request $request)
+public function index(Request $request)
 {
     $currentUrl = url()->current();
 
-    $users = SparePart::select('user_id')
-        ->distinct()
-        ->inRandomOrder()
-        ->pluck('user_id');
+    // البحث في الديلرز
+    $dealersQuery = CarDealer::query();
 
-    if ($request->has('dealer_id')) {
-        $dealers = CarDealer::where('id', $request->dealer_id)->get();
-    } else {
-        $dealers = CarDealer::whereIn('user_id', $users)->get();
+    if ($request->filled('q')) {
+        $keyword = $request->q;
+
+        $dealersQuery->where(function ($q) use ($keyword) {
+            $q->where('company_name', 'like', "%{$keyword}%")
+              ->orWhere('company_address', 'like', "%{$keyword}%");
+        });
     }
 
-    // Fetch distinct values for filters
+    // فلترة بالديلر ID إن وجد
+    if ($request->has('dealer_id')) {
+        $dealersQuery->where('id', $request->dealer_id);
+    }
+
+    // جلب النتائج
+    $dealers = $dealersQuery->paginate(12)->withQueryString();
+
+    // باقي الفلاتر - من جدول SparePart (علشان المستخدم يقدر يفلتر بناءً على قطع الغيار)
     $makes      = SparePart::select('brand')->distinct()->orderBy('brand')->pluck('brand');
     $models     = SparePart::select('model')->distinct()->orderBy('model')->pluck('model');
     $conditions = SparePart::select('part_type')->distinct()->orderBy('part_type')->pluck('part_type');
     $cities     = SparePart::select('city')->distinct()->orderBy('city')->pluck('city');
 
     $category_ids = SparePart::distinct()->pluck('category_id')->toArray();
-    $categories   = SparepartCategory::where('parent_id', null)
+    $categories   = SparepartCategory::whereNull('parent_id')
                         ->whereIn('id', $category_ids)
                         ->distinct()
                         ->pluck('name')
@@ -50,8 +59,26 @@ class SparePartController extends Controller
         ->values()
         ->toArray();
 
-    return view('spareparts.index', compact('dealers', 'cities', 'makes', 'models', 'years', 'categories', 'conditions'));
+    return view('spareparts.index', compact(
+        'dealers', 'cities', 'makes', 'models', 'years', 'categories', 'conditions'
+    ));
 }
+
+public function getModels(Request $request)
+{
+    $brand = $request->get('brand');
+
+    $models = SparePart::where('brand', $brand)
+        ->select('model')
+        ->distinct()
+        ->orderBy('model')
+        ->pluck('model')
+        ->filter()
+        ->values();
+
+    return response()->json($models);
+}
+
 
 
     public function homeSection(Request $request)

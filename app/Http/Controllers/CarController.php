@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class CarController extends Controller
 {
-     public function index(Request $request)
+public function index(Request $request)
 {
     // Filters
     $cities        = CarListingModel::select('city')->distinct()->orderBy('city')->pluck('city');
@@ -26,6 +26,15 @@ class CarController extends Controller
 
     // Base query
     $carlisting = CarListingModel::with(['user', 'images']);
+
+    // Apply search
+    if ($request->filled('q')) {
+        $carlisting->where(function($query) use ($request) {
+            $query->where('listing_type', 'like', '%' . $request->q . '%')
+                  ->orWhere('listing_model', 'like', '%' . $request->q . '%')
+                  ->orWhere('city', 'like', '%' . $request->q . '%');
+        });
+    }
 
     // Apply filters
     if ($request->filled('make')) {
@@ -57,7 +66,7 @@ class CarController extends Controller
         }
     }
 
-    // Get all results (no pagination)
+    // Get all results
     $carlisting = $carlisting->get();
 
     // Map first valid image for each car
@@ -84,6 +93,7 @@ class CarController extends Controller
         'fueltypes', 'gears', 'doors', 'cylinders', 'colors', 'conditions'
     ));
 }
+
 
 
     public function create()

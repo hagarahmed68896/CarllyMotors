@@ -120,6 +120,8 @@ Route::resource('spareParts', SparePartController::class);
 Route::get('spareparts/homeSection', [SparePartController::class, 'homeSection'])->name('spareparts.homeSection');
 Route::get('filter-sparePart', [SparePartController::class, 'filter'])->name('filter.spareParts');
 Route::post('getSubCategories', [SparePartController::class, 'getSubCategories'])->name('getSubCategories');
+// Route لجلب الموديلات بناءً على الماركة المختارة (Ajax)
+Route::get('/get-models', [SparePartController::class, 'getModels']);
 
 //  Spare Part Deep Links
 Route::get('/spare-part/{id}', [SparePartController::class, 'show'])->name('sparepart.detail')->where('id', '[0-9]+');
@@ -241,4 +243,4 @@ Route::get('/app/workshop/{id}', function ($id) {
     ]);
 })->name('app.workshop')->where('id', '[0-9]+');
 // 🔍 Global Search Route
-Route::get('/search', [HomeController::class, 'search'])->name('search');
+Route::get('/search', [App\Http\Controllers\SearchController::class, 'search'])->name('global.search');

@@ -127,7 +127,8 @@ use Illuminate\Support\Str;
         <aside class="col-lg-3 col-md-4">
             <div class="filter-sidebar">
                 <h5><i class="fas fa-sliders-h me-2"></i>Filter Workshops</h5>
-                <form id="filterForm" method="GET" action="{{ route('workshops.index') }}">
+<form id="filterForm" method="GET" 
+      action="{{ request()->routeIs('global.search') ? route('global.search') : route('workshops.index') }}">
                     <div class="mb-3">
                         <label class="form-label fw-semibold small text-muted">Make</label>
                         <select class="form-select" id="brand" name="brand_id">
@@ -142,10 +143,10 @@ use Illuminate\Support\Str;
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold small text-muted">Category</label>
-                        <select class="form-select" id="workshop" name="workshop_category_id">
+                        <select class="form-select" id="workshop" name="category_id">
                             <option value="">All Categories</option>
                             @foreach($categories as $key => $category)
-                                <option value="{{ $key }}" {{ request('workshop_category_id') == $key ? 'selected' : '' }}>
+                                <option value="{{ $key }}" {{ request('category_id') == $key ? 'selected' : '' }}>
                                     {{ $category }}
                                 </option>
                             @endforeach
@@ -176,76 +177,98 @@ use Illuminate\Support\Str;
         </aside>
 
         <!-- Workshops List -->
-        <div class="col-lg-9 col-md-8">
-            <div class="row">
-                @foreach ($workshops as $workshop)
-                @php
-                    $shareUrl = request()->url() . '?id=' . $workshop->id;
-                    $image = $workshop->workshop_logo
-                        ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
-                            ? $workshop->workshop_logo
-                            : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
-                        : asset('workshopNotFound.png');
-                @endphp
+     <div class="col-lg-9 col-md-8">
+    <div class="row g-4">
+        @forelse ($workshops as $workshop)
+            @php
+                $shareUrl = request()->url() . '?id=' . $workshop->id;
+                $image = $workshop->workshop_logo
+                    ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
+                        ? $workshop->workshop_logo
+                        : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
+                    : asset('workshopNotFound.png');
+            @endphp
 
-                <div class="col-sm-6 col-lg-4 mb-4">
-                    <div class="card workshop-card h-100">
-                        <img src="{{ $image }}" onerror="this.onerror=null; this.src='{{ asset('workshopNotFound.png') }}';" class="card-img-top" alt="Workshop Image">
-                        <div class="card-body d-flex flex-column justify-content-between">
-                            <div>
-                                <h5 class="card-title text-truncate">{{ Str::limit($workshop->workshop_name, 25) }}</h5>
-                                <p class="text-muted small mb-1"><i class="fas fa-map-marker-alt"></i>{{ $workshop->address }}</p>
-                                @if(isset($workshop->days[0]))
-                                    <p class="text-muted small mb-1"><i class="fas fa-clock"></i>{{ $workshop->days[0]->day }}: {{ $workshop->days[0]->from }} - {{ $workshop->days[0]->to }}</p>
-                                @endif
-                                       @if(count($workshop->days) > 1)
-                    <div class="dropdown mb-2">
-                        <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" id="dropdownDays"
-                           data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 10px;">
-                            More Days
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownDays">
-                            @foreach($workshop->days as $key => $day)
-                                @if($key == 0) @continue @endif
-                                <li class="px-3 py-1 small text-muted">
-                                    <i class="fas fa-clock me-1" style="color:#760e13;"></i>
-                                    {{ $day->day }}: {{ $day->from }} - {{ $day->to }}
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                            </div>
+            <div class="col-sm-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden workshop-card">
+                    <img src="{{ $image }}" 
+                         onerror="this.onerror=null; this.src='{{ asset('workshopNotFound.png') }}';" 
+                         class="card-img-top" 
+                         alt="Workshop Image" 
+                         style="height:200px; object-fit:cover;">
 
-                            <div class="actions">
-                                <a href="https://wa.me/{{ $workshop->user?->phone }}" target="_blank" class="btn btn-outline-success">
-                                    <i class="fab fa-whatsapp"></i>
-                                </a>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <h5 class="card-title fw-bold text-truncate">{{ Str::limit($workshop->workshop_name, 25) }}</h5>
+                            <p class="text-muted small mb-1">
+                                <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $workshop->address }}
+                            </p>
 
-                                @php
-                                    $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
-                                @endphp
+                            @if(isset($workshop->days[0]))
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-clock me-1 text-success"></i>
+                                    {{ $workshop->days[0]->day }}: {{ $workshop->days[0]->from }} - {{ $workshop->days[0]->to }}
+                                </p>
+                            @endif
 
-                                @if($isMobile)
-                                    <a href="tel:{{ $workshop->user?->phone }}" class="btn btn-outline-danger">
-                                        <i class="fas fa-phone"></i>
+                            @if(count($workshop->days) > 1)
+                                <div class="dropdown mb-2">
+                                    <a class="btn btn-sm btn-outline-secondary dropdown-toggle w-100" href="#" id="dropdownDays{{ $workshop->id }}"
+                                       data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 10px;">
+                                        More Days
                                     </a>
-                                @else
-                                    <a href="https://wa.me/{{ $workshop->user?->phone }}" target="_blank" class="btn btn-outline-danger">
-                                        <i class="fas fa-phone"></i>
-                                    </a>
-                                @endif
+                                    <ul class="dropdown-menu w-100" aria-labelledby="dropdownDays{{ $workshop->id }}">
+                                        @foreach($workshop->days as $key => $day)
+                                            @if($key == 0) @continue @endif
+                                            <li class="px-3 py-1 small text-muted">
+                                                <i class="fas fa-clock me-1" style="color:#5a0b0f;"></i>
+                                                {{ $day->day }}: {{ $day->from }} - {{ $day->to }}
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
 
-                                <a href="https://wa.me/?text={{ urlencode('Check this workshop: ' . $shareUrl) }}" target="_blank" class="btn btn-outline-primary">
-                                    <i class="fa fa-share"></i>
+                        <div class="d-flex justify-content-between mt-3">
+                            <a href="https://wa.me/{{ $workshop->user?->phone }}" 
+                               target="_blank" 
+                               class="btn btn-outline-success flex-fill mx-1 rounded-3">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+
+                            @php
+                                $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
+                            @endphp
+
+                            @if($isMobile)
+                                <a href="tel:{{ $workshop->user?->phone }}" 
+                                   class="btn btn-outline-danger flex-fill mx-1 rounded-3">
+                                    <i class="fas fa-phone"></i>
                                 </a>
-                            </div>
+                            @else
+                                <a href="https://wa.me/{{ $workshop->user?->phone }}" 
+                                   target="_blank" 
+                                   class="btn btn-outline-danger flex-fill mx-1 rounded-3">
+                                    <i class="fas fa-phone"></i>
+                                </a>
+                            @endif
+
+                            <a href="https://wa.me/?text={{ urlencode('Check this workshop: ' . $shareUrl) }}" 
+                               target="_blank" 
+                               class="btn btn-outline-primary flex-fill mx-1 rounded-3">
+                                <i class="fa fa-share"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
-                @endforeach
             </div>
-        </div>
+        @empty
+            <p class="text-center text-muted mt-4">No workshops found.</p>
+        @endforelse
+    </div>
+</div>
+
 
     </div>
 </div>

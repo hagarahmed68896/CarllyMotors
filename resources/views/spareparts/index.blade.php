@@ -250,266 +250,190 @@
         }
     </style>
 
-    {{-- <div id="demo" class="carousel slide mt-1" data-bs-ride="carousel" data-bs-interval="2000">
-        <!-- النقاط -->
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="3"></button>
-        </div>
 
-        <!-- الصور -->
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img class="d-block   " src="{{asset('1.jpg')}}" alt="Los Angeles">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block   " src="{{asset('2.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block   " src="{{asset('3.jpg')}}" alt="Chicago">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block   " src="{{asset('4.jpg')}}" alt="New York">
-            </div>
-        </div>
+<div class="container my-5 mx-5 main-home-filter-sec">
+  <div class="row gx-4 gy-4">
+    
+    <!-- ✅ FILTER SIDEBAR -->
+    <aside class="col-lg-3 col-md-4">
+      <div class="bg-white border rounded-4 shadow-sm p-4 h-100 sticky-top" style="top: 100px;">
+        <h5 class="fw-bold mb-3 text-center" style="color: #5a0b0f">
+          <i class="fas fa-sliders-h me-2"></i> Filter Dealers
+        </h5>
 
-        <!-- أزرار التنقل -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-    </div> --}}
-    <!-- filter -->
-    <!-- Start filter home with items -->
+        <form id="filterForm" method="GET" action="{{ route('spareParts.index') }}">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-muted">Make</label>
+            <select class="form-select" id="brand" name="make">
+              <option value="">All Makes</option>
+              @foreach($makes as $make)
+                <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>
+                  {{ $make }}
+                </option>
+              @endforeach
+            </select>
+          </div>
 
-  <div class="container-fluid my-5 main-home-filter-sec">
-    <div class="row g-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-muted">Model</label>
+            <select class="form-select" id="model" name="model">
+              <option value="">All Models</option>
+              @if(request('make') && request('model'))
+                <option value="{{ request('model') }}" selected>{{ request('model') }}</option>
+              @endif
+            </select>
+          </div>
 
-        {{-- ================= FILTER SIDEBAR ================= --}}
-        @if(request()->path() == 'spareParts')
-            <div class="col-lg-3 col-md-4">
-                <div class="bg-white border rounded-4 shadow-sm p-4 h-100">
-                    <h5 class="fw-bold mb-3 text-center" style="color: #760e13">
-                        <i class="fas fa-sliders-h me-2"></i>Filter Spare Parts
-                    </h5>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-muted">City</label>
+            <select class="form-select" name="city">
+              <option value="">All Cities</option>
+              @foreach($cities as $city)
+                @if(!empty($city))
+                  <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+                    {{ $city }}
+                  </option>
+                @endif
+              @endforeach
+            </select>
+          </div>
 
-                    <form id="filterForm" method="GET" action="{{ route('filter.spareParts') }}">
-                        {{-- Make --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-muted">Make</label>
-                            <select class="form-select" id="brand" name="make">
-                                <option value="">All Makes</option>
-                                @foreach($makes as $make)
-                                    <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>
-                                        {{ $make }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-muted">Category</label>
+            <select class="form-select" id="category" name="category">
+              <option value="">All Categories</option>
+              @foreach($categories as $category)
+                <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>
+                  {{ $category }}
+                </option>
+              @endforeach
+            </select>
+          </div>
 
-                        {{-- Model --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-muted">Model</label>
-                            <select class="form-select" id="model" name="model">
-                                <option value="">All Models</option>
-                            </select>
-                        </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-muted">Condition</label>
+            <select class="form-select" name="condition">
+              <option value="">All Conditions</option>
+              <option value="New" {{ request('condition') == 'New' ? 'selected' : '' }}>New</option>
+              <option value="Used" {{ request('condition') == 'Used' ? 'selected' : '' }}>Used</option>
+            </select>
+          </div>
 
-                        {{-- Year --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-muted">Year</label>
-                            <select class="form-select" name="year">
-                                <option value="">All Years</option>
-                                @foreach($years as $year)
-                                    <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>
-                                        {{ $year }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+          <div id="vin-input-container" class="mb-3" style="display:none;">
+            <label class="form-label fw-semibold small text-muted">VIN Number</label>
+            <input type="text" name="vin_number" id="vin-number" class="form-control"
+                   placeholder="Enter VIN Number">
+          </div>
 
-                        {{-- City --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-muted">City</label>
-                            <select class="form-select" name="city">
-                                <option value="">All Cities</option>
-                                @foreach($cities as $city)
-                                    @if(!empty($city))
-                                        <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-                                            {{ $city }}
-                                        </option>
-                                    @endif
-                                @endforeach
-                            </select>
-                        </div>
+          <div class="d-flex gap-2 border-top pt-3">
+            <button type="submit" class="btn flex-fill text-white fw-semibold"
+                    style="background-color:#760e13;">
+              Apply Filters
+            </button>
+            <button type="button" onclick="resetFilters()" class="btn btn-outline-secondary flex-fill">
+              Reset
+            </button>
+          </div>
+        </form>
+      </div>
+    </aside>
 
-                        {{-- Category --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-muted">Category</label>
-                            <select class="form-select" id="category" name="category">
-                                <option value="">All Categories</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>
-                                        {{ $category }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+    <!-- ✅ DEALERS RESULTS -->
+    <section class="col-lg-9 col-md-8">
+      <div class="row g-4">
+        @forelse ($dealers as $dealer)
+          @php
+            $image = Str::after($dealer->company_img, url('/') . '/');
+            $dealerName = ucfirst(strtolower($dealer->company_name));
+            $dealerName = substr($dealerName, 0, 25);
+            $phone = optional($dealer->user)->phone ?? 'N/A';
+            $shareUrl = request()->url() . '?shop_id=' . $dealer->id;
+          @endphp
 
-                        {{-- Sub-category --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-muted">Sub-Category</label>
-                            <select class="form-select" id="subCategory" name="subCategory">
-                                <option value="">All Sub-Categories</option>
-                            </select>
-                        </div>
+          <div class="col-sm-5 col-lg-4 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
+              <div class="bg-light position-relative" style="height: 220px; overflow: hidden;">
+                <img src="{{ config('app.file_base_url') . $image }}" alt="Dealer Image"
+                     class="w-100 h-100 object-fit-cover"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';"
+                     loading="lazy">
+              </div>
 
-                        {{-- Condition --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-muted">Condition</label>
-                            <select class="form-select" name="condition">
-                                <option value="">All Conditions</option>
-                                <option value="New" {{ request('condition') == 'New' ? 'selected' : '' }}>New</option>
-                                <option value="Used" {{ request('condition') == 'Used' ? 'selected' : '' }}>Used</option>
-                            </select>
-                        </div>
-
-                        {{-- VIN Input --}}
-                        <div id="vin-input-container" class="mb-3" style="display:none;">
-                            <label class="form-label fw-semibold small text-muted">VIN Number</label>
-                            <input type="text" name="vin_number" id="vin-number" class="form-control"
-                                   placeholder="Enter VIN Number">
-                        </div>
-
-                        {{-- Buttons --}}
-                        <div class="d-flex gap-2 border-top pt-3">
-                            <button type="submit" class="btn flex-fill text-white fw-semibold"
-                                    style="background-color:#760e13;">
-                                Apply Filters
-                            </button>
-                            <button type="button" onclick="resetFilters()" class="btn btn-outline-secondary flex-fill">
-                                Reset
-                            </button>
-                        </div>
-                    </form>
+              <div class="card-body d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <h6 class="fw-bold text-truncate mb-0" style="color:#760e13" title="{{ $dealer->company_name }}">
+                    {{ $dealerName }}{{ strlen($dealer->company_name) >= 25 ? '...' : '' }}
+                  </h6>
+                  <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($dealer->company_address) }}"
+                     target="_blank" class="text-decoration-none small text-muted">
+                    <i class="fas fa-map-marker-alt text-danger me-1"></i> Location
+                  </a>
                 </div>
-            </div>
-        @else
-            {{-- ================= CAR SUMMARY ================= --}}
-            <div class="col-12">
-                <div class="bg-white shadow-sm rounded-4 p-4 text-start mx-auto" style="max-width: 600px;">
-                    <h5 class="fw-bold text-center text-danger mb-4">Your Car Details</h5>
-                    <div class="row gy-2 small">
-                        <div class="col-6 fw-semibold text-muted">Car Type:</div>
-                        <div class="col-6 bg-light rounded px-2 py-1">{{ request()->make ?? '--' }}</div>
 
-                        <div class="col-6 fw-semibold text-muted">Car Model:</div>
-                        <div class="col-6 bg-light rounded px-2 py-1">{{ request()->model ?? '--' }}</div>
-
-                        <div class="col-6 fw-semibold text-muted">Car Year:</div>
-                        <div class="col-6 bg-light rounded px-2 py-1">{{ request()->year ?? '--' }}</div>
-
-                        <div class="col-6 fw-semibold text-muted">Category:</div>
-                        <div class="col-6 bg-light rounded px-2 py-1">{{ request()->category ?? '--' }}</div>
-
-                        <div class="col-6 fw-semibold text-muted">Sub-category:</div>
-                        <div class="col-6 bg-light rounded px-2 py-1">{{ request()->subCategory ?? '--' }}</div>
-                    </div>
+                <div class="actions d-flex justify-content-between align-items-center gap-2 mt-2">
+                  <a href="https://wa.me/{{ $phone }}" target="_blank" class="btn btn-outline-success">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a href="tel:{{ $phone }}" class="btn btn-outline-danger">
+                    <i class="fas fa-phone"></i>
+                  </a>
+                  <a href="https://wa.me/?text={{ urlencode('Check this store: ' . $shareUrl) }}" 
+                     target="_blank" class="btn btn-outline-primary">
+                    <i class="fa fa-share"></i>
+                  </a>
                 </div>
+              </div>
             </div>
-        @endif
+          </div>
+        @empty
+          <p class="text-center text-muted mt-4">No dealers found.</p>
+        @endforelse
+      </div>
 
-        {{-- ================= DEALERS LIST ================= --}}
-        <div class="@if(request()->path() == 'spareParts') col-lg-9 col-md-8 @else col-12 @endif">
-            <div class="row g-4">
-                @foreach ($dealers as $dealer)
-                    @php
-                        $image = Str::after($dealer->company_img, url('/') . '/');
-                        $dealerName = ucfirst(strtolower($dealer->company_name));
-                        $dealerName = substr($dealerName, 0, 25);
-                        $phone = $dealer->user->phone;
-                        $shareUrl = request()->path() == 'spareParts'
-                            ? request()->url() . '?shop_id=' . $dealer->id
-                            : request()->fullUrl() . '&shop_id=' . $dealer->id;
-                        $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
-                    @endphp
+      <div class="d-flex justify-content-center mt-4">
+        {{ $dealers->onEachSide(1)->links('pagination::bootstrap-5') }}
+      </div>
+    </section>
 
-                    <div class="col-sm-6 col-lg-4 col-xl-3">
-                        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
-                            {{-- Image --}}
-                            <div class="bg-light position-relative" style="height: 220px; overflow: hidden;">
-                                <img src="{{ config('app.file_base_url') . $image }}" alt="Dealer Image"
-                                     class="w-100 h-100 object-fit-cover"
-                                     onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';"
-                                     loading="lazy">
-                            </div>
-
-                            {{-- Content --}}
-                            <div class="card-body d-flex flex-column justify-content-between">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <h6 class="fw-bold text-truncate mb-0" style="color:#760e13" title="{{ $dealer->company_name }}">
-                                        {{ $dealerName }}{{ strlen($dealer->company_name) >= 25 ? '...' : '' }}
-                                    </h6>
-                                    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($dealer->company_address) }}"
-                                       target="_blank" class="text-decoration-none small text-muted">
-                                        <i class="fas fa-map-marker-alt text-danger me-1"></i> Location
-                                    </a>
-                                </div>
-
-                                {{-- Actions --}}
-                              <div class="actions d-flex justify-content-between align-items-center gap-2 mt-2">
-    <a href="https://wa.me/{{ $phone }}" target="_blank" class="btn btn-outline-success">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
-    @php
-        $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
-    @endphp
-
-    @if($isMobile)
-        <a href="tel:{{ $phone }}" class="btn btn-outline-danger">
-            <i class="fas fa-phone"></i>
-        </a>
-    @else
-        <a href="https://wa.me/{{ $phone }}" target="_blank" class="btn btn-outline-danger">
-            <i class="fas fa-phone"></i>
-        </a>
-    @endif
-
-    <a href="https://wa.me/?text={{ urlencode('Check this store: ' . $shareUrl) }}" 
-       target="_blank" class="btn btn-outline-primary">
-        <i class="fa fa-share"></i>
-    </a>
+  </div>
 </div>
 
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-    </div>
 </div>
 
+{{-- ================= JS SCRIPT ================= --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const brandSelect = document.getElementById('brand');
+    const modelSelect = document.getElementById('model');
+
+    brandSelect.addEventListener('change', function() {
+        const brand = this.value;
+        modelSelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (brand) {
+            fetch(`/get-models?brand=${encodeURIComponent(brand)}`)
+                .then(res => res.json())
+                .then(models => {
+                    modelSelect.innerHTML = '<option value="">All Models</option>';
+                    models.forEach(model => {
+                        modelSelect.innerHTML += `<option value="${model}">${model}</option>`;
+                    });
+                });
+        } else {
+            modelSelect.innerHTML = '<option value="">All Models</option>';
+        }
+    });
+});
+
+function resetFilters() {
+    document.getElementById('filterForm').reset();
+    document.getElementById('model').innerHTML = '<option value="">All Models</option>';
+}
+</script>
+
+
     </div>
     </div>
-
-    <!-- <style>
-      .select2-container--default .select2-selection--single {
-        height: 38px;
-        padding: 6px 12px;
-        font-size: 14px;
-      }
-      .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 24px;
-      }
-    </style> -->
-
 
     @push('carlistingscript')
         {{-- Script related filters on spareParts page --}}

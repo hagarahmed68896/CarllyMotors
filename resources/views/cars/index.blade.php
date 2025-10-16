@@ -337,23 +337,27 @@ input[type="number"] {}
 
 <div style="margin-left: 70px; margin-right:70px">
   <div class="row px-6 py-5">
+
     <!-- 🧭 Sidebar Filters -->
     <aside class="col-lg-3 col-md-4 mb-4">
       <div class="bg-white shadow-sm rounded-4 p-4 sticky-top" style="top: 90px; max-height: calc(100vh - 120px); overflow-y: auto;">
-         <h5 class="fw-bold mb-3 text-center" style="color: #760e13">
-                        <i class="fas fa-sliders-h me-2"></i>Filter Cars
-                    </h5>
+        <h5 class="fw-bold mb-3 text-center" style="color: #5a0b0f">
+            <i class="fas fa-sliders-h me-2"></i>Filter Cars
+        </h5>
 
         <form id="filterForm" method="GET" action="{{ route('cars.index') }}" class="d-flex flex-column gap-3">
+          
+          <!-- Preserve global search -->
+          <input type="hidden" name="q" value="{{ request('q') }}">
 
           <!-- Car Type -->
           <div>
             <label class="form-label fw-semibold small text-muted">Car Type</label>
             <select class="form-select rounded-3" name="car_type" onchange="submitFilterForm()">
               <option value="">All Types</option>
-              <option value="UsedOrNew" {{request('car_type')=='UsedOrNew'?'selected':''}}>Used/New</option>
-              <option value="Imported" {{request('car_type')=='Imported'?'selected':''}}>Imported</option>
-              <option value="Auction" {{request('car_type')=='Auction'?'selected':''}}>Auction</option>
+              <option value="UsedOrNew" {{ request('car_type')=='UsedOrNew'?'selected':'' }}>Used/New</option>
+              <option value="Imported" {{ request('car_type')=='Imported'?'selected':'' }}>Imported</option>
+              <option value="Auction" {{ request('car_type')=='Auction'?'selected':'' }}>Auction</option>
             </select>
           </div>
 
@@ -412,10 +416,10 @@ input[type="number"] {}
           <!-- Regional Specs -->
           <div>
             <label class="form-label fw-semibold small text-muted">Regional Specs</label>
-            <select class="form-select rounded-3" name="regionalSpecs" onchange="submitFilterForm()">
+            <select class="form-select rounded-3" name="regionalSpec" onchange="submitFilterForm()">
               <option value="">All Specs</option>
               @foreach($regionalSpecs as $regionalSpec)
-                <option value="{{ $regionalSpec }}" {{ request('regionalSpecs') == $regionalSpec ? 'selected' : '' }}>{{ $regionalSpec }}</option>
+                <option value="{{ $regionalSpec }}" {{ request('regionalSpec') == $regionalSpec ? 'selected' : '' }}>{{ $regionalSpec }}</option>
               @endforeach
             </select>
           </div>
@@ -425,49 +429,46 @@ input[type="number"] {}
             <label class="form-label fw-semibold small text-muted">Price Range (AED)</label>
             <div class="d-flex align-items-center gap-2 mb-2">
               <input type="number" class="form-control rounded-3" name="priceFrom" placeholder="Min"
-                min="{{ $minPrice }}" max="{{ $maxPrice }}"
-                value="{{ request('priceFrom', $minPrice) }}">
+                     min="{{ $minPrice }}" max="{{ $maxPrice }}" value="{{ request('priceFrom', $minPrice) }}">
               <span class="fw-bold">–</span>
               <input type="number" class="form-control rounded-3" name="priceTo" placeholder="Max"
-                min="{{ $minPrice }}" max="{{ $maxPrice }}"
-                value="{{ request('priceTo', $maxPrice) }}">
+                     min="{{ $minPrice }}" max="{{ $maxPrice }}" value="{{ request('priceTo', $maxPrice) }}">
             </div>
-<button type="submit" class="btn btn-sm btn-outline-dark w-100 rounded-3 apply-btn">
-  Apply
-</button>
+            <button type="submit" class="btn btn-sm btn-outline-dark w-100 rounded-3 apply-btn">Apply</button>
 
-<style>
-.apply-btn {
-  transition: all 0.3s ease;
-  border-color: #760e13;
-  color: #760e13;
-}
-
-.apply-btn:hover {
-  background-color: #760e13;
-  color: #fff;
-  border-color: #760e13;
-}
-</style>
+            <style>
+            .apply-btn {
+                transition: all 0.3s ease;
+                border-color: #760e13;
+                color: #760e13;
+            }
+            .apply-btn:hover {
+                background-color: #760e13;
+                color: #fff;
+                border-color: #760e13;
+            }
+            </style>
           </div>
 
           <!-- Buttons -->
           <div class="d-flex gap-2 mt-3">
-<button type="submit" class="btn flex-fill rounded-3 text-white" style="background-color: #760e13; border-color: #760e13;">
-  Apply Filters
-</button>
+            <button type="submit" class="btn flex-fill rounded-3 text-white" style="background-color: #760e13; border-color: #760e13;">
+              Apply Filters
+            </button>
             <button type="button" onclick="resetFilters()" class="btn btn-light flex-fill rounded-3 border">Reset</button>
           </div>
         </form>
       </div>
     </aside>
 
-  <!-- 🚘 Main Car Listings -->
+    <!-- 🚘 Main Car Listings -->
 <div class="col-lg-9 col-md-8">
   <div class="row g-4" id="car-list">
-    @foreach ($carlisting as $key => $car)
-<div class="col-sm-6 col-md-4 col-lg-4">
+    @forelse ($carlisting as $key => $car)
+      <!-- CAR CARD -->
+      <div class="col-sm-6 col-md-4 col-lg-4">
         <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
+
           <!-- Image Section -->
           <div class="position-relative" style="height: 200px;">
             @php
@@ -476,43 +477,47 @@ input[type="number"] {}
                 : asset('carNotFound.jpg');
             @endphp
             <a href="{{ route('car.detail', $car->id) }}">
-              <img src="{{ $imageSrc }}" class="card-img-top h-100 w-100" style="object-fit: cover" alt="{{ $car->listing_model }}" onerror="this.src='{{ asset('carNotFound.jpg') }}'">
+              <img src="{{ $imageSrc }}" 
+                   class="card-img-top h-100 w-100" 
+                   style="object-fit: cover" 
+                   alt="{{ $car->listing_model }}" 
+                   onerror="this.src='{{ asset('carNotFound.jpg') }}'">
             </a>
 
-            <span class="badge bg-danger position-absolute top-0 start-0 m-2 px-3 py-1 rounded-pill">{{ $car->listing_year }}</span>
+            <span class="badge bg-danger position-absolute top-0 start-0 m-2 px-3 py-1 rounded-pill">
+              {{ $car->listing_year }}
+            </span>
 
-          <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
-        @if(auth()->check())
-            @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
-            <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
-                @csrf
-                <button title="Add to favorites" 
-                        class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                        type="submit" 
-                        aria-label="Add to favorites"
-                        style="width: 32px; height: 32px; border-radius: 50%;">
-                    <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
-                </button>
-            </form>
-        @else
-            <a href="{{ route('login') }}" 
-               title="Login to add to favorites" 
-               class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-               aria-label="Login to add to favorites"
-               style="width: 32px; height: 32px; border-radius: 50%;">
-                <i class="fas fa-heart" style="color: #6c757d;"></i>
-            </a>
-        @endif
+            <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
+              @if(auth()->check())
+                @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
+                <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
+                    @csrf
+                    <button title="Add to favorites" 
+                            class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                            type="submit" 
+                            aria-label="Add to favorites"
+                            style="width: 32px; height: 32px; border-radius: 50%;">
+                        <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+                    </button>
+                </form>
+              @else
+                <a href="{{ route('login') }}" 
+                   title="Login to add to favorites" 
+                   class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                   style="width: 32px; height: 32px; border-radius: 50%;">
+                    <i class="fas fa-heart" style="color: #6c757d;"></i>
+                </a>
+              @endif
 
-        <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" 
-           target="_blank" 
-           title="Share via WhatsApp"
-           aria-label="Share via WhatsApp"
-           class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-           style="width: 32px; height: 32px; border-radius: 50%;">
-            <i class="fas fa-share-alt" style="color: #25d366;"></i>
-        </a>
-    </div>
+              <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" 
+                 target="_blank" 
+                 title="Share via WhatsApp"
+                 class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                 style="width: 32px; height: 32px; border-radius: 50%;">
+                  <i class="fas fa-share-alt" style="color: #25d366;"></i>
+              </a>
+            </div>
           </div>
 
           <!-- Content Section -->
@@ -520,11 +525,14 @@ input[type="number"] {}
             <div>
               <div class="d-flex justify-content-between mb-2">
                 <h5 class="mb-0 fw-bold text-dark">
-                  <img src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}" alt="Price" width="14" height="14" class="me-1">
+                  <img src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}" 
+                       alt="Price" width="14" height="14" class="me-1">
                   {{ number_format($car->listing_price) }}
                 </h5>
                 @if($car->user?->lat && $car->user?->lng)
-                  <a href="https://www.google.com/maps?q={{ $car->user->lat }},{{ $car->user->lng }}" target="_blank" class="text-muted small text-decoration-none">
+                  <a href="https://www.google.com/maps?q={{ $car->user->lat }},{{ $car->user->lng }}" 
+                     target="_blank" 
+                     class="text-muted small text-decoration-none">
                     <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $car->city }}
                   </a>
                 @endif
@@ -543,23 +551,29 @@ input[type="number"] {}
             </div>
 
             <div class="d-flex gap-2">
-              <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="btn btn-outline-success flex-fill rounded-3">
+              <a href="https://wa.me/{{ $car->user?->phone }}" 
+                 target="_blank" 
+                 class="btn btn-outline-success flex-fill rounded-3">
                 <i class="fab fa-whatsapp"></i>
               </a>
-              <a href="tel:{{ $car->user?->phone }}" class="btn btn-outline-danger flex-fill rounded-3">
+              <a href="tel:{{ $car->user?->phone }}" 
+                 class="btn btn-outline-danger flex-fill rounded-3">
                 <i class="fa fa-phone"></i>
               </a>
             </div>
           </div>
         </div>
       </div>
-    @endforeach
-  </div>
-
-</div>
-
+    @empty
+      <p class="text-center text-muted mt-4">No cars found.</p>
+    @endforelse
   </div>
 </div>
+
+
+  </div>
+</div>
+
 
 
 <script>
