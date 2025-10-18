@@ -91,6 +91,159 @@
     </div>
   </div>
 </nav>
+<div class="secondary-nav bg-light border-top py-2 shadow-sm sticky-top" style="top: 72px; z-index: 1030;">
+  <div class="container d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+    <!-- ✅ Navigation Links -->
+    <ul class="nav d-flex align-items-center gap-4 mb-0">
+      <li class="nav-item">
+        <a href="" 
+           class="text-dark fw-semibold text-decoration-none d-flex align-items-center">
+          Sell Your Car
+        </a>
+      </li>
+
+      <li class="nav-item dropdown position-relative">
+        <a class="nav-link dropdown-toggle text-dark fw-semibold" 
+           href="#" id="dropdownMegaMenu" role="button"
+           data-bs-toggle="dropdown" aria-expanded="false">
+          Browse Cars
+        </a>
+
+        <!-- 🌟 Mega Menu -->
+        <div class="dropdown-menu p-4 shadow border-0 mt-2"
+             aria-labelledby="dropdownMegaMenu"
+             style="min-width: 650px; max-height: 400px; overflow-y: auto; border-radius: 12px;">
+          <div class="row g-4">
+
+            <!-- 🚘 By Model -->
+            <div class="col-md-3 border-end">
+              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Model</h6>
+              <ul class="list-unstyled mb-0">
+                @foreach ($models->take(10) as $model)
+                  <li>
+                    <a class="dropdown-item py-1 small" 
+                       href="{{ route('cars.index', ['model' => $model]) }}">
+                      {{ ucfirst($model) }}
+                    </a>
+                  </li>
+                @endforeach
+              </ul>
+
+              <!-- 🔗 Show All -->
+              @if ($models->count() > 10)
+              <div class="mt-2">
+  <a href="{{ route('cars.index') }}" 
+     class="small fw-semibold text-decoration-none"
+     style="color: gray"> <!-- لون أحمر لطيف -->
+    Show All Models →
+  </a>
+</div>
+
+              @endif
+            </div>
+
+            <!-- 🗓️ By Year -->
+            <div class="col-md-3 border-end">
+              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Year</h6>
+              <ul class="list-unstyled mb-0">
+       @foreach (collect($models)->take(10) as $model)
+  <li>
+    <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['model' => $model]) }}">
+      {{ ucfirst($model) }}
+    </a>
+  </li>
+@endforeach
+
+              </ul>
+
+@if (count($years) > 10)
+                <div class="mt-2">
+                  <a href="{{ route('cars.index') }}" 
+                     class="small  fw-semibold text-decoration-none"
+                      style="color: gray">
+                    Show All Years →
+                  </a>
+                </div>
+              @endif
+            </div>
+
+            <!-- 🏷️ By Type -->
+            <div class="col-md-3">
+              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Type</h6>
+              <ul class="list-unstyled mb-0">
+                @foreach ($bodyTypes->take(10) as $type)
+                  <li>
+                    <a class="dropdown-item py-1 small" 
+                       href="{{ route('cars.index', ['type' => $type]) }}">
+                      {{ ucfirst($type) }}
+                    </a>
+                  </li>
+                @endforeach
+              </ul>
+
+              @if ($bodyTypes->count() > 10)
+                <div class="mt-2">
+                  <a href="{{ route('cars.index') }}" 
+                     class="small  fw-semibold text-decoration-none"
+                      style="color: gray">
+                    Show All Types →
+                  </a>
+                </div>
+              @endif
+            </div>
+
+          </div>
+        </div>
+      </li>
+    </ul>
+
+  </div>
+</div>
+
+
+<!-- 🎨 Styles -->
+<style>
+  .dropdown-menu {
+    animation: fadeIn 0.2s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dropdown-item:hover {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    color: black;
+  }
+
+  /* Scrollbar for dropdown */
+  .dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .dropdown-menu::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+  }
+
+  @media (max-width: 768px) {
+    .nav {
+      flex-direction: column;
+      text-align: center;
+    }
+    .dropdown-menu {
+      min-width: 100%;
+      max-height: 300px;
+      border-radius: 0;
+    }
+  }
+</style>
+
+
+
 
 <style>
   .custom-btn {

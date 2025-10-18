@@ -8,11 +8,12 @@ html, body {
     height: 100%;
 }
 
-.container {
+.login {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    
 }
 
 .login-form {
@@ -73,9 +74,10 @@ input[type="text"], select {
 .sign-up a:hover {
     text-decoration: underline;
 }
+
 </style>
 
-<div class="container">
+<div class="container login">
     <div class="login-form card p-4">
         <h5 class="text-center">Login Form</h5>
 

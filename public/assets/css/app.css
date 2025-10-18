@@ -326,12 +326,18 @@ body {
 
 
 
+
+
+
 }
 .main-content {
   flex: 1;
   order: 1;
   /* Content on left */
     
+
+
+
 
 
 
@@ -452,34 +458,8 @@ body {
   background: white;
   
 }
-/* Mobile Content Container */
-    .main-car-list-sec {
-  padding: 1rem;
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  
-}
-/* Mobile Cards - Full Width */
-    .main-car-list-sec .row {
-  margin: 0;
-  width: 100%;
-  
-}
-.main-car-list-sec .col-sm-6,
-    .main-car-list-sec .col-lg-4,
-    .main-car-list-sec .col-xl-3 {
-  padding: 0.5rem;
-  width: 100%;
-  max-width: 100%;
-  
-}
 /* Mobile Car Cards */
-    .car-card {
-  margin-bottom: 1rem;
-  width: 100%;
-  
-}
+
 /* Mobile Navigation */
     .main-home-filter-sec {
   padding: 0 1rem;
@@ -664,6 +644,9 @@ to {
   /* color: var(--primary-color);
   */
   
+
+
+
 
 
 

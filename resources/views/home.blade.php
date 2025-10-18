@@ -42,7 +42,7 @@
             <span class="visually-hidden">Next</span>
         </button>
     </div> --}}
-   <section class="position-relative" style="background: linear-gradient(90deg, #760e13, #9b2a2f, #c4474c); overflow: hidden;">
+   <section class="position-relative" style="background: linear-gradient(90deg, #760e13, #9b2a2f, #c4474c); overflow: hidden; ">
   <div class="container-fluid p-0 position-relative " style="z-index: 2;">
     <img src="{{ asset('1.jpg') }}" alt="Cars" class="w-100 img-fluid object-fit-cover" style="max-height: 550px; object-position: center;">
   </div>
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         <!-- Enhanced Mobile Filter Bar -->
-        <div class="filter-bar-mobile d-lg-none animate__animated animate__fadeInUp">
+        {{-- <div class="filter-bar-mobile d-lg-none animate__animated animate__fadeInUp">
             <form id="filterFormMobile" action="{{ route('cars.index') }}" method="get" 
                   class="d-flex overflow-auto gap-3 pb-2" style="scroll-snap-type: x mandatory;">
                 
@@ -318,10 +318,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     </button>
                 </div>
             </form>
-        </div>
+        </div> --}}
 
         <!-- Enhanced Price Modal -->
-        <div id="priceModal" class="modal">
+        {{-- <div id="priceModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal()" aria-label="Close">&times;</span>
                 <h3 style="color: var(--primary-color); font-weight: 700; margin-bottom: 1.5rem;">
@@ -338,13 +338,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     <i class="fas fa-search me-2"></i>Apply Filter
                 </button>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Enhanced Car Listings -->
         <div class="custom-container main-car-list-sec">
             <div class="row g-4">
                 @forelse ($carlisting as $key => $car)
-                    <div class="col-sm-6 col-lg-4 col-xl-3">
+<div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-3">
                         <div class="car-card animate__animated animate__fadeInUp" style="animation-delay: {{ $key * 0.1 }}s">
                             <!-- Enhanced Car Image -->
                             <div class="car-image">

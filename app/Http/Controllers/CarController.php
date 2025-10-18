@@ -66,18 +66,19 @@ public function index(Request $request)
         }
     }
 
-    // Get all results
-    $carlisting = $carlisting->get();
+// Get all results
+$carlisting = $carlisting->paginate(12)->withQueryString();
 
-    // Map first valid image for each car
-    $carlisting = $carlisting->map(function ($car) {
-        $firstValidImage = $car->images->first(function ($image) {
-            return Storage::disk('r2')->exists($image->image);
-        });
-
-        $car->image = $firstValidImage ?? null;
-        return $car;
+// Map first valid image for each car (without breaking pagination)
+$carlisting->getCollection()->transform(function ($car) {
+    $firstValidImage = $car->images->first(function ($image) {
+        return Storage::disk('r2')->exists($image->image);
     });
+
+    $car->image = $firstValidImage ?? null;
+    return $car;
+});
+
 
     // Other filters
     $fueltypes = CarListingModel::select('features_fuel_type')->distinct()->orderBy('features_fuel_type')->pluck('features_fuel_type');
