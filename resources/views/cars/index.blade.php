@@ -3,593 +3,489 @@
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
+$currentMake = request('make'); // Get the currently selected make for highlighting
 @endphp
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<style>
-/* Price Input Fields */
-.price-range {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 10%;
-
-}
-
-input[type="number"] {}
-
-/* Range Slider Wrapper */
-.range-slider {
-    position: relative;
-    width: 100%;
-    margin: 20px 0;
-    height: 6px;
-    background: #e3c5b5;
-    /* Light brown background */
-    border-radius: 5px;
-}
-
-/* Range Inputs */
-.range-slider input[type="range"] {
-    position: absolute;
-    width: 100%;
-    appearance: none;
-    background: transparent;
-    pointer-events: none;
-    /* Makes the background clickable */
-}
-
-/* Styling the Track */
-.range-slider input[type="range"]::-webkit-slider-runnable-track {
-    height: 6px;
-    background: transparent;
-    border-radius: 5px;
-}
-
-/* Styling the Thumbs */
-.range-slider input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #7b4b40;
-    border-radius: 50%;
-    cursor: pointer;
-    pointer-events: auto;
-    /* Allows interaction */
-    margin-top: -7px;
-    /* Adjust thumb position */
-}
-
-/* Filter Button */
-.filter-btn {
-    width: 100% !important;
-    padding: 12px !important;
-    background: #9b3128 !important;
-    color: white !important;
-    font-size: 16px !important;
-    font-weight: bold !important;
-    border: none !important;
-    border-radius: 8px !important;
-    cursor: pointer !important;
-    margin-top: 20px !important;
-}
-
-.filter-btn:hover {
-    background: #80251e;
-}
-
-.close {
-    cursor: pointer;
-}
-
-.button-like-select {
-    background-color: #80251e;
-
-    /* Adjust padding */
-    border: 1px solid #ccc !important;
-
-}
-
-/* Optional: Hover effect similar to select */
-.button-like-select:hover {
-    background-color: #f0f0f0 !important;
-}
-
-/* Optional: Active effect */
-.button-like-select:active {
-    background-color: #e0e0e0 !important;
-
-}
-
-.main-home-filter-sec {
-    margin-top: 11px !important;
-    z-index: 1;
-    position: relative;
-}
-
-.main-car-list-sec .badge-featured,
-.badge-year {
-    background-color: #760e13 !important;
-}
 
 
-.car-card-body {
-    /* background-color: #f3f3f3; */
-    /* border-radius: 15px; */
-    padding: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: Arial, sans-serif;
-    color: #4a4a4a;
-    /* border-top: 5px solid #760e13; */
 
-}
-
-.price-location {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.price {
-    color: #760e13;
-    font-size: 22px;
-}
-
-.location {
-    color: #4a4a4a;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-}
-
-.location i {
-    margin-right: 5px;
-    color: #760e13;
-}
-
-.showroom-name {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 12px;
-    color: #333;
-}
-
-.car-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
-    font-size: 14px;
-
-    color: #6b6b6b;
-}
-
-.car-details p {
-    margin: 5px 0;
-}
-
-.car-details strong {
-    color: #4a4a4a;
-    font-weight: bold;
-}
-
-.actions {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 15px;
-}
-
-.call-btn {
-    background-color: #760e13;
-    color: white;
-    border-color: #760e13;
-}
-
-.share-btn {
-    background-color: #f3f3f3;
-    color: #760e13;
-    border-color: #760e13;
-}
-
-.actions i {
-    font-size: 16px;
-}
-.carousel-control-prev, .carousel-control-next {
-            width: 8%;
-            padding: 5px;
-            background-color: rgba(0, 0, 0, 0.5) !important;
-            
-        }
-
-        .carousel-control-prev-icon, .carousel-control-next-icon {
-            background-color: rgba(0, 0, 0, 0.5) !important;
-            padding: 5px;
-            width: 8%;
-            border-radius: 50%;
-            /* color: rgba(0, 0, 0, 0.5) !important; */
-        }
-
-        /* تخصيص النقاط */
-        .carousel-indicators [data-bs-target] {
-            background-color: #fff;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-bottom: 4px;
-        }
-</style>
 
 @section('content')
-<!-- home slider -->
 
 <style>
-    .custom-container {
-    width: 100%; /* افتراضيًا يكون `container-fluid` */
-
+    .brand-pill {
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    border: 1px solid #ccc;
+    color: #4a4a4a;
+    background-color: #f8f9fa;
+    text-decoration: none;
+    transition: all 0.2s;
 }
 
-/* عند تجاوز 1400px، يصبح مثل `container` */
-@media (min-width: 1400px) {
-    .custom-container {
-        max-width: 1250px; /* أو أي عرض مناسب */
-        margin: 0 auto; /* يضمن أن يكون في المنتصف */
-    }
-
-
-}
-.carousel-item img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;  
-
-    min-width: 100vw; 
-    /* min-height: 100vh;  */
-    object-fit: contain;
-
-}
-.carousel-inner {
-    height: 80vh;
-    background-color: #5a0b0f !important;
+.brand-pill:hover {
+    background-color: #e9ecef;
+    color: #000;
+    border-color: #aaa;
 }
 
-.carousel {
-    position: relative;
+.brand-pill.active {
+    background-color: #dc3545; /* A color for active state, like the image */
+    color: #fff;
+    border-color: #dc3545;
+    font-weight: 600;
+}
+/* 🔹 الفلتر الرئيسي */
+.filter-bar-top {
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem auto;
+    max-width: 1300px;
 }
 
-@media (max-width: 470px) {
-    .carousel-inner {
-    height: 18vh;
-    background-color: #5a0b0f !important;
+/* الحقول */
+.filter-bar-top .form-select,
+.filter-bar-top .form-control,
+.filter-bar-top .btn {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
 }
-} 
 
-@media (min-width: 1600px) {
-    .carousel {
-        max-width: 1250px; 
-        margin: 0 auto;
-        width: 100vw; 
-        /* height: 30vh; */
-    }
-    .carousel-inner {
-    height: 70vh; 
-    background-color: #5a0b0f !important;
-    object-fit: contain;
+/* أزرار Dropdown */
+.btn-outline-secondary {
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: 0.3s;
     width: 100%;
 }
-.carousel-item img {
-    
-    width: 100vw; 
-    /* min-height: 100vh;  */
-    object-fit: contain;
-
-}
-}
-.filter-bar .form-row > div {
-    margin-right: 0.75rem; /* مسافة بين العناصر */
-}
-.filter-bar .form-row > div:last-child {
-    margin-right: 0; /* إزالة المسافة من العنصر الأخير */
+.btn-outline-secondary:hover {
+    background-color: #f8f9fa;
 }
 
+/* Dropdown Menu */
+.dropdown-menu {
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+}
 
-    
+/* تصميم الريسبونسف */
+@media (min-width: 992px) {
+    .filter-form-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 1rem;
+        align-items: center;
+    }
+}
+@media (max-width: 991px) {
+    .filter-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
+@media (max-width: 576px) {
+    .filter-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 
-{{-- <div id="demo" class=" carousel slide mt-1" data-bs-ride="carousel" data-bs-interval="2000">
-    <!--  النقاط -->
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
-        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
-        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
-        <button type="button" data-bs-target="#demo" data-bs-slide-to="3"></button>
-    </div>
+<div class="container-fluid" style="padding-top: 0.7rem; background-color: #fff; position: sticky; top: 70px; z-index: 1000;">
+  <div class="filter-bar-top">
+    <form id="topFilterForm" method="GET" action="{{ route('cars.index') }}" class="filter-form-grid">
+      
+      <!-- 🏙️ City -->
+  <select class="form-select" name="city" onchange="submitTopFilter()">
+  <option value="" disabled {{ empty(request('city')) ? 'selected' : '' }}>City</option>
+  @foreach($cities as $city)
+    @if(!empty($city))
+      <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+        {{ $city }}
+      </option>
+    @endif
+  @endforeach
+</select>
 
-    <!-- الصور -->
-    <div class="carousel-inner">
-    <div class="carousel-item active">
-            <img class="d-block   "   src="{{asset('1.jpg')}}" alt="Los Angeles">
-        </div>
-        <div class="carousel-item">
-            <img class="d-block   "  src="{{asset('2.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item">
-            <img class="d-block   "  src="{{asset('3.jpg')}}" alt="Chicago">
-        </div>
-        <div class="carousel-item">
-            <img class="d-block   "  src="{{asset('4.jpg')}}" alt="New York">
-        </div>
-    </div>
 
-    <!-- أزرار التنقل -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </button>
-</div> --}}
-<!-- filter -->
+      <!-- 🚗 Make -->
+      <select class="form-select" name="make" onchange="submitTopFilter()">
+        <option value="">Make</option>
+        @foreach($makes as $make)
+            <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
+        @endforeach
+      </select>
 
-<div style="margin-left: 70px; margin-right:70px">
-  <div class="row px-6 py-5">
-
-    <!-- 🧭 Sidebar Filters -->
-    <aside class="col-lg-3 col-md-4 mb-4">
-      <div class="bg-white shadow-sm rounded-4 p-4 sticky-top" style="top: 90px; max-height: calc(100vh - 120px); overflow-y: auto;">
-        <h5 class="fw-bold mb-3 text-center" style="color: #5a0b0f">
-            <i class="fas fa-sliders-h me-2"></i>Filter Cars
-        </h5>
-
-        <form id="filterForm" method="GET" action="{{ route('cars.index') }}" class="d-flex flex-column gap-3">
-          
-          <!-- Preserve global search -->
-          <input type="hidden" name="q" value="{{ request('q') }}">
-
-          <!-- Car Type -->
-          <div>
-            <label class="form-label fw-semibold small text-muted">Car Type</label>
-            <select class="form-select rounded-3" name="car_type" onchange="submitFilterForm()">
-              <option value="">All Types</option>
-              <option value="UsedOrNew" {{ request('car_type')=='UsedOrNew'?'selected':'' }}>Used/New</option>
-              <option value="Imported" {{ request('car_type')=='Imported'?'selected':'' }}>Imported</option>
-              <option value="Auction" {{ request('car_type')=='Auction'?'selected':'' }}>Auction</option>
-            </select>
+      <!-- 💰 Price Dropdown -->
+      <div class="dropdown w-100">
+        <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="dropdown">
+          Price Range
+        </button>
+        <ul class="dropdown-menu p-3" style="min-width: 260px;">
+          <p class="small text-muted mb-2">Price Range (AED)</p>
+          <div class="d-flex gap-2 mb-2">
+            <input type="number" class="form-control form-control-sm" name="priceFrom" placeholder="Min" value="{{ request('priceFrom') }}">
+            <span class="fw-bold">–</span>
+            <input type="number" class="form-control form-control-sm" name="priceTo" placeholder="Max" value="{{ request('priceTo') }}">
           </div>
-
-          <!-- City -->
-          <div>
-            <label class="form-label fw-semibold small text-muted">City</label>
-            <select class="form-select rounded-3" name="city" onchange="submitFilterForm()">
-              <option value="">All Cities</option>
-              @foreach($cities as $city)
-                <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
-              @endforeach
-            </select>
-          </div>
-
-          <!-- Make -->
-          <div>
-            <label class="form-label fw-semibold small text-muted">Make</label>
-            <select class="form-select rounded-3" id="brand" name="make" onchange="submitFilterForm()">
-              <option value="">All Makes</option>
-              @foreach($makes as $make)
-                <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
-              @endforeach
-            </select>
-          </div>
-
-          <!-- Model -->
-          <div>
-            <label class="form-label fw-semibold small text-muted">Model</label>
-            <select class="form-select rounded-3" id="model" name="model" onchange="submitFilterForm()">
-              <option value="">All Models</option>
-            </select>
-          </div>
-
-          <!-- Year -->
-          <div>
-            <label class="form-label fw-semibold small text-muted">Year</label>
-            <select class="form-select rounded-3" name="year" onchange="submitFilterForm()">
-              <option value="">All Years</option>
-              @foreach($years as $year)
-                <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
-              @endforeach
-            </select>
-          </div>
-
-          <!-- Body Type -->
-          <div>
-            <label class="form-label fw-semibold small text-muted">Body Type</label>
-            <select class="form-select rounded-3" name="body_type" onchange="submitFilterForm()">
-              <option value="">All Body Types</option>
-              @foreach($bodyTypes as $bodyType)
-                <option value="{{ $bodyType }}" {{ request('body_type') == $bodyType ? 'selected' : '' }}>{{ $bodyType }}</option>
-              @endforeach
-            </select>
-          </div>
-
-          <!-- Regional Specs -->
-          <div>
-            <label class="form-label fw-semibold small text-muted">Regional Specs</label>
-            <select class="form-select rounded-3" name="regionalSpec" onchange="submitFilterForm()">
-              <option value="">All Specs</option>
-              @foreach($regionalSpecs as $regionalSpec)
-                <option value="{{ $regionalSpec }}" {{ request('regionalSpec') == $regionalSpec ? 'selected' : '' }}>{{ $regionalSpec }}</option>
-              @endforeach
-            </select>
-          </div>
-
-          <!-- Price Range -->
-          <div class="border-top pt-3 mt-2">
-            <label class="form-label fw-semibold small text-muted">Price Range (AED)</label>
-            <div class="d-flex align-items-center gap-2 mb-2">
-              <input type="number" class="form-control rounded-3" name="priceFrom" placeholder="Min"
-                     min="{{ $minPrice }}" max="{{ $maxPrice }}" value="{{ request('priceFrom', $minPrice) }}">
-              <span class="fw-bold">–</span>
-              <input type="number" class="form-control rounded-3" name="priceTo" placeholder="Max"
-                     min="{{ $minPrice }}" max="{{ $maxPrice }}" value="{{ request('priceTo', $maxPrice) }}">
-            </div>
-            <button type="submit" class="btn btn-sm btn-outline-dark w-100 rounded-3 apply-btn">Apply</button>
-
-            <style>
-            .apply-btn {
-                transition: all 0.3s ease;
-                border-color: #760e13;
-                color: #760e13;
-            }
-            .apply-btn:hover {
-                background-color: #760e13;
-                color: #fff;
-                border-color: #760e13;
-            }
-            </style>
-          </div>
-
-          <!-- Buttons -->
-          <div class="d-flex gap-2 mt-3">
-            <button type="submit" class="btn flex-fill rounded-3 text-white" style="background-color: #760e13; border-color: #760e13;">
-              Apply Filters
-            </button>
-            <button type="button" onclick="resetFilters()" class="btn btn-light flex-fill rounded-3 border">Reset</button>
-          </div>
-        </form>
+          <button type="submit" class="btn btn-sm btn-danger w-100">Apply Price</button>
+        </ul>
       </div>
-    </aside>
 
-    <!-- 🚘 Main Car Listings -->
-<div class="col-lg-9 col-md-8">
-  <div class="row g-4" id="car-list">
-    @forelse ($carlisting as $key => $car)
-      <!-- CAR CARD -->
-      <div class="col-sm-6 col-md-4 col-lg-4">
-        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
+      <!-- 📅 Year -->
+      <select class="form-select" name="year" onchange="submitTopFilter()">
+        <option value="">Year</option>
+        @foreach($years as $year)
+            <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
+        @endforeach
+      </select>
 
-          <!-- Image Section -->
-          <div class="position-relative" style="height: 200px;">
-            @php
-              $imageSrc = isset($car->images[0]->image)
-                ? env("CLOUDFLARE_R2_URL") . $car->images[0]->image
-                : asset('carNotFound.jpg');
-            @endphp
-            <a href="{{ route('car.detail', $car->id) }}">
-              <img src="{{ $imageSrc }}" 
-                   class="card-img-top h-100 w-100" 
-                   style="object-fit: cover" 
-                   alt="{{ $car->listing_model }}" 
-                   onerror="this.src='{{ asset('carNotFound.jpg') }}'">
-            </a>
-
-            <span class="badge bg-danger position-absolute top-0 start-0 m-2 px-3 py-1 rounded-pill">
-              {{ $car->listing_year }}
-            </span>
-
-            <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
-              @if(auth()->check())
-                @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
-                <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
-                    @csrf
-                    <button title="Add to favorites" 
-                            class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                            type="submit" 
-                            aria-label="Add to favorites"
-                            style="width: 32px; height: 32px; border-radius: 50%;">
-                        <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
-                    </button>
-                </form>
-              @else
-                <a href="{{ route('login') }}" 
-                   title="Login to add to favorites" 
-                   class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                   style="width: 32px; height: 32px; border-radius: 50%;">
-                    <i class="fas fa-heart" style="color: #6c757d;"></i>
-                </a>
-              @endif
-
-              <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" 
-                 target="_blank" 
-                 title="Share via WhatsApp"
-                 class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                 style="width: 32px; height: 32px; border-radius: 50%;">
-                  <i class="fas fa-share-alt" style="color: #25d366;"></i>
-              </a>
-            </div>
+      <!-- 🛞 Mileage Dropdown -->
+      <div class="dropdown w-100">
+        <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="dropdown">
+          Mileage
+        </button>
+        <ul class="dropdown-menu p-3" style="min-width: 250px;">
+          <p class="small text-muted mb-2">Mileage (KM)</p>
+          <div class="d-flex gap-2 mb-2">
+            <input type="number" class="form-control form-control-sm" name="mileageFrom" placeholder="Min" value="{{ request('mileageFrom') }}">
+            <span class="fw-bold">–</span>
+            <input type="number" class="form-control form-control-sm" name="mileageTo" placeholder="Max" value="{{ request('mileageTo') }}">
           </div>
-
-          <!-- Content Section -->
-          <div class="card-body d-flex flex-column justify-content-between">
-            <div>
-              <div class="d-flex justify-content-between mb-2">
-                <h5 class="mb-0 fw-bold text-dark">
-                  <img src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}" 
-                       alt="Price" width="14" height="14" class="me-1">
-                  {{ number_format($car->listing_price) }}
-                </h5>
-                @if($car->user?->lat && $car->user?->lng)
-                  <a href="https://www.google.com/maps?q={{ $car->user->lat }},{{ $car->user->lng }}" 
-                     target="_blank" 
-                     class="text-muted small text-decoration-none">
-                    <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $car->city }}
-                  </a>
-                @endif
-              </div>
-
-              <h6 class="fw-semibold mb-2 text-truncate" title="{{ $car->user?->fname }} {{ $car->user?->lname }}">
-                {{ $car->user?->fname }} {{ $car->user?->lname }}
-              </h6>
-
-              <ul class="list-unstyled small text-muted mb-3">
-                <li><strong>Type:</strong> {{ $car->listing_type }}</li>
-                <li><strong>Model:</strong> {{ $car->listing_model }}</li>
-                <li><strong>Year:</strong> {{ $car->listing_year }}</li>
-                <li><strong>Mileage:</strong> {{ $car->mileage ?? 'N/A' }} km</li>
-              </ul>
-            </div>
-
-            <div class="d-flex gap-2">
-              <a href="https://wa.me/{{ $car->user?->phone }}" 
-                 target="_blank" 
-                 class="btn btn-outline-success flex-fill rounded-3">
-                <i class="fab fa-whatsapp"></i>
-              </a>
-              <a href="tel:{{ $car->user?->phone }}" 
-                 class="btn btn-outline-danger flex-fill rounded-3">
-                <i class="fa fa-phone"></i>
-              </a>
-            </div>
-          </div>
-        </div>
+          <button type="submit" class="btn btn-sm btn-danger w-100">Apply Mileage</button>
+        </ul>
       </div>
-    @empty
-      <p class="text-center text-muted mt-4">No cars found.</p>
-    @endforelse
+
+      <!-- ⚙️ More Filters Dropdown -->
+      <div class="dropdown w-100">
+        <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="dropdown">
+          More Filters
+        </button>
+       <ul class="dropdown-menu p-3" style="min-width: 260px;">
+  <p class="small text-muted mb-2">Additional Filters</p>
+
+  <div class="mb-2">
+    <!-- 🔍 Keywords -->
+    <input 
+      type="text" 
+      class="form-control form-control-sm mb-2" 
+      name="keywords" 
+      placeholder="Keywords" 
+      value="{{ request('keywords') }}"
+    >
+
+    <!-- ⚙️ Regional Specs -->
+    <select class="form-select form-select-sm" name="specs">
+      <option value="">Regional Specs</option>
+      @foreach($regionalSpecs as $regionalSpec)
+        <option 
+          value="{{ $regionalSpec }}" 
+          {{ request('specs') == $regionalSpec ? 'selected' : '' }}
+        >
+          {{ $regionalSpec }}
+        </option>
+      @endforeach
+    </select>
+  </div>
+
+  <button type="submit" class="btn btn-sm btn-danger w-100">
+    Apply Filters
+  </button>
+</ul>
+
+      </div>
+    </form>
   </div>
 </div>
-
-    <div class="d-flex justify-content-center mt-4">
-        {{ $carlisting->onEachSide(1)->links('pagination::bootstrap-5') }}
-      </div>
-  </div>
-</div>
-
-
 
 <script>
-function resetFilters() {
-    // امسح كل الحقول في الفورم
-    const form = document.getElementById('filterForm');
-    form.reset();
-
-    // أرجع المستخدم إلى الصفحة الأصلية بدون أي فلاتر
-    window.location.href = "{{ route('cars.index') }}";
+function submitTopFilter() {
+    document.getElementById('topFilterForm').submit();
 }
 </script>
 
 
 
+<div class="container-xl">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="listing-header mb-0">Cars for sale in Dubai • {{ number_format($carlisting->total()) }} Ads</h1>
+    </div>
+
+<div class="d-flex flex-wrap gap-2 mb-4" id="brandPillsContainer">
+    @foreach ($brands as $index => $brand)
+        <a href="{{ route('cars.index', array_merge(request()->query(), ['make' => $brand->name])) }}"
+           class="brand-pill {{ $brand->name == $currentMake ? 'active' : '' }}"
+           @if($index >= 10) style="display: none;" @endif>
+            {{ $brand->name }} ({{ $brand->cars_count ?? 0 }})
+        </a>
+    @endforeach
+
+    @if(count($brands) > 10)
+        <a href="javascript:void(0);" id="viewMoreBrands" 
+           class="brand-pill bg-light text-dark border-0 fw-semibold">
+           View More
+        </a>
+    @endif
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('viewMoreBrands');
+        if (btn) {
+            btn.addEventListener('click', function() {
+                const container = document.getElementById('brandPillsContainer');
+                container.querySelectorAll('a').forEach((a, index) => {
+                    if(index >= 10) a.style.display = 'inline-flex';
+                });
+                btn.style.display = 'none'; // hide the button after clicking
+            });
+        }
+    });
+</script>
+
+
+
+<div class="container py-4">
+  <div class="row  g-4 mb-4" id="car-list">
+    @forelse ($carlisting as $key => $car)
+      @php
+          $images = $car->images->map(fn($img) => env('FILE_BASE_URL') . $img->image)->toArray();
+      @endphp
+
+      <div class="col-12 col-md-10 col-lg-9">
+        <a href="{{ route('car.detail', $car->id) }}" class="text-decoration-none text-dark">
+          <div class="car-card shadow-sm rounded-4 overflow-hidden hover-card d-flex flex-column flex-lg-row">
+
+            {{-- الصورة --}}
+            <div class="car-carousel-container flex-shrink-0">
+              <div id="carCarousel-{{ $key }}" class="carousel slide h-100" data-bs-ride="carousel">
+                <div class="carousel-inner h-100 ratio ratio-16x9 ratio-lg-unset">
+                  @if($images && count($images) > 0)
+                    @foreach ($images as $index => $image)
+                      <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                        <img src="{{ $image }}" class="d-block w-100 h-100" alt="Car Image" style="object-fit: cover;">
+                      </div>
+                    @endforeach
+                  @else
+                    <div class="carousel-item active">
+                      <img src="{{ asset('carNotFound.jpg') }}" class="d-block w-100 h-100" alt="Car Not Found" style="object-fit: cover;">
+                    </div>
+                  @endif
+                </div>
+
+                {{-- Controls --}}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel-{{ $key }}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carCarousel-{{ $key }}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              </div>
+            </div>
+
+            {{-- التفاصيل --}}
+            <div class="car-details p-3 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="car-price fw-bold h5">
+                    <img src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}" width="14" height="14" class="me-1">
+                    {{ number_format($car->listing_price) }}
+                  </span>
+                </div>
+
+                @if($car->listing_type || $car->listing_model || $car->listing_title)
+                  <h6 class="fw-bold text-truncate mb-2">
+                    {{ $car->listing_type ? $car->listing_type . ' • ' : '' }}
+                    {{ $car->listing_model ? $car->listing_model . ' • ' : '' }}
+                    {{ $car->listing_title ? Str::limit($car->listing_title, 40) : '' }}
+                  </h6>
+                @endif
+
+                @if($car->car_type || $car->feautures_gear || $car->features_fuel_type)
+                  <p class="text-muted mb-2 small">
+                    {{ $car->car_type ? $car->car_type . ' | ' : '' }}
+                    {{ $car->feautures_gear ? $car->feautures_gear . ' | ' : '' }}
+                    {{ $car->features_fuel_type ?? '' }}
+                  </p>
+                @endif
+
+                <ul class="list-unstyled d-flex flex-wrap small text-muted mb-2">
+                  @if($car->listing_year)
+                    <li class="me-3"><i class="fas fa-calendar-alt me-1"></i>{{ $car->listing_year }}</li>
+                  @endif
+                  @if($car->mileage)
+                    <li class="me-3"><i class="fas fa-tachometer-alt me-1"></i>{{ number_format($car->mileage) }} km</li>
+                  @endif
+                  @if($car->steering_side)
+                    <li class="me-3"><i class="fas fa-steering-wheel me-1"></i>{{ $car->steering_side }}</li>
+                  @endif
+                  @if($car->regional_specs)
+                    <li><i class="fas fa-globe-asia me-1"></i>{{ $car->regional_specs }}</li>
+                  @endif
+                </ul>
+              </div>
+
+              <p class="small text-muted mb-0">
+                <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $car->city ?? 'Dubai' }}, UAE
+              </p>
+            </div>
+
+          </div>
+        </a>
+      </div>
+    @empty
+      <p class="text-center text-muted mt-4">No cars found matching your criteria.</p>
+    @endforelse
+  </div>
+</div>
+
+<style>
+.car-card {
+  background-color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 16px;
+}
+
+.hover-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.car-carousel-container {
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .car-card {
+    flex-direction: row;
+    height: 240px;
+  }
+  .car-carousel-container {
+    width: 45%;
+    height: 100%;
+  }
+  .car-carousel-container img {
+    height: 100%;
+    object-fit: cover;
+  }
+  .car-details {
+    width: 55%;
+    padding: 1.2rem 1.5rem;
+  }
+}
+
+@media (max-width: 991px) {
+  .car-card {
+    flex-direction: column;
+  }
+  .car-carousel-container {
+    width: 100%;
+  }
+  .car-details {
+    padding: 1rem;
+  }
+}
+</style>
+
+
+
+
+
+
+
+
+    <div class="d-flex justify-content-center mt-4">
+        {{ $carlisting->onEachSide(1)->links('pagination::bootstrap-5') }}
+    </div>
+</div>
+
+<div class="modal " id="moreFiltersModal" tabindex="-1" aria-labelledby="moreFiltersModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="modalFilterForm" method="GET" action="{{ route('cars.index') }}">
+        <div class="modal-header">
+          <h5 class="modal-title" id="moreFiltersModalLabel">Additional Filters</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+            <div>
+                <label class="form-label fw-semibold small text-muted">Regional Specs</label>
+                <select class="form-select rounded-3" name="regionalSpec">
+                    <option value="">All Specs</option>
+                    @foreach($regionalSpecs as $regionalSpec)
+                        <option value="{{ $regionalSpec }}" {{ request('regionalSpec') == $regionalSpec ? 'selected' : '' }}>{{ $regionalSpec }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="form-label fw-semibold small text-muted">Car Type</label>
+                <select class="form-select rounded-3" name="car_type">
+                    <option value="">All Types</option>
+                    <option value="UsedOrNew" {{ request('car_type')=='UsedOrNew'?'selected':'' }}>Used/New</option>
+                    <option value="Imported" {{ request('car_type')=='Imported'?'selected':'' }}>Imported</option>
+                    <option value="Auction" {{ request('car_type')=='Auction'?'selected':'' }}>Auction</option>
+                </select>
+            </div>
+             <div>
+                <label class="form-label fw-semibold small text-muted">Body Type</label>
+                <select class="form-select rounded-3" name="body_type">
+                    <option value="">All Body Types</option>
+                    @foreach($bodyTypes as $bodyType)
+                        <option value="{{ $bodyType }}" {{ request('body_type') == $bodyType ? 'selected' : '' }}>{{ $bodyType }}</option>
+                    @endforeach
+                </select>
+            </div>
+             <div>
+                <label class="form-label fw-semibold small text-muted">Keywords</label>
+                <input type="text" class="form-control rounded-3" name="q" placeholder="Enter keywords..." value="{{ request('q') }}">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Apply Filters</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    function submitTopFilter() {
+        document.getElementById('topFilterForm').submit();
+    }
+
+    function resetFilters() {
+        window.location.href = "{{ route('cars.index') }}";
+    }
+
+    // Function to merge all filter fields into the modal form before submission
+    document.getElementById('modalFilterForm').addEventListener('submit', function(e) {
+        // Get values from the top filter bar
+        const topForm = document.getElementById('topFilterForm');
+        const topFilters = new FormData(topForm);
+        const modalForm = e.target;
+
+        // Append top filter values to the modal form (to keep all filters)
+        for (let [key, value] of topFilters.entries()) {
+            if (value && modalForm.querySelector(`[name="${key}"]`) === null) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = key;
+                hiddenInput.value = value;
+                modalForm.appendChild(hiddenInput);
+            }
+        }
+    });
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 @endsection

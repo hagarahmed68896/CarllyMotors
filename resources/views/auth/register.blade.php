@@ -162,33 +162,47 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 let recaptchaVerifier;
+let recaptchaVerifier; // خليها global فوق الكود
 
 function setupReCaptcha() {
-    if (typeof recaptchaVerifier !== "undefined") {
-        document.getElementById("recaptcha-container").innerHTML = "";
+    if (!recaptchaVerifier) {
+        recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+            size: 'invisible',
+            callback: function(response) {
+                console.log('reCAPTCHA verified ✅');
+            }
+        });
+        recaptchaVerifier.render();
+    } else {
+        console.log("reCAPTCHA already rendered, skipping...");
     }
-    recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
-        size: "invisible",
-        callback: function(response) { console.log("reCAPTCHA solved:", response); },
-        "expired-callback": function() { alert("reCAPTCHA expired, please refresh."); }
-    });
-    recaptchaVerifier.render().then(widgetId => window.recaptchaWidgetId = widgetId);
 }
+
 
 function sendOTP() {
     setupReCaptcha();
     const phoneNumber = document.getElementById("phone").value;
+
     firebase.auth().signInWithPhoneNumber(phoneNumber, recaptchaVerifier)
         .then((confirmationResult) => {
             window.confirmationResult = confirmationResult;
+            console.log("✅ OTP sent successfully to:", phoneNumber);
+            console.log("ℹ️ confirmationResult object:", confirmationResult);
             alert("OTP sent successfully!");
+
+            // 🔥 لو بتجربي محليًا، ممكن تولدي كود وهمي للطباعة
+            const fakeOtp = Math.floor(100000 + Math.random() * 900000);
+            console.log("🧪 (Demo) Fake OTP for testing:", fakeOtp);
+
             startCountdown(60);
         })
         .catch((error) => {
-            console.log(error); alert(error.message);
+            console.error("❌ Error sending OTP:", error);
+            alert(error.message);
             grecaptcha.reset();
         });
 }
+
 
 function startCountdown(seconds) {
     let countdownElement = document.getElementById("countdown");

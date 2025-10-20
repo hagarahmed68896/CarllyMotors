@@ -87,11 +87,17 @@ $carlisting->getCollection()->transform(function ($car) {
     $cylinders = CarListingModel::select('features_cylinders')->distinct()->orderby('features_cylinders', 'asc')->pluck('features_cylinders');
     $colors    = CarListingModel::select('car_color')->distinct()->orderby('car_color', 'asc')->pluck('car_color');
 
+     $brands = CarBrand::select('id', 'name')
+        ->whereHas('cars')
+        ->withCount('cars')
+        ->having('cars_count', '>', 2)
+        ->orderBy('name')
+        ->get();
     // Return view
     return view('cars.index', compact(
         'carlisting', 'cities', 'makes', 'models', 'years',
         'bodyTypes', 'regionalSpecs', 'minPrice', 'maxPrice',
-        'fueltypes', 'gears', 'doors', 'cylinders', 'colors', 'conditions'
+        'fueltypes', 'gears', 'doors', 'cylinders', 'colors', 'conditions','brands'
     ));
 }
 

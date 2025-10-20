@@ -1,282 +1,222 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
-  <div class="container-fluid">
+<style>
+    /* Custom Button Styles */
+    .custom-btn {
+        background-color: #185D31;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        transition: 0.3s ease;
+    }
+    .custom-btn:hover {
+        background-color: #124b27;
+        color: #fff;
+    }
 
-    <!-- Logo -->
-    <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
-      <img src="{{ asset('carllymotorsmainlogo_dark.png') }}" 
-           alt="Carl Motors Logo" 
-           class="img-fluid" 
-           style="max-height: 45px;">
-    </a>
+    /* Mega menu fix for full width */
+    .nav-item.dropdown.position-static .dropdown-menu {
+        left: 0;
+        right: 0;
+        transform: none !important;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
 
-    <!-- Mobile Toggle -->
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <i class="fas fa-bars"></i>
-    </button>
+    /* Main Container Styles */
+    .navbar-top-bar {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
 
-    <!-- Collapsible Content -->
-    <div class="collapse navbar-collapse justify-content-between align-items-center" id="navbarNav">
+    /* Centering the Search Bar on Desktop (lg and up) */
+    @media (min-width: 992px) {
+        .search-container {
+            flex-grow: 1; 
+            display: flex;
+            justify-content: center;
+            margin: 0 5rem; 
+        }
+        .navbar-brand { order: 1; }
+        .search-container { order: 2; }
+        .navbar-collapse { order: 3; }
+        .navbar-toggler { display: none; }
+    }
 
-      <!-- 🔍 Search Bar (CENTERED) -->
-      <div class="mx-auto my-3 my-lg-0 d-flex justify-content-center w-100 w-lg-auto" style="max-width: 700px;">
-        <form action="{{ route('global.search') }}" method="GET" class="d-flex align-items-center w-100">
-          <select name="type" class="form-select me-2" style="max-width: 150px; border-radius: 8px;">
-            <option value="cars" {{ request('type') == 'cars' ? 'selected' : '' }}>Cars</option>
-            <option value="spareparts" {{ request('type') == 'spareparts' ? 'selected' : '' }}>Spare Parts</option>
-            <option value="workshops" {{ request('type') == 'workshops' ? 'selected' : '' }}>Workshops</option>
-          </select>
+    /* Mobile/Tablet Adjustments (Less than 992px) */
+    @media (max-width: 991.98px) {
+        .container-fluid {
+            flex-wrap: wrap;
+            align-items: center;
+        }
 
-          <div class="input-group flex-grow-1 shadow-sm" style="border-radius: 10px; overflow: hidden;">
-            <span class="input-group-text bg-white border-0">
-              <i class="fas fa-search text-muted"></i>
-            </span>
-            <input type="search" 
-                   name="q" 
-                   class="form-control border-0" 
-                   placeholder="Search cars, spare parts, workshops..."
-                   value="{{ request('q') }}" 
-                   style="box-shadow: none;">
-            <button type="submit" class="btn px-4" style="background-color:#5a0b0f; color:#fff; border-radius:0;">
-              Search
-            </button>
-          </div>
-        </form>
-      </div>
+        /* ✅ Logo and toggler in same row */
+        .navbar-brand {
+            flex: 1;
+            order: 1;
+        }
 
-      <!-- 🧍 Right Side Buttons -->
-      <div class="d-flex align-items-center justify-content-end flex-column flex-lg-row gap-2 mt-3 mt-lg-0 text-center text-lg-start">
+        .navbar-toggler {
+            order: 2;
+            margin-left: auto;
+        }
 
-        @guest
-          <a class="btn custom-btn" href="{{ route('login') }}">
-            <i class="fas fa-sign-in-alt me-1"></i>Login
-          </a>
-        @else
-          <a href="{{ route('cars.create') }}" class="btn custom-btn" title="Add New Car">
-            <i class="fas fa-plus"></i>
-          </a>
+        /* ✅ Search bar takes full width below */
+        .search-container {
+            width: 100%;
+            margin: 0.75rem 0 !important;
+            order: 3;
+        }
 
-          <a href="{{ route('cars.favList') }}" class="btn custom-btn" title="My Favorites">
-            <i class="fas fa-heart"></i>
-          </a>
+        .navbar-collapse {
+            order: 4;
+            width: 100%;
+        }
 
-          <a class="btn custom-btn" href="#">
-            <i class="fas fa-bullhorn me-1"></i>Place Your AD
-          </a>
+        .nav-item.dropdown.position-static .dropdown-menu {
+            position: static !important;
+        }
+    }
+</style>
 
-          <!-- Profile Dropdown -->
-          <div class="dropdown">
-            <a class="btn custom-btn dropdown-toggle" href="#" data-bs-toggle="dropdown">
-              <i class="fas fa-user me-1"></i>Profile
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li>
-                <a href="{{ route('profile', auth()->user()->id) }}" class="dropdown-item">
-                  <i class="fas fa-user-circle me-2"></i>My Profile
-                </a>
-              </li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <form method="post" action="{{ route('logout') }}">
-                  @csrf
-                  <button class="dropdown-item" type="submit">
-                    <i class="fas fa-sign-out-alt me-2"></i>Logout
-                  </button>
-                </form>
-              </li>
-            </ul>
-          </div>
-        @endguest
-      </div>
-    </div>
-  </div>
-</nav>
-<div class="secondary-nav bg-light border-top py-2 shadow-sm sticky-top" style="top: 72px; z-index: 1030;">
-  <div class="container d-flex justify-content-between align-items-center flex-wrap gap-3">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm navbar-top-bar">
+    <div class="container-fluid d-flex align-items-center">
 
-    <!-- ✅ Navigation Links -->
-    <ul class="nav d-flex align-items-center gap-4 mb-0">
-      <li class="nav-item">
-        <a href="" 
-           class="text-dark fw-semibold text-decoration-none d-flex align-items-center">
-          Sell Your Car
-        </a>
-      </li>
-
-      <li class="nav-item dropdown position-relative">
-        <a class="nav-link dropdown-toggle text-dark fw-semibold" 
-           href="#" id="dropdownMegaMenu" role="button"
-           data-bs-toggle="dropdown" aria-expanded="false">
-          Browse Cars
+        <!-- ✅ Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
+            <img src="{{ asset('carllymotorsmainlogo_dark.png') }}" 
+                 alt="Carl Motors Logo" 
+                 class="img-fluid" 
+                 style="max-height: 45px;">
         </a>
 
-        <!-- 🌟 Mega Menu -->
-        <div class="dropdown-menu p-4 shadow border-0 mt-2"
-             aria-labelledby="dropdownMegaMenu"
-             style="min-width: 650px; max-height: 400px; overflow-y: auto; border-radius: 12px;">
-          <div class="row g-4">
+        <!-- ✅ Burger icon (in same row on small screens) -->
+        <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
+            aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fas fa-bars fs-4"></i>
+        </button>
 
-            <!-- 🚘 By Model -->
-            <div class="col-md-3 border-end">
-              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Model</h6>
-              <ul class="list-unstyled mb-0">
-                @foreach ($models->take(10) as $model)
-                  <li>
-                    <a class="dropdown-item py-1 small" 
-                       href="{{ route('cars.index', ['model' => $model]) }}">
-                      {{ ucfirst($model) }}
-                    </a>
-                  </li>
-                @endforeach
-              </ul>
+        <!-- ✅ Search Bar -->
+        <div class="d-flex search-container">
+            <form action="{{ route('global.search') }}" method="GET" 
+                class="d-flex align-items-center w-100" 
+                style="max-width: 700px;">
+                
+                <select name="type" class="form-select me-2" style="max-width: 130px; border-radius: 8px;">
+                    <option value="cars" {{ request('type') == 'cars' ? 'selected' : '' }}>Cars</option>
+                    <option value="spareparts" {{ request('type') == 'spareparts' ? 'selected' : '' }}>Spare Parts</option>
+                    <option value="workshops" {{ request('type') == 'workshops' ? 'selected' : '' }}>Workshops</option>
+                </select>
 
-              <!-- 🔗 Show All -->
-              @if ($models->count() > 10)
-              <div class="mt-2">
-  <a href="{{ route('cars.index') }}" 
-     class="small fw-semibold text-decoration-none"
-     style="color: gray"> <!-- لون أحمر لطيف -->
-    Show All Models →
-  </a>
-</div>
-
-              @endif
-            </div>
-
-            <!-- 🗓️ By Year -->
-            <div class="col-md-3 border-end">
-              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Year</h6>
-              <ul class="list-unstyled mb-0">
-       @foreach (collect($models)->take(10) as $model)
-  <li>
-    <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['model' => $model]) }}">
-      {{ ucfirst($model) }}
-    </a>
-  </li>
-@endforeach
-
-              </ul>
-
-@if (count($years) > 10)
-                <div class="mt-2">
-                  <a href="{{ route('cars.index') }}" 
-                     class="small  fw-semibold text-decoration-none"
-                      style="color: gray">
-                    Show All Years →
-                  </a>
+                <div class="input-group flex-grow-1 shadow-sm" style="border-radius: 10px; overflow: hidden; max-width: 500px;">
+                    <span class="input-group-text bg-white border-0 d-none d-md-block">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="search" 
+                        name="q" 
+                        class="form-control border-0" 
+                        placeholder="Search cars, spare parts, workshops..."
+                        value="{{ request('q') }}" 
+                        style="box-shadow: none;">
+                    <button type="submit" class="btn px-4" style="background-color:#5a0b0f; color:#fff; border-radius:0;">
+                        Search
+                    </button>
                 </div>
-              @endif
-            </div>
-
-            <!-- 🏷️ By Type -->
-            <div class="col-md-3">
-              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Type</h6>
-              <ul class="list-unstyled mb-0">
-                @foreach ($bodyTypes->take(10) as $type)
-                  <li>
-                    <a class="dropdown-item py-1 small" 
-                       href="{{ route('cars.index', ['type' => $type]) }}">
-                      {{ ucfirst($type) }}
-                    </a>
-                  </li>
-                @endforeach
-              </ul>
-
-              @if ($bodyTypes->count() > 10)
-                <div class="mt-2">
-                  <a href="{{ route('cars.index') }}" 
-                     class="small  fw-semibold text-decoration-none"
-                      style="color: gray">
-                    Show All Types →
-                  </a>
-                </div>
-              @endif
-            </div>
-
-          </div>
+            </form>
         </div>
-      </li>
-    </ul>
 
-  </div>
-</div>
+        <!-- ✅ Collapsible Menu -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarMenu">
+            <div class="d-flex flex-column flex-lg-row align-items-center gap-4 text-center text-lg-start">
+                <ul class="navbar-nav d-flex align-items-center gap-2 gap-lg-4 mb-0">
+                    <li class="nav-item">
+                        @guest
+                            <a href="{{ route('login') }}" class="text-dark fw-semibold text-decoration-none nav-link">
+                                Sell Your Car
+                            </a>
+                        @else
+                            <a href="{{ route('cars.create') }}" class="text-dark fw-semibold text-decoration-none nav-link">
+                                Sell Your Car
+                            </a>
+                        @endguest
+                    </li>
 
+                    <li class="nav-item dropdown position-static">
+                        <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" id="dropdownMegaMenu" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Browse Cars
+                        </a>
 
-<!-- 🎨 Styles -->
-<style>
-  .dropdown-menu {
-    animation: fadeIn 0.2s ease-in-out;
-  }
+                        <div class="dropdown-menu p-4 shadow border-0 mt-2"
+                            aria-labelledby="dropdownMegaMenu"
+                            style="max-height: 400px; overflow-y: auto; border-radius: 12px; min-width: 650px;">
+                            <div class="row g-4">
+                                <div class="col-md-4 border-end">
+                                    <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Model</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li><a class="dropdown-item py-1 small" href="#">Toyota</a></li>
+                                        <li><a class="dropdown-item py-1 small" href="#">Honda</a></li>
+                                        <li><a class="dropdown-item py-1 small" href="#">BMW</a></li>
+                                    </ul>
+                                    <div class="mt-2">
+                                        <a href="#" class="small fw-semibold text-decoration-none text-muted">Show All Models →</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 border-end">
+                                    <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Year</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li><a class="dropdown-item py-1 small" href="#">2024</a></li>
+                                        <li><a class="dropdown-item py-1 small" href="#">2023</a></li>
+                                        <li><a class="dropdown-item py-1 small" href="#">2022</a></li>
+                                    </ul>
+                                    <div class="mt-2">
+                                        <a href="#" class="small fw-semibold text-decoration-none text-muted">Show All Years →</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Type</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li><a class="dropdown-item py-1 small" href="#">Sedan</a></li>
+                                        <li><a class="dropdown-item py-1 small" href="#">SUV</a></li>
+                                        <li><a class="dropdown-item py-1 small" href="#">Truck</a></li>
+                                    </ul>
+                                    <div class="mt-2">
+                                        <a href="#" class="small fw-semibold text-decoration-none text-muted">Show All Types →</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .dropdown-item:hover {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    color: black;
-  }
-
-  /* Scrollbar for dropdown */
-  .dropdown-menu::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .dropdown-menu::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
-  }
-
-  @media (max-width: 768px) {
-    .nav {
-      flex-direction: column;
-      text-align: center;
-    }
-    .dropdown-menu {
-      min-width: 100%;
-      max-height: 300px;
-      border-radius: 0;
-    }
-  }
-</style>
-
-
-
-
-<style>
-  .custom-btn {
-    background-color: #185D31;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
-    transition: 0.3s ease;
-  }
-  .custom-btn:hover {
-    background-color: #124b27;
-    color: #fff;
-  }
-
-  /* --- RESPONSIVE FIXES --- */
-  @media (max-width: 991px) {
-    .navbar-collapse {
-      text-align: center;
-    }
-    .navbar .dropdown-menu {
-      position: static !important;
-      float: none;
-      margin-top: 0.5rem;
-    }
-    .navbar .custom-btn {
-      width: 100%;
-    }
-    .input-group span.input-group-text {
-      display: none; /* hides icon to save space on mobile */
-    }
-    .input-group .form-control {
-      font-size: 14px;
-    }
-  }
-</style>
+                @guest
+                    <a class="btn custom-btn" href="{{ route('login') }}">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login
+                    </a>
+                @else
+                    <a href="{{ route('cars.favList') }}" class="btn custom-btn" title="My Favorites">
+                        <i class="fas fa-heart"></i>
+                    </a>
+                    <a class="btn custom-btn" href="#">
+                        <i class="fas fa-bullhorn me-1"></i>Place Your AD
+                    </a>
+                    <div class="dropdown">
+                        <a class="btn custom-btn dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>Profile
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
+                            <li><a href="{{ route('profile', auth()->user()->id) }}" class="dropdown-item"><i class="fas fa-user-circle me-2"></i>My Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button class="dropdown-item" type="submit"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                @endguest
+            </div>
+        </div>
+    </div>
+</nav>
