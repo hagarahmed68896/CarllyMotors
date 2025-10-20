@@ -12,199 +12,297 @@ $currentMake = request('make'); // Get the currently selected make for highlight
 @section('content')
 
 <style>
-    .brand-pill {
-    white-space: nowrap;
-    cursor: pointer;
+  /* Make all filter buttons uniform with selects */
+.filter-bar-top .btn-outline-secondary {
+  border-radius: 8px;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  color: #4a4a4a;
+  height: 42px; /* Same height as selects */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 130px; /* Keeps consistent width for all buttons */
+  transition: all 0.3s ease;
+}
+
+/* Hover effect — slightly darker background, text remains dark */
+.filter-bar-top .btn-outline-secondary:hover {
+  background-color: #e9ecef;
+  color: #000;
+  border-color: #aaa;
+}
+
+/* Make selects match button style for perfect alignment */
+.filter-bar-top .form-select,
+.filter-bar-top .form-control {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
+  height: 42px;
+  color: #4a4a4a;
+}
+
+/* Adjust spacing for smaller screens */
+@media (max-width: 991px) {
+  .filter-bar-top {
+    padding: 0.8rem 1rem;
+  }
+  .filter-form-grid {
+    gap: 0.75rem;
+  }
+  .filter-bar-top .btn-outline-secondary,
+  .filter-bar-top .form-select {
+    min-width: 110px;
     font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-    border-radius: 50px;
-    border: 1px solid #ccc;
-    color: #4a4a4a;
-    background-color: #f8f9fa;
-    text-decoration: none;
-    transition: all 0.2s;
+  }
 }
 
+  .modal-backdrop {
+      z-index: 1050 !important;
+
+  background-color: transparent !important;
+}
+.modal {
+  z-index: 1055 !important;
+}
+
+
+
+.brand-pill {
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  border: 1px solid #ccc;
+  color: #4a4a4a;
+  background-color: #f8f9fa;
+  text-decoration: none;
+  transition: all 0.2s;
+}
 .brand-pill:hover {
-    background-color: #e9ecef;
-    color: #000;
-    border-color: #aaa;
+  background-color: #e9ecef;
+  color: #000;
+  border-color: #aaa;
+}
+.brand-pill.active {
+  background-color: #dc3545;
+  color: #fff;
+  border-color: #dc3545;
+  font-weight: 600;
 }
 
-.brand-pill.active {
-    background-color: #dc3545; /* A color for active state, like the image */
-    color: #fff;
-    border-color: #dc3545;
-    font-weight: 600;
-}
 /* 🔹 الفلتر الرئيسي */
 .filter-bar-top {
-    background-color: #fff;
-    border: 1px solid #e5e5e5;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    margin: 1.5rem auto;
-    max-width: 1300px;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem auto;
+  max-width: 1300px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.filter-bar-top::-webkit-scrollbar {
+  height: 6px;
+}
+.filter-bar-top::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
 }
 
-/* الحقول */
+/* keep filters in one line */
+.filter-form-grid {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: nowrap;
+  min-width: max-content;
+}
+
+/* fields */
 .filter-bar-top .form-select,
 .filter-bar-top .form-control,
 .filter-bar-top .btn {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 0.6rem 0.8rem;
-    font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
 }
 
-/* أزرار Dropdown */
+/* buttons */
 .btn-outline-secondary {
-    border-radius: 8px;
-    font-size: 0.95rem;
-    transition: 0.3s;
-    width: 100%;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: 0.3s;
+  width: 100%;
 }
 .btn-outline-secondary:hover {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
-/* Dropdown Menu */
-.dropdown-menu {
-    border-radius: 10px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    border: 1px solid #e0e0e0;
+/* Modal styling */
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+.modal-header {
+  border-bottom: 1px solid #eee;
+}
+.modal-footer {
+  border-top: 1px solid #eee;
+}
+.modal-body {
+  padding: 1.5rem;
 }
 
-/* تصميم الريسبونسف */
-@media (min-width: 992px) {
-    .filter-form-grid {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 1rem;
-        align-items: center;
-    }
-}
 @media (max-width: 991px) {
-    .filter-form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-    }
-}
-@media (max-width: 576px) {
-    .filter-form-grid {
-        grid-template-columns: 1fr;
-    }
+  .filter-bar-top {
+    padding: 0.8rem 1rem;
+  }
+  .filter-form-grid {
+    gap: 0.75rem;
+  }
 }
 </style>
 
 <div class="container-fluid" style="padding-top: 0.7rem; background-color: #fff; position: sticky; top: 70px; z-index: 1000;">
   <div class="filter-bar-top">
     <form id="topFilterForm" method="GET" action="{{ route('cars.index') }}" class="filter-form-grid">
-      
-      <!-- 🏙️ City -->
-  <select class="form-select" name="city" onchange="submitTopFilter()">
-  <option value="" disabled {{ empty(request('city')) ? 'selected' : '' }}>City</option>
-  @foreach($cities as $city)
-    @if(!empty($city))
-      <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-        {{ $city }}
-      </option>
-    @endif
-  @endforeach
-</select>
 
+      <!-- 🏙️ City -->
+      <select class="form-select" name="city" onchange="submitTopFilter()">
+        <option value="" disabled {{ empty(request('city')) ? 'selected' : '' }}>City</option>
+        @foreach($cities as $city)
+          @if(!empty($city))
+            <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+              {{ $city }}
+            </option>
+          @endif
+        @endforeach
+      </select>
 
       <!-- 🚗 Make -->
       <select class="form-select" name="make" onchange="submitTopFilter()">
         <option value="">Make</option>
         @foreach($makes as $make)
-            <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
+          <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
         @endforeach
       </select>
 
-      <!-- 💰 Price Dropdown -->
-      <div class="dropdown w-100">
-        <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="dropdown">
-          Price Range
-        </button>
-        <ul class="dropdown-menu p-3" style="min-width: 260px;">
-          <p class="small text-muted mb-2">Price Range (AED)</p>
-          <div class="d-flex gap-2 mb-2">
-            <input type="number" class="form-control form-control-sm" name="priceFrom" placeholder="Min" value="{{ request('priceFrom') }}">
-            <span class="fw-bold">–</span>
-            <input type="number" class="form-control form-control-sm" name="priceTo" placeholder="Max" value="{{ request('priceTo') }}">
-          </div>
-          <button type="submit" class="btn btn-sm btn-danger w-100">Apply Price</button>
-        </ul>
-      </div>
+      <!-- 💰 Price Modal -->
+      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#priceModal">
+        Price Range
+      </button>
 
       <!-- 📅 Year -->
       <select class="form-select" name="year" onchange="submitTopFilter()">
         <option value="">Year</option>
         @foreach($years as $year)
-            <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
+          <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
         @endforeach
       </select>
 
-      <!-- 🛞 Mileage Dropdown -->
-      <div class="dropdown w-100">
-        <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="dropdown">
-          Mileage
-        </button>
-        <ul class="dropdown-menu p-3" style="min-width: 250px;">
-          <p class="small text-muted mb-2">Mileage (KM)</p>
-          <div class="d-flex gap-2 mb-2">
-            <input type="number" class="form-control form-control-sm" name="mileageFrom" placeholder="Min" value="{{ request('mileageFrom') }}">
-            <span class="fw-bold">–</span>
-            <input type="number" class="form-control form-control-sm" name="mileageTo" placeholder="Max" value="{{ request('mileageTo') }}">
-          </div>
-          <button type="submit" class="btn btn-sm btn-danger w-100">Apply Mileage</button>
-        </ul>
-      </div>
+      <!-- 🛞 Mileage Modal -->
+      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#mileageModal">
+        Mileage
+      </button>
 
-      <!-- ⚙️ More Filters Dropdown -->
-      <div class="dropdown w-100">
-        <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="dropdown">
-          More Filters
-        </button>
-       <ul class="dropdown-menu p-3" style="min-width: 260px;">
-  <p class="small text-muted mb-2">Additional Filters</p>
-
-  <div class="mb-2">
-    <!-- 🔍 Keywords -->
-    <input 
-      type="text" 
-      class="form-control form-control-sm mb-2" 
-      name="keywords" 
-      placeholder="Keywords" 
-      value="{{ request('keywords') }}"
-    >
-
-    <!-- ⚙️ Regional Specs -->
-    <select class="form-select form-select-sm" name="specs">
-      <option value="">Regional Specs</option>
-      @foreach($regionalSpecs as $regionalSpec)
-        <option 
-          value="{{ $regionalSpec }}" 
-          {{ request('specs') == $regionalSpec ? 'selected' : '' }}
-        >
-          {{ $regionalSpec }}
-        </option>
-      @endforeach
-    </select>
-  </div>
-
-  <button type="submit" class="btn btn-sm btn-danger w-100">
-    Apply Filters
-  </button>
-</ul>
-
-      </div>
+      <!-- ⚙️ More Filters Modal -->
+      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filtersModal">
+        More Filters
+      </button>
     </form>
   </div>
 </div>
+
+<!-- 💰 Price Modal -->
+<div class="modal fade" id="priceModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Price Range (AED)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex gap-2 mb-3">
+          <input type="number" class="form-control" name="priceFrom" form="topFilterForm" placeholder="Min" value="{{ request('priceFrom') }}">
+          <input type="number" class="form-control" name="priceTo" form="topFilterForm" placeholder="Max" value="{{ request('priceTo') }}">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" form="topFilterForm" class="btn btn-danger w-100">Apply Price</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🛞 Mileage Modal -->
+<div class="modal fade" id="mileageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Mileage (KM)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex gap-2 mb-3">
+          <input type="number" class="form-control" name="mileageFrom" form="topFilterForm" placeholder="Min" value="{{ request('mileageFrom') }}">
+          <input type="number" class="form-control" name="mileageTo" form="topFilterForm" placeholder="Max" value="{{ request('mileageTo') }}">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" form="topFilterForm" class="btn btn-danger w-100">Apply Mileage</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⚙️ More Filters Modal -->
+<div class="modal fade" id="filtersModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Additional Filters</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input 
+          type="text" 
+          class="form-control mb-3" 
+          name="keywords" 
+          form="topFilterForm" 
+          placeholder="Keywords" 
+          value="{{ request('keywords') }}"
+        >
+        <select class="form-select" name="specs" form="topFilterForm">
+          <option value="">Regional Specs</option>
+          @foreach($regionalSpecs as $regionalSpec)
+            <option value="{{ $regionalSpec }}" {{ request('specs') == $regionalSpec ? 'selected' : '' }}>
+              {{ $regionalSpec }}
+            </option>
+          @endforeach
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" form="topFilterForm" class="btn btn-danger w-100">Apply Filters</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function submitTopFilter() {
+  document.getElementById('topFilterForm').submit();
+}
+</script>
+
 
 <script>
 function submitTopFilter() {
@@ -264,8 +362,44 @@ function submitTopFilter() {
         <a href="{{ route('car.detail', $car->id) }}" class="text-decoration-none text-dark">
           <div class="car-card shadow-sm rounded-4 overflow-hidden hover-card d-flex flex-column flex-lg-row">
 
-            {{-- الصورة --}}
-            <div class="car-carousel-container flex-shrink-0">
+              {{-- 🖼️ الصورة --}}
+            <div class="car-carousel-container position-relative flex-shrink-0" style="min-height: 230px;">
+              
+              {{-- ❤️ Favorite & Share Buttons --}}
+              <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
+                  @if(auth()->check())
+                      @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
+                      <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
+                          @csrf
+                          <button title="Add to favorites"
+                                  class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                                  type="submit"
+                                  aria-label="Add to favorites"
+                                  style="width: 32px; height: 32px; border-radius: 50%;">
+                              <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+                          </button>
+                      </form>
+                  @else
+                      <a href="{{ route('login') }}"
+                         title="Login to add to favorites"
+                         class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                         aria-label="Login to add to favorites"
+                         style="width: 32px; height: 32px; border-radius: 50%;">
+                          <i class="fas fa-heart" style="color: #6c757d;"></i>
+                      </a>
+                  @endif
+
+                  <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}"
+                     target="_blank"
+                     title="Share via WhatsApp"
+                     aria-label="Share via WhatsApp"
+                     class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                     style="width: 32px; height: 32px; border-radius: 50%;">
+                      <i class="fas fa-share-alt" style="color: #25d366;"></i>
+                  </a>
+              </div>
+
+              {{-- Carousel --}}
               <div id="carCarousel-{{ $key }}" class="carousel slide h-100" data-bs-ride="carousel">
                 <div class="carousel-inner h-100 ratio ratio-16x9 ratio-lg-unset">
                   @if($images && count($images) > 0)
