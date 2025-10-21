@@ -6,42 +6,7 @@
 
 @section('content')
 <div id="main-content">
-    <!-- Enhanced Carousel Banner -->
-    {{-- <div id="demo" class="carousel slide animate__animated animate__fadeIn" data-bs-ride="carousel" data-bs-interval="4000">
-        <!-- Indicators -->
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="2" aria-label="Slide 3"></button>
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="3" aria-label="Slide 4"></button>
-        </div>
-
-        <!-- Slides -->
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img class="d-block w-100" src="{{asset('1.jpg')}}" alt="Featured Car 1" loading="eager">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('2.jpg')}}" alt="Featured Car 2" loading="lazy">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('3.jpg')}}" alt="Featured Car 3" loading="lazy">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{asset('4.jpg')}}" alt="Featured Car 4" loading="lazy">
-            </div>
-        </div>
-
-        <!-- Controls -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div> --}}
+  
    <section class="position-relative" style="background: linear-gradient(90deg, #760e13, #9b2a2f, #c4474c); overflow: hidden; ">
   <div class="container-fluid p-0 position-relative " style="z-index: 2;">
     <img src="{{ asset('1.jpg') }}" alt="Cars" class="w-100 img-fluid object-fit-cover" style="max-height: 550px; object-position: center;">
@@ -54,297 +19,148 @@
 </section>
 
 
-<!-- قسم الخدمات -->
+<!-- ✅ Services Section -->
 <section class="py-5 mt-4 bg-light">
   <div class="container text-center">
-    <h2 class="fw-bold mb-3" style="color: #760e13;">Browse from our services</h2>
+    <h2 class="fw-bold mb-4" style="color: #760e13;">Browse from our services</h2>
 
-    <div class="row g-4 justify-content-center">
-      <!-- Buy Car -->
-  <div class="col-6 col-sm-4 col-md-4 col-lg-2">
-        <a href="{{route('cars.index')}}" class="text-decoration-none text-dark">
-          <div class="p-4 bg-white rounded-4 shadow-sm hover-shadow transition">
-            <i class="fas fa-car fa-2x mb-3" style="color:#760e13;"></i>
-            <h5 class="fw-bold">Cars</h5>
-            <p class="text-muted small mb-4">Best in class cars</p>
+    <!-- ✅ Scrollable container -->
+    <div class="services-scroll">
+      <div class="d-flex gap-3 flex-nowrap justify-content-center">
+
+        <!-- Buy Car -->
+        <a href="{{ route('cars.index') }}" class="service-card text-decoration-none text-dark flex-shrink-0">
+          <div class="card-inner">
+            <i class="fas fa-car fa-2x mb-2" style="color:#760e13;"></i>
+            <h5 class="fw-bold mb-1 text-truncate">Cars</h5>
+            <p class="text-muted small mb-0 text-wrap">Best in class cars</p>
           </div>
         </a>
-      </div>
 
-      <!--  Spare Parts -->
-  <div class="col-6 col-sm-4 col-md-4 col-lg-2">
-        <a href="{{route('spareParts.index')}}" class="text-decoration-none text-dark">
-          <div class="p-4 bg-white rounded-4 shadow-sm hover-shadow transition">
-          <i class="fas fa-cog fa-2x mb-3" style="color:#760e13;"></i>
-            <h5 class="fw-bold">Spare Parts </h5>
-        <p class="text-muted small mb-0">Find genuine car parts easily</p>
+        <!-- Spare Parts -->
+        <a href="{{ route('spareParts.index') }}" class="service-card text-decoration-none text-dark flex-shrink-0">
+          <div class="card-inner">
+            <i class="fas fa-cog fa-2x mb-2" style="color:#760e13;"></i>
+            <h5 class="fw-bold mb-1 text-truncate">Spare Parts</h5>
+            <p class="text-muted small mb-0 text-wrap">Find genuine parts easily</p>
           </div>
         </a>
-      </div>
 
-      <!-- Workshops -->
-  <div class="col-6 col-sm-4 col-md-4 col-lg-2">
-        <a href="{{route('workshops.index')}}" class="text-decoration-none text-dark">
-          <div class="p-4 bg-white rounded-4 shadow-sm hover-shadow transition">
-           <i class="fas fa-wrench fa-2x mb-3" style="color:#760e13;"></i> 
-           <h5 class="fw-bold">Workshops</h5>
-        <p class="text-muted small mb-0">Get expert car service near you</p>
+        <!-- Workshops -->
+        <a href="{{ route('workshops.index') }}" class="service-card text-decoration-none text-dark flex-shrink-0">
+          <div class="card-inner">
+            <i class="fas fa-wrench fa-2x mb-2" style="color:#760e13;"></i>
+            <h5 class="fw-bold mb-1 text-truncate">Workshops</h5>
+            <p class="text-muted small mb-0 text-wrap">Expert car service near you</p>
           </div>
         </a>
+
       </div>
-
-
-
     </div>
   </div>
 </section>
 
+<!-- ✅ Styles -->
 <style>
-.hover-shadow:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+.services-scroll {
+  overflow-x: auto;
+  padding-bottom: 0.7rem;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
 }
-.transition {
+.services-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.services-scroll::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+.services-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ✅ All cards same size and centered content */
+.service-card {
+  width: 180px;
+  height: 180px;
+  flex: 0 0 auto;
+  text-align: center;
+}
+.card-inner {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  padding: 1.2rem 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   transition: all 0.3s ease;
+}
+.card-inner:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  transform: translateY(-4px);
+}
+
+/* ✅ Text control */
+h5, p {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+
+/* ✅ Responsive behavior */
+@media (max-width: 992px) {
+  .service-card {
+    width: 160px;
+    height: 160px;
+  }
+  .card-inner h5 { font-size: 1rem; }
+  .card-inner p { font-size: 0.8rem; }
+}
+@media (max-width: 768px) {
+  .service-card {
+    width: 140px;
+    height: 150px;
+  }
+  .card-inner h5 { font-size: 0.95rem; }
+  .card-inner p { font-size: 0.75rem; }
+}
+@media (max-width: 576px) {
+  .services-scroll {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+    padding-left: 0.75rem;
+  }
+  .service-card {
+    width: 130px;
+    height: 140px;
+  }
+  .card-inner h5 { font-size: 0.9rem; }
+  .card-inner p { font-size: 0.7rem; }
 }
 </style>
 
 
+
+
+
+
     <!-- Enhanced Navigation Section -->
     <div class="main-home-filter-sec text-center">
-                   <h2 class="section-title animate__animated animate__fadeInUp">Featured Cars</h2>
-
-
-        <!-- Enhanced Desktop Filter Bar -->
-     <!-- FILTER BUTTON WITH CLICK DROPDOWN -->
-{{-- <div class="dropdown text-center my-3" data-bs-auto-close="outside" id="filterDropdownWrapper">
-  <!-- Filter Button -->
-  <button 
-    class="btn btn-outline-dark dropdown-toggle px-4 py-2 rounded-pill" 
-    type="button" 
-    id="filterDropdown" 
-    data-bs-toggle="dropdown" 
-    aria-expanded="false"
-  >
-    <i class="fas fa-sliders-h me-2"></i> Filters
-  </button>
-
-  <!-- Dropdown Menu -->
-  <div 
-    class="dropdown-menu dropdown-menu-end p-4 shadow-lg border-0 rounded-4" 
-    aria-labelledby="filterDropdown" 
-    style="min-width: 800px; max-width: 95vw;"
-    id="filterDropdownMenu"
-  >
-    <form id="filterForm" action="{{ route('cars.index') }}" method="get">
-      <div class="row g-3">
-
-        <!-- Car Type -->
-        <div class="col-md-4">
-          <label class="form-label fw-semibold">Car Type</label>
-          <select class="form-select" name="car_type">
-            <option value="UsedOrNew" {{ request('car_type') == 'UsedOrNew' ? 'selected' : '' }}>Used/New</option>
-            <option value="Imported" {{ request('car_type') == 'Imported' ? 'selected' : '' }}>Imported</option>
-            <option value="Auction" {{ request('car_type') == 'Auction' ? 'selected' : '' }}>Auction</option>
-          </select>
-        </div>
-
-        <!-- City -->
-        <div class="col-md-4">
-          <label class="form-label fw-semibold">City</label>
-          <select class="form-select" name="city">
-            <option value="">All Cities</option>
-            @foreach($cities as $city)
-              <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
-            @endforeach
-          </select>
-        </div>
-
-        <!-- Make -->
-        <div class="col-md-4">
-          <label class="form-label fw-semibold">Make</label>
-          <select class="form-select" name="make">
-            <option value="">All Makes</option>
-            @foreach($makes as $make)
-              <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
-            @endforeach
-          </select>
-        </div>
-
-        <!-- Model -->
-        <div class="col-md-4">
-          <label class="form-label fw-semibold">Model</label>
-          <select class="form-select" name="model">
-            <option value="">All Models</option>
-            @foreach($models as $model)
-              <option value="{{ $model }}" {{ request('model') == $model ? 'selected' : '' }}>{{ $model }}</option>
-            @endforeach
-          </select>
-        </div>
-
-        <!-- Year -->
-        <div class="col-md-4">
-          <label class="form-label fw-semibold">Year</label>
-          <select class="form-select" name="year">
-            <option value="">All Years</option>
-            @foreach($years as $year)
-              <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
-            @endforeach
-          </select>
-        </div>
-
-        <!-- Body Type -->
-        <div class="col-md-4">
-          <label class="form-label fw-semibold">Body Type</label>
-          <select class="form-select" name="body_type">
-            <option value="">All Body Types</option>
-            @foreach($bodyTypes as $bodyType)
-              <option value="{{ $bodyType }}" {{ request('body_type') == $bodyType ? 'selected' : '' }}>{{ $bodyType }}</option>
-            @endforeach
-          </select>
-        </div>
-
-        <!-- Regional Specs -->
-        <div class="col-md-4">
-          <label class="form-label fw-semibold">Regional Specs</label>
-          <select class="form-select" name="regionalSpecs">
-            <option value="">All Specs</option>
-            @foreach($regionalSpecs as $regionalSpec)
-              <option value="{{ $regionalSpec }}" {{ request('regionalSpec') == $regionalSpec ? 'selected' : '' }}>
-                {{ $regionalSpec }}
-              </option>
-            @endforeach
-          </select>
-        </div>
-
-        <!-- Price -->
-        <div class="col-md-4">
-          <label class="form-label fw-semibold">Price Range</label>
-          <button type="button" class="btn btn-outline-secondary w-100" onclick="openModal()">
-            <i class="fas fa-dollar-sign me-2"></i> Select Price
-          </button>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="text-end mt-4">
-        <button type="submit" class="btn btn-primary px-4 me-2">Apply</button>
-        <a href="{{ route('cars.index') }}" class="btn btn-outline-secondary px-4">Reset</a>
-      </div>
-    </form>
-  </div>
+        <div class="text-center my-5">
+  <h2 class="animated-square-title">
+    Featured <span>CARS</span>
+  </h2>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  // 🟢 Prevent dropdown from closing when interacting inside
-  const dropdownMenu = document.getElementById('filterDropdownMenu');
-  dropdownMenu.addEventListener('click', function (e) {
-    e.stopPropagation();
-  });
-
-  // 🟢 Prevent it from opening on hover (if any theme forces it)
-  const style = document.createElement('style');
-  style.textContent = `
-    .dropdown:hover .dropdown-menu.show {
-      display: none !important;
-    }
-  `;
-  document.head.appendChild(style);
-});
-</script> --}}
-
-
-
-        <!-- Enhanced Mobile Filter Bar -->
-        {{-- <div class="filter-bar-mobile d-lg-none animate__animated animate__fadeInUp">
-            <form id="filterFormMobile" action="{{ route('cars.index') }}" method="get" 
-                  class="d-flex overflow-auto gap-3 pb-2" style="scroll-snap-type: x mandatory;">
-                
-                <!-- Car Type Mobile -->
-                <div class="filter-item" style="min-width: 140px; scroll-snap-align: start;">
-                    <select class="form-control" name="car_type" onchange="submitFilterForm()">
-                        <option value="UsedOrNew" {{ request('car_type') == 'UsedOrNew' ? 'selected' : '' }}>Used/New</option>
-                        <option value="Imported" {{ request('car_type') == 'Imported' ? 'selected' : '' }}>Imported</option>
-                        <option value="Auction" {{ request('car_type') == 'Auction' ? 'selected' : '' }}>Auction</option>
-                    </select>
-                </div>
-
-                <!-- City Mobile -->
-                <div class="filter-item" style="min-width: 120px; scroll-snap-align: start;">
-                    <select class="form-control" name="city">
-                        <option value="">City</option>
-                        @foreach($cities as $city)
-                            @if(!$city) @continue @endif
-                            <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Make Mobile -->
-                <div class="filter-item" style="min-width: 120px; scroll-snap-align: start;">
-                    <select class="form-control" name="make" id="brandMobile" onchange="submitFilterForm()">
-                        <option value="">Make</option>
-                        @foreach($makes as $make)
-                            <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Model Mobile -->
-                <div class="filter-item" style="min-width: 120px; scroll-snap-align: start;">
-                    <select class="form-control" name="model" id="modelMobile" onchange="submitFilterForm()">
-                        <option value="">Model</option>
-                        @foreach($models as $model)
-                            <option value="{{ $model }}" {{ request('model') == $model ? 'selected' : '' }}>{{ $model }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Year Mobile -->
-                <div class="filter-item" style="min-width: 100px; scroll-snap-align: start;">
-                    <select class="form-control" name="year" onchange="submitFilterForm()">
-                        <option value="">Year</option>
-                        @foreach($years as $year)
-                            <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Price Mobile -->
-                <div class="filter-item" style="min-width: 100px; scroll-snap-align: start;">
-                    <button type="button" class="btn btn-outline-danger w-100" onclick="openModal()" style="height: 44px;">
-                        <i class="fas fa-dollar-sign"></i>
-                    </button>
-                </div>
-            </form>
-        </div> --}}
-
-        <!-- Enhanced Price Modal -->
-        {{-- <div id="priceModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()" aria-label="Close">&times;</span>
-                <h3 style="color: var(--primary-color); font-weight: 700; margin-bottom: 1.5rem;">
-                    <i class="fas fa-dollar-sign me-2"></i>Price Range
-                </h3>
-                <div class="price-range">
-                    <input type="number" id="minPrice" name="priceFrom" min="{{$minPrice ?? 0}}" max="{{$maxPrice ?? 1000000}}" 
-                           value="{{$minPrice ?? 0}}" placeholder="Min Price" aria-label="Minimum Price">
-                    <span style="font-weight: 600; color: #6c757d;">to</span>
-                    <input type="number" id="maxPrice" name="priceTo" min="{{$minPrice ?? 0}}" max="{{$maxPrice ?? 1000000}}" 
-                           value="{{$maxPrice ?? 1000000}}" placeholder="Max Price" aria-label="Maximum Price">
-                </div>
-                <button class="filter-btn" onclick="submitFilterForm()">
-                    <i class="fas fa-search me-2"></i>Apply Filter
-                </button>
-            </div>
-        </div> --}}
-
+                   {{-- <h2 class="section-title animate__animated animate__fadeInUp">Featured Cars</h2> --}}
         <!-- Enhanced Car Listings -->
         <div class="custom-container main-car-list-sec">
             <div class="row g-4">
                 @forelse ($carlisting as $key => $car)
-<div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-3">
+                        <div class="col-sm-6 col-lg-4 col-xl-3">
                         <div class="car-card animate__animated animate__fadeInUp" style="animation-delay: {{ $key * 0.1 }}s">
                             <!-- Enhanced Car Image -->
                             <div class="car-image">
@@ -433,28 +249,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-                                <!-- Enhanced Action Buttons -->
-                                <div class="actions">
-                                    <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="flex-fill">
-                                        <button class="btn btn-outline-success w-100">
-                                            <i class="fab fa-whatsapp me-1"></i>
-                                        </button>
-                                    </a>
-                                    
-                                    @if($os == 'Android' || $os == 'iOS')
-                                        <a href="tel:{{ $car->user->phone }}" class="flex-fill">
-                                            <button class="btn btn-outline-danger w-100">
-                                                <i class="fas fa-phone me-1"></i>
-                                            </button>
-                                        </a>
-                                    @else
-                                        <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="flex-fill">
-                                            <button class="btn btn-outline-danger w-100">
-                                                <i class="fas fa-phone me-1"></i>
-                                            </button>
-                                        </a>
-                                    @endif
-                                </div>
+                           <!-- Enhanced Action Buttons -->
+<div class="d-flex justify-content-between gap-2 flex-wrap text-center mt-2" style="width: 100%;">
+    <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="flex-fill text-decoration-none">
+        <button class="btn btn-outline-success w-100 rounded-4">
+            <i class="fab fa-whatsapp me-1"></i>
+        </button>
+    </a>
+
+    @if($os == 'Android' || $os == 'iOS')
+        <a href="tel:{{ $car->user->phone }}" class="flex-fill text-decoration-none">
+            <button class="btn btn-outline-danger w-100 rounded-4">
+                <i class="fas fa-phone me-1"></i>
+            </button>
+        </a>
+    @else
+        <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="flex-fill text-decoration-none">
+            <button class="btn btn-outline-danger w-100 rounded-4">
+                <i class="fas fa-phone me-1"></i>
+            </button>
+        </a>
+    @endif
+</div>
+
+<style>
+/* Keep buttons side-by-side even on very small screens */
+.actions a {
+  flex: 1 1 48%; /* each button roughly half width */
+}
+
+.actions button {
+  white-space: nowrap;
+  font-size: 1rem;
+  padding: 0.6rem 0;
+}
+
+/* Adjust spacing for extra small screens */
+@media (max-width: 400px) {
+  .actions a {
+    flex: 1 1 48%;
+  }
+  .actions button {
+    font-size: 0.9rem;
+  }
+}
+</style>
+
                             </div>
                         </div>
                     </div>
@@ -482,7 +322,12 @@ document.addEventListener('DOMContentLoaded', function () {
     <!-- Enhanced Dealers Section -->
     @if(isset($dealers) && count($dealers) > 0)
         <div class="main-home-filter-sec">
-            <h2 class="section-title animate__animated animate__fadeInUp">Featured Dealers</h2>
+            <div class="text-center my-5">
+  <h2 class="animated-square-title">
+    Featured <span>DEALERS</span>
+  </h2>
+</div>
+            {{-- <h2 class="section-title animate__animated animate__fadeInUp">Featured Dealers</h2> --}}
             <div class="custom-container">
                 <div class="row g-4">
                     @foreach ($dealers as $key => $dealer)
@@ -522,35 +367,91 @@ document.addEventListener('DOMContentLoaded', function () {
                                         @endif
                                     </div>
 
-                                    <!-- Dealer Actions -->
-                                    <div class="actions">
-                                        <a href="https://wa.me/{{ $phone }}" target="_blank" class="flex-fill">
-                                            <button class="btn btn-outline-success w-100">
-                                                <i class="fab fa-whatsapp me-1"></i>
-                                            </button>
-                                        </a>
+<!-- Dealer Actions -->
+<div class="actions-dealer d-flex justify-content-between align-items-center mt-2">
+    <a href="https://wa.me/{{ $phone }}" target="_blank" class="text-decoration-none flex-grow-1">
+        <button class="btn btn-outline-success w-100 action-btn rounded-4">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+    </a>
 
-                                        @if ($os == 'Android' || $os == 'iOS')
-                                            <a href="tel:{{ $phone }}" class="flex-fill">
-                                                <button class="btn btn-outline-danger w-100">
-                                                    <i class="fas fa-phone me-1"></i>
-                                                </button>
-                                            </a>
-                                        @else
-                                            <a href="https://wa.me/{{ $phone }}" target="_blank" class="flex-fill">
-                                                <button class="btn btn-outline-danger w-100">
-                                                    <i class="fas fa-phone me-1"></i>
-                                                </button>
-                                            </a>
-                                        @endif
+    @if ($os == 'Android' || $os == 'iOS')
+        <a href="tel:{{ $phone }}" class="text-decoration-none flex-grow-1">
+            <button class="btn btn-outline-danger w-100 action-btn rounded-4">
+                <i class="fas fa-phone"></i>
+            </button>
+        </a>
+    @else
+        <a href="https://wa.me/{{ $phone }}" target="_blank" class="text-decoration-none flex-grow-1">
+            <button class="btn btn-outline-danger w-100 action-btn rounded-4">
+                <i class="fas fa-phone"></i>
+            </button>
+        </a>
+    @endif
 
-                                        <a href="https://wa.me/?text={{ urlencode('Check out this dealer: ' . $shareUrl) }}" 
-                                           target="_blank" class="flex-fill">
-                                            <button class="btn btn-outline-info w-100">
-                                                <i class="fas fa-share-alt me-1"></i>
-                                            </button>
-                                        </a>
-                                    </div>
+    <a href="https://wa.me/?text={{ urlencode('Check out this dealer: ' . $shareUrl) }}" 
+       target="_blank" class="text-decoration-none flex-grow-1">
+        <button class="btn btn-outline-info w-100 action-btn rounded-4">
+            <i class="fas fa-share-alt"></i>
+        </button>
+    </a>
+</div>
+
+<style>
+.actions-dealer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+/* Make all buttons share space equally */
+.actions-dealer a {
+  flex: 1 1 0;
+}
+
+/* Base button style (large screens → smaller buttons) */
+.action-btn {
+  width: 100%;
+  height: 38px;           /* smaller on desktop */
+  font-size: 1rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+/* Medium screens */
+@media (max-width: 992px) {
+  .action-btn {
+    height: 42px;
+    font-size: 1.05rem;
+  }
+}
+
+/* Small screens */
+@media (max-width: 576px) {
+  .actions-dealer {
+    gap: 6px;
+  }
+  .action-btn {
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 400px) {
+  .action-btn {
+    height: 36px;
+    font-size: 0.9rem;
+  }
+}
+</style>
+
+
+
+
                                 </div>
                             </div>
                         </div>
@@ -567,10 +468,70 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     @endif
 
+
     <!-- Enhanced Workshops Section -->
     @if(isset($workshops) && count($workshops) > 0)
         <div class="main-home-filter-sec">
-            <h2 class="section-title animate__animated animate__fadeInUp">Featured Workshops</h2>
+<style>
+@keyframes bgFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-square-title {
+  display: inline-block;
+  padding: 13px 40px;
+  font-size: 1.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #fff;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #760e13, #c71f2d, #185D31, #0f3c1f);
+  background-size: 300% 300%;
+  animation: bgFlow 6s ease infinite;
+  box-shadow: 0 0 25px rgba(118, 14, 19, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-square-title::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15), transparent, rgba(255,255,255,0.15));
+  animation: bgFlow 3s linear infinite;
+  z-index: 0;
+}
+
+.animated-square-title span {
+  color: #ffe600;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .animated-square-title {
+    font-size: 1.6rem;
+    padding: 14px 25px;
+  }
+}
+</style>
+
+<div class="text-center my-5">
+  <h2 class="animated-square-title">
+    Featured <span>WORKSHOPS</span>
+  </h2>
+</div>
+
+
+
+
             <div class="custom-container">
                 <div class="row g-4">
                     @foreach ($workshops as $key => $workshop)
@@ -644,27 +605,80 @@ document.addEventListener('DOMContentLoaded', function () {
                                         </p>
                                     @endif
 
-                                    <!-- Workshop Actions -->
-                                    <div class="actions">
-                                        <a href="https://wa.me/{{ $workshop->user->phone }}" target="_blank" class="flex-fill">
-                                            <button class="btn btn-outline-success w-100 mb-2">
-                                                <i class="fab fa-whatsapp me-1"></i>
-                                            </button>
-                                        </a>
+                              <!-- Workshop Actions -->
+<div class="actions-workshop d-flex justify-content-between align-items-center mt-2">
+    <a href="https://wa.me/{{ $workshop->user->phone }}" target="_blank" class="text-decoration-none flex-grow-1">
+        <button class="btn btn-outline-success w-100 action-btn rounded-4">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+    </a>
 
-                                        <a href="tel:{{ $workshop->user->phone }}" class="flex-fill">
-                                            <button class="btn btn-outline-danger w-100 mb-2">
-                                                <i class="fas fa-phone me-1"></i>
-                                            </button>
-                                        </a>
+    <a href="tel:{{ $workshop->user->phone }}" class="text-decoration-none flex-grow-1">
+        <button class="btn btn-outline-danger w-100 action-btn rounded-4">
+            <i class="fas fa-phone"></i>
+        </button>
+    </a>
 
-                                        <a href="https://wa.me/?text={{ urlencode('Check out this workshop: ' . $shareUrl) }}" 
-                                           target="_blank" class="flex-fill">
-                                            <button class="btn btn-outline-info w-100">
-                                                <i class="fas fa-share-alt me-1"></i>
-                                            </button>
-                                        </a>
-                                    </div>
+    <a href="https://wa.me/?text={{ urlencode('Check out this workshop: ' . $shareUrl) }}" 
+       target="_blank" class="text-decoration-none flex-grow-1">
+        <button class="btn btn-outline-info w-100 action-btn rounded-4">
+            <i class="fas fa-share-alt"></i>
+        </button>
+    </a>
+</div>
+
+<style>
+.actions-workshop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+/* Ensure all links share space evenly */
+.actions-workshop a {
+  flex: 1 1 0;
+}
+
+/* Base button style */
+.action-btn {
+  width: 100%;
+  height: 38px;           /* smaller size on large screens */
+  font-size: 1rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+/* Medium screens (tablets) */
+@media (max-width: 992px) {
+  .action-btn {
+    height: 42px;
+    font-size: 1.05rem;
+  }
+}
+
+/* Small screens (phones) */
+@media (max-width: 576px) {
+  .actions-workshop {
+    gap: 6px;
+  }
+  .action-btn {
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+
+/* Extra small screens (very small phones) */
+@media (max-width: 400px) {
+  .action-btn {
+    height: 36px;
+    font-size: 0.9rem;
+  }
+}
+</style>
+
                                 </div>
                             </div>
                         </div>

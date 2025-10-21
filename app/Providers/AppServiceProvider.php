@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
         $shared = [
             'os' => $os,
             'bodyTypes' => collect(),
-            'models' => collect(),
+            'car_models' => collect(),
             'years' => collect(),
             'navbarBrands' => collect(),
         ];
@@ -62,7 +62,7 @@ class AppServiceProvider extends ServiceProvider
                     ->distinct()
                     ->pluck('body_type');
 
-                $shared['models'] = CarListingModel::whereNotNull('listing_model')
+                $shared['car_models'] = CarListingModel::whereNotNull('listing_model')
                     ->distinct()
                     ->pluck('listing_model');
 

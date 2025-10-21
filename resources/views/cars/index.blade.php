@@ -351,71 +351,33 @@ function submitTopFilter() {
 
 
 
-<div class="container py-4">
-  <div class="row  g-4 mb-4" id="car-list">
+ <div class="container py-4">
+  <div class="row g-4 mb-4" id="car-list">
     @forelse ($carlisting as $key => $car)
       @php
           $images = $car->images->map(fn($img) => env('FILE_BASE_URL') . $img->image)->toArray();
       @endphp
 
-      <div class="col-12 col-md-10 col-lg-9">
-        <a href="{{ route('car.detail', $car->id) }}" class="text-decoration-none text-dark">
-          <div class="car-card shadow-sm rounded-4 overflow-hidden hover-card d-flex flex-column flex-lg-row">
+      <div class="col-12 p-0 col-md-10 col-lg-9">
+        <div class="car-card shadow-sm rounded-4 overflow-hidden hover-card d-flex flex-column flex-lg-row">
 
-              {{-- 🖼️ الصورة --}}
-            <div class="car-carousel-container position-relative flex-shrink-0" style="min-height: 230px;">
-              
-              {{-- ❤️ Favorite & Share Buttons --}}
-              <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
-                  @if(auth()->check())
-                      @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
-                      <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
-                          @csrf
-                          <button title="Add to favorites"
-                                  class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                                  type="submit"
-                                  aria-label="Add to favorites"
-                                  style="width: 32px; height: 32px; border-radius: 50%;">
-                              <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
-                          </button>
-                      </form>
-                  @else
-                      <a href="{{ route('login') }}"
-                         title="Login to add to favorites"
-                         class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                         aria-label="Login to add to favorites"
-                         style="width: 32px; height: 32px; border-radius: 50%;">
-                          <i class="fas fa-heart" style="color: #6c757d;"></i>
-                      </a>
-                  @endif
-
-                  <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}"
-                     target="_blank"
-                     title="Share via WhatsApp"
-                     aria-label="Share via WhatsApp"
-                     class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                     style="width: 32px; height: 32px; border-radius: 50%;">
-                      <i class="fas fa-share-alt" style="color: #25d366;"></i>
-                  </a>
-              </div>
-
-              {{-- Carousel --}}
-              <div id="carCarousel-{{ $key }}" class="carousel slide h-100" data-bs-ride="carousel">
-                <div class="carousel-inner h-100 ratio ratio-16x9 ratio-lg-unset">
+          {{-- 🖼️ الصورة clickable --}}
+          <div class="car-carousel-container position-relative flex-shrink-0">
+            <a href="{{ route('car.detail', $car->id) }}" class="d-block w-100 h-100">
+              <div id="carCarousel-{{ $key }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
                   @if($images && count($images) > 0)
                     @foreach ($images as $index => $image)
                       <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                        <img src="{{ $image }}" class="d-block w-100 h-100" alt="Car Image" style="object-fit: cover;">
+                        <img src="{{ $image }}" class="d-block w-100" alt="Car Image">
                       </div>
                     @endforeach
                   @else
                     <div class="carousel-item active">
-                      <img src="{{ asset('carNotFound.jpg') }}" class="d-block w-100 h-100" alt="Car Not Found" style="object-fit: cover;">
+                      <img src="{{ asset('carNotFound.jpg') }}" class="d-block w-100" alt="Car Not Found">
                     </div>
                   @endif
                 </div>
-
-                {{-- Controls --}}
                 <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel-{{ $key }}" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon"></span>
                 </button>
@@ -423,58 +385,105 @@ function submitTopFilter() {
                   <span class="carousel-control-next-icon"></span>
                 </button>
               </div>
+            </a>
+
+            {{-- ❤️ Favorite & Share Buttons --}}
+            <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
+              @if(auth()->check())
+                @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
+                <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
+                  @csrf
+                  <button class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" type="submit" style="width:32px; height:32px; border-radius:50%;">
+                    <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+                  </button>
+                </form>
+              @else
+                <a href="{{ route('login') }}" class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" style="width:32px; height:32px; border-radius:50%;">
+                  <i class="fas fa-heart" style="color:#6c757d;"></i>
+                </a>
+              @endif
+
+              <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" target="_blank" class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" style="width:32px; height:32px; border-radius:50%;">
+                <i class="fas fa-share-alt" style="color:#25d366;"></i>
+              </a>
             </div>
+          </div>
 
-            {{-- التفاصيل --}}
-            <div class="car-details p-3 d-flex flex-column justify-content-between">
-              <div>
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <span class="car-price fw-bold h5">
-                    <img src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}" width="14" height="14" class="me-1">
-                    {{ number_format($car->listing_price) }}
-                  </span>
-                </div>
-
-                @if($car->listing_type || $car->listing_model || $car->listing_title)
-                  <h6 class="fw-bold text-truncate mb-2">
-                    {{ $car->listing_type ? $car->listing_type . ' • ' : '' }}
-                    {{ $car->listing_model ? $car->listing_model . ' • ' : '' }}
-                    {{ $car->listing_title ? Str::limit($car->listing_title, 40) : '' }}
-                  </h6>
-                @endif
-
-                @if($car->car_type || $car->feautures_gear || $car->features_fuel_type)
-                  <p class="text-muted mb-2 small">
-                    {{ $car->car_type ? $car->car_type . ' | ' : '' }}
-                    {{ $car->feautures_gear ? $car->feautures_gear . ' | ' : '' }}
-                    {{ $car->features_fuel_type ?? '' }}
-                  </p>
-                @endif
-
-                <ul class="list-unstyled d-flex flex-wrap small text-muted mb-2">
-                  @if($car->listing_year)
-                    <li class="me-3"><i class="fas fa-calendar-alt me-1"></i>{{ $car->listing_year }}</li>
-                  @endif
-                  @if($car->mileage)
-                    <li class="me-3"><i class="fas fa-tachometer-alt me-1"></i>{{ number_format($car->mileage) }} km</li>
-                  @endif
-                  @if($car->steering_side)
-                    <li class="me-3"><i class="fas fa-steering-wheel me-1"></i>{{ $car->steering_side }}</li>
-                  @endif
-                  @if($car->regional_specs)
-                    <li><i class="fas fa-globe-asia me-1"></i>{{ $car->regional_specs }}</li>
-                  @endif
-                </ul>
+          {{-- التفاصيل --}}
+          <div class="car-details p-3 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="car-price fw-bold h5">
+                  <img src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}" width="14" height="14" class="me-1">
+                  {{ number_format($car->listing_price) }}
+                </span>
               </div>
 
-              <p class="small text-muted mb-0">
-                <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $car->city ?? 'Dubai' }}, UAE
-              </p>
+              @if($car->listing_type || $car->listing_model || $car->listing_title)
+                <h6 class="fw-bold text-truncate mb-2">
+                  {{ $car->listing_type ? $car->listing_type . ' • ' : '' }}
+                  {{ $car->listing_model ? $car->listing_model . ' • ' : '' }}
+                  {{ $car->listing_title ? Str::limit($car->listing_title, 40) : '' }}
+                </h6>
+              @endif
+
+              @if($car->car_type || $car->feautures_gear || $car->features_fuel_type)
+                <p class="text-muted mb-2 small">
+                  {{ $car->car_type ? $car->car_type . ' | ' : '' }}
+                  {{ $car->feautures_gear ? $car->feautures_gear . ' | ' : '' }}
+                  {{ $car->features_fuel_type ?? '' }}
+                </p>
+              @endif
+
+              <ul class="list-unstyled d-flex flex-wrap small text-muted mb-2">
+                @if($car->listing_year)
+                  <li class="me-3"><i class="fas fa-calendar-alt me-1"></i>{{ $car->listing_year }}</li>
+                @endif
+                @if($car->mileage)
+                  <li class="me-3"><i class="fas fa-tachometer-alt me-1"></i>{{ number_format($car->mileage) }} km</li>
+                @endif
+                @if($car->steering_side)
+                  <li class="me-3"><i class="fas fa-steering-wheel me-1"></i>{{ $car->steering_side }}</li>
+                @endif
+                @if($car->regional_specs)
+                  <li><i class="fas fa-globe-asia me-1"></i>{{ $car->regional_specs }}</li>
+                @endif
+              </ul>
+
+              
             </div>
 
-          </div>
+            <p class="small text-muted mb-0 mt-2">
+              <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $car->city ?? 'Dubai' }}, UAE
+            </p>
+         {{-- Enhanced Action Buttons --}}
+<div class="action d-flex gap-2 mt-2">
+    <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="text-decoration-none flex-grow-1">
+        <button class="btn btn-outline-success rounded-4 w-100">
+            <i class="fab fa-whatsapp me-1"></i>
+        </button>
+    </a>
+
+    @if($os == 'Android' || $os == 'iOS')
+        <a href="tel:{{ $car->user->phone }}" class="text-decoration-none flex-grow-1">
+            <button class="btn btn-outline-danger rounded-4 w-100">
+                <i class="fas fa-phone me-1"></i> 
+            </button>
         </a>
+    @else
+        <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="text-decoration-none flex-grow-1">
+            <button class="btn btn-outline-danger rounded-4 w-100">
+                <i class="fas fa-phone me-1"></i> 
+            </button>
+        </a>
+    @endif
+</div>
+
+          </div>
+
+        </div>
       </div>
+
     @empty
       <p class="text-center text-muted mt-4">No cars found matching your criteria.</p>
     @endforelse
@@ -482,10 +491,14 @@ function submitTopFilter() {
 </div>
 
 <style>
+/* ================= Car Card Base ================= */
 .car-card {
   background-color: #fff;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .hover-card:hover {
@@ -493,10 +506,43 @@ function submitTopFilter() {
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
+/* Carousel */
 .car-carousel-container {
   width: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
 }
 
+.car-carousel-container img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Details */
+.car-details {
+  padding: 1rem;
+}
+
+/* Action Buttons */
+.action {
+    display: flex;
+    gap: 0.5rem; /* spacing between buttons */
+}
+
+.action a {
+    flex: 1; /* make buttons equal width */
+}
+
+.action button {
+    white-space: nowrap;
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+}
+
+
+/* Desktop */
 @media (min-width: 992px) {
   .car-card {
     flex-direction: row;
@@ -506,27 +552,29 @@ function submitTopFilter() {
     width: 45%;
     height: 100%;
   }
-  .car-carousel-container img {
-    height: 100%;
-    object-fit: cover;
-  }
   .car-details {
     width: 55%;
     padding: 1.2rem 1.5rem;
   }
 }
 
+/* Mobile */
 @media (max-width: 991px) {
   .car-card {
     flex-direction: column;
+    height: auto;
   }
   .car-carousel-container {
     width: 100%;
+    height: auto;
+    margin-bottom: 1rem;
   }
   .car-details {
     padding: 1rem;
   }
 }
+
+
 </style>
 
 
@@ -536,9 +584,197 @@ function submitTopFilter() {
 
 
 
-    <div class="d-flex justify-content-center mt-4">
-        {{ $carlisting->onEachSide(1)->links('pagination::bootstrap-5') }}
+
+
+@php
+  use Illuminate\Pagination\LengthAwarePaginator;
+@endphp
+
+@if ($carlisting instanceof LengthAwarePaginator && $carlisting->hasPages())
+  @php
+    $current = $carlisting->currentPage();
+    $last = $carlisting->lastPage();
+    $maxFull = 10; // if pages <= this -> show all pages
+    $window = 2;   // pages to show around current when condensing
+    // build pages array to render
+    $pages = [];
+
+    if ($last <= $maxFull) {
+        for ($p = 1; $p <= $last; $p++) {
+            $pages[] = $p;
+        }
+    } else {
+        // always show first 2
+        $pages[] = 1;
+        $pages[] = 2;
+
+        // determine left and right window
+        $start = max(3, $current - $window);
+        $end = min($last - 2, $current + $window);
+
+        if ($start > 3) {
+            $pages[] = '...';
+        } else {
+            // include 3 if window touches
+            for ($p = 3; $p < $start; $p++) $pages[] = $p;
+        }
+
+        for ($p = $start; $p <= $end; $p++) $pages[] = $p;
+
+        if ($end < $last - 2) {
+            $pages[] = '...';
+        } else {
+            for ($p = $end + 1; $p <= $last - 2; $p++) $pages[] = $p;
+        }
+
+        // always show last 2
+        $pages[] = $last - 1;
+        $pages[] = $last;
+
+        // remove duplicates while preserving order
+        $pages = array_values(array_unique($pages));
+    }
+  @endphp
+
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="custom-pagination d-flex justify-content-center align-items-center flex-wrap">
+
+      {{-- Previous --}}
+      @if ($carlisting->onFirstPage())
+        <li class="disabled"><span class="page-btn" aria-hidden="true">‹</span></li>
+      @else
+        <li><a href="{{ $carlisting->previousPageUrl() }}" class="page-btn" rel="prev" aria-label="Previous">‹</a></li>
+      @endif
+
+      {{-- Page Numbers --}}
+      @foreach ($pages as $p)
+        @if ($p === '...')
+          <li><span class="page-btn dots">…</span></li>
+        @else
+          @php $p = (int) $p; @endphp
+          @if ($p === $current)
+            <li><span class="page-btn active" aria-current="page">{{ $p }}</span></li>
+          @else
+            <li><a href="{{ $carlisting->url($p) }}" class="page-btn" aria-label="Go to page {{ $p }}">{{ $p }}</a></li>
+          @endif
+        @endif
+      @endforeach
+
+      {{-- Next --}}
+      @if ($carlisting->hasMorePages())
+        <li><a href="{{ $carlisting->nextPageUrl() }}" class="page-btn" rel="next" aria-label="Next">›</a></li>
+      @else
+        <li class="disabled"><span class="page-btn" aria-hidden="true">›</span></li>
+      @endif
+    </ul>
+  </nav>
+
+  {{-- Page Info --}}
+  <div class="d-flex justify-content-center mt-3">
+    <div class="page-info text-center" role="status" aria-live="polite">
+      Page <strong>{{ $carlisting->currentPage() }}</strong> of <strong>{{ $carlisting->lastPage() }}</strong>
     </div>
+  </div>
+@endif
+
+<style>
+/* container */
+.custom-pagination {
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+/* item */
+.custom-pagination li {
+  display: inline-block;
+}
+
+/* buttons */
+.page-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 50px; /* pill */
+  font-weight: 600;
+  text-decoration: none;
+  color: #760e13;           /* primary color */
+  background-color: #fff;
+  border: 1px solid #e6e6e6;
+  transition: transform .18s ease, background-color .18s ease, color .18s ease, box-shadow .18s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+}
+
+/* hover */
+.page-btn:hover {
+  background-color: #760e13;
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(118,14,19,0.22);
+}
+
+/* active */
+.page-btn.active {
+  background-color: #760e13;
+  color: #fff;
+  border-color: #760e13;
+  box-shadow: 0 6px 14px rgba(118,14,19,0.28);
+}
+
+/* disabled/dots */
+.custom-pagination li.disabled .page-btn,
+.page-btn.dots {
+  background: #f7f7f7;
+  color: #888;
+  border-color: #eee;
+  transform: none;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+/* page info pill */
+.page-info {
+  color: #760e13;
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: #fff;
+  padding: 6px 16px;
+  border-radius: 50px;
+  border: 1px solid #eee;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  display: inline-block;
+}
+
+/* responsive sizing */
+@media (max-width: 576px) {
+  .page-btn { min-width: 32px; height: 32px; font-size: 0.87rem; padding: 0 6px; }
+  .custom-pagination { gap: 6px; padding: 6px 8px; }
+}
+
+/* make container horizontally scrollable instead of wrapping (optional) */
+/* Uncomment if you prefer a single-line horizontal scroll on mobile:
+.custom-pagination {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+.custom-pagination::-webkit-scrollbar { display: none; }
+*/
+</style>
+
+
+
+
+
 </div>
 
 <div class="modal " id="moreFiltersModal" tabindex="-1" aria-labelledby="moreFiltersModalLabel" aria-hidden="true">

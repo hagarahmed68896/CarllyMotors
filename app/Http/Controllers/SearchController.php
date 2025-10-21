@@ -35,64 +35,81 @@ class SearchController extends Controller
     }
 
     // ================= CAR SEARCH =================
-    protected function searchCars(Request $request, $query)
-    {
-        $cars = CarListingModel::with(['user', 'images']);
+protected function searchCars(Request $request, $query)
+{
+    // ===== إنشاء الاستعلام الأساسي مع العلاقات =====
+    $cars = CarListingModel::with(['user', 'images']);
 
-        if ($query) {
-            $cars->where(function($q) use ($query) {
-                $q->where('listing_type', 'like', "%{$query}%")
-                  ->orWhere('listing_model', 'like', "%{$query}%")
-                  ->orWhere('car_color', 'like', "%{$query}%");
-            });
-        }
-
-        // ==== APPLY FILTERS ====
-        foreach ([
-            'make' => 'listing_type',
-            'model' => 'listing_model',
-            'city' => 'city',
-            'body_type' => 'body_type',
-            'regionalSpecs' => 'regional_specs',
-            'year' => 'listing_year'
-        ] as $input => $column) {
-            if ($request->filled($input)) {
-                $cars->where($column, $request->$input);
-            }
-        }
-
-        // Price filter
-        if ($request->filled('priceFrom') && $request->filled('priceTo')) {
-            $cars->whereBetween('listing_price', [$request->priceFrom, $request->priceTo]);
-        }
-
-        // Car type filter
-        if ($request->filled('car_type')) {
-            if ($request->car_type === 'UsedOrNew') {
-                $cars->whereIn('car_type', ['Used', 'New']);
-            } else {
-                $cars->where('car_type', $request->car_type);
-            }
-        }
-
-        $carlisting = $cars->paginate(12)->withQueryString();
-
-        // ==== LOAD SIDEBAR FILTERS ====
-        $cities        = CarListingModel::select('city')->distinct()->pluck('city');
-        $makes         = CarListingModel::select('listing_type')->distinct()->pluck('listing_type');
-        $models        = CarListingModel::select('listing_model')->distinct()->pluck('listing_model');
-        $years         = CarListingModel::select('listing_year')->distinct()->pluck('listing_year');
-        $bodyTypes     = CarListingModel::select('body_type')->distinct()->pluck('body_type');
-        $regionalSpecs = CarListingModel::select('regional_specs')->distinct()->pluck('regional_specs');
-        $minPrice      = CarListingModel::min('listing_price');
-        $maxPrice      = CarListingModel::max('listing_price');
-        $conditions    = CarListingModel::select('car_type')->distinct()->pluck('car_type');
-
-        return view('cars.index', compact(
-            'carlisting', 'cities', 'makes', 'models', 'years',
-            'bodyTypes', 'regionalSpecs', 'minPrice', 'maxPrice', 'conditions'
-        ));
+    // ===== البحث العام =====
+    if ($query) {
+        $cars->where(function($q) use ($query) {
+            $q->where('listing_type', 'like', "%{$query}%")
+              ->orWhere('listing_model', 'like', "%{$query}%")
+              ->orWhere('car_color', 'like', "%{$query}%");
+        });
     }
+
+    // ===== تطبيق الفلاتر من الـ request =====
+    $filters = [
+        'make' => 'listing_type',
+        'model' => 'listing_model',
+        'city' => 'city',
+        'body_type' => 'body_type',
+        'regionalSpecs' => 'regional_specs',
+        'year' => 'listing_year'
+    ];
+
+    foreach ($filters as $input => $column) {
+        if ($request->filled($input)) {
+            $cars->where($column, $request->$input);
+        }
+    }
+
+    // ===== فلتر السعر =====
+    if ($request->filled('priceFrom') && $request->filled('priceTo')) {
+        $cars->whereBetween('listing_price', [$request->priceFrom, $request->priceTo]);
+    }
+
+    // ===== فلتر حالة السيارة (Used / New) =====
+    if ($request->filled('car_type')) {
+        if ($request->car_type === 'UsedOrNew') {
+            $cars->whereIn('car_type', ['Used', 'New']);
+        } else {
+            $cars->where('car_type', $request->car_type);
+        }
+    }
+
+    // ===== تنفيذ الباجينيشن =====
+    $carlisting = $cars->paginate(12)->withQueryString();
+
+    // ===== تجهيز البيانات للفلتر في الشريط الجانبي =====
+    $cities        = CarListingModel::select('city')->distinct()->pluck('city');
+    $makes         = CarListingModel::select('listing_type')->distinct()->pluck('listing_type');
+    $models        = CarListingModel::select('listing_model')->distinct()->pluck('listing_model');
+    $years         = CarListingModel::select('listing_year')->distinct()->pluck('listing_year');
+    $bodyTypes     = CarListingModel::select('body_type')->distinct()->pluck('body_type');
+    $regionalSpecs = CarListingModel::select('regional_specs')->distinct()->pluck('regional_specs');
+    $conditions    = CarListingModel::select('car_type')->distinct()->pluck('car_type');
+
+    // ===== أسعار السيارات =====
+    $minPrice = CarListingModel::min('listing_price');
+    $maxPrice = CarListingModel::max('listing_price');
+
+    // ===== قائمة الـ brands =====
+    $brands = CarListingModel::select('listing_type')->distinct()->get();
+
+    // ===== العلامة المختارة حاليا =====
+    $currentMake = $request->make;
+
+    // ===== إعادة العرض مع جميع البيانات =====
+    return view('cars.index', compact(
+        'carlisting',
+        'cities', 'makes', 'models', 'years',
+        'bodyTypes', 'regionalSpecs', 'minPrice', 'maxPrice', 'conditions',
+        'brands', 'currentMake'
+    ));
+}
+
 
     // ================= SPARE PARTS SEARCH =================
 public function searchSpareParts(Request $request)

@@ -256,7 +256,7 @@ use Illuminate\Support\Str;
 
                             <a href="https://wa.me/?text={{ urlencode('Check this workshop: ' . $shareUrl) }}" 
                                target="_blank" 
-                               class="btn btn-outline-primary flex-fill mx-1 rounded-3">
+                               class="btn btn-outline-info flex-fill mx-1 rounded-3">
                                 <i class="fa fa-share"></i>
                             </a>
                         </div>
@@ -267,6 +267,191 @@ use Illuminate\Support\Str;
             <p class="text-center text-muted mt-4">No workshops found.</p>
         @endforelse
     </div>
+    @php
+  use Illuminate\Pagination\LengthAwarePaginator;
+@endphp
+
+@if ($workshops instanceof LengthAwarePaginator && $workshops->hasPages())
+  @php
+    $current = $workshops->currentPage();
+    $last = $workshops->lastPage();
+    $maxFull = 50; // if pages <= this -> show all pages
+    $window = 2;   // pages to show around current when condensing
+    // build pages array to render
+    $pages = [];
+
+    if ($last <= $maxFull) {
+        for ($p = 1; $p <= $last; $p++) {
+            $pages[] = $p;
+        }
+    } else {
+        // always show first 2
+        $pages[] = 1;
+        $pages[] = 2;
+
+        // determine left and right window
+        $start = max(3, $current - $window);
+        $end = min($last - 2, $current + $window);
+
+        if ($start > 3) {
+            $pages[] = '...';
+        } else {
+            // include 3 if window touches
+            for ($p = 3; $p < $start; $p++) $pages[] = $p;
+        }
+
+        for ($p = $start; $p <= $end; $p++) $pages[] = $p;
+
+        if ($end < $last - 2) {
+            $pages[] = '...';
+        } else {
+            for ($p = $end + 1; $p <= $last - 2; $p++) $pages[] = $p;
+        }
+
+        // always show last 2
+        $pages[] = $last - 1;
+        $pages[] = $last;
+
+        // remove duplicates while preserving order
+        $pages = array_values(array_unique($pages));
+    }
+  @endphp
+
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="custom-pagination d-flex justify-content-center align-items-center flex-wrap">
+
+      {{-- Previous --}}
+      @if ($workshops->onFirstPage())
+        <li class="disabled"><span class="page-btn" aria-hidden="true">‹</span></li>
+      @else
+        <li><a href="{{ $workshops->previousPageUrl() }}" class="page-btn" rel="prev" aria-label="Previous">‹</a></li>
+      @endif
+
+      {{-- Page Numbers --}}
+      @foreach ($pages as $p)
+        @if ($p === '...')
+          <li><span class="page-btn dots">…</span></li>
+        @else
+          @php $p = (int) $p; @endphp
+          @if ($p === $current)
+            <li><span class="page-btn active" aria-current="page">{{ $p }}</span></li>
+          @else
+            <li><a href="{{ $workshops->url($p) }}" class="page-btn" aria-label="Go to page {{ $p }}">{{ $p }}</a></li>
+          @endif
+        @endif
+      @endforeach
+
+      {{-- Next --}}
+      @if ($workshops->hasMorePages())
+        <li><a href="{{ $workshops->nextPageUrl() }}" class="page-btn" rel="next" aria-label="Next">›</a></li>
+      @else
+        <li class="disabled"><span class="page-btn" aria-hidden="true">›</span></li>
+      @endif
+    </ul>
+  </nav>
+
+  {{-- Page Info --}}
+  <div class="d-flex justify-content-center mt-3">
+    <div class="page-info text-center" role="status" aria-live="polite">
+      Page <strong>{{ $workshops->currentPage() }}</strong> of <strong>{{ $workshops->lastPage() }}</strong>
+    </div>
+  </div>
+@endif
+
+<style>
+/* container */
+.custom-pagination {
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+/* item */
+.custom-pagination li {
+  display: inline-block;
+}
+
+/* buttons */
+.page-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 50px; /* pill */
+  font-weight: 600;
+  text-decoration: none;
+  color: #760e13;           /* primary color */
+  background-color: #fff;
+  border: 1px solid #e6e6e6;
+  transition: transform .18s ease, background-color .18s ease, color .18s ease, box-shadow .18s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+}
+
+/* hover */
+.page-btn:hover {
+  background-color: #760e13;
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(118,14,19,0.22);
+}
+
+/* active */
+.page-btn.active {
+  background-color: #760e13;
+  color: #fff;
+  border-color: #760e13;
+  box-shadow: 0 6px 14px rgba(118,14,19,0.28);
+}
+
+/* disabled/dots */
+.custom-pagination li.disabled .page-btn,
+.page-btn.dots {
+  background: #f7f7f7;
+  color: #888;
+  border-color: #eee;
+  transform: none;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+/* page info pill */
+.page-info {
+  color: #760e13;
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: #fff;
+  padding: 6px 16px;
+  border-radius: 50px;
+  border: 1px solid #eee;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  display: inline-block;
+}
+
+/* responsive sizing */
+@media (max-width: 576px) {
+  .page-btn { min-width: 32px; height: 32px; font-size: 0.87rem; padding: 0 6px; }
+  .custom-pagination { gap: 6px; padding: 6px 8px; }
+}
+
+/* make container horizontally scrollable instead of wrapping (optional) */
+/* Uncomment if you prefer a single-line horizontal scroll on mobile:
+.custom-pagination {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+.custom-pagination::-webkit-scrollbar { display: none; }
+*/
+</style>
+
 </div>
 
 

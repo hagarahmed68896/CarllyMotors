@@ -115,7 +115,7 @@
                     <input type="search" 
                         name="q" 
                         class="form-control border-0" 
-                        placeholder="Search cars, spare parts, workshops..."
+                        placeholder="Search "
                         value="{{ request('q') }}" 
                         style="box-shadow: none;">
                     <button type="submit" class="btn px-4" style="background-color:#5a0b0f; color:#fff; border-radius:0;">
@@ -140,53 +140,81 @@
                             </a>
                         @endguest
                     </li>
+ 
+                 <li class="nav-item dropdown position-static">
+  <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" id="dropdownMegaMenu" role="button"
+      data-bs-toggle="dropdown" aria-expanded="false">
+      Browse Cars
+  </a>
 
-                    <li class="nav-item dropdown position-static">
-                        <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" id="dropdownMegaMenu" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            Browse Cars
-                        </a>
+  <div class="dropdown-menu p-4 shadow border-0 mt-2"
+      aria-labelledby="dropdownMegaMenu"
+      style="max-height: 400px; overflow-y: auto; border-radius: 12px; min-width: 650px;">
+      
+      <div class="row g-4">
 
-                        <div class="dropdown-menu p-4 shadow border-0 mt-2"
-                            aria-labelledby="dropdownMegaMenu"
-                            style="max-height: 400px; overflow-y: auto; border-radius: 12px; min-width: 650px;">
-                            <div class="row g-4">
-                                <div class="col-md-4 border-end">
-                                    <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Model</h6>
-                                    <ul class="list-unstyled mb-0">
-                                        <li><a class="dropdown-item py-1 small" href="#">Toyota</a></li>
-                                        <li><a class="dropdown-item py-1 small" href="#">Honda</a></li>
-                                        <li><a class="dropdown-item py-1 small" href="#">BMW</a></li>
-                                    </ul>
-                                    <div class="mt-2">
-                                        <a href="#" class="small fw-semibold text-decoration-none text-muted">Show All Models →</a>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 border-end">
-                                    <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Year</h6>
-                                    <ul class="list-unstyled mb-0">
-                                        <li><a class="dropdown-item py-1 small" href="#">2024</a></li>
-                                        <li><a class="dropdown-item py-1 small" href="#">2023</a></li>
-                                        <li><a class="dropdown-item py-1 small" href="#">2022</a></li>
-                                    </ul>
-                                    <div class="mt-2">
-                                        <a href="#" class="small fw-semibold text-decoration-none text-muted">Show All Years →</a>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Type</h6>
-                                    <ul class="list-unstyled mb-0">
-                                        <li><a class="dropdown-item py-1 small" href="#">Sedan</a></li>
-                                        <li><a class="dropdown-item py-1 small" href="#">SUV</a></li>
-                                        <li><a class="dropdown-item py-1 small" href="#">Truck</a></li>
-                                    </ul>
-                                    <div class="mt-2">
-                                        <a href="#" class="small fw-semibold text-decoration-none text-muted">Show All Types →</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+          {{-- ✅ By Model --}}
+          <div class="col-md-4 border-end">
+              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Model</h6>
+              <ul class="list-unstyled mb-0">
+                  @foreach($car_models->take(10) as $model)
+                      <li>
+                          <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['model' => $model]) }}">
+                              {{ $model }}
+                          </a>
+                      </li>
+                  @endforeach
+              </ul>
+              <div class="mt-2">
+                  <a href="{{ route('cars.index', ['type' => 'car_models']) }}" class="small fw-semibold text-decoration-none text-muted">
+                      Show All Models →
+                  </a>
+              </div>
+          </div>
+
+          {{-- ✅ By Year --}}
+          <div class="col-md-4 border-end">
+              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Year</h6>
+              <ul class="list-unstyled mb-0">
+              @foreach(collect($years)->take(10) as $year)
+    <li>
+        <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['year' => $year]) }}">
+            {{ $year }}
+        </a>
+    </li>
+@endforeach
+
+              </ul>
+              <div class="mt-2">
+                  <a href="{{ route('cars.index', ['type' => 'years']) }}" class="small fw-semibold text-decoration-none text-muted">
+                      Show All Years →
+                  </a>
+              </div>
+          </div>
+
+          {{-- ✅ By Type --}}
+          <div class="col-md-4">
+              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Type</h6>
+              <ul class="list-unstyled mb-0">
+                  @foreach($bodyTypes->take(10) as $type)
+                      <li>
+                          <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['type' => $type]) }}">
+                              {{ $type }}
+                          </a>
+                      </li>
+                  @endforeach
+              </ul>
+              <div class="mt-2">
+                  <a href="{{ route('cars.index', ['type' => 'bodyTypes']) }}" class="small fw-semibold text-decoration-none text-muted">
+                      Show All Types →
+                  </a>
+              </div>
+          </div>
+
+      </div>
+  </div>
+</li>
+
                 </ul>
 
                 @guest

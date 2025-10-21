@@ -104,7 +104,7 @@ public function index(Request $request)
     $carlisting = $carlisting->orderBy(...$sortOptions[$sortBy]);
 
     // ✅ Apply pagination
-    $carlisting = $carlisting->paginate($perPage);
+    $carlisting = $carlisting->paginate(8);
 
     // ✅ Get image per car
     $carlisting->setCollection(
@@ -135,18 +135,6 @@ public function index(Request $request)
     ));
 }
 
-
-//     public function search(Request $request)
-// {
-//     $query = $request->get('q');
-
-//     // مثال: بحث في السيارات وقطع الغيار والورش
-//     $cars = \App\Models\Car::where('name', 'like', "%{$query}%")->get();
-//     $spareParts = \App\Models\SparePart::where('name', 'like', "%{$query}%")->get();
-//     $workshops = \App\Models\Workshop::where('name', 'like', "%{$query}%")->get();
-
-//     return view('search-results', compact('query', 'cars', 'spareParts', 'workshops'));
-// }
 
 
     public function filters(Request $request)

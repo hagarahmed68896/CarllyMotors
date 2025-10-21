@@ -27,5 +27,12 @@ class CarDealer extends Model
     public function user() {
         return $this->belongsTo(allUsersModel::class,'user_id');
     }
+
+ public function spareParts()
+{
+    return $this->hasMany(SparePart::class, 'user_id', 'user_id');
+}
+
+
  
 }
