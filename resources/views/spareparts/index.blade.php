@@ -369,11 +369,17 @@ function filterCategories(filter) {
 
             <div class="actions-dealer d-flex align-items-center mt-2">
                 @if ($phone !== 'N/A')
-                    <a href="https://wa.me/{{ $phone }}" target="_blank" class="action-link">
-                        <button class="btn btn-outline-success action-btn rounded-4">
-                            <i class="fab fa-whatsapp"></i>
-                        </button>
-                    </a>
+               <a href="https://wa.me/{{ $phone }}?text={{ urlencode(
+    'Hello, I’m interested in buying spare parts from your dealership. Could you please share more details about available parts?' . "\n\n" .
+    'Dealer Name: ' . $dealer->company_name . "\n" .
+    'Address: ' . ($dealer->company_address ?? 'Not specified') . "\n\n" 
+) }}"
+target="_blank"
+class="text-decoration-none flex-grow-1">
+    <button class="btn btn-outline-success w-100 action-btn rounded-4">
+        <i class="fab fa-whatsapp"></i>
+    </button>
+</a>
 
                     <a href="tel:{{ $phone }}" class="action-link">
                         <button class="btn btn-outline-danger action-btn rounded-4">

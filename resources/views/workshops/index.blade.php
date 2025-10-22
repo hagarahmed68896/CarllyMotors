@@ -231,11 +231,19 @@ use Illuminate\Support\Str;
                         </div>
 
                         <div class="d-flex justify-content-between mt-3">
-                            <a href="https://wa.me/{{ $workshop->user?->phone }}" 
-                               target="_blank" 
-                               class="btn btn-outline-success flex-fill mx-1 rounded-3">
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
+                        <a href="https://wa.me/{{ $workshop->user->phone }}?text={{ urlencode(
+    'Hello, I’m interested in your workshop services. Are you still available for maintenance or repair work?' . "\n\n" .
+    'Workshop Name: ' . $workshop->workshop_name . "\n" .
+    'Address: ' . ($workshop->address ?? 'Not specified') . "\n\n" .
+    'View Workshop on Website: ' . $shareUrl
+) }}"
+   target="_blank"
+   class="text-decoration-none flex-grow-1">
+    <button class="btn btn-outline-success w-100 action-btn rounded-4">
+        <i class="fab fa-whatsapp"></i>
+    </button>
+</a>
+
 
                             @php
                                 $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);

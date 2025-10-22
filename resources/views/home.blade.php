@@ -206,14 +206,23 @@ h5, p {
             </a>
         @endif
 
-        <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" 
-           target="_blank" 
-           title="Share via WhatsApp"
-           aria-label="Share via WhatsApp"
-           class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-           style="width: 32px; height: 32px; border-radius: 50%;">
-            <i class="fas fa-share-alt" style="color: #25d366;"></i>
-        </a>
+      <a href="https://wa.me/?text={{ urlencode(
+    'Check out this car on Carlly Motors:' . "\n\n" .
+    $car->listing_make . ' • ' . $car->listing_model . "\n" .
+    'Year: ' . $car->listing_year . "\n" .
+    'Price: AED ' . number_format($car->listing_price) . "\n" .
+    'Fuel Type: ' . $car->features_fuel_type . "\n" .
+    'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
+    'View full details here: ' . route('car.detail', $car->id)
+) }}" 
+target="_blank" 
+title="Share via WhatsApp"
+aria-label="Share via WhatsApp"
+class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+style="width: 32px; height: 32px; border-radius: 50%;">
+    <i class="fas fa-share-alt" style="color: #25d366;"></i>
+</a>
+
     </div>
                             </div>
 
@@ -251,11 +260,23 @@ h5, p {
 
                            <!-- Enhanced Action Buttons -->
 <div class="d-flex justify-content-between gap-2 flex-wrap text-center mt-2" style="width: 100%;">
-    <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="flex-fill text-decoration-none">
-        <button class="btn btn-outline-success w-100 rounded-4">
-            <i class="fab fa-whatsapp me-1"></i>
-        </button>
-    </a>
+ <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode(
+    'Hi, I would like to ask if this car is still available:' . "\n\n" .
+    $car->listing_type . ' • ' . $car->listing_model . "\n" .
+    'Year: ' . $car->listing_year . "\n" .
+    'Price: AED ' . number_format($car->listing_price) . "\n" .
+    'Fuel Type: ' . $car->features_fuel_type . "\n" .
+    'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
+    'View full details here: ' . route('car.detail', $car->id)
+) }}"
+target="_blank"
+class="flex-fill text-decoration-none">
+    <button class="btn btn-outline-success w-100 rounded-4">
+        <i class="fab fa-whatsapp me-1"></i>
+    </button>
+</a>
+
+
 
     @if($os == 'Android' || $os == 'iOS')
         <a href="tel:{{ $car->user->phone }}" class="flex-fill text-decoration-none">
@@ -369,11 +390,18 @@ h5, p {
 
 <!-- Dealer Actions -->
 <div class="actions-dealer d-flex justify-content-between align-items-center mt-2">
-    <a href="https://wa.me/{{ $phone }}" target="_blank" class="text-decoration-none flex-grow-1">
-        <button class="btn btn-outline-success w-100 action-btn rounded-4">
-            <i class="fab fa-whatsapp"></i>
-        </button>
-    </a>
+<a href="https://wa.me/{{ $phone }}?text={{ urlencode(
+    'Hello, I’m interested in buying spare parts from your dealership. Could you please share more details about available parts?' . "\n\n" .
+    'Dealer Name: ' . $dealer->company_name . "\n" .
+    'Address: ' . ($dealer->company_address ?? 'Not specified') . "\n\n" 
+) }}"
+target="_blank"
+class="text-decoration-none flex-grow-1">
+    <button class="btn btn-outline-success w-100 action-btn rounded-4">
+        <i class="fab fa-whatsapp"></i>
+    </button>
+</a>
+
 
     @if ($os == 'Android' || $os == 'iOS')
         <a href="tel:{{ $phone }}" class="text-decoration-none flex-grow-1">
@@ -389,12 +417,21 @@ h5, p {
         </a>
     @endif
 
-    <a href="https://wa.me/?text={{ urlencode('Check out this dealer: ' . $shareUrl) }}" 
-       target="_blank" class="text-decoration-none flex-grow-1">
-        <button class="btn btn-outline-info w-100 action-btn rounded-4">
-            <i class="fas fa-share-alt"></i>
-        </button>
-    </a>
+<a href="https://wa.me/?text={{ urlencode(
+    'Check out this spare parts dealer on Carlly Motors:' . "\n\n" .
+    'Dealer Name: ' . $dealer->company_name . "\n" .
+    'Address: ' . ($dealer->company_address ?? 'Not specified') . "\n" .
+    'City: ' . ($dealer->user->city ?? 'N/A') . "\n" .
+    'Contact: ' . $dealer->user->phone . "\n\n" .
+    'View full dealer details here: ' . $shareUrl
+) }}" 
+target="_blank" 
+class="text-decoration-none flex-grow-1">
+    <button class="btn btn-outline-info w-100 action-btn rounded-4" title="Share via WhatsApp">
+        <i class="fas fa-share-alt"></i>
+    </button>
+</a>
+
 </div>
 
 <style>
@@ -607,11 +644,19 @@ h5, p {
 
                               <!-- Workshop Actions -->
 <div class="actions-workshop d-flex justify-content-between align-items-center mt-2">
-    <a href="https://wa.me/{{ $workshop->user->phone }}" target="_blank" class="text-decoration-none flex-grow-1">
-        <button class="btn btn-outline-success w-100 action-btn rounded-4">
-            <i class="fab fa-whatsapp"></i>
-        </button>
-    </a>
+ <a href="https://wa.me/{{ $workshop->user->phone }}?text={{ urlencode(
+    'Hello, I’m interested in your workshop services. Are you still available for maintenance or repair work?' . "\n\n" .
+    'Workshop Name: ' . $workshop->workshop_name . "\n" .
+    'Address: ' . ($workshop->address ?? 'Not specified') . "\n\n" .
+    'View Workshop on Website: ' . $shareUrl
+) }}"
+   target="_blank"
+   class="text-decoration-none flex-grow-1">
+    <button class="btn btn-outline-success w-100 action-btn rounded-4">
+        <i class="fab fa-whatsapp"></i>
+    </button>
+</a>
+
 
     <a href="tel:{{ $workshop->user->phone }}" class="text-decoration-none flex-grow-1">
         <button class="btn btn-outline-danger w-100 action-btn rounded-4">

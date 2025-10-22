@@ -130,6 +130,8 @@
         }
     </style>
 </head>
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 <div class="container py-4">
 
@@ -148,44 +150,109 @@
         <div class="col-lg-8">
 
             <!-- Carousel -->
-            <div class="card shadow-sm border-0 rounded-3 mb-4 overflow-hidden">
-                <div id="carCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        @if($images && count($images) > 0)
-                            @foreach ($images as $index => $image)
-                                <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                                    <img src="{{ $image }}" alt="Car Image">
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="carousel-item active">
-                                <img src="{{ asset('carNotFound.jpg') }}" alt="Car Not Found">
-                            </div>
-                        @endif
-                    </div>
+           <div class="card shadow-sm border-0 rounded-3 mb-4 overflow-hidden">
+  <div class="swiper carSwiper rounded-3">
+    <div class="swiper-wrapper">
+      @if($images && count($images) > 0)
+        @foreach ($images as $image)
+          <div class="swiper-slide">
+            <img src="{{ $image }}" alt="Car Image">
+          </div>
+        @endforeach
+      @else
+        <div class="swiper-slide">
+          <img src="{{ asset('carNotFound.jpg') }}" alt="Car Not Found">
+        </div>
+      @endif
+    </div>
 
-                    <!-- Controls -->
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    </button>
+    <!-- Navigation arrows -->
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
 
-                    <!-- Indicators -->
-                    @if($images && count($images) > 0)
-                        <div class="carousel-indicators mb-0 pb-3">
-                            @foreach ($images as $index => $image)
-                                <button type="button"
-                                        data-bs-target="#carCarousel"
-                                        data-bs-slide-to="{{ $index }}"
-                                        class="{{ $index == 0 ? 'active' : '' }}"
-                                        aria-label="Slide {{ $index + 1 }}"></button>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
+    <!-- Pagination dots -->
+    <div class="swiper-pagination"></div>
+  </div>
+</div>
+<style>
+.carSwiper {
+  width: 100%;
+  height: 500px; /* consistent height */
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.carSwiper .swiper-slide {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carSwiper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ✅ fill area completely */
+  object-position: center; /* keep car centered */
+  border-radius: 0;
+  transition: transform 0.4s ease;
+}
+
+.carSwiper img:hover {
+  transform: scale(1.03); /* smooth zoom */
+}
+
+/* Navigation arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Pagination dots */
+.swiper-pagination-bullet {
+  background: #fff;
+  opacity: 0.8;
+}
+.swiper-pagination-bullet-active {
+  background: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .carSwiper {
+    height: 400px;
+  }
+}
+@media (max-width: 576px) {
+  .carSwiper {
+    height: 300px;
+  }
+}
+</style>
+
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+  const swiper = new Swiper('.carSwiper', {
+    loop: true,
+    grabCursor: true,
+    centeredSlides: true,
+    spaceBetween: 10,
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+  });
+</script>
 
             <!-- Description -->
             <div class="card shadow-sm border-0 p-4">
@@ -282,28 +349,53 @@
 
                 <h6 class="fw-bold mt-4 mb-2">Contact Dealer</h6>
           <div class="d-flex gap-2">
-    <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="btn btn-outline-success flex-fill">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+ <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode(
+    'Hi, I would like to ask if this car is still available:' . "\n\n" .
+    $car->listing_type . ' • ' . $car->listing_model . "\n" .
+    'Year: ' . $car->listing_year . "\n" .
+    'Price: AED ' . number_format($car->listing_price) . "\n" .
+    'Fuel Type: ' . $car->features_fuel_type . "\n" .
+    'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
+    'View full details here: ' . route('car.detail', $car->id)
+) }}"
+target="_blank"
+class="flex-fill text-decoration-none">
+    <button class="btn btn-outline-success w-100 rounded-4">
+        <i class="fab fa-whatsapp me-1"></i> 
+    </button>
+</a>
+
 
     @php
         $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
     @endphp
 
     @if($isMobile)
-        <a href="tel:{{ $car->user?->phone }}" class="btn btn-outline-danger flex-fill">
+        <a href="tel:{{ $car->user?->phone }}" class="btn btn-outline-danger flex-fill rounded-4">
             <i class="fa fa-phone"></i>
         </a>
     @else
-        <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="btn btn-outline-danger flex-fill">
+        <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="btn btn-outline-danger flex-fill rounded-4">
             <i class="fa fa-phone"></i>
         </a>
     @endif
 
-    <a href="https://wa.me/?text={{ urlencode('Check this car: ' . route('car.detail', [Crypt::encrypt($car->id)])) }}"
-       target="_blank" class="btn btn-outline-primary flex-fill">
-        <i class="fa fa-share"></i>
-    </a>
+  <a href="https://wa.me/?text={{ urlencode(
+    'Check out this car on Carlly Motors:' . "\n\n" .
+    $car->listing_make . ' • ' . $car->listing_model . "\n" .
+    'Year: ' . $car->listing_year . "\n" .
+    'Price: AED ' . number_format($car->listing_price) . "\n" .
+    'Fuel Type: ' . $car->features_fuel_type . "\n" .
+    'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
+    'View full details here: ' . route('car.detail', $car->id)
+) }}" 
+target="_blank" 
+title="Share via WhatsApp"
+aria-label="Share via WhatsApp"
+class="btn btn-outline-primary flex-fill rounded-4">
+    <i class="fas fa-share-alt"></i>
+</a>
+
 </div>
 
             </div>

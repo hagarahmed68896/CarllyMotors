@@ -362,52 +362,126 @@ function submitTopFilter() {
         <div class="car-card shadow-sm rounded-4 overflow-hidden hover-card d-flex flex-column flex-lg-row">
 
           {{-- 🖼️ الصورة clickable --}}
-          <div class="car-carousel-container position-relative flex-shrink-0">
-            <a href="{{ route('car.detail', $car->id) }}" class="d-block w-100 h-100">
-              <div id="carCarousel-{{ $key }}" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                  @if($images && count($images) > 0)
-                    @foreach ($images as $index => $image)
-                      <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                        <img src="{{ $image }}" class="d-block w-100" alt="Car Image">
-                      </div>
-                    @endforeach
-                  @else
-                    <div class="carousel-item active">
-                      <img src="{{ asset('carNotFound.jpg') }}" class="d-block w-100" alt="Car Not Found">
-                    </div>
-                  @endif
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel-{{ $key }}" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon"></span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carCarousel-{{ $key }}" data-bs-slide="next">
-                  <span class="carousel-control-next-icon"></span>
-                </button>
-              </div>
-            </a>
-
-            {{-- ❤️ Favorite & Share Buttons --}}
-            <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
-              @if(auth()->check())
-                @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
-                <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
-                  @csrf
-                  <button class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" type="submit" style="width:32px; height:32px; border-radius:50%;">
-                    <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
-                  </button>
-                </form>
-              @else
-                <a href="{{ route('login') }}" class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" style="width:32px; height:32px; border-radius:50%;">
-                  <i class="fas fa-heart" style="color:#6c757d;"></i>
-                </a>
-              @endif
-
-              <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}" target="_blank" class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" style="width:32px; height:32px; border-radius:50%;">
-                <i class="fas fa-share-alt" style="color:#25d366;"></i>
-              </a>
+         <div class="car-carousel-container position-relative flex-shrink-0">
+  <a href="{{ route('car.detail', $car->id) }}" class="d-block w-100 h-100">
+    <div class="swiper carSwiper-{{ $key }} rounded-3">
+      <div class="swiper-wrapper">
+        @if($images && count($images) > 0)
+          @foreach ($images as $image)
+            <div class="swiper-slide">
+              <img src="{{ $image }}" alt="Car Image">
             </div>
+          @endforeach
+        @else
+          <div class="swiper-slide">
+            <img src="{{ asset('carNotFound.jpg') }}" alt="Car Not Found">
           </div>
+        @endif
+      </div>
+
+      <!-- Navigation arrows -->
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+
+      <!-- Pagination -->
+      <div class="swiper-pagination"></div>
+    </div>
+  </a>
+
+  <!-- ❤️ Favorite & Share Buttons -->
+  <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
+    @if(auth()->check())
+      @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
+      <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
+        @csrf
+        <button class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" type="submit" style="width:32px; height:32px; border-radius:50%;">
+          <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+        </button>
+      </form>
+    @else
+      <a href="{{ route('login') }}" class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" style="width:32px; height:32px; border-radius:50%;">
+        <i class="fas fa-heart" style="color:#6c757d;"></i>
+      </a>
+    @endif
+
+    <a href="https://wa.me/?text={{ urlencode(
+      'Check out this car on Carlly Motors:' . "\n\n" .
+      $car->listing_make . ' • ' . $car->listing_model . "\n" .
+      'Year: ' . $car->listing_year . "\n" .
+      'Price: AED ' . number_format($car->listing_price) . "\n" .
+      'Fuel Type: ' . $car->features_fuel_type . "\n" .
+      'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
+      'View full details here: ' . route('car.detail', $car->id)
+    ) }}" 
+    target="_blank"
+    title="Share via WhatsApp"
+    class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+    style="width: 32px; height: 32px; border-radius: 50%;">
+      <i class="fas fa-share-alt" style="color: #25d366;"></i>
+    </a>
+  </div>
+</div>
+
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<style>
+.carSwiper-{{ $key }} {
+  width: 100%;
+  aspect-ratio: 16 / 9; /* keeps a nice responsive proportion */
+  overflow: hidden;
+}
+
+.carSwiper-{{ $key }} img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ensures full coverage without black borders */
+  display: block;
+  border-radius: 10px;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #fff;
+  text-shadow: 0 0 5px rgba(0,0,0,0.6);
+}
+
+.swiper-pagination-bullet {
+  background: #fff;
+  opacity: 0.8;
+}
+.swiper-pagination-bullet-active {
+  background: #760e13;
+  opacity: 1;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  new Swiper('.carSwiper-{{ $key }}', {
+    loop: true,
+    grabCursor: true,
+    centeredSlides: true,
+    spaceBetween: 10,
+    autoplay: {
+      delay: 3500,
+      disableOnInteraction: false,
+    },
+    pagination: {
+      el: '.carSwiper-{{ $key }} .swiper-pagination',
+      clickable: true,
+    },
+    navigation: {
+      nextEl: '.carSwiper-{{ $key }} .swiper-button-next',
+      prevEl: '.carSwiper-{{ $key }} .swiper-button-prev',
+    },
+  });
+});
+</script>
+
 
           {{-- التفاصيل --}}
           <div class="car-details p-3 d-flex flex-column justify-content-between">
@@ -458,11 +532,22 @@ function submitTopFilter() {
             </p>
          {{-- Enhanced Action Buttons --}}
 <div class="action d-flex gap-2 mt-2">
-    <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="text-decoration-none flex-grow-1">
-        <button class="btn btn-outline-success rounded-4 w-100">
-            <i class="fab fa-whatsapp me-1"></i>
-        </button>
-    </a>
+ <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode(
+    'Hi, I would like to ask if this car is still available:' . "\n\n" .
+    $car->listing_type . ' • ' . $car->listing_model . "\n" .
+    'Year: ' . $car->listing_year . "\n" .
+    'Price: AED ' . number_format($car->listing_price) . "\n" .
+    'Fuel Type: ' . $car->features_fuel_type . "\n" .
+    'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
+    'View full details here: ' . route('car.detail', $car->id)
+) }}"
+target="_blank"
+class="flex-fill text-decoration-none">
+    <button class="btn btn-outline-success w-100 rounded-4">
+        <i class="fab fa-whatsapp me-1"></i> 
+    </button>
+</a>
+
 
     @if($os == 'Android' || $os == 'iOS')
         <a href="tel:{{ $car->user->phone }}" class="text-decoration-none flex-grow-1">
@@ -507,18 +592,46 @@ function submitTopFilter() {
 }
 
 /* Carousel */
+/* Carousel container */
 .car-carousel-container {
   width: 100%;
-  position: relative;
-  overflow: hidden;
   border-radius: 16px;
+  overflow: hidden;
+  background-color: #f5f5f5;
+  position: relative; /* مهم جداً */
 }
 
-.car-carousel-container img {
+/* الصور داخل carousel */
+.carousel-img {
   width: 100%;
-  height: auto;
-  object-fit: cover;
+  height: 200px; /* ارتفاع ثابت على الموبايل */
+  object-fit: cover; /* الصورة تغطي المساحة بالكامل */
+  display: block;
 }
+
+/* Desktop */
+@media (min-width: 992px) {
+  .car-carousel-container {
+    width: 45%;
+    height: 100%; /* يملأ ارتفاع البطاقة */
+  }
+  .carousel-img {
+    height: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 991px) {
+  .car-carousel-container {
+    width: 100%;
+    height: 200px; /* ارتفاع ثابت للصور على الموبايل */
+    margin-bottom: 1rem;
+  }
+  .carousel-img {
+    height: 100%;
+  }
+}
+
 
 /* Details */
 .car-details {
@@ -548,10 +661,10 @@ function submitTopFilter() {
     flex-direction: row;
     height: 240px;
   }
-  .car-carousel-container {
+  /* .car-carousel-container {
     width: 45%;
     height: 100%;
-  }
+  } */
   .car-details {
     width: 55%;
     padding: 1.2rem 1.5rem;
@@ -564,11 +677,11 @@ function submitTopFilter() {
     flex-direction: column;
     height: auto;
   }
-  .car-carousel-container {
+  /* .car-carousel-container {
     width: 100%;
     height: auto;
     margin-bottom: 1rem;
-  }
+  } */
   .car-details {
     padding: 1rem;
   }
