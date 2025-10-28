@@ -406,7 +406,7 @@ class="btn btn-outline-primary flex-fill rounded-4">
                 <small class="text-muted mb-3">You might also like</small>
 
                 @foreach ($recommendedCars as $recommendedCar)
-                    <a href="{{ route('car.detail', [Crypt::encrypt($recommendedCar->id)]) }}" class="text-decoration-none text-dark">
+                    <a href="{{ route('car.detail', $recommendedCar->id) }}" class="text-decoration-none text-dark">
                         <div class="d-flex align-items-center border-bottom py-2">
                             <img src="{{ env('FILE_BASE_URL') . $recommendedCar->listing_img1 }}" alt="Car" width="80" height="60" class="rounded me-3">
                             <div>

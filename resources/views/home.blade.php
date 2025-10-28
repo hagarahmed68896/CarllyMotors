@@ -417,16 +417,25 @@ class="text-decoration-none flex-grow-1">
         </a>
     @endif
 
-<a href="https://wa.me/?text={{ urlencode(
-    'Check out this spare parts dealer on Carlly Motors:' . "\n\n" .
-    'Dealer Name: ' . $dealer->company_name . "\n" .
-    'Address: ' . ($dealer->company_address ?? 'Not specified') . "\n" .
-    'City: ' . ($dealer->user->city ?? 'N/A') . "\n" .
-    'Contact: ' . $dealer->user->phone . "\n\n" .
-    'View full dealer details here: ' . $shareUrl
-) }}" 
-target="_blank" 
-class="text-decoration-none flex-grow-1">
+
+     @php
+    $dealerUrl = route('spareParts.index', [
+        'dealer_id'   => $dealer->id,
+        'make'        => request('make'),
+        'model'       => request('model'),
+        'year'        => request('year'),
+        'category'    => request('category'),
+        'sub-category'=> request('sub-category'),
+        'city'        => request('city'),
+        'condition'   => request('condition'),
+    ]);
+
+    $shareMessage = "Check out my latest find on Carlly! Great deals await. Don't miss out!: " . $dealerUrl;
+@endphp
+
+<a href="https://wa.me/?text={{ urlencode($shareMessage) }}" 
+   target="_blank" 
+   class="action-link">
     <button class="btn btn-outline-info w-100 action-btn rounded-4" title="Share via WhatsApp">
         <i class="fas fa-share-alt"></i>
     </button>

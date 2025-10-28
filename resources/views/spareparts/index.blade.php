@@ -153,195 +153,583 @@
 }
 </style>
 
+  <style>
+    /* ✅ Make category icons display 3 per row */
+    #categoryGridIcons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
 
-<div class="container my-5 custom-container">`
+    .category-icon {
+      text-align: center;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      padding: 6px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .category-icon.selected {
+      border-color: #760e13;
+      background-color: #f8f1f2;
+      box-shadow: 0 0 6px rgba(118, 14, 19, 0.4);
+    }
+
+    .category-icon img {
+      display: block;
+      margin: 0 auto 4px;
+      border-radius: 8px;
+    }
+  </style>
+
+<div class="container my-5 custom-container">
   <div class="row">
     
-    <!-- ✅ FILTER SIDEBAR -->
-    <aside class="col-lg-3 col-md-4">
-      <div class="filter-sidebar">
-        <h5 class="fw-bold mb-3 text-center" style="color:#760e13">
-          <i class="fas fa-sliders-h me-2"></i> Filter Dealers
-        </h5>
+<!-- ✅ FILTER SIDEBAR -->
+<aside class="col-lg-3 col-md-4">
+  <div class="filter-sidebar">
+    <h5 class="fw-bold mb-3 text-center" style="color:#760e13">
+      <i class="fas fa-sliders-h me-2"></i> Filter Dealers
+    </h5>
 
-        <form id="filterForm" method="GET" action="{{ route('spareParts.index') }}">
-          <div class="mb-3">
-            <label class="form-label fw-semibold small text-muted">Make</label>
-            <select class="form-select" id="brand" name="make">
-              <option value="">All Makes</option>
-              @foreach($makes as $make)
-                <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
-              @endforeach
-            </select>
-          </div>
+<form id="filterForm" method="GET" action="{{ route('spareParts.index') }}">
+      <!-- ✅ MAKE -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold small text-muted">Make</label>
+        <select class="form-select" id="brand" name="make" required>
+          <option value="">All Makes</option>
+          @foreach($makes as $make)
+            @php $normalizedMake = strtolower(trim($make)); @endphp
+            <option value="{{ $normalizedMake }}" {{ strtolower(request('make')) == $normalizedMake ? 'selected' : '' }}>
+              {{ $make }}
+            </option>
+          @endforeach
+        </select>
+      </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-semibold small text-muted">Model</label>
-            <select class="form-select" id="model" name="model">
-              <option value="">All Models</option>
-              @if(request('make') && request('model'))
-                <option value="{{ request('model') }}" selected>{{ request('model') }}</option>
-              @endif
-            </select>
-          </div>
+      <!-- ✅ MODEL -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold small text-muted">Model</label>
+        <select class="form-select" id="model" name="model" disabled required>
+          <option value="">All Models</option>
+          @if(request('make') && request('model'))
+            <option value="{{ request('model') }}" selected>{{ request('model') }}</option>
+          @endif
+        </select>
+      </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-semibold small text-muted">City</label>
-            <select class="form-select" name="city">
-              <option value="">All Cities</option>
-              @foreach($cities as $city)
-                @if(!empty($city))
-                  <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
-                @endif
-              @endforeach
-            </select>
-          </div>
+      <!-- ✅ YEAR -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold small text-muted">Year</label>
+        <select class="form-select" id="yearSelect" name="year" disabled required>
+          <option value="">All Years</option>
+          @foreach($years as $year)
+            <option value="{{ $year }}">{{ $year }}</option>
+          @endforeach
+        </select>
+      </div>
 
+      <!-- ✅ CITY -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold small text-muted">City</label>
+        <select class="form-select" name="city" required>
+          <option value="">All Cities</option>
+          @foreach($cities as $city)
+            @if(!empty($city))
+              <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
+            @endif
+          @endforeach
+        </select>
+      </div>
+
+    <!-- ✅ CATEGORY ICONS (always visible) -->
 <div class="mb-3">
-    <label class="form-label fw-semibold small text-muted">Category</label>
-    <div class="custom-select-wrapper" style="position: relative;">
+  <label class="form-label fw-semibold small text-muted">Category of spare</label>
 
-        <!-- Selected -->
-        <div class="custom-select-selected border rounded p-2 d-flex justify-content-between align-items-center" style="cursor:pointer;">
-            <span id="selectedCategory">{{ request('category') ?? 'All Categories' }}</span>
-            <i class="fas fa-chevron-down"></i>
-        </div>
 
-        <!-- Options -->
-        <div class="custom-select-options border rounded shadow-sm mt-1" 
-             style="position:absolute; width:100%; max-height:300px; overflow-y:auto; background:#fff; display:none; z-index:1000; padding:8px; box-sizing:border-box;">
+  <div id="categoryGridIcons">
+    @foreach($mainCategories as $category)
+      @php
+        $img = $category->image
+            ? config('app.file_base_url') . Str::after($category->image, url('/') . '/')
+            : 'https://via.placeholder.com/60';
+      @endphp
+      <div class="text-center category-icon"
+           data-id="{{ $category->id }}"
+           data-name="{{ $category->name }}"
+           data-subs='@json($category->subcategories)'>
+        <img src="{{ $img }}" class="rounded mb-1" width="60" height="60">
+        <div style="font-size:0.75rem;">{{ $category->name }}</div>
+      </div>
+    @endforeach
+  </div>
 
-            <!-- Search -->
-            <input type="text" id="categorySearch" class="form-control form-control-sm mb-2" placeholder="Search...">
-
-            <!-- Categories Grid -->
-            <div class="d-flex flex-wrap" id="categoryGrid">
-
-                <!-- All Categories -->
-                <div class="custom-select-item text-center m-1" data-value="" style="width:80px; cursor:pointer;">
-                    <img src="https://via.placeholder.com/60?text=All" class="rounded mb-1" width="60" height="60">
-                    <div style="font-size:0.75rem;">All</div>
-                </div>
-
-                @foreach($categories as $category)
-                    @php
-                        $name = $category->name;
-                        $img = $category->image
-                            ? config('app.file_base_url') . Str::after($category->image, url('/') . '/')
-                            : 'https://via.placeholder.com/60';
-                    @endphp
-                    <div class="custom-select-item text-center m-1" data-value="{{ $name }}" style="width:80px; cursor:pointer;">
-                        <img src="{{ $img }}" class="rounded mb-1" width="60" height="60">
-                        <div style="font-size:0.75rem;">{{ $name }}</div>
-                    </div>
-                @endforeach
-
-            </div>
-        </div>
-
-        <input type="hidden" name="category" id="categoryInput" value="{{ request('category') }}">
-    </div>
+  <input type="hidden" name="category" id="categoryInput"required value="{{ request('category') }}">
+  <input type="hidden" name="category_name" id="categoryNameInput" value="{{ request('category_name') }}">
 </div>
 
+
+      <!-- ✅ SUBCATEGORY -->
+      <div id="subcategoryWrapper" class="mb-3">
+        <label class="form-label fw-semibold small text-muted">Subcategory</label>
+<div class="position-relative">
+  <select class="form-select" name="subcategory" id="subcategorySelect" disabled required>
+    <option value="">All Subcategories</option>
+  </select>
+  <div id="subcategoryDropdown" class="dropdown-menu w-100 shadow-sm" style="max-height: 250px; overflow-y: auto; display: none;"></div>
+</div>
+
+      </div>
+
+      <!-- ✅ CONDITION -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold small text-muted d-block mb-2">Condition</label>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-secondary flex-fill condition-btn" data-value="New">New</button>
+          <button type="button" class="btn btn-outline-secondary flex-fill condition-btn" data-value="Used">Used</button>
+        </div>
+        <input type="hidden" name="condition" id="conditionInput" required value="{{ request('condition') }}">
+      </div>
+
+      <!-- ✅ VIN -->
+      <div id="vin-input-container" class="mb-3" style="display:none;">
+        <label class="form-label fw-semibold small text-muted">VIN Number</label>
+<input type="text" 
+       name="vin_number" 
+       id="vin-number" 
+       class="form-control" 
+       placeholder="Enter VIN Number"
+       value="{{ request('vin_number') }}">
+      </div>
+
+      <!-- ✅ ACTION BUTTONS -->
+      <div class="d-flex gap-2 border-top pt-3">
+       <button 
+  type="submit" 
+  id="applyFiltersBtn"
+  class="btn flex-fill text-white fw-semibold" 
+  style="background-color:#760e13;" 
+  disabled>
+  Apply Filters
+</button>
+
+        <button type="button" onclick="resetFilters()" class="btn btn-outline-secondary flex-fill">
+          Reset
+        </button>
+      </div>
+    </form>
+  </div>
+</aside>
+
+<!-- ✅ JS SCRIPT -->
 <script>
-const selected = document.querySelector('.custom-select-selected');
-const optionsContainer = document.querySelector('.custom-select-options');
-const hiddenInput = document.getElementById('categoryInput');
-const searchInput = document.getElementById('categorySearch');
-const categoryItems = document.querySelectorAll('.custom-select-item');
+document.addEventListener('DOMContentLoaded', function() {
+  const fileBaseUrl = "{{ config('app.file_base_url') ? rtrim(config('app.file_base_url'), '/') . '/' : '' }}";
 
-selected.addEventListener('click', () => {
-    optionsContainer.style.display = optionsContainer.style.display === 'block' ? 'none' : 'block';
-});
+  const categoryIcons = document.querySelectorAll('.category-icon');
+  const conditionButtons = document.querySelectorAll('.condition-btn');
+  const vinContainer = document.getElementById('vin-input-container');
+  const conditionInput = document.getElementById('conditionInput');
 
-// اختيار عنصر
-categoryItems.forEach(item => {
-    item.addEventListener('click', () => {
-        const value = item.getAttribute('data-value');
-        hiddenInput.value = value;
-        document.getElementById('selectedCategory').innerText = item.querySelector('div').innerText;
-        optionsContainer.style.display = 'none';
-        searchInput.value = '';
-        filterCategories(''); // show all again
+  // ✅ CATEGORY CLICK
+  categoryIcons.forEach(icon => {
+    icon.addEventListener('click', () => {
+      categoryIcons.forEach(i => i.classList.remove('selected'));
+      icon.classList.add('selected');
+
+      const subs = JSON.parse(icon.dataset.subs || '[]');
+      const categoryInput = document.getElementById('categoryInput');
+      const categoryNameInput = document.getElementById('categoryNameInput');
+      const subcategorySelect = document.getElementById('subcategorySelect');
+      const subcategoryDropdown = document.getElementById('subcategoryDropdown');
+
+      categoryInput.value = icon.dataset.id;
+      categoryNameInput.value = icon.dataset.name;
+
+      // Reset subcategory dropdown
+      subcategorySelect.innerHTML = '<option value="">All Subcategories</option>';
+      subcategoryDropdown.innerHTML = '';
+      subcategoryDropdown.style.display = 'none';
+
+      if (subs.length) {
+        subs.forEach(sub => {
+          // Add option to regular select
+          const opt = document.createElement('option');
+          opt.value = sub.id;
+          opt.textContent = sub.name;
+          subcategorySelect.appendChild(opt);
+
+          // ✅ Build correct image path like category
+          let imgSrc = '';
+          if (sub.image) {
+            const imagePath = sub.image.replace("{{ url('/') }}/", '');
+            imgSrc = fileBaseUrl + imagePath;
+          } else {
+            imgSrc = 'https://via.placeholder.com/40';
+          }
+
+          // ✅ Create list-style option (horizontal)
+          const div = document.createElement('div');
+          div.classList.add('sub-option');
+          div.innerHTML = `
+            <img src="${imgSrc}" alt="" width="35" height="35" style="border-radius:6px; object-fit:cover;">
+            <span style="font-size:0.9rem; color:#333;">${sub.name}</span>
+          `;
+          div.addEventListener('click', () => {
+            subcategorySelect.value = sub.id;
+            subcategoryDropdown.style.display = 'none';
+          });
+          subcategoryDropdown.appendChild(div);
+        });
+
+        subcategorySelect.disabled = false;
+
+       // ✅ Always rebuild subcategory dropdown with images when opened
+subcategorySelect.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  const selectedIcon = document.querySelector('.category-icon.selected');
+  if (!selectedIcon) return;
+
+  const subs = JSON.parse(selectedIcon.dataset.subs || '[]');
+  const subcategoryDropdown = document.getElementById('subcategoryDropdown');
+  const fileBaseUrl = "{{ config('app.file_base_url') ? rtrim(config('app.file_base_url'), '/') . '/' : '' }}";
+
+  // Rebuild dropdown every time
+  subcategoryDropdown.innerHTML = '';
+  subs.forEach(sub => {
+    let imgSrc = sub.image
+      ? fileBaseUrl + sub.image.replace("{{ url('/') }}/", '')
+      : 'https://via.placeholder.com/40';
+
+    const div = document.createElement('div');
+    div.classList.add('sub-option');
+    div.innerHTML = `
+      <img src="${imgSrc}" alt="" width="35" height="35" style="border-radius:6px; object-fit:cover;">
+      <span style="font-size:0.9rem; color:#333;">${sub.name}</span>
+    `;
+    div.addEventListener('click', () => {
+      subcategorySelect.value = sub.id;
+      subcategoryDropdown.style.display = 'none';
     });
+    subcategoryDropdown.appendChild(div);
+  });
+
+  // Toggle visibility
+  subcategoryDropdown.style.display =
+    subcategoryDropdown.style.display === 'none' ? 'block' : 'none';
 });
 
-// اغلاق الـ dropdown عند الضغط خارجها
-document.addEventListener('click', function(e){
-    if(!selected.parentElement.contains(e.target)){
-        optionsContainer.style.display = 'none';
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!subcategoryDropdown.contains(e.target) && e.target !== subcategorySelect) {
+            subcategoryDropdown.style.display = 'none';
+          }
+        });
+      } else {
+        subcategorySelect.disabled = true;
+      }
+    });
+  });
+
+  // ✅ CONDITION BUTTONS
+  conditionButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      conditionButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      conditionInput.value = btn.dataset.value;
+      vinContainer.style.display = btn.dataset.value === 'New' ? 'block' : 'none';
+    });
+  });
+
+  // ✅ ADDED: ENABLE MODEL AND YEAR WHEN MAKE IS SELECTED
+  const brandSelect = document.getElementById('brand');
+  const modelSelect = document.getElementById('model');
+  const yearSelect = document.getElementById('yearSelect');
+
+  // ✅ Preload brandModels (passed from Laravel)
+  const brandModels = @json($brandModels);
+  const years = @json($years);
+
+  // Function to populate models and years dynamically
+  function updateModelAndYearDropdowns(make) {
+    const normalizedMake = make.trim().toLowerCase();
+    const models = brandModels[normalizedMake] || [];
+
+    // Reset dropdowns
+    modelSelect.innerHTML = '<option value="">All Models</option>';
+    yearSelect.innerHTML = '<option value="">All Years</option>';
+
+    // Populate models
+    if (models.length > 0) {
+      models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        modelSelect.appendChild(opt);
+      });
+      modelSelect.disabled = false;
+    } else {
+      modelSelect.disabled = true;
     }
-});
 
-// فلترة live أثناء الكتابة
-searchInput.addEventListener('input', function() {
-    const filter = this.value.toLowerCase();
-    filterCategories(filter);
-});
+    // Populate years
+    if (years.length > 0) {
+      years.forEach(y => {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = y;
+        yearSelect.appendChild(opt);
+      });
+      yearSelect.disabled = false;
+    } else {
+      yearSelect.disabled = true;
+    }
+  }
 
-function filterCategories(filter) {
-    document.querySelectorAll('.custom-select-item').forEach(item => {
-        const text = item.querySelector('div').innerText.toLowerCase();
-        item.style.display = text.includes(filter) ? 'flex' : 'none';
-    });
+  // On Make change
+  brandSelect.addEventListener('change', function() {
+    const make = this.value;
+    updateModelAndYearDropdowns(make);
+  });
+
+  // ✅ ADDED: Keep model/year enabled if page reloaded with filters
+  const currentMake = "{{ request('make') }}";
+  if (currentMake) {
+    updateModelAndYearDropdowns(currentMake);
+
+    const currentModel = "{{ request('model') }}";
+    const currentYear = "{{ request('year') }}";
+    if (currentModel) modelSelect.value = currentModel;
+    if (currentYear) yearSelect.value = currentYear;
+  }
+// ✅ Keep condition active after reload
+const currentCondition = "{{ request('condition') }}";
+if (currentCondition) {
+  conditionButtons.forEach(btn => {
+    if (btn.dataset.value === currentCondition) {
+      btn.classList.add('active');
+      conditionInput.value = currentCondition;
+      vinContainer.style.display = currentCondition === 'New' ? 'block' : 'none';
+    }
+  });
 }
+
+  // ✅ ADDED: Keep selected category & subcategory active after reload
+  const currentCategoryId = "{{ request('category') }}";
+  const currentSubcategoryId = "{{ request('subcategory') }}";
+
+  if (currentCategoryId) {
+    const selectedIcon = document.querySelector(`.category-icon[data-id='${currentCategoryId}']`);
+    if (selectedIcon) {
+      selectedIcon.classList.add('selected');
+
+      const subs = JSON.parse(selectedIcon.dataset.subs || '[]');
+      const subcategorySelect = document.getElementById('subcategorySelect');
+      const subcategoryDropdown = document.getElementById('subcategoryDropdown');
+
+      subcategorySelect.innerHTML = '<option value="">All Subcategories</option>';
+      subcategoryDropdown.innerHTML = '';
+
+      if (subs.length > 0) {
+        subs.forEach(sub => {
+          const opt = document.createElement('option');
+          opt.value = sub.id;
+          opt.textContent = sub.name;
+          subcategorySelect.appendChild(opt);
+
+          let imgSrc = sub.image
+            ? fileBaseUrl + sub.image.replace("{{ url('/') }}/", '')
+            : 'https://via.placeholder.com/40';
+
+          const div = document.createElement('div');
+          div.classList.add('sub-option');
+          div.innerHTML = `
+            <img src="${imgSrc}" alt="" width="35" height="35" style="border-radius:6px; object-fit:cover;">
+            <span style="font-size:0.9rem; color:#333;">${sub.name}</span>
+          `;
+          div.addEventListener('click', () => {
+            subcategorySelect.value = sub.id;
+            subcategoryDropdown.style.display = 'none';
+          });
+          subcategoryDropdown.appendChild(div);
+        });
+
+        subcategorySelect.disabled = false;
+
+        // ✅ Select current subcategory
+        if (currentSubcategoryId) {
+          subcategorySelect.value = currentSubcategoryId;
+        }
+      } else {
+        subcategorySelect.disabled = true;
+      }
+    }
+  }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('filterForm');
+  const applyBtn = document.getElementById('applyFiltersBtn');
+
+  const requiredFields = [
+    '[name="make"]',
+    '[name="model"]',
+    '[name="year"]',
+    '[name="city"]',
+    '[name="category"]',
+    '[name="condition"]'
+  ];
+
+  function checkAllFilled() {
+    let allFilled = true;
+    for (let selector of requiredFields) {
+      const el = document.querySelector(selector);
+      if (!el || !el.value.trim()) {
+        allFilled = false;
+        break;
+      }
+    }
+    applyBtn.disabled = !allFilled;
+  }
+
+  // راقب التغييرات على كل الفلاتر
+  requiredFields.forEach(selector => {
+    const el = document.querySelector(selector);
+    if (el) {
+      el.addEventListener('change', checkAllFilled);
+      el.addEventListener('input', checkAllFilled);
+    }
+  });
+
+  // لما يختار category من الأيقونات
+  document.querySelectorAll('.category-icon').forEach(icon => {
+    icon.addEventListener('click', () => {
+      document.getElementById('categoryInput').value = icon.dataset.id;
+      checkAllFilled();
+    });
+  });
+
+  // لما يختار condition
+  document.querySelectorAll('.condition-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('conditionInput').value = btn.dataset.value;
+      checkAllFilled();
+    });
+  });
+
+  // تحقق أولي لو الصفحة اتفتحت ومعمول فلاتر
+  checkAllFilled();
+});
 </script>
 
+
+<!-- ✅ Add or keep this CSS -->
+<style>
+.sub-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid #eee;
+}
+.sub-option:hover {
+  background-color: #f8f8f8;
+}
+.sub-option img {
+  width: 35px;
+  height: 35px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+</style>
 <style>
 .custom-select-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s;
 }
 .custom-select-item:hover {
-    transform: scale(1.05);
-    background-color: #f8f9fa;
-    border-radius: 6px;
+  transform: scale(1.05);
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+.custom-select-selected:hover {
+  background-color: #f8f9fa;
+}
+</style>
+<style>
+/* Make categories in 3 columns */
+#categoryGridIcons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* Selected category border */
+.category-icon.selected {
+  border: 2px solid #760e13;
+  border-radius: 10px;
+  background: #fff;
+  transition: 0.3s ease;
+}
+.category-icon:hover {
+  border: 2px solid #aaa;
+  transform: scale(1.05);
+}
+.condition-btn.active {
+  background-color: #760e13 !important;
+  color: #fff !important;
+  border-color: #760e13 !important;
+}
+
+</style>
+<style>
+.sub-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sub-option:hover {
+  background-color: #f5f5f5;
+}
+.sub-option img {
+  width: 35px;
+  height: 35px;
+  border-radius: 6px;
+  object-fit: cover;
 }
 </style>
 
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold small text-muted">Condition</label>
-            <select class="form-select" name="condition">
-              <option value="">All Conditions</option>
-              <option value="New" {{ request('condition') == 'New' ? 'selected' : '' }}>New</option>
-              <option value="Used" {{ request('condition') == 'Used' ? 'selected' : '' }}>Used</option>
-            </select>
-          </div>
-
-          <div id="vin-input-container" class="mb-3" style="display:none;">
-            <label class="form-label fw-semibold small text-muted">VIN Number</label>
-            <input type="text" name="vin_number" id="vin-number" class="form-control" placeholder="Enter VIN Number">
-          </div>
-
-          <div class="d-flex gap-2 border-top pt-3">
-            <button type="submit" class="btn flex-fill text-white fw-semibold" style="background-color:#760e13;">
-              Apply Filters
-            </button>
-            <button type="button" onclick="resetFilters()" class="btn btn-outline-secondary flex-fill">
-              Reset
-            </button>
-          </div>
-        </form>
-      </div>
-    </aside>
-
     <!-- ✅ DEALERS GRID -->
+    @if(request()->has('make') && request()->has('model') && request()->has('year') && request()->has('city') && request()->has('category') && request()->has('condition'))
+
     <section class="col-lg-9 col-md-8">
-    <div class="dealers-grid">
+<div class="dealers-grid">
 @forelse ($dealers as $dealer)
     @php
-        $image = $dealer->company_img
-            ? config('app.file_base_url') . Str::after($dealer->company_img, url('/') . '/')
-            : 'https://via.placeholder.com/350x219?text=No+Image';
+        $companyImg = $dealer->company_img;
+
+        // التحقق من أن الصورة صالحة ومش "notfound"
+        if (!empty($companyImg) && !Str::contains($companyImg, ['notfound.png', 'noimage.png'])) {
+            $image = config('app.file_base_url') . Str::after($companyImg, url('/') . '/');
+        } else {
+$image = asset('carllymotorsmainlogo.png');
+        }
 
         $dealerName = $dealer->company_name
             ? ucfirst(strtolower(substr($dealer->company_name, 0, 25))) . (strlen($dealer->company_name) > 25 ? '...' : '')
             : 'Unknown Dealer';
 
-        $phone = $dealer->user ? $dealer->user->phone : 'N/A';
+        $phone = $dealer->user?->phone ?? 'N/A';
         $shareUrl = request()->url() . '?shop_id=' . ($dealer->id ?? '');
     @endphp
 
@@ -349,7 +737,7 @@ function filterCategories(filter) {
         <img src="{{ $image }}" 
              class="card-img-top"
              alt="Dealer Image"
-             onerror="this.onerror=null; this.src='https://via.placeholder.com/350x219?text=No+Image';"
+             onerror="this.onerror=null; this.src='{{ asset('images/carllymotorsmainlogo_dark.png') }}';"
              loading="lazy">
 
         <div class="card-body d-flex flex-column">
@@ -369,17 +757,40 @@ function filterCategories(filter) {
 
             <div class="actions-dealer d-flex align-items-center mt-2">
                 @if ($phone !== 'N/A')
-               <a href="https://wa.me/{{ $phone }}?text={{ urlencode(
-    'Hello, I’m interested in buying spare parts from your dealership. Could you please share more details about available parts?' . "\n\n" .
-    'Dealer Name: ' . $dealer->company_name . "\n" .
-    'Address: ' . ($dealer->company_address ?? 'Not specified') . "\n\n" 
-) }}"
-target="_blank"
-class="text-decoration-none flex-grow-1">
-    <button class="btn btn-outline-success w-100 action-btn rounded-4">
-        <i class="fab fa-whatsapp"></i>
-    </button>
+ @php
+    $dealerUrl = route('spareParts.index', [
+        'dealer_id'   => $dealer->id,
+        'make'        => request('make'),
+        'model'       => request('model'),
+        'year'        => request('year'),
+        'category'    => request('category'),
+        'sub-category'=> request('sub-category'),
+        'city'        => request('city'),
+        'condition'   => request('condition'),
+    ]);
+
+    $message = "((Carlly Motors))\n\n" .
+               "I'm interested in buying your spare parts!\n\n" .
+               "Car Type : " . (request('make') ?? '-') . "\n" .
+               "Car Model : " . (request('model') ?? '-') . "\n" .
+               "Car Year : " . (request('year') ?? '-') . "\n" .
+               "Category : " . (request('category') ?? '-') . "\n" .
+               "Sub-category : " . (request('sub-category') ?? '-') . "\n" .
+               "City : " . (request('city') ?? '-') . "\n" .
+               "Condition : " . (request('condition') ?? '-') . "\n\n" .
+               "Spare Part Url : " . $dealerUrl;
+@endphp
+
+<a href="https://wa.me/{{ $phone }}?text={{ urlencode($message) }}"
+   target="_blank"
+   class="text-decoration-none flex-grow-1">
+   <button class="btn btn-outline-success w-100 action-btn rounded-4">
+       <i class="fab fa-whatsapp"></i>
+   </button>
 </a>
+
+
+
 
                     <a href="tel:{{ $phone }}" class="action-link">
                         <button class="btn btn-outline-danger action-btn rounded-4">
@@ -388,20 +799,38 @@ class="text-decoration-none flex-grow-1">
                     </a>
                 @endif
 
-                <a href="https://wa.me/?text={{ urlencode('Check this store: ' . $shareUrl) }}" 
-                   target="_blank" class="action-link">
-                    <button class="btn btn-outline-info action-btn rounded-4">
-                        <i class="fa fa-share"></i>
-                    </button>
-                </a>
+     @php
+    $dealerUrl = route('spareParts.index', [
+        'dealer_id'   => $dealer->id,
+        'make'        => request('make'),
+        'model'       => request('model'),
+        'year'        => request('year'),
+        'category'    => request('category'),
+        'sub-category'=> request('sub-category'),
+        'city'        => request('city'),
+        'condition'   => request('condition'),
+    ]);
+
+    $shareMessage = "Check out my latest find on Carlly! Great deals await. Don't miss out!: " . $dealerUrl;
+@endphp
+
+<a href="https://wa.me/?text={{ urlencode($shareMessage) }}" 
+   target="_blank" 
+   class="action-link">
+  <button class="btn btn-outline-info w-100 action-btn rounded-4" title="Share via WhatsApp">
+        <i class="fas fa-share-alt"></i>
+    </button>
+</a>
+
+
             </div>
         </div>
     </div>
 @empty
     <p class="text-center text-muted mt-4">No dealers found.</p>
 @endforelse
-
 </div>
+
 
 <style>
 /* ✅ ACTION BUTTON STYLES */
@@ -458,9 +887,9 @@ class="text-decoration-none flex-grow-1">
 </style>
 
 
-@php
+{{-- @php
   use Illuminate\Pagination\LengthAwarePaginator;
-@endphp
+@endphp --}}
 
 @if ($dealers instanceof \Illuminate\Pagination\LengthAwarePaginator && $dealers->hasPages())
   @php
@@ -640,40 +1069,24 @@ class="text-decoration-none flex-grow-1">
 
 
     </section>
+    @else
+  <section class="col-lg-9 col-md-8 d-flex justify-content-center " >
+    <div class="text-center">
+
+      <h5 class="fw-bold" style="color:#760e13;">Find Your Perfect Spare Parts Dealer</h5>
+      <p class="text-muted mb-3">Please fill in all filter fields and click <strong>Apply Filters</strong> to begin your search.</p>
+
+      <button class="btn btn-outline-danger" disabled>
+        <i class="fas fa-sliders-h me-2"></i> Waiting for Filters...
+      </button>
+    </div>
+  </section>
+@endif
+
   </div>
 </div>
 
 
-{{-- ================= JS SCRIPT ================= --}}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const brandSelect = document.getElementById('brand');
-    const modelSelect = document.getElementById('model');
-
-    brandSelect.addEventListener('change', function() {
-        const brand = this.value;
-        modelSelect.innerHTML = '<option value="">Loading...</option>';
-
-        if (brand) {
-            fetch(`/get-models?brand=${encodeURIComponent(brand)}`)
-                .then(res => res.json())
-                .then(models => {
-                    modelSelect.innerHTML = '<option value="">All Models</option>';
-                    models.forEach(model => {
-                        modelSelect.innerHTML += `<option value="${model}">${model}</option>`;
-                    });
-                });
-        } else {
-            modelSelect.innerHTML = '<option value="">All Models</option>';
-        }
-    });
-});
-
-function resetFilters() {
-    document.getElementById('filterForm').reset();
-    document.getElementById('model').innerHTML = '<option value="">All Models</option>';
-}
-</script>
 <script>
 function resetFilters() {
     // إعادة ضبط كل الحقول إلى قيمها الافتراضية
@@ -764,7 +1177,7 @@ function resetFilters() {
                             // Populate the child select box
                             $('#model').empty().append('<option value="">Select Model</option>');
 
-                            response.models.forEach(function (model) {
+                            response.brandModels.forEach(function (model) {
                                 let modelName = model ?? 'No Parent';
 
                                 $('#model').append('<option value="' + modelName + '">' +

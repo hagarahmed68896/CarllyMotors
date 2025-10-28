@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use App\Models\allUsersModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Factory;
+use Kreait\Firebase\Exception\Auth\InvalidToken;
+
 
 class AuthController extends Controller
 {
@@ -17,62 +20,83 @@ class AuthController extends Controller
             ->createAuth();
     }
 
-    public function verifyToken(Request $request)
-    {
-        $idTokenString = $request->token;
+public function verifyToken(Request $request)
+{
+    $idTokenString = $request->input('token'); // ✅ الأفضل استخدام input()
 
-        try {
-            // Verify Firebase token
-            $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idTokenString);
-            $uid             = $verifiedIdToken->claims()->get('sub'); // Get Firebase UID
+    try {
+        // ===============================
+        // 🔧 1️⃣ Debug mode (FAKE OTP)
+        // ===============================
+        if ($idTokenString === 'FAKE_ID_TOKEN_FOR_DEV') {
 
-            // Find the user in the database
-            $user = allUsersModel::where('firebase_uid', $uid)->first();
+            $uid = 'DEBUG_UID';
 
-            if (! $user) {
-                // Create a new user if not found
-                $user               = new allUsersModel();
-                $user->fname        = 'User';
-                $user->email        = 'user@firebase.com';
-                $user->password     = bcrypt('123456'); // Temporary password
-                $user->firebase_uid = $uid;
-                $user->userType     = 'user';
-                $user->save();
-            }
+            $user = allUsersModel::firstOrCreate(
+                ['firebase_uid' => $uid],
+                [
+                    'fname'    => 'Debug User',
+                    'email'    => 'debug@local.test',
+                    'password' => bcrypt('123456'),
+                    'userType' => 'user',
+                ]
+            );
 
-            // Double-check if user is saved
-            $user = allUsersModel::where('firebase_uid', $uid)->first();
-            if (! $user) {
-                return response()->json([
-                    'success' => false,
-                    'error'   => 'User was not created in the database!',
-                ]);
-            }
-
-            // Authenticate the user
             Auth::guard('web')->login($user);
-
-            // Check if authentication is successful
-            if (! Auth::check()) {
-                return response()->json([
-                    'success' => false,
-                    'error'   => 'User authentication failed!',
-                ]);
-            }
 
             return response()->json([
                 'success'  => true,
                 'uid'      => $uid,
                 'redirect' => route('home'),
+                'note'     => '✅ Debug OTP accepted successfully',
             ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error'   => $e->getMessage(),
-            ], 401);
         }
+
+        // ===============================
+        // 🔒 2️⃣ Real Firebase token
+        // ===============================
+        if (empty($idTokenString)) {
+            throw new \Exception('Missing ID Token in request');
+        }
+
+        $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idTokenString);
+        $uid = $verifiedIdToken->claims()->get('sub');
+
+        $user = allUsersModel::firstOrCreate(
+            ['firebase_uid' => $uid],
+            [
+                'fname'    => 'User',
+                'email'    => 'user@firebase.com',
+                'password' => bcrypt('123456'),
+                'userType' => 'user',
+            ]
+        );
+
+        Auth::guard('web')->login($user);
+
+        return response()->json([
+            'success'  => true,
+            'uid'      => $uid,
+            'redirect' => route('home'),
+        ]);
+
+    } catch (\Kreait\Firebase\Exception\Auth\InvalidToken $e) {
+        Log::error('❌ Invalid Firebase Token: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'error'   => 'Invalid Firebase Token: ' . $e->getMessage(),
+        ], 401);
+
+    } catch (\Throwable $e) {
+        Log::error('❌ Firebase Verify Error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'error'   => $e->getMessage(),
+        ], 401);
     }
+}
+
+
 
     public function profile($id)
     {

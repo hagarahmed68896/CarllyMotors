@@ -6,6 +6,8 @@ use App\Models\CarDealer;
 use App\Models\SparePart;
 use App\Models\SparepartCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class SparePartController extends Controller
 {
@@ -14,115 +16,174 @@ class SparePartController extends Controller
      */
 public function index(Request $request)
 {
-    // لجلب بيانات القوائم المستخدمة في الفيلتر (من جدول spare_parts)
-    $makes = SparePart::select('brand')->distinct()->orderBy('brand')->pluck('brand');
-    $models = SparePart::select('model')->distinct()->orderBy('model')->pluck('model');
-    $conditions = SparePart::select('part_type')->distinct()->orderBy('part_type')->pluck('part_type');
-    $cities = SparePart::select('city')->distinct()->orderBy('city')->pluck('city');
+    // ✅ جلب الفئات الرئيسية والفرعية
+    $mainCategories = DB::table('sparepart_categories')
+        ->whereNull('parent_id')
+        ->get();
 
-    $category_ids = SparePart::distinct()->pluck('category_id')->toArray();
-//  $categories = SparepartCategory::whereIn('id', $category_ids)
-//                 ->distinct()
-//                 ->get(['id', 'name', 'image']);
-$categories = SparepartCategory::orderBy('name')->get();
+    $subCategories = DB::table('sparepart_categories')
+        ->whereNotNull('parent_id')
+        ->get();
 
+    // ✅ ربط الفروع مع الرئيسية
+    foreach ($mainCategories as $cat) {
+        $cat->subcategories = $subCategories->where('parent_id', $cat->id)->values();
+    }
 
-    $years = SparePart::select('year')
-        ->distinct()
-        ->pluck('year')
-        ->filter(fn($y) => is_numeric($y))
-        ->map(fn($y) => (int) $y)
-        ->unique()
-        ->sort()
-        ->values()
-        ->toArray();
+    // ✅ بناء كويري الفلترة
+    $sparePartsQuery = DB::table('spare_parts')
+        ->when($request->filled('make'), fn($q) => $q->where('brand', $request->make))
+        ->when($request->filled('category'), fn($q) => $q->where('category_id', $request->category))
+        ->when($request->filled('city'), fn($q) => $q->whereRaw('LOWER(city) = ?', [strtolower($request->city)]))
+        ->when($request->filled('model'), function ($q) use ($request) {
+            $q->where(function ($subQ) use ($request) {
+                $subQ->where('car_model', 'LIKE', '%"'.$request->model.'"%')
+                     ->orWhere('car_model', 'LIKE', "%{$request->model}%");
+            });
+        })
+        ->when($request->filled('year'), fn($q) => $q->whereRaw('JSON_CONTAINS(year, ?)', ['"' . $request->year . '"']))
+        ->when($request->filled('condition'), fn($q) => $q->where('part_type', $request->condition))
+        ->limit(25);
 
-    // بناء استعلام الديلرز (نبدأ من CarDealer)
-    $dealersQuery = CarDealer::query()->withCount('spareParts');
+    // ✅ user_ids
+    $userIds = $sparePartsQuery->distinct()->pluck('user_id');
 
-    // بحث نصي عام على الديلر (company_name / company_address)
-    if ($request->filled('q')) {
-        $keyword = $request->q;
-        $dealersQuery->where(function($q) use ($keyword) {
-            $q->where('company_name', 'like', "%{$keyword}%")
-              ->orWhere('company_address', 'like', "%{$keyword}%");
+    // ✅ dealers باستخدام الموديل CarDealer + العلاقات
+    $dealers = collect();
+
+    if ($userIds->isNotEmpty()) {
+        $dealers = \App\Models\CarDealer::query()
+            ->when($request->filled('dealer_id'), fn($q) => $q->where('id', $request->dealer_id))
+            ->whereIn('user_id', $userIds)
+            ->with(['user', 'spareParts'])
+            ->withCount('spareParts')
+            ->orderByDesc('id')
+            ->paginate(12)
+            ->withQueryString();
+    }
+
+    // ✅ بيانات الفلاتر
+    $makes = DB::table('spare_parts')->whereNotNull('brand')->distinct()->pluck('brand');
+    $years = range(date('Y'), 1990);
+    rsort($years);
+    $cities = DB::table('spare_parts')->whereNotNull('city')->distinct()->pluck('city');
+    $conditions = ['New', 'Used'];
+
+    // ✅ خريطة الموديلات (make => models)
+    $brandModels = DB::table('spare_parts')
+        ->select('brand', 'car_model')
+        ->whereNotNull('brand')
+        ->whereNotNull('car_model')
+        ->get()
+        ->groupBy(fn($item) => strtolower(trim($item->brand)))
+        ->map(function ($group) {
+            $models = $group->pluck('car_model')
+                ->flatMap(function ($item) {
+                    $item = trim($item);
+
+                    $decoded = json_decode($item, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        return $decoded;
+                    }
+
+                    if (str_contains($item, '\\')) {
+                        $parts = preg_split('/\\\\+/', $item);
+                        return $parts;
+                    }
+
+                    if (preg_match('/,| \//', $item)) {
+                        $parts = preg_split('/\s*[,\|]\s*|\s+\/\s+/', $item);
+                        return $parts;
+                    }
+
+                    return [$item];
+                })
+                ->map(function ($m) {
+                    return trim(str_replace(['"', '[', ']', '\\'], '', $m));
+                })
+                ->filter(function ($m) {
+                    return $m !== '' && !ctype_punct($m) && strlen($m) > 1;
+                })
+                ->unique()
+                ->values();
+
+            return $models;
         });
-    }
 
-    // الآن نطبّق فلاتر مبنية على خصائص spare_parts باستخدام whereHas
-    // make -> brand
-    if ($request->filled('make')) {
-        $dealersQuery->whereHas('spareParts', function($q) use ($request) {
-            $q->where('brand', $request->make);
-        });
-    }
-
-    // model
-    if ($request->filled('model')) {
-        $dealersQuery->whereHas('spareParts', function($q) use ($request) {
-            $q->where('model', $request->model);
-        });
-    }
-
-    // city
-    if ($request->filled('city')) {
-        $dealersQuery->whereHas('spareParts', function($q) use ($request) {
-            $q->where('city', $request->city);
-        });
-    }
-
-    // condition -> part_type
-    if ($request->filled('condition')) {
-        $dealersQuery->whereHas('spareParts', function($q) use ($request) {
-            $q->where('part_type', $request->condition);
-        });
-    }
-
-    // vin_number (بحث جزئي)
-    if ($request->filled('vin_number')) {
-        $dealersQuery->whereHas('spareParts', function($q) use ($request) {
-            $q->where('vin_number', 'like', '%'.$request->vin_number.'%');
-        });
-    }
-
-    // category (نبحث عن أجزاء لها category.name = القيمة)
-    if ($request->filled('category')) {
-        $dealersQuery->whereHas('spareParts.category', function($q) use ($request) {
-            $q->where('name', $request->category);
-        });
-    }
-
-    // إذا بعت dealer_id مباشرة (مثلاً من رابط)
-    if ($request->filled('dealer_id')) {
-        $dealersQuery->where('id', $request->dealer_id);
-    }
-
-    // ترتيب، pagination، وإعادة البيانات للفيو
-    $dealers = $dealersQuery->orderBy('id','desc')->paginate(12)->withQueryString();
-
+    // ✅ إرسال كل البيانات للواجهة
     return view('spareparts.index', compact(
-        'dealers', 'cities', 'makes', 'models', 'years', 'categories', 'conditions'
+        'dealers',
+        'makes',
+        'years',
+        'cities',
+        'conditions',
+        'mainCategories',
+        'subCategories',
+        'brandModels'
     ));
 }
 
 
-
-
-
-public function getModels(Request $request)
+public function filter(Request $request)
 {
-    $brand = $request->get('brand');
-
-    $models = SparePart::where('brand', $brand)
-        ->select('model')
-        ->distinct()
-        ->orderBy('model')
-        ->pluck('model')
-        ->filter()
-        ->values();
-
-    return response()->json($models);
+    // مجرد إعادة استخدام نفس الكود لكن مع الـ request الحالي
+    return $this->index($request);
 }
+
+
+
+    public function getSubCategories(Request $request)
+    {
+        $category      = SparepartCategory::where(['name' => $request->category, 'parent_id' => null])->first();
+        $subCategories = SparepartCategory::where('parent_id', $category->id)->distinct()->pluck('name');
+
+        return response()->json(['subCategories' => $subCategories], 200);
+    }
+
+    /**
+     * Handle spare part requests with query parameters
+     * This method handles URLs like: /spare-part?id=123 or /spare-part?shop_id=688&car_type=Honda...
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Contracts\View\View
+     */
+    public function showFromQuery(Request $request)
+    {
+        // Check if there's an ID parameter for direct spare part view
+        $id = $request->query('id');
+        if ($id && is_numeric($id)) {
+            return redirect()->route('sparepart.detail', ['id' => $id]);
+        }
+
+        // If no direct ID, but has other filter parameters, show filtered results
+        // This handles URLs like: /spare-part?car_model=Civic&car_type=Honda&category=Engine...
+        if ($request->hasAny(['shop_id', 'car_type', 'car_model', 'year', 'category', 'sub-category', 'make', 'model', 'city', 'subCategory'])) {
+            // Call the existing filter method
+            return $this->filter($request);
+        }
+
+        // If no parameters, redirect to spare parts index/listing page
+        return redirect()->route('spareParts.index');
+    }
+
+
+
+
+
+// public function getModels(Request $request)
+// {
+//     $brand = $request->get('brand');
+
+//     $models = SparePart::where('brand', $brand)
+//         ->select('model')
+//         ->distinct()
+//         ->orderBy('model')
+//         ->pluck('model')
+//         ->filter()
+//         ->values();
+
+//     return response()->json($models);
+// }
 
 
 
@@ -186,134 +247,7 @@ public function getModels(Request $request)
         return view('spareParts.show', compact('sparePart', 'images'));
     }
 
-    public function filter(Request $request)
-    {
-        // Fetch distinct values for filters
-        $makes      = SparePart::select('brand')->distinct()->orderBy('brand')->pluck('brand');
-        $models     = SparePart::select('model')->distinct()->orderBy('model')->pluck('model');
-        $conditions = SparePart::select('part_type')->distinct()->orderBy('part_type')->pluck('part_type');
-        $cities = SparePart::select('city')->distinct()->orderBy('city')->pluck('city');
 
-        $category_ids = SparePart::distinct()->pluck('category_id')->toArray();
-        $categories   = SparepartCategory::where('parent_id', null)->whereIn('id', $category_ids)->distinct()->pluck('name')->toArray();
-
-        $years = SparePart::select('year')
-            ->distinct()
-            ->pluck('year')
-            ->filter(function ($year) {
-                return is_numeric($year); // Keep only numeric values
-            })
-            ->map(function ($year) {
-                return (int) $year; // Convert to integers
-            })
-            ->unique()
-            ->sort()
-            ->values()
-            ->toArray();
-
-        // Start the base query
-        $query = SparePart::query();
-
-        // Apply filters based on your URL parameters
-        if ($request->has('shop_id') && $request->shop_id != '') {
-            $query->where('user_id', $request->shop_id);
-        }
-
-        if ($request->has('car_type') && $request->car_type != '') {
-            $query->where('brand', $request->car_type);
-        }
-
-        if ($request->has('car_model') && $request->car_model != '') {
-            $query->where('model', 'like', '%' . $request->car_model . '%');
-        }
-
-        if ($request->has('year') && $request->year != '') {
-            $query->where('year', 'like', '%' . $request->year . '%');
-        }
-
-        if ($request->has('category') && $request->category != '') {
-            $category = SparepartCategory::select('id')->where('name', $request->category)->first();
-            if ($category) {
-                $query->where('category_id', $category->id);
-            }
-        }
-
-        if ($request->has('sub-category') && $request->input('sub-category') != '') {
-            $subCategory = SparepartCategory::select('id')->where('name', $request->input('sub-category'))->first();
-            if ($subCategory) {
-                $query->where('category_id', $subCategory->id);
-            }
-        }
-
-        // Legacy filters (keeping for backward compatibility)
-        if ($request->has('make') && $request->make != '') {
-            $query->where('brand', $request->make);
-        }
-
-        if ($request->has('model') && $request->model != '') {
-            $query->where('model', 'like', '%' . $request->model . '%');
-        }
-
-        if ($request->has('city') && $request->city != '') {
-            $query->where('city', $request->city);
-        }
-
-        if ($request->has('subCategory') && $request->subCategory != '') {
-            $subCategory = SparepartCategory::select('id')->where(['name' => $request->subCategory])->first();
-            if ($subCategory) {
-                $query->where('category_id', $subCategory->id);
-            }
-        }
-
-        // final result of the filter
-        $spareParts = $query->select('user_id')->distinct()->pluck('user_id');
-
-        if ($spareParts->isEmpty()) {
-            $dealers = collect(); // Return an empty collection
-        } else {
-            if ($request->has('dealer_id')) {
-                $dealers = CarDealer::where('id', $request->dealer_id)->whereIn('user_id', $spareParts)->get();
-            } else {
-                $dealers = CarDealer::whereIn('user_id', $spareParts)->paginate(8);
-            }
-        }
-
-        return view('spareparts.index', compact('dealers', 'spareParts', 'cities', 'makes', 'models', 'years', 'categories', 'conditions'));
-    }
-
-    public function getSubCategories(Request $request)
-    {
-        $category      = SparepartCategory::where(['name' => $request->category, 'parent_id' => null])->first();
-        $subCategories = SparepartCategory::where('parent_id', $category->id)->distinct()->pluck('name');
-
-        return response()->json(['subCategories' => $subCategories], 200);
-    }
-
-    /**
-     * Handle spare part requests with query parameters
-     * This method handles URLs like: /spare-part?id=123 or /spare-part?shop_id=688&car_type=Honda...
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Contracts\View\View
-     */
-    public function showFromQuery(Request $request)
-    {
-        // Check if there's an ID parameter for direct spare part view
-        $id = $request->query('id');
-        if ($id && is_numeric($id)) {
-            return redirect()->route('sparepart.detail', ['id' => $id]);
-        }
-
-        // If no direct ID, but has other filter parameters, show filtered results
-        // This handles URLs like: /spare-part?car_model=Civic&car_type=Honda&category=Engine...
-        if ($request->hasAny(['shop_id', 'car_type', 'car_model', 'year', 'category', 'sub-category', 'make', 'model', 'city', 'subCategory'])) {
-            // Call the existing filter method
-            return $this->filter($request);
-        }
-
-        // If no parameters, redirect to spare parts index/listing page
-        return redirect()->route('spareParts.index');
-    }
 
     /**
      * ✅ Deep Linking Spare Parts (Legacy method - keeping for compatibility)

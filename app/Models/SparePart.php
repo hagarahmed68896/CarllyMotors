@@ -27,10 +27,18 @@ class SparePart extends Model
         return $this->belongsTo(SparepartCategory::class,'category_id');
     }
 
+    public function subcategories()
+    {
+        return $this->hasMany(SparepartCategory::class, 'parent_id');
+    }
+
 public function dealer()
 {
     return $this->belongsTo(CarDealer::class, 'user_id', 'user_id');
 }
+protected $casts = [
+    'car_model' => 'array',
+];
 
 
 }

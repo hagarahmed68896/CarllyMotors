@@ -23,4 +23,11 @@ class SparepartCategory extends Model
     public function spareParts() {
         return $this->hasMany(SparePart::class,'category_id');
     }
+        /**
+     * ✅ Relationship: One category can have many subcategories
+     */
+    public function subcategories()
+    {
+        return $this->hasMany(SparepartCategory::class, 'parent_id');
+    }
 }

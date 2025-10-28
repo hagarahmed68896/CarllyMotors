@@ -134,11 +134,17 @@ public function searchSpareParts(Request $request)
     $cities = SparePart::select('city')->distinct()->orderBy('city')->pluck('city');
 
     $category_ids = SparePart::distinct()->pluck('category_id')->toArray();
+    // $categories = SparepartCategory::whereNull('parent_id')
+    //     ->whereIn('id', $category_ids)
+    //     ->distinct()
+    //     ->pluck('name')
+    //     ->toArray();
+
     $categories = SparepartCategory::whereNull('parent_id')
-        ->whereIn('id', $category_ids)
-        ->distinct()
-        ->pluck('name')
-        ->toArray();
+    ->whereIn('id', $category_ids)
+    ->distinct()
+    ->get(['id', 'name', 'image']);
+
 
     $years = SparePart::select('year')
         ->distinct()

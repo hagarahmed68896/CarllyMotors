@@ -147,103 +147,178 @@
       Browse Cars
   </a>
 
-  <div class="dropdown-menu p-4 shadow border-0 mt-2"
-      aria-labelledby="dropdownMegaMenu"
-      style="max-height: 400px; overflow-y: auto; border-radius: 12px; min-width: 650px;">
-      
-      <div class="row g-4">
+<div class="dropdown-menu p-4 shadow border-0 mt-2 mega-menu"
+    aria-labelledby="dropdownMegaMenu">
+    
+    <div class="row g-4">
 
-          {{-- ✅ By Model --}}
-          <div class="col-md-4 border-end">
-              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Model</h6>
-              <ul class="list-unstyled mb-0">
-                  @foreach($car_models->take(10) as $model)
-                      <li>
-                          <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['model' => $model]) }}">
-                              {{ $model }}
-                          </a>
-                      </li>
-                  @endforeach
-              </ul>
-              <div class="mt-2">
-                  <a href="{{ route('cars.index', ['type' => 'car_models']) }}" class="small fw-semibold text-decoration-none text-muted">
-                      Show All Models →
-                  </a>
-              </div>
-          </div>
+        {{-- ✅ By Model --}}
+        <div class="col-md-4 border-end">
+            <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Model</h6>
+            <ul class="list-unstyled mb-0">
+                @foreach($car_models->take(10) as $model)
+                    <li>
+                        <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['model' => $model]) }}">
+                            {{ $model }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+            <div class="mt-2">
+                <a href="{{ route('cars.index', ['type' => 'car_models']) }}" class="small fw-semibold text-decoration-none text-muted">
+                    Show All Models →
+                </a>
+            </div>
+        </div>
 
-          {{-- ✅ By Year --}}
-          <div class="col-md-4 border-end">
-              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Year</h6>
-              <ul class="list-unstyled mb-0">
-              @foreach(collect($years)->take(10) as $year)
-    <li>
-        <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['year' => $year]) }}">
-            {{ $year }}
-        </a>
-    </li>
-@endforeach
+        {{-- ✅ By Year --}}
+        <div class="col-md-4 border-end">
+            <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Year</h6>
+            <ul class="list-unstyled mb-0">
+                @foreach(collect($years)->take(10) as $year)
+                    <li>
+                        <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['year' => $year]) }}">
+                            {{ $year }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+            <div class="mt-2">
+                <a href="{{ route('cars.index', ['type' => 'years']) }}" class="small fw-semibold text-decoration-none text-muted">
+                    Show All Years →
+                </a>
+            </div>
+        </div>
 
-              </ul>
-              <div class="mt-2">
-                  <a href="{{ route('cars.index', ['type' => 'years']) }}" class="small fw-semibold text-decoration-none text-muted">
-                      Show All Years →
-                  </a>
-              </div>
-          </div>
+        {{-- ✅ By Type --}}
+        <div class="col-md-4">
+            <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Type</h6>
+            <ul class="list-unstyled mb-0">
+                @foreach($bodyTypes->take(10) as $type)
+                    <li>
+                        <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['type' => $type]) }}">
+                            {{ $type }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+            <div class="mt-2">
+                <a href="{{ route('cars.index', ['type' => 'bodyTypes']) }}" class="small fw-semibold text-decoration-none text-muted">
+                    Show All Types →
+                </a>
+            </div>
+        </div>
 
-          {{-- ✅ By Type --}}
-          <div class="col-md-4">
-              <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Type</h6>
-              <ul class="list-unstyled mb-0">
-                  @foreach($bodyTypes->take(10) as $type)
-                      <li>
-                          <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['type' => $type]) }}">
-                              {{ $type }}
-                          </a>
-                      </li>
-                  @endforeach
-              </ul>
-              <div class="mt-2">
-                  <a href="{{ route('cars.index', ['type' => 'bodyTypes']) }}" class="small fw-semibold text-decoration-none text-muted">
-                      Show All Types →
-                  </a>
-              </div>
-          </div>
+    </div>
+</div>
 
-      </div>
-  </div>
 </li>
 
                 </ul>
 
-                @guest
-                    <a class="btn custom-btn" href="{{ route('login') }}">
-                        <i class="fas fa-sign-in-alt me-1"></i>Login
-                    </a>
-                @else
-                    <a href="{{ route('cars.favList') }}" class="btn custom-btn" title="My Favorites">
-                        <i class="fas fa-heart"></i>
-                    </a>
-                    <a class="btn custom-btn" href="#">
-                        <i class="fas fa-bullhorn me-1"></i>Place Your AD
-                    </a>
-                    <div class="dropdown">
-                        <a class="btn custom-btn dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="fas fa-user me-1"></i>Profile
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
-                            <li><a href="{{ route('profile', auth()->user()->id) }}" class="dropdown-item"><i class="fas fa-user-circle me-2"></i>My Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="post" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button class="dropdown-item" type="submit"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                @endguest
+@guest
+    <a class="btn custom-btn" href="{{ route('login') }}">
+        <i class="fas fa-sign-in-alt me-1"></i> Login
+    </a>
+@else
+    <!-- My Favorites -->
+    <a href="{{ route('cars.favList') }}" class="nav-link text-dark fw-semibold d-flex align-items-center">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+</svg>
+    </a>
+
+    <!-- Profile Dropdown -->
+    <div class="dropdown">
+        <a class="nav-link dropdown-toggle text-dark fw-semibold d-flex align-items-center" href="#" data-bs-toggle="dropdown">
+            <i class="fas fa-user me-1"></i> Profile
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
+            <li>
+                <a href="{{ route('profile', auth()->user()->id) }}" class="dropdown-item">
+                    <i class="fas fa-user-circle me-2"></i> My Profile
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('cars.create') }}" class="dropdown-item">
+                    <i class="fas fa-bullhorn me-2 text-secondary"></i> My Ads
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <form method="post" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="dropdown-item" type="submit">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+@endguest
+
+
+<style>
+/* Navbar Text Buttons (like "Sell Your Car") */
+.navbar .nav-link {
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Hover effect similar to Sell Your Car */
+.navbar .nav-link:hover {
+    color: #185D31 !important;
+    background-color: rgba(24, 93, 49, 0.08);
+    text-decoration: none;
+}
+
+/* Adjust icon spacing */
+.navbar .nav-link i {
+    font-size: 0.95rem;
+}
+/* ✅ Desktop View */
+.mega-menu {
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 12px;
+    min-width: 650px;
+}
+
+/* ✅ Mobile Fix */
+@media (max-width: 768px) {
+    .mega-menu {
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        width: 100% !important;
+        min-width: auto !important;
+        max-height: 70vh !important; /* 👈 خليه يسحب بمساحة 70% من الشاشة */
+        overflow-y: auto !important; /* 👈 يفعّل السكرول */
+        border-radius: 0 0 12px 12px !important;
+        background-color: #fff !important;
+        z-index: 9999 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .mega-menu .row {
+        flex-direction: column !important;
+    }
+
+    .mega-menu .col-md-4 {
+        border: none !important;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .mega-menu .col-md-4:last-child {
+        border-bottom: none;
+    }
+}
+
+</style>
             </div>
         </div>
     </div>

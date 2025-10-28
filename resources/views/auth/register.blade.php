@@ -4,21 +4,23 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-/* Container */
 #container {
     max-width: 500px;
     margin: 60px auto;
 }
-
-/* Card */
 .card-step {
     background-color: #fff;
     padding: 2rem;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
+.step {
+    display: none;
+}
+.step.step-1 {
+    display: block;
+}
 
-/* Step Circles */
 .step-container {
     position: relative;
     text-align: center;
@@ -41,8 +43,6 @@
     background-color: #760e13;
     color: #fff;
 }
-
-/* Step line */
 .step-line {
     position: absolute;
     top: 16px;
@@ -52,8 +52,6 @@
     background-color: #760e13;
     z-index: -1;
 }
-
-/* Progress bar */
 .progress {
     height: 5px;
     border-radius: 10px;
@@ -61,9 +59,8 @@
 }
 .progress-bar {
     background-color: #760e13;
+    transition: width 0.4s ease;
 }
-
-/* Form Inputs */
 input[type="text"], .form-control {
     border-radius: 15px;
     border: 2px solid #760e13;
@@ -73,166 +70,300 @@ input[type="text"]:focus {
     box-shadow: 0 0 8px rgba(118,14,19,0.3);
     outline: none;
 }
-
-/* Buttons */
 button.btn-secondary, button.btn-primary {
     border-radius: 15px;
     padding: 0.5rem 1rem;
 }
-
-/* OTP timer */
 #otp-timer {
     font-size: 0.9rem;
     color: #760e13;
     margin-bottom: 0.5rem;
 }
-
-/* Responsive */
 @media (max-width: 576px) {
-    #container {
-        margin: 30px auto;
-        padding: 0 1rem;
-    }
+    #container { margin: 30px auto; padding: 0 1rem; }
 }
 </style>
 
 <div id="container">
-    <!-- Progress Bar -->
     <div class="progress mb-4">
         <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
 
-    <!-- Step Circles -->
     <div class="step-container d-flex justify-content-between position-relative">
-        <div class="step-circle active" onclick="displayStep(1)">1</div>
-        <div class="step-circle" onclick="displayStep(2)">2</div>
-        <div class="step-circle" onclick="displayStep(3)">3</div>
+        <div class="step-circle active">1</div>
+        <div class="step-circle">2</div>
+        <div class="step-circle">3</div>
         <div class="step-line"></div>
     </div>
 
-    <!-- Form Card -->
     <div class="card-step">
         <div id="multi-step-form">
-            <!-- Step 1 -->
-            <div class="step step-1">
-                <h3 class="text-center mb-4" style="color:#760e13;">Verify Phone Number</h3>
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone:</label>
-                    <input type="text" class="form-control mb-2" id="phone" name="phone" placeholder="Enter phone">
-                    <button type="button" class="btn btn-secondary btn-sm float-end mb-2" onclick="sendOTP()">Send OTP</button>
-                    <div id="recaptcha-container"></div>
-                    <p id="otp-timer">OTP expires in <span id="countdown">60</span> seconds</p>
-                    <button type="button" class="btn btn-secondary btn-sm w-100 mb-2" id="resend-otp" onclick="sendOTP()" disabled>Resend OTP</button>
-                    <input type="text" id="otp" class="form-control mb-2" placeholder="Enter OTP">
-                    <button type="button" class="btn btn-secondary btn-sm float-end mb-4" onclick="verifyOTP()">Verify OTP</button>
+            
+            <!-- ✅ STEP 1 — Phone Input -->
+            <div class="step step-1 text-center">
+                <h3 class="mb-4" style="color:#760e13;">Enter Your Phone Number</h3>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">+971</span>
+                    <input type="text" class="form-control" id="phone" name="phone" placeholder="5xxxxxxxx" maxlength="9" required>
                 </div>
+                <div id="recaptcha-container"></div>
+                <button type="button" class="btn rounded-4  w-100" style="background-color: #760e13; color: white;" onclick="sendOTP()">Send OTP</button>
             </div>
 
-            <!-- Step 2 Placeholder -->
-            <div class="step step-2">
-                <h3 class="text-center mb-4" style="color:#760e13;">Step 2 Title</h3>
-                <p class="text-center">Content for step 2 goes here.</p>
+            <!-- ✅ STEP 2 — OTP Input -->
+            <div class="step step-2 text-center">
+                <h3 class="mb-3" style="color:#760e13;">Verify Code</h3>
+                <p id="otp-timer">OTP expires in <span id="countdown">60</span> seconds</p>
+                <input type="text" id="otp" class="form-control mb-3" placeholder="Enter OTP">
+                <button type="button" class="btn  w-100 rounded-4 mb-2" style="background-color: #760e13; color: white;" onclick="verifyOTP()">Verify OTP</button>
+                <button type="button" class="btn rounded-4 btn-secondary w-100" id="resend-otp" onclick="sendOTP()" disabled>Resend OTP</button>
             </div>
 
-            <!-- Step 3 Placeholder -->
-            <div class="step step-3">
-                <h3 class="text-center mb-4" style="color:#760e13;">Step 3 Title</h3>
-                <p class="text-center">Content for step 3 goes here.</p>
+            <!-- ✅ STEP 3 — Verified Message -->
+            <div class="step step-3 text-center">
+                <h3 style="color:#760e13;">Phone Verified ✅</h3>
+                <p>You are successfully verified. Redirecting...</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Scripts (Firebase + jQuery) -->
+{{-- keep all your Firebase + JS exactly same --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
-<!-- Keep all your existing JS logic unchanged -->
+
 <script>
+/* global firebase, $, window */
+
+// ✅ إعداد Firebase الصحيح
 const firebaseConfig = {
-    apiKey: "{{ env('FIREBASE_API_KEY') }}",
-    authDomain: "{{ env('FIREBASE_AUTH_DOMAIN') }}",
-    projectId: "{{ env('FIREBASE_PROJECT_ID') }}",
-    storageBucket: "{{ env('FIREBASE_STORAGE_BUCKET') }}",
-    messagingSenderId: "{{ env('FIREBASE_MESSAGING_SENDER_ID') }}",
-    appId: "{{ env('FIREBASE_APP_ID') }}",
-    measurementId: "{{ env('FIREBASE_MEASUREMENT_ID') }}"
+    apiKey: "AIzaSyDV5bqNaUUDmB3SBawLc7HXBI2WvAcOvV8",
+    authDomain: "carlly-de5a1.firebaseapp.com",
+    projectId: "carlly-de5a1",
+    storageBucket: "carlly-de5a1.appspot.com", // ✅ تصحيح هنا
+    messagingSenderId: "336138983965",
+    appId: "1:336138983965:web:edd47ae145c033f05a44f4",
+    measurementId: "G-416GMZTRZT"
 };
+console.log("🔍 Firebase Config:", firebaseConfig);
 
+// ✅ تهيئة Firebase
 firebase.initializeApp(firebaseConfig);
+
 let recaptchaVerifier;
-let recaptchaVerifier; // خليها global فوق الكود
+let lastConfirmationResult = null;
 
+/* ================================================================
+   🔹 Helper: نتحقق هل الوضع تطوير محلي أو Debug مفعّل
+================================================================ */
+function isDebugMode() {
+  const checkbox = document.querySelector('#use-debug');
+  return (checkbox && checkbox.checked) || location.hostname.includes('localhost') || location.hostname.includes('127.0.0.1');
+}
+
+/* ================================================================
+   🔹 إعداد reCAPTCHA (غير مرئي)
+================================================================ */
 function setupReCaptcha() {
-    if (!recaptchaVerifier) {
-        recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-            size: 'invisible',
-            callback: function(response) {
-                console.log('reCAPTCHA verified ✅');
-            }
-        });
-        recaptchaVerifier.render();
-    } else {
-        console.log("reCAPTCHA already rendered, skipping...");
-    }
+  if (!recaptchaVerifier) {
+    recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      size: 'invisible',
+      callback: function () {
+        console.log('reCAPTCHA verified ✅');
+      }
+    });
+    recaptchaVerifier.render().catch(() => {});
+  }
 }
 
-
+/* ================================================================
+   🔹 إرسال OTP
+================================================================ */
 function sendOTP() {
-    setupReCaptcha();
-    const phoneNumber = document.getElementById("phone").value;
+  setupReCaptcha();
 
-    firebase.auth().signInWithPhoneNumber(phoneNumber, recaptchaVerifier)
-        .then((confirmationResult) => {
-            window.confirmationResult = confirmationResult;
-            console.log("✅ OTP sent successfully to:", phoneNumber);
-            console.log("ℹ️ confirmationResult object:", confirmationResult);
-            alert("OTP sent successfully!");
+  const phoneInput = document.getElementById("phone");
+  let phoneNumber = phoneInput ? phoneInput.value.trim() : '';
 
-            // 🔥 لو بتجربي محليًا، ممكن تولدي كود وهمي للطباعة
-            const fakeOtp = Math.floor(100000 + Math.random() * 900000);
-            console.log("🧪 (Demo) Fake OTP for testing:", fakeOtp);
+  if (!phoneNumber) {
+    alert("Please enter phone number");
+    return;
+  }
 
-            startCountdown(60);
-        })
-        .catch((error) => {
-            console.error("❌ Error sending OTP:", error);
-            alert(error.message);
-            grecaptcha.reset();
+  // ✅ تأكد من وجود الكود الدولي
+  if (!phoneNumber.startsWith('+')) {
+    phoneNumber = '+971' + phoneNumber.replace(/^0+/, '');
+  }
+
+  console.log("📞 Full phone number:", phoneNumber);
+
+  // ✅ وضع DEBUG محلي أو إجباري
+  if (isDebugMode()) {
+    const fakeOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log("🧪 (DEBUG) Fake OTP for", phoneNumber, "is:", fakeOtp);
+
+    lastConfirmationResult = {
+      _isFake: true,
+      _fakeOtp: fakeOtp,
+      confirm: function (code) {
+        return new Promise((resolve, reject) => {
+          if (String(code) === String(this._fakeOtp)) {
+            const fakeUser = {
+              getIdToken: () => Promise.resolve('FAKE_ID_TOKEN_FOR_DEV'),
+              phoneNumber,
+              uid: 'FAKE_UID_' + Math.random().toString(36).substring(2, 8)
+            };
+            resolve({ user: fakeUser });
+          } else {
+            reject({ code: 'auth/invalid-verification-code', message: 'Invalid debug OTP code.' });
+          }
         });
+      }
+    };
+
+    // alert("🧪 Debug OTP generated — check console!");
+    startCountdown(60);
+        showStep(2); // ✅ move to Step 2 in debug mode
+
+    return;
+  }
+
+  // ✅ الوضع الحقيقي: إرسال OTP عبر Firebase
+  firebase.auth().signInWithPhoneNumber(phoneNumber, recaptchaVerifier)
+    .then((confirmationResult) => {
+      lastConfirmationResult = confirmationResult;
+      console.log("✅ confirmationResult:", confirmationResult);
+    //   alert("OTP sent successfully!");
+      startCountdown(60);
+          showStep(2); // ✅ move to Step 2 in debug mode
+
+    })
+    .catch((error) => {
+      console.error("❌ Error sending OTP:", error);
+    //   alert(error.message || "Error sending OTP");
+      try { grecaptcha && grecaptcha.reset(); } catch (e) {}
+    });
 }
 
-
-function startCountdown(seconds) {
-    let countdownElement = document.getElementById("countdown");
-    let resendButton = document.getElementById("resend-otp");
-    resendButton.disabled = true;
-    let interval = setInterval(() => {
-        if (seconds > 0) { countdownElement.innerText = seconds; seconds--; } 
-        else { clearInterval(interval); resendButton.disabled = false; countdownElement.innerText = "Expired!"; }
-    }, 1000);
-}
-
+/* ================================================================
+   🔹 التحقق من الكود (OTP)
+================================================================ */
 function verifyOTP() {
-    const otp = document.getElementById("otp").value;
-    window.confirmationResult.confirm(otp)
-        .then((result) => { alert("Phone number verified!"); })
-        .catch((error) => { if(error.code==="auth/code-expired") { alert("OTP expired."); document.getElementById("resend-otp").disabled=false; } else { alert(error.message); } });
+  const otpInput = document.getElementById("otp");
+  const code = otpInput ? otpInput.value.trim() : '';
+
+  if (!code) {
+    alert("Please enter OTP");
+    return;
+  }
+
+  if (!lastConfirmationResult) {
+    alert("No OTP request found. Please request OTP first.");
+    return;
+  }
+
+  // ✅ لو الوضع Debug
+  if (lastConfirmationResult._isFake) {
+    lastConfirmationResult.confirm(code)
+      .then((result) => handleVerifiedFirebaseUser(result.user))
+      .catch((err) => {
+        console.error(err);
+        alert(err.message || "Invalid Debug OTP");
+      });
+    return;
+  }
+
+  // ✅ التحقق الحقيقي من Firebase
+  lastConfirmationResult.confirm(code)
+    .then((result) => handleVerifiedFirebaseUser(result.user))
+    .catch((error) => {
+      console.error("❌ verifyOTP error:", error);
+      if (error.code === "auth/code-expired") {
+        alert("OTP expired. Please resend.");
+        document.getElementById("resend-otp").disabled = false;
+      } else {
+        alert(error.message || "Invalid OTP");
+      }
+    });
 }
 
-// Multi-step wizard
-var currentStep = 1;
-function displayStep(stepNumber) {
-    if(stepNumber>=1 && stepNumber<=3){
-        $(".step-"+currentStep).hide();
-        $(".step-"+stepNumber).show();
-        $(".step-circle").removeClass("active");
-        $(".step-circle:nth-child("+stepNumber+")").addClass("active");
-        currentStep=stepNumber;
-        $(".progress-bar").css("width", ((currentStep-1)/2)*100+"%");
-    }
+/* ================================================================
+   🔹 بعد التحقق — إرسال التوكن للباك إند
+================================================================ */
+function handleVerifiedFirebaseUser(user) {
+  return user.getIdToken().then(function (idToken) {
+    console.log("✅ Firebase User verified:", user);
+
+    return $.ajax({
+      url: "/verify-token",
+      method: "POST",
+      headers: { // ✅ CSRF token هنا
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      data: {
+        token: idToken
+      }
+    }).then(function (response) {
+  if (response.success) {
+    showStep(3); // ✅ نعرض Step 2 بعد النجاح
+    setTimeout(() => {
+        window.location.href = response.redirect || "/";
+    }, 2000); // بعد ثانيتين
 }
-$(document).ready(function(){ $('#multi-step-form').find('.step').slice(1).hide(); displayStep(1); });
+ else {
+        alert("Server error: " + (response.error || "Unknown"));
+      }
+    }).catch(function (err) {
+      console.error("Backend verify-token error:", err);
+      alert("Server verification failed");
+    });
+  });
+}
+
+/* ================================================================
+   🔹 العداد (Countdown)
+================================================================ */
+function startCountdown(seconds) {
+  const countdownElement = document.getElementById("countdown");
+  const resendButton = document.getElementById("resend-otp");
+
+  resendButton.disabled = true;
+  countdownElement.innerText = seconds;
+
+  const interval = setInterval(() => {
+    seconds--;
+    if (seconds > 0) {
+      countdownElement.innerText = seconds;
+    } else {
+      clearInterval(interval);
+      resendButton.disabled = false;
+      countdownElement.innerText = "Expired!";
+    }
+  }, 1000);
+}
+function showStep(stepNumber) {
+  // Hide all steps
+  document.querySelectorAll('.step').forEach(step => step.style.display = 'none');
+  const stepElement = document.querySelector(`.step-${stepNumber}`);
+  if (stepElement) stepElement.style.display = 'block';
+  
+  // Update active step circles
+  const circles = document.querySelectorAll('.step-circle');
+  circles.forEach((circle, index) => {
+    if (index < stepNumber) circle.classList.add('active');
+    else circle.classList.remove('active');
+  });
+
+  // ✅ Update progress bar width
+  const progressBar = document.querySelector('.progress-bar');
+  const totalSteps = circles.length;
+  const progress = ((stepNumber - 1) / (totalSteps - 1)) * 100;
+  progressBar.style.width = progress + '%';
+  progressBar.setAttribute('aria-valuenow', progress);
+}
+
+
 </script>
 @endsection

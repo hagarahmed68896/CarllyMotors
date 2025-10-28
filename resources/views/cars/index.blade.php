@@ -360,7 +360,7 @@ function submitTopFilter() {
 
       <div class="col-12 p-0 col-md-10 col-lg-9">
         <div class="car-card shadow-sm rounded-4 overflow-hidden hover-card d-flex flex-column flex-lg-row">
-
+ 
           {{-- 🖼️ الصورة clickable --}}
          <div class="car-carousel-container position-relative flex-shrink-0">
   <a href="{{ route('car.detail', $car->id) }}" class="d-block w-100 h-100">
@@ -548,20 +548,22 @@ class="flex-fill text-decoration-none">
     </button>
 </a>
 
-
+@if(!empty($car->user?->phone))
     @if($os == 'Android' || $os == 'iOS')
-        <a href="tel:{{ $car->user->phone }}" class="text-decoration-none flex-grow-1">
+        <a href="tel:{{ $car->user?->phone }}" class="text-decoration-none flex-grow-1">
             <button class="btn btn-outline-danger rounded-4 w-100">
-                <i class="fas fa-phone me-1"></i> 
+                <i class="fas fa-phone me-1"></i>
             </button>
         </a>
     @else
         <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="text-decoration-none flex-grow-1">
             <button class="btn btn-outline-danger rounded-4 w-100">
-                <i class="fas fa-phone me-1"></i> 
+                <i class="fas fa-phone me-1"></i>
             </button>
         </a>
     @endif
+@endif
+
 </div>
 
           </div>

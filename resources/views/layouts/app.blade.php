@@ -288,7 +288,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('img').forEach(img => {
                 img.addEventListener('error', function() {
-                    this.src = '{{ asset("placeholder-car.jpg") }}';
+                    this.src = '{{ asset("workshopNotFound.png") }}';
                     this.alt = 'Image not available';
                     this.classList.add('error-image');
                 });
