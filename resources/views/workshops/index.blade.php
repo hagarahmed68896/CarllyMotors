@@ -122,128 +122,249 @@ use Illuminate\Support\Str;
 @section('content')
 <div class="container my-4">
     <div class="row g-4">
-        
-        <!-- Sidebar Filter -->
-        <aside class="col-lg-3 col-md-4">
-            <div class="filter-sidebar">
-                <h5><i class="fas fa-sliders-h me-2"></i>Filter Workshops</h5>
-<form id="filterForm" method="GET" 
-      action="{{ request()->routeIs('global.search') ? route('global.search') : route('workshops.index') }}">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small text-muted">Make</label>
-                        <select class="form-select" id="brand" name="brand_id">
-                            <option value="">All Makes</option>
-                            @foreach($brands as $key => $brand)
-                                <option value="{{ $key }}" {{ request('brand_id') == $key ? 'selected' : '' }}>
-                                    {{ $brand }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+         
+<!-- Sidebar Filter -->
+<aside class="col-lg-3 col-md-4">
+  <div class="filter-sidebar p-3 rounded-3 shadow-sm bg-white">
+    <h5 class="fw-bold mb-3 text-center" style="color:#760e13">
+      <i class="fas fa-sliders-h me-2"></i> Filter Workshops
+    </h5>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small text-muted">Category</label>
-                        <select class="form-select" id="workshop" name="category_id">
-                            <option value="">All Categories</option>
-                            @foreach($categories as $key => $category)
-                                <option value="{{ $key }}" {{ request('category_id') == $key ? 'selected' : '' }}>
-                                    {{ $category }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+    <form id="filterForm" method="GET"
+          action="{{ request()->routeIs('global.search') ? route('global.search') : route('workshops.index') }}">
 
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold small text-muted">City</label>
-                        <select class="form-select" id="city" name="city">
-                            <option value="">All Cities</option>
-                            @foreach($cities as $city)
-                                @if(!empty($city))
-                                    <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-                                        {{ $city }}
-                                    </option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
+      <!-- City -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold small text-muted">City</label>
+        <select class="form-select" id="city" name="city" required>
+          <option value="">Select City</option>
+          @foreach($cities as $city)
+            @if(!empty($city))
+              <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+                {{ ucfirst($city) }}
+              </option>
+            @endif
+          @endforeach
+        </select>
+      </div>
 
-                    <div class="d-flex gap-2 border-top pt-3">
-<button type="submit" class="btn flex-fill rounded-3 text-white" style="background-color: #760e13; border-color: #760e13;">
-                            Apply Filters</button>
-                        <button type="button" onclick="resetFilters()" class="btn btn-light flex-fill border">Reset</button>
-                    </div>
-                </form>
-            </div>
-        </aside>
+      <!-- Car Brand -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold small text-muted">Car Brand</label>
+        <select class="form-select" id="brand" name="brand_id" required>
+          <option value="">Select Car Brand</option>
+          @foreach($brands as $id => $brand)
+            <option value="{{ $id }}" {{ request('brand_id') == $id ? 'selected' : '' }}>
+              {{ $brand }}
+            </option>
+          @endforeach
+        </select>
+      </div>
 
-        <!-- Workshops List -->
-     <div class="col-lg-9 col-md-8">
-    <div class="row g-4">
-        @forelse ($workshops as $workshop)
+      <!-- Services (Categories) -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold small text-muted d-block mb-2">Services</label>
+        <div class="row g-2">
+          @foreach($categories as $category)
             @php
-                $shareUrl = request()->url() . '?id=' . $workshop->id;
-                $image = $workshop->workshop_logo
-                    ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
-                        ? $workshop->workshop_logo
-                        : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
-                    : asset('workshopNotFound.png');
+              $img = $category->image
+                  ? config('app.file_base_url') . Str::after($category->image, url('/') . '/')
+                  : 'https://via.placeholder.com/60';
             @endphp
 
-            <div class="col-sm-6 col-lg-4">
-                <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden workshop-card">
-                    <img src="{{ $image }}" 
-                         onerror="this.onerror=null; this.src='{{ asset('workshopNotFound.png') }}';" 
-                         class="card-img-top" 
-                         alt="Workshop Image" 
-                         style="height:200px; object-fit:cover;">
+           <div class="col-4 mb-3">
+    <label class="service-option w-100" style="cursor:pointer;">
+        <input type="radio" name="category_id" value="{{ $category->id }}" class="d-none"
+               {{ request('category_id') == $category->id ? 'checked' : '' }}>
+        <div class="border p-2 rounded-3 text-center service-card 
+                    {{ request('category_id') == $category->id ? 'selected-service' : '' }}">
+            
+            <!-- Fixed square icon container -->
+            <div style="width: 60px; height: 60px; margin: 0 auto; overflow:hidden; border-radius:8px;">
+                <img src="{{ $img }}" 
+                     alt="{{ $category->name }}" 
+                     style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
 
-                    <div class="card-body d-flex flex-column justify-content-between">
-                        <div>
-                            <h5 class="card-title fw-bold text-truncate">{{ Str::limit($workshop->workshop_name, 25) }}</h5>
-                            <p class="text-muted small mb-1">
-                                <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $workshop->address }}
-                            </p>
+            <div class="fw-semibold mt-2" style="font-size: 0.9rem; white-space: normal; word-break: break-word;">
+                {{ $category->name }}
+            </div>
+        </div>
+    </label>
+</div>
 
-                            @if(isset($workshop->days[0]))
-                                <p class="text-muted small mb-2">
-                                    <i class="fas fa-clock me-1 text-success"></i>
-                                    {{ $workshop->days[0]->day }}: {{ $workshop->days[0]->from }} - {{ $workshop->days[0]->to }}
-                                </p>
-                            @endif
+          @endforeach
+        </div>
+      </div>
 
-                            @if(count($workshop->days) > 1)
-                                <div class="dropdown mb-2">
-                                    <a class="btn btn-sm btn-outline-secondary dropdown-toggle w-100" href="#" id="dropdownDays{{ $workshop->id }}"
-                                       data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 10px;">
-                                        More Days
-                                    </a>
-                                    <ul class="dropdown-menu w-100" aria-labelledby="dropdownDays{{ $workshop->id }}">
-                                        @foreach($workshop->days as $key => $day)
-                                            @if($key == 0) @continue @endif
-                                            <li class="px-3 py-1 small text-muted">
-                                                <i class="fas fa-clock me-1" style="color:#5a0b0f;"></i>
-                                                {{ $day->day }}: {{ $day->from }} - {{ $day->to }}
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-                        </div>
+      <!-- Buttons -->
+      <div class="d-flex gap-2 border-top pt-3">
+        <button type="submit"
+                id="applyBtn"
+                class="btn flex-fill rounded-3 text-white"
+                style="background-color: #760e13; border-color: #760e13;"
+                disabled>
+          Apply Filters
+        </button>
+        <button type="button" onclick="resetFilters()" class="btn btn-light flex-fill border">
+          Reset
+        </button>
+      </div>
+    </form>
+  </div>
+</aside>
 
-                        <div class="d-flex justify-content-between mt-3">
-                        <a href="https://wa.me/{{ $workshop->user->phone }}?text={{ urlencode(
-    'Hello, I’m interested in your workshop services. Are you still available for maintenance or repair work?' . "\n\n" .
-    'Workshop Name: ' . $workshop->workshop_name . "\n" .
-    'Address: ' . ($workshop->address ?? 'Not specified') . "\n\n" .
-    'View Workshop on Website: ' . $shareUrl
-) }}"
-   target="_blank"
-   class="text-decoration-none flex-grow-1">
-    <button class="btn btn-outline-success w-100 action-btn rounded-4">
-        <i class="fab fa-whatsapp"></i>
-    </button>
-</a>
+<!-- ✅ Styles -->
+<style>
+  .service-card {
+    border: 2px solid #ddd;
+    transition: all 0.2s ease-in-out;
+  }
 
+  .service-card:hover {
+    border-color: #760e13;
+    background-color: #fdf4f4;
+  }
+
+  .selected-service {
+    border: 2px solid #760e13 !important;
+    background-color: #f9f3f3 !important;
+  }
+
+  #applyBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+</style>
+
+<!-- ✅ Script -->
+<script>
+  function updateApplyButtonState() {
+    const city = document.getElementById('city').value.trim();
+    const brand = document.getElementById('brand').value.trim();
+    const categoryChecked = document.querySelector('input[name="category_id"]:checked');
+    const applyBtn = document.getElementById('applyBtn');
+
+    // Enable only if all three filters filled
+    if (city && brand && categoryChecked) {
+      applyBtn.removeAttribute('disabled');
+    } else {
+      applyBtn.setAttribute('disabled', true);
+    }
+  }
+
+  // monitor all changes
+  document.getElementById('city').addEventListener('change', updateApplyButtonState);
+  document.getElementById('brand').addEventListener('change', updateApplyButtonState);
+  document.querySelectorAll('input[name="category_id"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.querySelectorAll('.service-card').forEach(card => card.classList.remove('selected-service'));
+      radio.closest('.service-option').querySelector('.service-card').classList.add('selected-service');
+      updateApplyButtonState();
+    });
+  });
+
+  // ✅ reset filters
+  function resetFilters() {
+    document.getElementById('city').value = '';
+    document.getElementById('brand').value = '';
+    document.querySelectorAll('input[name="category_id"]').forEach(radio => radio.checked = false);
+    document.querySelectorAll('.service-card').forEach(card => card.classList.remove('selected-service'));
+    updateApplyButtonState();
+  }
+
+  // initial state on page load
+  updateApplyButtonState();
+</script>
+
+
+
+
+   <!-- Workshops List -->
+<div class="col-lg-9 col-md-8">
+
+  @php
+      $hasFilters = request()->filled('city') && request()->filled('brand_id') && request()->filled('category_id');
+  @endphp
+
+  @if(!$hasFilters)
+    <!-- 💤 Waiting for Filters Section -->
+    <section class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
+      <div class="text-center">
+        <h5 class="fw-bold mb-2" style="color:#760e13;">Find Your Perfect Workshop</h5>
+        <p class="text-muted mb-3">
+          Please fill in all filter fields and click <strong>Apply Filters</strong> to begin your search.
+        </p>
+        <button class="btn btn-outline-danger" disabled>
+          <i class="fas fa-sliders-h me-2"></i> Waiting for Filters...
+        </button>
+      </div>
+    </section>
+  @else
+  <!-- ✅ Workshops Display Section -->
+<div class="row g-4">
+    @forelse ($workshops as $workshop)
+        @php
+            $shareUrl = request()->url() . '?id=' . $workshop->id;
+            $image = $workshop->workshop_logo
+                ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
+                    ? $workshop->workshop_logo
+                    : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
+                : asset('workshopNotFound.png');
+
+            $mapUrl = $workshop->latitude && $workshop->longitude
+                ? "https://www.google.com/maps?q={$workshop->latitude},{$workshop->longitude}"
+                : null;
+        @endphp
+
+      <div class="col-sm-6 col-lg-4">
+    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden workshop-card hover-effect position-relative">
+
+        <a href="{{ route('workshops.show', $workshop->id) }}" 
+           class="text-decoration-none text-dark d-block">
+            <img src="{{ $image }}" 
+                 onerror="this.onerror=null; this.src='{{ asset('workshopNotFound.png') }}';" 
+                 class="card-img-top" 
+                 alt="Workshop Image" 
+                 style="height:200px; object-fit:cover;">
+        </a>
+
+      <!-- 🔍 زر الزووم -->
+<button type="button" 
+        class="btn btn-light position-absolute top-0 end-0 m-2 shadow"
+        style="width: 30px; height: 30px; border-radius: 50%; color:#760e13;
+         display:flex; align-items:center; justify-content:center;"
+        data-bs-toggle="modal" 
+        data-bs-target="#workshopImagesModal{{ $workshop->id }}"
+        onclick="event.stopPropagation();">
+    <i class="fas fa-search-plus"></i>
+</button>
+
+
+        <div class="card-body d-flex flex-column justify-content-between">
+            <h5 class="card-title fw-bold text-truncate" title="{{ $workshop->workshop_name }}">
+                {{ $workshop->workshop_name }}
+            </h5>
+
+            <p class="text-muted small mb-2">
+                <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+                {{ $workshop->branch ?? 'Address not available' }}
+            </p>
+
+            <!-- ✅ الأزرار -->
+            <div class="d-flex justify-content-between mt-3">
+                <a href="https://wa.me/{{ $workshop->user->phone }}?text={{ urlencode(
+                    'السلام عليكم، شفت ورشتكم ' . $workshop->workshop_name . ' في تطبيق Carlly Motors، وعندي شغل ' .
+                    ($workshop->workshop_categories ?? 'صيانة') . ' بسيارتي. متى أقدر آييبها؟' . "\n\n" .
+                    'Hello, I saw your ' . $workshop->workshop_name . ' workshop on the Carlly app. I need some ' .
+                    ($workshop->workshop_categories ?? 'maintenance') . ' work done on my car. When can I bring it in?' . "\n\n" .
+                    $shareUrl
+                ) }}" 
+                   target="_blank" 
+                   class="btn btn-outline-success flex-fill rounded-4 mx-1"
+                   onclick="event.stopPropagation();">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
 
                             @php
                                 $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
@@ -251,216 +372,130 @@ use Illuminate\Support\Str;
 
                             @if($isMobile)
                                 <a href="tel:{{ $workshop->user?->phone }}" 
-                                   class="btn btn-outline-danger flex-fill mx-1 rounded-3">
+                                   class="btn btn-outline-danger flex-fill mx-1 rounded-4">
                                     <i class="fas fa-phone"></i>
                                 </a>
                             @else
                                 <a href="https://wa.me/{{ $workshop->user?->phone }}" 
                                    target="_blank" 
-                                   class="btn btn-outline-danger flex-fill mx-1 rounded-3">
+                                   class="btn btn-outline-danger flex-fill mx-1 rounded-4">
                                     <i class="fas fa-phone"></i>
                                 </a>
                             @endif
-
-                            <a href="https://wa.me/?text={{ urlencode('Check this workshop: ' . $shareUrl) }}" 
-                               target="_blank" 
-                               class="btn btn-outline-info flex-fill mx-1 rounded-3">
-                                <i class="fa fa-share"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <a href="https://wa.me/?text={{ urlencode(
+                    'Workshop Name: ' . $workshop->workshop_name . "\n" .
+                    'Phone: ' . ($workshop->user?->phone ?? 'N/A') . "\n" . $shareUrl
+                ) }}" 
+                   target="_blank" 
+                   class="btn btn-outline-info flex-fill rounded-4 mx-1"
+                   onclick="event.stopPropagation();">
+                    <i class="fa fa-share"></i>
+                </a>
             </div>
-        @empty
-            <p class="text-center text-muted mt-4">No workshops found.</p>
-        @endforelse
+        </div>
     </div>
-    @php
-  use Illuminate\Pagination\LengthAwarePaginator;
+</div>
+
+<!-- ✅ Fully Responsive Image Modal -->
+@php
+    $images = \App\Models\Image::where('workshop_provider_id', $workshop->id)->pluck('image');
 @endphp
 
-@if ($workshops instanceof LengthAwarePaginator && $workshops->hasPages())
-  @php
-    $current = $workshops->currentPage();
-    $last = $workshops->lastPage();
-    $maxFull = 50; // if pages <= this -> show all pages
-    $window = 2;   // pages to show around current when condensing
-    // build pages array to render
-    $pages = [];
+@if($images && count($images) > 0)
+<div class="modal fade" id="workshopImagesModal{{ $workshop->id }}" tabindex="-1" aria-labelledby="workshopImagesModalLabel{{ $workshop->id }}" aria-hidden="true" style="z-index:1055;">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content rounded-4 position-relative">
 
-    if ($last <= $maxFull) {
-        for ($p = 1; $p <= $last; $p++) {
-            $pages[] = $p;
-        }
-    } else {
-        // always show first 2
-        $pages[] = 1;
-        $pages[] = 2;
+            <div class="modal-header">
+                <h5 class="modal-title" id="workshopImagesModalLabel{{ $workshop->id }}">
+                    {{ $workshop->workshop_name }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color:#5a0b0f;"></button>
+            </div>
 
-        // determine left and right window
-        $start = max(3, $current - $window);
-        $end = min($last - 2, $current + $window);
+            <div class="modal-body p-0 d-flex justify-content-center align-items-center" 
+                 style="max-height: 80vh; overflow: hidden;">
+                <div class="swiper workshopSwiper-{{ $workshop->id }}" style="width:100%; height:100%;">
 
-        if ($start > 3) {
-            $pages[] = '...';
-        } else {
-            // include 3 if window touches
-            for ($p = 3; $p < $start; $p++) $pages[] = $p;
-        }
+                    <div class="swiper-wrapper">
+                        @foreach($images as $img)
+                        <div class="swiper-slide d-flex justify-content-center align-items-center">
+                            <img src="{{ env('CLOUDFLARE_R2_URL') . $img }}" class="img-fluid rounded-4" 
+                                 alt="Workshop Image" 
+                                 style="max-height: 75vh; object-fit: contain;">
+                        </div>
+                        @endforeach
+                    </div>
 
-        for ($p = $start; $p <= $end; $p++) $pages[] = $p;
+                    <!-- Navigation -->
+                    <div class="swiper-button-next text-white"></div>
+                    <div class="swiper-button-prev text-white"></div>
 
-        if ($end < $last - 2) {
-            $pages[] = '...';
-        } else {
-            for ($p = $end + 1; $p <= $last - 2; $p++) $pages[] = $p;
-        }
+                    <!-- Pagination -->
+                    <div class="swiper-pagination"></div>
 
-        // always show last 2
-        $pages[] = $last - 1;
-        $pages[] = $last;
+                </div>
+            </div>
 
-        // remove duplicates while preserving order
-        $pages = array_values(array_unique($pages));
-    }
-  @endphp
-
-  <nav aria-label="Page navigation" class="mt-4">
-    <ul class="custom-pagination d-flex justify-content-center align-items-center flex-wrap">
-
-      {{-- Previous --}}
-      @if ($workshops->onFirstPage())
-        <li class="disabled"><span class="page-btn" aria-hidden="true">‹</span></li>
-      @else
-        <li><a href="{{ $workshops->previousPageUrl() }}" class="page-btn" rel="prev" aria-label="Previous">‹</a></li>
-      @endif
-
-      {{-- Page Numbers --}}
-      @foreach ($pages as $p)
-        @if ($p === '...')
-          <li><span class="page-btn dots">…</span></li>
-        @else
-          @php $p = (int) $p; @endphp
-          @if ($p === $current)
-            <li><span class="page-btn active" aria-current="page">{{ $p }}</span></li>
-          @else
-            <li><a href="{{ $workshops->url($p) }}" class="page-btn" aria-label="Go to page {{ $p }}">{{ $p }}</a></li>
-          @endif
-        @endif
-      @endforeach
-
-      {{-- Next --}}
-      @if ($workshops->hasMorePages())
-        <li><a href="{{ $workshops->nextPageUrl() }}" class="page-btn" rel="next" aria-label="Next">›</a></li>
-      @else
-        <li class="disabled"><span class="page-btn" aria-hidden="true">›</span></li>
-      @endif
-    </ul>
-  </nav>
-
-  {{-- Page Info --}}
-  <div class="d-flex justify-content-center mt-3">
-    <div class="page-info text-center" role="status" aria-live="polite">
-      Page <strong>{{ $workshops->currentPage() }}</strong> of <strong>{{ $workshops->lastPage() }}</strong>
+        </div>
     </div>
-  </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+<script>
+    var workshopModal{{ $workshop->id }} = document.getElementById('workshopImagesModal{{ $workshop->id }}');
+    workshopModal{{ $workshop->id }}.addEventListener('shown.bs.modal', function () {
+        new Swiper('.workshopSwiper-{{ $workshop->id }}', {
+            loop: true,
+            grabCursor: true,
+            centeredSlides: true,
+            spaceBetween: 10,
+            autoplay: {
+                delay: 3500,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.workshopSwiper-{{ $workshop->id }} .swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.workshopSwiper-{{ $workshop->id }} .swiper-button-next',
+                prevEl: '.workshopSwiper-{{ $workshop->id }} .swiper-button-prev',
+            },
+        });
+    });
+</script>
 @endif
 
+
+
+
+
+
+    @empty
+        <p class="text-center text-muted mt-4">No workshops found.</p>
+    @endforelse
+</div>
+
+<!-- ✅ Optional CSS -->
 <style>
-/* container */
-.custom-pagination {
-  gap: 6px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-}
-
-/* item */
-.custom-pagination li {
-  display: inline-block;
-}
-
-/* buttons */
-.page-btn {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 36px;
-  height: 36px;
-  padding: 0 8px;
-  border-radius: 50px; /* pill */
-  font-weight: 600;
-  text-decoration: none;
-  color: #760e13;           /* primary color */
-  background-color: #fff;
-  border: 1px solid #e6e6e6;
-  transition: transform .18s ease, background-color .18s ease, color .18s ease, box-shadow .18s ease;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.05);
-}
-
-/* hover */
-.page-btn:hover {
-  background-color: #760e13;
-  color: #fff;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 18px rgba(118,14,19,0.22);
-}
-
-/* active */
-.page-btn.active {
-  background-color: #760e13;
-  color: #fff;
-  border-color: #760e13;
-  box-shadow: 0 6px 14px rgba(118,14,19,0.28);
-}
-
-/* disabled/dots */
-.custom-pagination li.disabled .page-btn,
-.page-btn.dots {
-  background: #f7f7f7;
-  color: #888;
-  border-color: #eee;
-  transform: none;
-  pointer-events: none;
-  box-shadow: none;
-}
-
-/* page info pill */
-.page-info {
-  color: #760e13;
-  font-weight: 600;
-  font-size: 0.95rem;
-  background: #fff;
-  padding: 6px 16px;
-  border-radius: 50px;
-  border: 1px solid #eee;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
-  display: inline-block;
-}
-
-/* responsive sizing */
-@media (max-width: 576px) {
-  .page-btn { min-width: 32px; height: 32px; font-size: 0.87rem; padding: 0 6px; }
-  .custom-pagination { gap: 6px; padding: 6px 8px; }
-}
-
-/* make container horizontally scrollable instead of wrapping (optional) */
-/* Uncomment if you prefer a single-line horizontal scroll on mobile:
-.custom-pagination {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 4px;
-}
-.custom-pagination::-webkit-scrollbar { display: none; }
-*/
+  .workshop-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .workshop-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  }
 </style>
 
+
+    {{-- Pagination --}}
+    @includeWhen($workshops instanceof \Illuminate\Pagination\LengthAwarePaginator, 'partials.pagination', ['workshops' => $workshops])
+  @endif
 </div>
+
 
 
     </div>

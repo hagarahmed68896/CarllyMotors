@@ -158,176 +158,310 @@ h5, p {
                    {{-- <h2 class="section-title animate__animated animate__fadeInUp">Featured Cars</h2> --}}
         <!-- Enhanced Car Listings -->
         <div class="custom-container main-car-list-sec">
-            <div class="row g-4">
-                @forelse ($carlisting as $key => $car)
-                        <div class="col-sm-6 col-lg-4 col-xl-3">
-                        <div class="car-card animate__animated animate__fadeInUp" style="animation-delay: {{ $key * 0.1 }}s">
-                            <!-- Enhanced Car Image -->
-                            <div class="car-image">
-                                @if($car->image != null)
-                                    <a href="{{ route('car.detail', $car->id) }}" aria-label="View details for {{$car->listing_type}} {{$car->listing_model}}">
-                                        <img src="{{ env("CLOUDFLARE_R2_URL") . $car->image->image}}" 
-                                             alt="{{$car->listing_type}} {{$car->listing_model}}" 
-                                             loading="lazy"
-                                             onerror="this.src='{{ asset('carNotFound.jpg') }}'">
-                                    </a>
-                                @else
-                                    <a href="{{ route('car.detail', $car->id) }}" aria-label="View details for {{$car->listing_type}} {{$car->listing_model}}">
-                                        <img src="{{ asset('carNotFound.jpg') }}" 
-                                             alt="{{$car->listing_type}} {{$car->listing_model}}" 
-                                             loading="lazy">
-                                    </a>
-                                @endif
+        <div class="row g-4">
+    @forelse ($carlisting as $key => $car)
+        @php
+            // <-- ensure images for this car are loaded (required for zoom button & modal)
+            $images = $car->images()->pluck('image');
+        @endphp
 
-                                <!-- Enhanced Action Icons -->
-                                <div class="year-badge">{{ $car->listing_year }}</div>
-                                
-                              <!-- Favorite & Share Buttons -->
-    <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
-        @if(auth()->check())
-            @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
-            <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
-                @csrf
-                <button title="Add to favorites" 
-                        class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                        type="submit" 
-                        aria-label="Add to favorites"
-                        style="width: 32px; height: 32px; border-radius: 50%;">
-                    <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
-                </button>
-            </form>
-        @else
-            <a href="{{ route('login') }}" 
-               title="Login to add to favorites" 
-               class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-               aria-label="Login to add to favorites"
-               style="width: 32px; height: 32px; border-radius: 50%;">
-                <i class="fas fa-heart" style="color: #6c757d;"></i>
-            </a>
-        @endif
+        <div class="col-sm-6 col-lg-4 col-xl-3">
+            <div class="car-card animate__animated animate__fadeInUp" style="animation-delay: {{ $key * 0.1 }}s">
+                <!-- Enhanced Car Image -->
+                <div class="car-image">
+                    @if($car->image != null)
+                        <a href="{{ route('car.detail', $car->id) }}" aria-label="View details for {{$car->listing_type}} {{$car->listing_model}}">
+                            <img src="{{ env("CLOUDFLARE_R2_URL") . $car->image->image}}" 
+                                 alt="{{$car->listing_type}} {{$car->listing_model}}" 
+                                 loading="lazy"
+                                 onerror="this.src='{{ asset('carNotFound.jpg') }}'">
+                        </a>
+                    @else
+                        <a href="{{ route('car.detail', $car->id) }}" aria-label="View details for {{$car->listing_type}} {{$car->listing_model}}">
+                            <img src="{{ asset('carNotFound.jpg') }}" 
+                                 alt="{{$car->listing_type}} {{$car->listing_model}}" 
+                                 loading="lazy">
+                        </a>
+                    @endif
+@php
+    $images = $car->images ? $car->images->map(fn($img) => env('CLOUDFLARE_R2_URL') . $img->image)->toArray() : [];
+@endphp
 
-      <a href="https://wa.me/?text={{ urlencode(
-    'Check out this car on Carlly Motors:' . "\n\n" .
-    $car->listing_make . ' • ' . $car->listing_model . "\n" .
-    'Year: ' . $car->listing_year . "\n" .
-    'Price: AED ' . number_format($car->listing_price) . "\n" .
-    'Fuel Type: ' . $car->features_fuel_type . "\n" .
-    'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
-    'View full details here: ' . route('car.detail', $car->id)
-) }}" 
-target="_blank" 
-title="Share via WhatsApp"
-aria-label="Share via WhatsApp"
-class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-style="width: 32px; height: 32px; border-radius: 50%;">
-    <i class="fas fa-share-alt" style="color: #25d366;"></i>
-</a>
-
-    </div>
-                            </div>
-
-                            <!-- Enhanced Car Content -->
-                            <div class="car-card-body">
-                                <div class="price-location">
-                                    <span class="price">
-                                       <img style="width:17px; height: 17px;" src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}">
-
-                                         {{number_format($car->listing_price)}}</span>
-                              @if($car->user?->lat && $car->user?->lng && !empty($car->city) && strtolower($car->city) !== 'null')
-    <a href="https://www.google.com/maps?q={{ $car->user->lat }},{{ $car->user->lng }}" 
-       class="location" 
-       target="_blank"
-       aria-label="View location on map">
-        <i class="fas fa-map-marker-alt"></i> {{ $car->city }}
-    </a>
+                    <!-- 🔍 Zoom Button (only if images exist) -->
+               @if($images && count($images) > 0)
+<button type="button"
+        class="btn btn-light position-absolute top-0 start-0 m-2"
+        style="z-index: 1055; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;"
+        data-bs-toggle="modal"
+        data-bs-target="#zoomModal-{{ $key }}">
+    <i class="fas fa-search-plus" style="color:#760e13;"></i>
+</button>
 @endif
 
-                                </div>
-                                
-<h4 class="text-start mb-2" style="font-size:1.1rem">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
 
-                                <!-- Enhanced Car Details -->
-         <div class="car-details mt-3 text-start">
-  <div class="row g-1">
-    <p class="mb-1"><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
-    <p class="mb-1"><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
-    <p class="mb-1"><strong>Model:</strong> <span>{{ $car->listing_model }}</span></p>
-    <p class="mb-0"><strong>Mileage:</strong> <span>{{ $car->mileage ?? '215K' }} km</span></p>
+                    <!-- Favorite & Share Buttons (unchanged) -->
+                    <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
+                        @if(auth()->check())
+                            @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
+                            <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
+                                @csrf
+                                <button title="Add to favorites" 
+                                        class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                                        type="submit" 
+                                        aria-label="Add to favorites"
+                                        style="width: 32px; height: 32px; border-radius: 50%;">
+                                    <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+                                </button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" 
+                               title="Login to add to favorites" 
+                               class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                               aria-label="Login to add to favorites"
+                               style="width: 32px; height: 32px; border-radius: 50%;">
+                                <i class="fas fa-heart" style="color: #6c757d;"></i>
+                            </a>
+                        @endif
+
+                        <a href="https://wa.me/?text={{ urlencode(
+                        'Check out my latest find on Carlly! Great deals await. Don’t miss out!' . "\n" .
+                        route('car.detail', $car->id)
+                    ) }}"
+                    target="_blank"
+                    title="Share via WhatsApp"
+                    class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                    style="width: 32px; height: 32px; border-radius: 50%;">
+                        <i class="fas fa-share-alt" style="color: #25d366;"></i>
+                    </a>
+                    </div>
+                </div>
+
+                <!-- Enhanced Car Content (unchanged) -->
+                <div class="car-card-body">
+                    <div class="price-location d-flex align-items-center justify-content-between flex-wrap">
+                        <!-- Price -->
+                        <span class="price d-flex align-items-center me-3">
+                            <img style="width:17px; height:17px; margin-right: 4px;" src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}">
+                            {{ number_format($car->listing_price) }}
+                        </span>
+
+                        <!-- Location (will not show when missing/null) -->
+                        @if(!empty($car->lat) && !empty($car->lng) && !empty($car->city) && strtolower($car->city) !== 'null')
+                            <span class="small text-muted mb-0 mt-0 d-flex align-items-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                <a href="https://www.google.com/maps?q={{ $car->lat }},{{ $car->lng }}" 
+                                   target="_blank" 
+                                   style="color: #760e13; text-decoration: none;">
+                                    {{ $car->city }}, UAE
+                                </a>
+                            </span>
+                        @endif
+                    </div>
+
+                    <h4 class="text-start mb-2" style="font-size:1.1rem">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
+
+                    <div class="car-details mt-3 text-start">
+                        <div class="row g-1">
+                            <p class="mb-1"><strong>Make:</strong> <span>{{$car->listing_type}}</span></p>
+                            <p class="mb-1"><strong>Year:</strong> <span>{{$car->listing_year}}</span></p>
+                            <p class="mb-1"><strong>Model:</strong> <span>{{ $car->listing_model }}</span></p>
+                            <p class="mb-0"><strong>Mileage:</strong> <span>{{ $car->mileage ?? '215K' }} km</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Action Buttons (unchanged) -->
+                    <div class="d-flex justify-content-between gap-2 flex-wrap text-center mt-2" style="width: 100%;">
+                        <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode(
+                            "Carlly Motors\n\n" .
+                            "مرحبًا، أتواصل معك للاستفسار عن السيارة المعروضة للبيع، " . $car->listing_type . " " . $car->listing_model . "، في Carlly Motors. هل لا تزال متوفرة؟\n\n" .
+                            "Hello, We are contacting you about the car for sale, " . $car->listing_type . " " . $car->listing_model . ", at Carlly Motors. Is it available?\n\n" .
+                            "Car Model : " . $car->listing_model . "\n" .
+                            "Car Type : " . $car->listing_type . "\n" .
+                            "Year Of Manufacture : " . $car->listing_year . "\n" .
+                            "Car Price : " . number_format($car->listing_price) . " AED\n" .
+                            "Car URL : " . route('car.detail', $car->id)
+                        ) }}"
+                        target="_blank"
+                        class="flex-fill text-decoration-none">
+                            <button class="btn btn-outline-success w-100 rounded-4">
+                                <i class="fab fa-whatsapp me-1"></i> 
+                            </button>
+                        </a>
+
+                        @if($os == 'Android' || $os == 'iOS')
+                            <a href="tel:{{ $car->user->phone }}" class="flex-fill text-decoration-none">
+                                <button class="btn btn-outline-danger w-100 rounded-4">
+                                    <i class="fas fa-phone me-1"></i>
+                                </button>
+                            </a>
+                        @else
+                            <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="flex-fill text-decoration-none">
+                                <button class="btn btn-outline-danger w-100 rounded-4">
+                                    <i class="fas fa-phone me-1"></i>
+                                </button>
+                            </a>
+                        @endif
+                    </div>
+
+                    <style>
+                        /* Keep buttons side-by-side even on very small screens */
+                        .actions a {
+                          flex: 1 1 48%; /* each button roughly half width */
+                        }
+
+                        .actions button {
+                          white-space: nowrap;
+                          font-size: 1rem;
+                          padding: 0.6rem 0;
+                        }
+
+                        /* Adjust spacing for extra small screens */
+                        @media (max-width: 400px) {
+                          .actions a {
+                            flex: 1 1 48%;
+                          }
+                          .actions button {
+                            font-size: 0.9rem;
+                          }
+                        }
+                    </style>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Zoom modal (only present if images exist) ===== -->
+<!-- ✅ Zoom Modal -->
+@if($images && count($images) > 0)
+<div class="modal fade customZoomModal" id="zoomModal-{{ $key }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl" >
+    <div class="modal-content border-0  shadow-none position-relative" style="padding: 20px; background-color: white;">
+
+      <!-- ❌ زر الإغلاق الكبير -->
+      <button type="button"
+              style="color: black"
+              class="btn-close-custom"
+              data-bs-dismiss="modal"
+              aria-label="Close">
+        &times;
+      </button>
+
+      <!-- ✅ Swiper Container -->
+      <div class="modal-body p-0">
+        <div class="swiper zoomSwiper-{{ $key }}">
+          <div class="swiper-wrapper">
+            @foreach ($images as $image)
+              <div class="swiper-slide d-flex justify-content-center align-items-center bg-black">
+                <img src="{{ $image }}" 
+                     class="img-fluid " 
+                     style="max-height:85vh; object-fit:contain;"
+                     alt="Car Image">
+              </div>
+            @endforeach
+          </div>
+
+          <!-- ✅ Swiper Controls -->
+          <div class="swiper-button-next text-white"></div>
+          <div class="swiper-button-prev text-white"></div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
+@endif
 
-
-
-                           <!-- Enhanced Action Buttons -->
-<div class="d-flex justify-content-between gap-2 flex-wrap text-center mt-2" style="width: 100%;">
- <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode(
-    'Hi, I would like to ask if this car is still available:' . "\n\n" .
-    $car->listing_type . ' • ' . $car->listing_model . "\n" .
-    'Year: ' . $car->listing_year . "\n" .
-    'Price: AED ' . number_format($car->listing_price) . "\n" .
-    'Fuel Type: ' . $car->features_fuel_type . "\n" .
-    'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
-    'View full details here: ' . route('car.detail', $car->id)
-) }}"
-target="_blank"
-class="flex-fill text-decoration-none">
-    <button class="btn btn-outline-success w-100 rounded-4">
-        <i class="fab fa-whatsapp me-1"></i>
-    </button>
-</a>
-
-
-
-    @if($os == 'Android' || $os == 'iOS')
-        <a href="tel:{{ $car->user->phone }}" class="flex-fill text-decoration-none">
-            <button class="btn btn-outline-danger w-100 rounded-4">
-                <i class="fas fa-phone me-1"></i>
-            </button>
-        </a>
-    @else
-        <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="flex-fill text-decoration-none">
-            <button class="btn btn-outline-danger w-100 rounded-4">
-                <i class="fas fa-phone me-1"></i>
-            </button>
-        </a>
-    @endif
-</div>
+<!-- ✅ Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<!-- ✅ Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <style>
-/* Keep buttons side-by-side even on very small screens */
-.actions a {
-  flex: 1 1 48%; /* each button roughly half width */
+/* ✅ إزالة الطبقة السوداء المزعجة */
+.modal-backdrop {
+  display: none !important;
 }
 
-.actions button {
-  white-space: nowrap;
-  font-size: 1rem;
-  padding: 0.6rem 0;
+/* ✅ خلفية المودال */
+
+
+/* ✅ ترتيب الطبقات */
+.customZoomModal {
+  z-index: 9999 !important;
 }
 
-/* Adjust spacing for extra small screens */
-@media (max-width: 400px) {
-  .actions a {
-    flex: 1 1 48%;
-  }
-  .actions button {
-    font-size: 0.9rem;
-  }
+/* ✅ زر X الكبير */
+.btn-close-custom {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 2rem;
+  color: #fff;
+  background: transparent;
+  border: none;
+  z-index: 10000;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.btn-close-custom:hover {
+  color: #ff4c4c;
+  transform: scale(1.1);
+}
+
+/* ✅ صور واضحة */
+.zoomSwiper-{{ $key }} img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
 }
 </style>
 
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-12 text-center py-5">
-                        <i class="fas fa-car fa-3x text-muted mb-3"></i>
-                        <h3 class="text-muted">No cars available</h3>
-                        <p class="text-muted">Check back later for new listings</p>
-                    </div>
-                @endforelse
-            </div>
-            
+<script>
+@if($images && count($images) > 0)
+document.addEventListener('shown.bs.modal', function (event) {
+  const modal = event.target;
+  if (modal.id === 'zoomModal-{{ $key }}') {
+    const swiperEl = modal.querySelector('.zoomSwiper-{{ $key }}');
+    if (!swiperEl.swiper) {
+      new Swiper(swiperEl, {
+        loop: true,
+        grabCursor: true,
+        centeredSlides: true,
+        spaceBetween: 10,
+        autoplay: {
+          delay: 3500,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: swiperEl.querySelector('.swiper-pagination'),
+          clickable: true,
+        },
+        navigation: {
+          nextEl: swiperEl.querySelector('.swiper-button-next'),
+          prevEl: swiperEl.querySelector('.swiper-button-prev'),
+        },
+      });
+    } else {
+      swiperEl.swiper.update();
+    }
+  }
+});
+@endif
+</script>
+
+    @empty
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-car fa-3x text-muted mb-3"></i>
+            <h3 class="text-muted">No cars available</h3>
+            <p class="text-muted">Check back later for new listings</p>
+        </div>
+    @endforelse
+</div>
+
+
+
             <!-- View More Button -->
             @if($carlisting && count($carlisting) > 0)
                 <div class="text-center mt-4">
@@ -579,165 +713,275 @@ class="text-decoration-none flex-grow-1">
 
 
             <div class="custom-container">
-                <div class="row g-4">
-                    @foreach ($workshops as $key => $workshop)
-                        @php
-                            $shareUrl = request()->path() == 'home'
-                                ? request()->url() . '?workshop_id=' . $workshop->id
-                                : request()->fullUrl() . '&workshop_id=' . $workshop->id;
-                        @endphp
-                        
-                        <div class="col-sm-6 col-lg-4 col-xl-3">
-                            <div class="car-card animate__animated animate__fadeInUp" style="animation-delay: {{ $key * 0.1 }}s">
-                                <!-- Workshop Image -->
-                                <div class="car-image">
-                                  @php
-    $image = $workshop->workshop_logo
-        ? env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo
-        : asset('workshopNotFound.png');
+               <div class="row g-4">
+    @foreach ($workshops as $key => $workshop)
+        @php
+            $shareUrl = request()->path() == 'home'
+                ? request()->url() . '?workshop_id=' . $workshop->id
+                : request()->fullUrl() . '&workshop_id=' . $workshop->id;
+
+            $image = $workshop->workshop_logo
+                ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
+                    ? $workshop->workshop_logo
+                    : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
+                : asset('workshopNotFound.png');
+        @endphp
+
+        <div class="col-sm-6 col-lg-4 col-xl-3">
+            <div class="car-card animate__animated animate__fadeInUp" style="animation-delay: {{ $key * 0.1 }}s">
+                
+                <!-- Workshop Image -->
+                <div class="car-image position-relative">
+                    <a href="{{ route('workshops.show', $workshop->id) }}">
+                        <img src="{{ $image }}"
+                             alt="{{ $workshop->workshop_name }}"
+                             loading="lazy"
+                             onerror="this.src='{{ asset('workshopNotFound.png') }}'"
+                             class="img-fluid rounded-4 w-100">
+                    </a>
+
+                    <!-- Zoom Button -->
+                    <button type="button" 
+                            class="btn btn-light position-absolute top-0 end-0 m-2 shadow"
+                            style="width: 30px; height: 30px; border-radius: 50%; color:#760e13; display:flex; align-items:center; justify-content:center;"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#workshopImagesModal{{ $workshop->id }}"
+                            onclick="event.stopPropagation();">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                </div>
+
+                <!-- Workshop Content -->
+                <div class="car-card-body mt-2">
+                    <h5 class="fw-bold text-truncate mb-1" title="{{ $workshop->workshop_name }}" style="color: var(--primary-color);">
+                        {{ Str::limit(ucwords(strtolower($workshop->workshop_name)), 25) }}
+                    </h5>
+
+                    @if($workshop->address)
+                        <p class="text-muted mb-2 text-truncate" title="{{ $workshop->address }}">
+                            <i class="fas fa-map-marker-alt me-2" style="color: var(--primary-color);"></i>
+                            {{ $workshop->address }}
+                        </p>
+                    @endif
+
+                    <!-- Working Hours -->
+                    @if($workshop->days && $workshop->days->count() > 0)
+                        <div class="mb-3">
+                            <p class="text-muted mb-1">
+                                <i class="fas fa-clock me-2" style="color: var(--primary-color);"></i>
+                                {{ $workshop->days[0]->day }}: {{ $workshop->days[0]->from }} - {{ $workshop->days[0]->to }}
+                            </p>
+
+                            @if(count($workshop->days) > 1)
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
+                                            id="dropdownDays{{ $workshop->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-clock me-1"></i>More Hours
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownDays{{ $workshop->id }}">
+                                        @foreach($workshop->days as $dayKey => $day)
+                                            @if($dayKey == 0) @continue @endif
+                                            <li class="dropdown-item-text">
+                                                <small class="text-muted">
+                                                    {{ $day->day }}: {{ $day->from }} - {{ $day->to }}
+                                                </small>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <p class="text-muted mb-3">
+                            <i class="fas fa-clock me-2" style="color: var(--primary-color);"></i>
+                            Hours not available
+                        </p>
+                    @endif
+
+                    <!-- Workshop Actions -->
+                    <div class="actions-workshop d-flex gap-2">
+                        <a href="https://wa.me/{{ $workshop->user->phone }}?text={{ urlencode(
+                            'Hello, I’m interested in your workshop services. Are you still available for maintenance or repair work?' . "\n\n" .
+                            'Workshop Name: ' . $workshop->workshop_name . "\n" .
+                            'Address: ' . ($workshop->address ?? 'Not specified') . "\n\n" .
+                            'View Workshop on Website: ' . $shareUrl
+                        ) }}" target="_blank" class="flex-grow-1">
+                            <button class="btn btn-outline-success w-100 action-btn rounded-4">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+                        </a>
+
+                        <a href="tel:{{ $workshop->user->phone }}" class="flex-grow-1">
+                            <button class="btn btn-outline-danger w-100 action-btn rounded-4">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </a>
+
+                        <a href="https://wa.me/?text={{ urlencode('Check out this workshop: ' . $shareUrl) }}" 
+                           target="_blank" class="flex-grow-1">
+                            <button class="btn btn-outline-info w-100 action-btn rounded-4">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+@php
+    $images = \App\Models\Image::where('workshop_provider_id', $workshop->id)->pluck('image');
 @endphp
 
-<img src="{{ $image }}"
-     alt="{{ $workshop->workshop_name }}"
-     loading="lazy"
-     onerror="this.src='{{ asset('workshopNotFound.png') }}'">
+@if($images && count($images) > 0)
+<div class="modal fade customWorkshopModal" id="workshopImagesModal{{ $workshop->id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content border-0 shadow-none position-relative" style="padding: 20px; background-color: white;">
 
-                                </div>
+      <!-- ❌ زر الإغلاق الكبير -->
+      <button type="button"
+              class="btn-close-custom"
+              data-bs-dismiss="modal"
+              aria-label="Close">
+        &times;
+      </button>
 
-                                <!-- Workshop Content -->
-                                <div class="car-card-body">
-                                    <h5 class="fw-bold text-truncate mb-3" style="color: var(--primary-color);" title="{{ $workshop->workshop_name }}">
-                                        {{ Str::limit(ucwords(strtolower($workshop->workshop_name)), 25) }}
-                                    </h5>
+      <!-- ✅ Swiper داخل المودال -->
+      <div class="modal-body p-0">
+        <div class="swiper workshopSwiper-{{ $workshop->id }}">
+          <div class="swiper-wrapper">
+            @foreach ($images as $img)
+              <div class="swiper-slide d-flex justify-content-center align-items-center bg-black">
+                <img src="{{ env('CLOUDFLARE_R2_URL') . $img }}"
+                     class="img-fluid"
+                     style="max-height:85vh; object-fit:contain;"
+                     alt="Workshop Image">
+              </div>
+            @endforeach
+          </div>
 
-                                    @if($workshop->address)
-                                        <p class="text-muted mb-2 text-truncate" title="{{ $workshop->address }}">
-                                            <i class="fas fa-map-marker-alt me-2" style="color: var(--primary-color);"></i>
-                                            {{ $workshop->address }}
-                                        </p>
-                                    @endif
+          <!-- ✅ عناصر التحكم -->
+          <div class="swiper-button-next text-white"></div>
+          <div class="swiper-button-prev text-white"></div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
 
-                                    <!-- Working Hours -->
-                                    @if($workshop->days && $workshop->days->count() > 0)
-                                        <div class="mb-3">
-                                            <p class="text-muted mb-1">
-                                                <i class="fas fa-clock me-2" style="color: var(--primary-color);"></i>
-                                                {{ $workshop->days[0]->day }}: {{ $workshop->days[0]->from }} - {{ $workshop->days[0]->to }}
-                                            </p>
-                                            
-                                            @if(count($workshop->days) > 1)
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
-                                                            id="dropdownDays{{ $workshop->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="fas fa-clock me-1"></i>More Hours
-                                                    </button>
-                                                    <ul class="dropdown-menu" aria-labelledby="dropdownDays{{ $workshop->id }}">
-                                                        @foreach($workshop->days as $dayKey => $day)
-                                                            @if($dayKey == 0) @continue @endif
-                                                            <li class="dropdown-item-text">
-                                                                <small class="text-muted">
-                                                                    {{ $day->day }}: {{ $day->from }} - {{ $day->to }}
-                                                                </small>
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <p class="text-muted mb-3">
-                                            <i class="fas fa-clock me-2" style="color: var(--primary-color);"></i>
-                                            Hours not available
-                                        </p>
-                                    @endif
-
-                              <!-- Workshop Actions -->
-<div class="actions-workshop d-flex justify-content-between align-items-center mt-2">
- <a href="https://wa.me/{{ $workshop->user->phone }}?text={{ urlencode(
-    'Hello, I’m interested in your workshop services. Are you still available for maintenance or repair work?' . "\n\n" .
-    'Workshop Name: ' . $workshop->workshop_name . "\n" .
-    'Address: ' . ($workshop->address ?? 'Not specified') . "\n\n" .
-    'View Workshop on Website: ' . $shareUrl
-) }}"
-   target="_blank"
-   class="text-decoration-none flex-grow-1">
-    <button class="btn btn-outline-success w-100 action-btn rounded-4">
-        <i class="fab fa-whatsapp"></i>
-    </button>
-</a>
-
-
-    <a href="tel:{{ $workshop->user->phone }}" class="text-decoration-none flex-grow-1">
-        <button class="btn btn-outline-danger w-100 action-btn rounded-4">
-            <i class="fas fa-phone"></i>
-        </button>
-    </a>
-
-    <a href="https://wa.me/?text={{ urlencode('Check out this workshop: ' . $shareUrl) }}" 
-       target="_blank" class="text-decoration-none flex-grow-1">
-        <button class="btn btn-outline-info w-100 action-btn rounded-4">
-            <i class="fas fa-share-alt"></i>
-        </button>
-    </a>
+    </div>
+  </div>
 </div>
+@endif
+
+<!-- ✅ Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<!-- ✅ Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <style>
-.actions-workshop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  flex-wrap: nowrap;
+/* ✅ خلفية المودال البيضاء */
+.customWorkshopModal {
+  z-index: 9999 !important;
 }
 
-/* Ensure all links share space evenly */
-.actions-workshop a {
-  flex: 1 1 0;
+/* ✅ زر الإغلاق الكبير */
+.btn-close-custom {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 2.3rem;
+  color: black;
+  background: transparent;
+  border: none;
+  z-index: 10000;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.btn-close-custom:hover {
+  color: #ff4c4c;
+  transform: scale(1.1);
 }
 
-/* Base button style */
-.action-btn {
-  width: 100%;
-  height: 38px;           /* smaller size on large screens */
-  font-size: 1rem;
-  border-radius: 10px;
-  transition: all 0.3s ease;
+/* ✅ الصور */
+.workshopSwiper-{{ $workshop->id }} img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
 }
 
-/* Medium screens (tablets) */
-@media (max-width: 992px) {
-  .action-btn {
-    height: 42px;
-    font-size: 1.05rem;
-  }
-}
-
-/* Small screens (phones) */
-@media (max-width: 576px) {
-  .actions-workshop {
-    gap: 6px;
-  }
-  .action-btn {
-    height: 40px;
-    font-size: 1rem;
-  }
-}
-
-/* Extra small screens (very small phones) */
-@media (max-width: 400px) {
-  .action-btn {
-    height: 36px;
-    font-size: 0.9rem;
-  }
+/* ✅ عدم التداخل مع مودالات أخرى */
+.modal-backdrop.show {
+  opacity: 0.8;
 }
 </style>
 
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
+<script>
+@if($images && count($images) > 0)
+document.addEventListener('shown.bs.modal', function (event) {
+  const modal = event.target;
+  if (modal.id === 'workshopImagesModal{{ $workshop->id }}') {
+    const swiperEl = modal.querySelector('.workshopSwiper-{{ $workshop->id }}');
+    if (!swiperEl.swiper) {
+      new Swiper(swiperEl, {
+        loop: true,
+        grabCursor: true,
+        centeredSlides: true,
+        spaceBetween: 10,
+        autoplay: {
+          delay: 3500,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: swiperEl.querySelector('.swiper-pagination'),
+          clickable: true,
+        },
+        navigation: {
+          nextEl: swiperEl.querySelector('.swiper-button-next'),
+          prevEl: swiperEl.querySelector('.swiper-button-prev'),
+        },
+      });
+    } else {
+      swiperEl.swiper.update();
+    }
+  }
+});
+@endif
+</script>
+
+
+    @endforeach
+</div>
+
+<!-- Actions CSS -->
+<style>
+.actions-workshop {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+.actions-workshop a {
+    flex: 1;
+}
+
+.action-btn {
+    width: 100%;
+    height: 38px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+/* Medium screens */
+@media (max-width: 992px) {
+    .action-btn { height: 42px; font-size: 1.05rem; }
+}
+
+/* Small screens */
+@media (max-width: 576px) {
+    .action-btn { height: 40px; font-size: 1rem; }
+}
+</style>
+
                 
                 <div class="text-center mt-4">
                     <a href="{{route('workshops.index')}}" class="btn btn-outline-danger btn-lg">
@@ -801,45 +1045,45 @@ class="text-decoration-none flex-grow-1">
                 'Land Rover', 'Lexus', 'Mercedes', 'Mitsubishi', 'Nissan', 'Toyota'
             ]))->take(12) as $brand)
                 <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                    <div class="brand-card text-center p-3 h-100">
-                        <div class="mb-2" style="height: 60px; display: flex; align-items: center; justify-content: center;">
-                            @php
-                                // نخزن أسماء الصور حسب الماركة
-                                $logos = [
-                                    'BMW' => 'bmw-svgrepo-com.svg',
-                                    'Chevrolet' => 'chevrolet-svgrepo-com.svg',
-                                    'Ford' => 'ford-svgrepo-com.svg',
-                                    'Hyundai' => 'hyundai-svgrepo-com.svg',
-                                    'Jeep' => 'jeep-alt-svgrepo-com.svg',
-                                    'Kia' => 'kia-svgrepo-com.svg',
-                                    'Land Rover' => 'land-rover-svgrepo-com.svg',
-                                    'Lexus' => 'lexus-svgrepo-com.svg',
-                                    'Mercedes' => 'mercedes-benz-svgrepo-com.svg',
-                                    'Mitsubishi' => 'mitsubishi-svgrepo-com.svg',
-                                    'Nissan' => 'nissan-svgrepo-com.svg',
-                                    'Toyota' => 'toyota-svgrepo-com.svg',
-                                ];
+                    <a href="{{ route('cars.index', array_merge(request()->query(), ['make' => $brand->name])) }}" class="text-decoration-none">
+                        <div class="brand-card text-center p-3 h-100">
+                            <div class="mb-2" style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                @php
+                                    $logos = [
+                                        'BMW' => 'bmw-svgrepo-com.svg',
+                                        'Chevrolet' => 'chevrolet-svgrepo-com.svg',
+                                        'Ford' => 'ford-svgrepo-com.svg',
+                                        'Hyundai' => 'hyundai-svgrepo-com.svg',
+                                        'Jeep' => 'jeep-alt-svgrepo-com.svg',
+                                        'Kia' => 'kia-svgrepo-com.svg',
+                                        'Land Rover' => 'land-rover-svgrepo-com.svg',
+                                        'Lexus' => 'lexus-svgrepo-com.svg',
+                                        'Mercedes' => 'mercedes-benz-svgrepo-com.svg',
+                                        'Mitsubishi' => 'mitsubishi-svgrepo-com.svg',
+                                        'Nissan' => 'nissan-svgrepo-com.svg',
+                                        'Toyota' => 'toyota-svgrepo-com.svg',
+                                    ];
+                                    $fileName = $logos[$brand->name] ?? null;
+                                @endphp
 
-                                $fileName = $logos[$brand->name] ?? null;
-                            @endphp
-
-                            @if($fileName && file_exists(public_path('images/brands/' . $fileName)))
-                                <img src="{{ asset('images/brands/' . $fileName) }}" 
-                                     alt="{{ $brand->name }}" 
-                                     class="img-fluid" 
-                                     style="max-height: 60px;">
-                            @else
-                                <i class="fas fa-car fa-2x" style="color: var(--primary-color);"></i>
-                            @endif
+                                @if($fileName && file_exists(public_path('images/brands/' . $fileName)))
+                                    <img src="{{ asset('images/brands/' . $fileName) }}" 
+                                         alt="{{ $brand->name }}" 
+                                         class="img-fluid" 
+                                         style="max-height: 60px;">
+                                @else
+                                    <i class="fas fa-car fa-2x" style="color: var(--primary-color);"></i>
+                                @endif
+                            </div>
+                            <p class="text-muted small mb-0 brand-subtitle">{{ $brand->cars_count ?? 'N/A' }} Cars</p>
                         </div>
-                        {{-- <p class="fw-bold mb-1 ">{{ $brand->name }}</p> --}}
-                        <p class="text-muted small mb-0 brand-subtitle">{{ $brand->cars_count ?? 'N/A' }} Cars</p>
-                    </div>
+                    </a>
                 </div>
             @endforeach
         </div>
     </div>
 @endif
+
 
     <!-- Enhanced App Download Section -->
     <div class="container py-5">

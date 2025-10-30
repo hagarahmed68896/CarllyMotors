@@ -10,90 +10,64 @@ use DB;
 
 class WorkshopController extends Controller
 {
-  public function index(Request $request)
+public function index(Request $request)
 {
     $currentUrl = url()->current();
-    
-    // Fetch distinct values for filters
-    $cities = WorkshopProvider::select('branch')->distinct()->orderBy('branch')->pluck('branch');
-    $brands = DB::table('car_brand_workshop_provider')->distinct()->pluck('car_brand_id')->toArray();
-    $brands = CarBrand::select('id', 'name')->whereIn('id', $brands)->distinct()->pluck('name', 'id')->toArray();
-    $categories = DB::table('workshop_category_provider')->distinct()->pluck('workshop_category_id')->toArray();
-    $categories = WorkshopCategory::select('id', 'name')->whereIn('id', $categories)->distinct()->pluck('name')->toArray();
-    
-    // Start the base query
+
+    // --- Fetch distinct filter data ---
+    $cities = WorkshopProvider::select('branch')
+        ->whereNotNull('branch')
+        ->distinct()
+        ->orderBy('branch')
+        ->pluck('branch');
+
+    $brands = DB::table('car_brand_workshop_provider')
+        ->distinct()
+        ->pluck('car_brand_id')
+        ->toArray();
+
+    $brands = CarBrand::whereIn('id', $brands)
+        ->select('id', 'name')
+        ->orderBy('name')
+        ->pluck('name', 'id')
+        ->toArray();
+
+    $categories = DB::table('workshop_category_provider')
+        ->distinct()
+        ->pluck('workshop_category_id')
+        ->toArray();
+
+    $categories = WorkshopCategory::whereIn('id', $categories)
+        ->select('id', 'name', 'image') // Make sure `image` exists in table
+        ->get();
+
+    // --- Build query ---
     $query = WorkshopProvider::query();
-    $query->inRandomOrder();
-    
-    // Apply filters
-    if ($request->city) {
-        $query->where('branch', $request->city);
-    }
-    
-    if ($request->brand_id) {
-        $brand = CarBrand::find($request->brand_id);
-        $workshop_ids = $brand->providers()->pluck('workshop_provider_id')->toArray();
-        $query->whereIn('id', $workshop_ids);
-    }
-    
-    if ($request->category_id) {
-        $category = WorkshopCategory::find($request->category_id);
-        $workshop_ids = $category->providers()->pluck('workshop_provider_id')->toArray();
-        $query->whereIn('id', $workshop_ids);
+
+    $hasFilters = $request->filled(['city', 'brand_id', 'category_id']);
+
+    if ($hasFilters) {
+        if ($request->city) {
+            $query->where('branch', $request->city);
+        }
+
+        if ($request->brand_id) {
+            $brand = CarBrand::find($request->brand_id);
+            $workshop_ids = $brand?->providers()->pluck('workshop_provider_id')->toArray() ?? [];
+            $query->whereIn('id', $workshop_ids);
+        }
+
+        if ($request->category_id) {
+            $category = WorkshopCategory::find($request->category_id);
+            $workshop_ids = $category?->providers()->pluck('workshop_provider_id')->toArray() ?? [];
+            $query->whereIn('id', $workshop_ids);
+        }
     }
 
-    // Additional filter support for search functionality
-    if ($request->search) {
-        $searchTerm = $request->search;
-        $query->where(function ($q) use ($searchTerm) {
-            $q->where('workshop_name', 'like', '%' . $searchTerm . '%')
-              ->orWhere('description', 'like', '%' . $searchTerm . '%')
-              ->orWhere('branch', 'like', '%' . $searchTerm . '%')
-              ->orWhere('area', 'like', '%' . $searchTerm . '%');
-        });
-    }
+    // Only show workshops if all filters are selected
+$workshops = $hasFilters ? $query->with(['images', 'user', 'days'])->get() : collect();
 
-    // Apply area filter
-    if ($request->area) {
-        $query->where('area', $request->area);
-    }
-
-    // Apply rating filter
-    if ($request->rating) {
-        $query->where('rating', '>=', $request->rating);
-    }
-
-    // Apply sorting
-    $sortBy = $request->input('sortBy', 'random');
-    switch ($sortBy) {
-        case 'rating_high':
-            $query->orderBy('rating', 'desc');
-            break;
-        case 'rating_low':
-            $query->orderBy('rating', 'asc');
-            break;
-        case 'name_asc':
-            $query->orderBy('workshop_name', 'asc');
-            break;
-        case 'name_desc':
-            $query->orderBy('workshop_name', 'desc');
-            break;
-        case 'latest':
-            $query->latest();
-            break;
-        case 'oldest':
-            $query->orderBy('created_at', 'asc');
-            break;
-        default:
-            $query->inRandomOrder();
-            break;
-    }
-    
-    // ✅ Get all results (no pagination)
-    $workshops = $query->get();
-    
-    // Return view
-    return view('workshops.index', compact('cities', 'workshops', 'brands', 'categories'));
+    return view('workshops.index', compact('cities', 'brands', 'categories', 'workshops'));
 }
 
 

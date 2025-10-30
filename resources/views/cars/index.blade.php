@@ -171,8 +171,60 @@ $currentMake = request('make'); // Get the currently selected make for highlight
   }
 }
 </style>
+<style>
+ .car-type-btn {
+    background-color: #fff;
+    color: #760e13;
+    border: 1px solid #760e13;
+    border-radius: 25px;
+    padding: 0.35rem 1rem;      /* uniform padding */
+    font-weight: 600;
+    white-space: nowrap;        /* prevent text wrapping */
+    flex-shrink: 0;             /* prevent shrinking */
+    transition: all 0.2s;
+    height: 40px;               /* fixed height for all buttons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.9rem;          /* adjust font size for small screens */
+}
 
+.car-type-btn:hover {
+    background-color: #760e13;
+    color: #fff;
+}
+
+.car-type-btn.active {
+    background-color: #760e13;
+    color: #fff;
+}
+
+
+</style>
 <div class="container-fluid" style="padding-top: 0.7rem; background-color: #fff; position: sticky; top: 70px; z-index: 1000;">
+      <!-- Car Type Buttons -->
+<div class="d-flex flex-nowrap justify-content-center gap-2 mb-2 overflow-auto py-1">
+    <!-- Used / New -->
+    <a href="{{ route('cars.index', array_merge(request()->except('car_type'), ['car_type' => 'UsedOrNew'])) }}"
+       class="btn car-type-btn {{ request('car_type') === null || request('car_type') === 'UsedOrNew' ? 'active' : '' }}">
+       Used / New
+    </a>
+
+    <!-- Imported -->
+    <a href="{{ route('cars.index', array_merge(request()->except('car_type'), ['car_type' => 'Imported'])) }}"
+       class="btn car-type-btn {{ request('car_type') === 'Imported' ? 'active' : '' }}">
+       Imported
+    </a>
+
+    <!-- Auction -->
+    <a href="{{ route('cars.index', array_merge(request()->except('car_type'), ['car_type' => 'Auction'])) }}"
+       class="btn car-type-btn {{ request('car_type') === 'Auction' ? 'active' : '' }}">
+       Auction
+    </a>
+</div>
+
+
   <div class="filter-bar-top">
     <form id="topFilterForm" method="GET" action="{{ route('cars.index') }}" class="filter-form-grid">
 
@@ -387,6 +439,16 @@ function submitTopFilter() {
       <div class="swiper-pagination"></div>
     </div>
   </a>
+<!-- 🔍 Zoom Button -->
+@if($images && count($images) > 0)
+<button type="button"
+        class="btn btn-light position-absolute top-0 start-0 m-2"
+        style="z-index: 1055; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;"
+        data-bs-toggle="modal"
+        data-bs-target="#zoomModal-{{ $key }}">
+    <i class="fas fa-search-plus" style="color:#760e13;"></i>
+</button>
+@endif
 
   <!-- ❤️ Favorite & Share Buttons -->
   <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
@@ -404,21 +466,17 @@ function submitTopFilter() {
       </a>
     @endif
 
-    <a href="https://wa.me/?text={{ urlencode(
-      'Check out this car on Carlly Motors:' . "\n\n" .
-      $car->listing_make . ' • ' . $car->listing_model . "\n" .
-      'Year: ' . $car->listing_year . "\n" .
-      'Price: AED ' . number_format($car->listing_price) . "\n" .
-      'Fuel Type: ' . $car->features_fuel_type . "\n" .
-      'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
-      'View full details here: ' . route('car.detail', $car->id)
-    ) }}" 
-    target="_blank"
-    title="Share via WhatsApp"
-    class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-    style="width: 32px; height: 32px; border-radius: 50%;">
-      <i class="fas fa-share-alt" style="color: #25d366;"></i>
-    </a>
+  <a href="https://wa.me/?text={{ urlencode(
+    'Check out my latest find on Carlly! Great deals await. Don’t miss out!' . "\n" .
+    route('car.detail', $car->id)
+) }}"
+target="_blank"
+title="Share via WhatsApp"
+class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+style="width: 32px; height: 32px; border-radius: 50%;">
+    <i class="fas fa-share-alt" style="color: #25d366;"></i>
+</a>
+
   </div>
 </div>
 
@@ -527,19 +585,30 @@ document.addEventListener("DOMContentLoaded", function() {
               
             </div>
 
-            <p class="small text-muted mb-0 mt-2">
-              <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $car->city ?? 'Dubai' }}, UAE
-            </p>
+<p class="small text-muted mb-0 mt-2">
+    <i class="fas fa-map-marker-alt text-danger me-1"></i>
+    @if($car->lat && $car->lng)
+        <a href="https://www.google.com/maps?q={{ $car->lat }},{{ $car->lng }}" 
+          target="_blank"  style="color: #760e13; text-decoration: none;">
+            {{ $car->city ?? 'Dubai' }}, UAE
+        </a>
+    @else
+        {{ $car->city ?? 'Dubai' }}, UAE
+    @endif
+</p>
+
+
          {{-- Enhanced Action Buttons --}}
 <div class="action d-flex gap-2 mt-2">
  <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode(
-    'Hi, I would like to ask if this car is still available:' . "\n\n" .
-    $car->listing_type . ' • ' . $car->listing_model . "\n" .
-    'Year: ' . $car->listing_year . "\n" .
-    'Price: AED ' . number_format($car->listing_price) . "\n" .
-    'Fuel Type: ' . $car->features_fuel_type . "\n" .
-    'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
-    'View full details here: ' . route('car.detail', $car->id)
+    "Carlly Motors\n\n" .
+    "مرحبًا، أتواصل معك للاستفسار عن السيارة المعروضة للبيع، " . $car->listing_type . " " . $car->listing_model . "، في Carlly Motors. هل لا تزال متوفرة؟\n\n" .
+    "Hello, We are contacting you about the car for sale, " . $car->listing_type . " " . $car->listing_model . ", at Carlly Motors. Is it available?\n\n" .
+    "Car Model : " . $car->listing_model . "\n" .
+    "Car Type : " . $car->listing_type . "\n" .
+    "Year Of Manufacture : " . $car->listing_year . "\n" .
+    "Car Price : " . number_format($car->listing_price) . " AED\n" .
+    "Car URL : " . route('car.detail', $car->id)
 ) }}"
 target="_blank"
 class="flex-fill text-decoration-none">
@@ -547,6 +616,7 @@ class="flex-fill text-decoration-none">
         <i class="fab fa-whatsapp me-1"></i> 
     </button>
 </a>
+
 
 @if(!empty($car->user?->phone))
     @if($os == 'Android' || $os == 'iOS')
@@ -569,6 +639,70 @@ class="flex-fill text-decoration-none">
           </div>
 
         </div>
+        <!-- 🔍 Zoom Modal -->
+@if($images && count($images) > 0)
+<div class="modal fade" id="zoomModal-{{ $key }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content  border-0 position-relative">
+
+      <!-- 🔒 Close Button -->
+      <button type="button" 
+      class="btn-close btn-close-white position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+
+      <div class="modal-body p-0">
+        <div class="swiper zoomSwiper-{{ $key }}">
+          <div class="swiper-wrapper">
+            @foreach ($images as $image)
+              <div class="swiper-slide">
+                <img src="{{ $image }}" class="img-fluid rounded-4" alt="Car Image">
+              </div>
+            @endforeach
+          </div>
+          <div class="swiper-button-next text-white"></div>
+          <div class="swiper-button-prev text-white"></div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+@endif
+<script>
+  @if($images && count($images) > 0)
+new Swiper('.zoomSwiper-{{ $key }}', {
+  loop: true,
+  grabCursor: true,
+  centeredSlides: true,
+  spaceBetween: 10,
+  autoplay: {
+    delay: 3500,
+    disableOnInteraction: false,
+  },
+  pagination: {
+    el: '.zoomSwiper-{{ $key }} .swiper-pagination',
+    clickable: true,
+  },
+  navigation: {
+    nextEl: '.zoomSwiper-{{ $key }} .swiper-button-next',
+    prevEl: '.zoomSwiper-{{ $key }} .swiper-button-prev',
+  },
+});
+@endif
+</script>
+<style>
+  .zoomSwiper-{{ $key }} img {
+  width: 100%;
+  height: auto;
+  object-fit: contain; /* تظهر الصورة كاملة وواضحة */
+  
+}
+.modal-content {
+  background-color: rgba(0,0,0,0.5); /* خلفية مظللة خفيفة */
+  border: none;
+}
+</style>
       </div>
 
     @empty
