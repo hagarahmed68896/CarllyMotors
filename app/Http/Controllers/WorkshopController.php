@@ -38,7 +38,7 @@ public function index(Request $request)
         ->toArray();
 
     $categories = WorkshopCategory::whereIn('id', $categories)
-        ->select('id', 'name', 'image') // Make sure `image` exists in table
+        ->select('id', 'name', 'image')
         ->get();
 
     // --- Build query ---
@@ -64,30 +64,85 @@ public function index(Request $request)
         }
     }
 
-    // Only show workshops if all filters are selected
-$workshops = $hasFilters ? $query->with(['images', 'user', 'days'])->get() : collect();
+    // ✅ لو المستخدم بعت الموقع بتاعه (latitude & longitude)
+    if ($request->filled(['latitude', 'longitude'])) {
+        $lat = $request->latitude;
+        $lng = $request->longitude;
+
+        // معادلة Haversine لحساب المسافة بالكيلومتر
+        $query->selectRaw("workshop_providers.*, 
+            (6371 * acos(cos(radians(?)) * cos(radians(latitude)) 
+            * cos(radians(longitude) - radians(?)) + sin(radians(?)) 
+            * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
+              ->orderBy('distance', 'asc'); // الأقرب فالأبعد
+    }
+
+    $workshops = $hasFilters ? $query->with(['images', 'user', 'days'])->get() : collect();
 
     return view('workshops.index', compact('cities', 'brands', 'categories', 'workshops'));
 }
 
 
-    public function show(WorkshopProvider $workshop)
-    {
-        // Fetch distinct values for filters
-        $cities = WorkshopProvider::select('branch')->distinct()->orderBy('branch')->pluck('branch');
-        $brands   = DB::table('car_brand_workshop_provider')->distinct()->pluck('car_brand_id')->toArray();
-        $brands = CarBrand::select('id', 'name')->whereIn('id', $brands)->distinct()->pluck('name', 'id')->toArray();
-        $categories = DB::table('workshop_category_provider')->distinct()->pluck('workshop_category_id')->toArray();
-        $categories = WorkshopCategory::select('id', 'name')->whereIn('id', $categories)->distinct()->pluck('name')->toArray();
 
-        // Get related workshops in the same city/area
-        $relatedWorkshops = WorkshopProvider::where('id', '!=', $workshop->id)
-            ->where('branch', $workshop->branch)
-            ->take(6)
-            ->get();
+ public function show(WorkshopProvider $workshop)
+{
+    // ✅ Fetch cities (for filter sidebar, if needed)
+    $cities = WorkshopProvider::select('branch')
+        ->distinct()
+        ->orderBy('branch')
+        ->pluck('branch');
 
-        return view('workshops.show', compact('cities', 'workshop', 'brands', 'categories', 'relatedWorkshops'));
+    // ✅ Fetch related brands for this workshop
+    $brandIds = DB::table('car_brand_workshop_provider')
+        ->where('workshop_provider_id', $workshop->id)
+        ->pluck('car_brand_id')
+        ->toArray();
+
+    $brands = CarBrand::whereIn('id', $brandIds)
+        ->pluck('name')
+        ->toArray();
+
+    // ✅ Fetch related categories
+    $categoryIds = DB::table('workshop_category_provider')
+        ->where('workshop_provider_id', $workshop->id)
+        ->pluck('workshop_category_id')
+        ->toArray();
+
+    $categories = WorkshopCategory::whereIn('id', $categoryIds)
+        ->pluck('name')
+        ->toArray();
+
+    // ✅ Fetch related workshops in the same city (exclude current)
+    $relatedWorkshops = WorkshopProvider::where('id', '!=', $workshop->id)
+        ->where('branch', $workshop->branch)
+        ->take(6)
+        ->get();
+
+    // ✅ Fetch images for the workshop
+    $images = \App\Models\Image::where('workshop_provider_id', $workshop->id)
+        ->pluck('image')
+        ->toArray();
+
+    // ✅ Prepare working days (if you have a relation or table for that)
+    $days = [];
+    if (method_exists($workshop, 'days')) {
+        $days = $workshop->days()
+            ->orderByRaw("FIELD(day, 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')")
+            ->get(['day', 'from', 'to']);
     }
+
+    // ✅ Return view
+    return view('workshops.show', compact(
+        'workshop',
+        'cities',
+        'brands',
+        'categories',
+        'relatedWorkshops',
+        'images',
+        'days'
+    ));
+}
+
 
     /**
      * Handle workshop requests with query parameters and redirect to proper route

@@ -144,6 +144,126 @@ h5, p {
 </style>
 
 
+<!-- 🚗 Most Recent Cars Section -->
+<section class="container my-5">
+  <div class="text-center mb-5">
+    <h2 class="animated-square-title">
+      Most Recent <span>Cars</span>
+    </h2>
+  </div>
+
+  <div class="row g-4">
+    @forelse($recentCars as $key => $car)
+   <div class="col-sm-6 col-lg-4 col-xl-3">
+  <div class="car-card animate__animated animate__fadeInUp shadow-sm border-0 rounded-4 overflow-hidden bg-white" 
+       style="animation-delay: {{ $key * 0.1 }}s; transition: all 0.3s ease-in-out;">
+
+    <!-- ✅ Car Image -->
+    <div class="car-image position-relative">
+      @php
+        $image = $car->images->first()?->image 
+            ? env('CLOUDFLARE_R2_URL') . $car->images->first()->image
+            : asset('carNotFound.jpg');
+      @endphp
+
+      <a href="{{ route('car.detail', $car->id) }}" 
+         aria-label="View details for {{$car->listing_type}} {{$car->listing_model}}">
+        <img src="{{ $image }}" 
+             alt="{{ $car->listing_model }}" 
+             loading="lazy"
+             class="w-100"
+             style="height:220px; object-fit:cover;">
+      </a>
+
+      <!-- 🔍 Zoom Button -->
+      @if($car->images->count() > 0)
+        <button type="button"
+                class="btn btn-light position-absolute top-0 start-0 m-2 rounded-circle shadow-sm"
+                style="width:36px; height:36px;"
+                data-bs-toggle="modal"
+                data-bs-target="#recentZoomModal-{{ $key }}">
+          <i class="fas fa-search-plus" style="color:#760e13;"></i>
+        </button>
+      @endif
+    </div>
+
+    <!-- ✅ Car Info (attached to same card) -->
+    <div class="p-3">
+      <h6 class="fw-bold mb-1 text-dark">
+        {{ $car->listing_type ?? 'Unknown' }} {{ $car->listing_model }}
+      </h6>
+      <p class="text-muted small mb-2">{{ $car->listing_year }} • {{ $car->body_type ?? '—' }}</p>
+      <p class="fw-semibold text-danger mb-0">
+        <img src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}" 
+             style="width:15px; height:15px; margin-right:4px;">
+        {{ number_format($car->listing_price) }}
+      </p>
+    </div>
+  </div>
+</div>
+
+
+      <!-- ✅ Zoom Modal -->
+      @if($car->images->count() > 0)
+      <div class="modal fade" id="recentZoomModal-{{ $key }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+          <div class="modal-content border-0 position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-body p-0">
+              <div class="swiper recentSwiper-{{ $key }}">
+                <div class="swiper-wrapper">
+                  @foreach ($car->images as $img)
+                    <div class="swiper-slide d-flex justify-content-center align-items-center bg-black">
+                      <img src="{{ env('CLOUDFLARE_R2_URL') . $img->image }}" class="img-fluid" style="max-height:85vh; object-fit:contain;">
+                    </div>
+                  @endforeach
+                </div>
+                <div class="swiper-button-next text-white"></div>
+                <div class="swiper-button-prev text-white"></div>
+                <div class="swiper-pagination"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+
+    @empty
+      <div class="col-12 text-center py-5">
+        <i class="fas fa-car fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No recent cars found.</h5>
+      </div>
+    @endforelse
+  </div>
+</section>
+
+<!-- ✅ Swiper Assets (once per page) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+document.addEventListener('shown.bs.modal', function (event) {
+  const modal = event.target;
+  if (modal.id.startsWith('recentZoomModal-')) {
+    const swiperEl = modal.querySelector('.swiper');
+    if (!swiperEl.swiper) {
+      new Swiper(swiperEl, {
+        loop: true,
+        grabCursor: true,
+        centeredSlides: true,
+        spaceBetween: 10,
+        autoplay: { delay: 3500, disableOnInteraction: false },
+        pagination: { el: swiperEl.querySelector('.swiper-pagination'), clickable: true },
+        navigation: {
+          nextEl: swiperEl.querySelector('.swiper-button-next'),
+          prevEl: swiperEl.querySelector('.swiper-button-prev')
+        }
+      });
+    }
+  }
+});
+</script>
+
 
 
 
@@ -725,6 +845,9 @@ class="text-decoration-none flex-grow-1">
                     ? $workshop->workshop_logo
                     : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
                 : asset('workshopNotFound.png');
+             $mapUrl = $workshop->latitude && $workshop->longitude
+        ? "https://www.google.com/maps?q={$workshop->latitude},{$workshop->longitude}"
+        : null;
         @endphp
 
         <div class="col-sm-6 col-lg-4 col-xl-3">
@@ -757,12 +880,17 @@ class="text-decoration-none flex-grow-1">
                         {{ Str::limit(ucwords(strtolower($workshop->workshop_name)), 25) }}
                     </h5>
 
-                    @if($workshop->address)
-                        <p class="text-muted mb-2 text-truncate" title="{{ $workshop->address }}">
-                            <i class="fas fa-map-marker-alt me-2" style="color: var(--primary-color);"></i>
-                            {{ $workshop->address }}
-                        </p>
-                    @endif
+                 <p class="text-muted small mb-2">
+    <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+
+    @if($mapUrl)
+        <a href="{{ $mapUrl }}" target="_blank" class="text-decoration-none text-muted">
+            {{ $workshop->branch ?? 'Address not available' }}
+        </a>
+    @else
+        {{ $workshop->branch ?? 'Address not available' }}
+    @endif
+</p>
 
                     <!-- Working Hours -->
                     @if($workshop->days && $workshop->days->count() > 0)

@@ -29,15 +29,20 @@ class HomeController extends Controller
      */
 public function index(Request $request)
 {
-    // Fetch brands with more than 2 cars
-    $brands = CarBrand::select('id', 'name')
-        ->whereHas('cars')
-        ->withCount('cars')
-        ->having('cars_count', '>', 2)
-        ->orderBy('name')
+    // ✅ Most Recent Cars (last 4 cars by created_at)
+    $recentCars = CarListingModel::with(['user', 'images'])
+        ->orderBy('created_at', 'desc')
+        ->take(4)
         ->get();
 
-    // Filters columns
+    // ✅ Featured Cars (latest by year, excluding recent cars)
+    $featuredCars = CarListingModel::with(['user', 'images'])
+        ->whereNotIn('id', $recentCars->pluck('id'))
+        ->orderBy('listing_year', 'desc')
+        ->take(8)
+        ->get();
+
+    // ✅ Filters columns
     $filters = [
         'cities'        => 'city',
         'makes'         => 'listing_type',
@@ -55,38 +60,30 @@ public function index(Request $request)
     $distinctValues = [];
     foreach ($filters as $key => $column) {
         $distinctValues[$key] = CarListingModel::select($column)
+            ->whereNotNull($column)
             ->distinct()
             ->orderBy($column)
             ->pluck($column);
     }
 
-    // Get min and max values
+    // ✅ Min & Max values
     $minPrice = CarListingModel::min('listing_price');
     $maxPrice = CarListingModel::max('listing_price');
-    $minYear = CarListingModel::min('listing_year');
-    $maxYear = CarListingModel::max('listing_year');
+    $minYear  = CarListingModel::min('listing_year');
+    $maxYear  = CarListingModel::max('listing_year');
 
-    // Pagination and sorting
-    $perPage = $request->input('perPage', 4);
+    // ✅ Sorting setup
     $sortBy = $request->input('sortBy', 'default');
-
     $sortOptions = [
         'Price: Low to High' => ['listing_price', 'asc'],
         'Price: High to Low' => ['listing_price', 'desc'],
         'Newest' => ['created_at', 'desc'],
         'Oldest' => ['created_at', 'asc'],
-        'default' => ['id', 'desc']
+        'default' => ['id', 'desc'],
     ];
 
-    // Start base query
+    // ✅ Base Query (no brand relationship)
     $carlisting = CarListingModel::with(['user', 'images']);
-
-    // ✅ Apply filters from dropdown (important part)
-    if ($request->filled('brand')) {
-        $carlisting->whereHas('brand', function ($q) use ($request) {
-            $q->where('name', $request->brand);
-        });
-    }
 
     if ($request->filled('model')) {
         $carlisting->where('listing_model', $request->model);
@@ -100,13 +97,10 @@ public function index(Request $request)
         $carlisting->where('body_type', $request->type);
     }
 
-    // ✅ Apply sorting
-    $carlisting = $carlisting->orderBy(...$sortOptions[$sortBy]);
+    // ✅ Apply sorting and pagination
+    $carlisting = $carlisting->orderBy(...$sortOptions[$sortBy])->paginate(8);
 
-    // ✅ Apply pagination
-    $carlisting = $carlisting->paginate(8);
-
-    // ✅ Get image per car
+    // ✅ Add first available image to each car
     $carlisting->setCollection(
         $carlisting->getCollection()->transform(function ($car) {
             $car->image = $car->images->first(fn($image) => Storage::disk('r2')->exists($image->image));
@@ -114,12 +108,12 @@ public function index(Request $request)
         })
     );
 
-    // Random dealers and workshops
+    // ✅ Random dealers and workshops
     $users = SparePart::select('user_id')->distinct()->inRandomOrder()->limit(4)->pluck('user_id');
     $dealers = CarDealer::whereIn('user_id', $users)->get();
     $workshops = WorkshopProvider::with('days')->inRandomOrder()->take(4)->get();
 
-    // Distinct data for dropdowns
+    // ✅ Distinct dropdowns
     $bodyTypes = CarListingModel::whereNotNull('body_type')->distinct()->pluck('body_type');
     $models    = CarListingModel::whereNotNull('listing_model')->distinct()->pluck('listing_model');
     $years     = CarListingModel::whereNotNull('listing_year')->distinct()->orderBy('listing_year', 'desc')->pluck('listing_year');
@@ -127,13 +121,24 @@ public function index(Request $request)
     // ✅ Return to view
     return view('home', array_merge(
         compact(
-            'carlisting', 'dealers', 'workshops',
-            'minPrice', 'maxPrice', 'minYear', 'maxYear',
-            'brands', 'bodyTypes', 'models', 'years'
+            'carlisting',
+            'dealers',
+            'workshops',
+            'minPrice',
+            'maxPrice',
+            'minYear',
+            'maxYear',
+            'bodyTypes',
+            'models',
+            'years',
+            'recentCars',
+            'featuredCars'
         ),
         $distinctValues
     ));
 }
+
+
 
 
 

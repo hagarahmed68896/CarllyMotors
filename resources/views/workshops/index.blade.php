@@ -346,10 +346,17 @@ use Illuminate\Support\Str;
                 {{ $workshop->workshop_name }}
             </h5>
 
-            <p class="text-muted small mb-2">
-                <i class="fas fa-map-marker-alt me-1 text-danger"></i>
-                {{ $workshop->branch ?? 'Address not available' }}
-            </p>
+         <p class="text-muted small mb-2">
+    <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+
+    @if($mapUrl)
+        <a href="{{ $mapUrl }}" target="_blank" class="text-decoration-none text-muted">
+            {{ $workshop->branch ?? 'Address not available' }}
+        </a>
+    @else
+        {{ $workshop->branch ?? 'Address not available' }}
+    @endif
+</p>
 
             <!-- ✅ الأزرار -->
             <div class="d-flex justify-content-between mt-3">
