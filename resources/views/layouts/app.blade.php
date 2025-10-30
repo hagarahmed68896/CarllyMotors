@@ -111,16 +111,63 @@
                     </ul>
                 </div>
 
-                <!-- Popular Cars Column -->
-                <div class="col-12 col-md-3">
-                    <h5 class="footer-title">Popular Used Cars</h5>
-                    <ul class="list-unstyled footer-list">
-                        <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Chevrolet</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Ford</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Toyota</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right me-2"></i>BMW</a></li>
-                    </ul>
-                </div>
+           <!-- Popular Cars Column -->
+<div class="col-12 col-md-3">
+    <h5 class="footer-title">Popular Used Cars</h5>
+
+    @if(isset($brands) && count($brands) > 0)
+        <ul class="list-unstyled footer-list">
+            @foreach ($brands->reject(fn($brand) => !in_array($brand->name, [
+                'BMW', 'Chevrolet', 'Ford', 'Hyundai', 'Jeep', 'Kia', 
+                'Land Rover', 'Lexus', 'Mercedes', 'Mitsubishi', 'Nissan', 'Toyota'
+            ]))->take(8) as $brand)
+                @php
+                    $logos = [
+                        'BMW' => 'bmw-svgrepo-com.svg',
+                        'Chevrolet' => 'chevrolet-svgrepo-com.svg',
+                        'Ford' => 'ford-svgrepo-com.svg',
+                        'Hyundai' => 'hyundai-svgrepo-com.svg',
+                        'Jeep' => 'jeep-alt-svgrepo-com.svg',
+                        'Kia' => 'kia-svgrepo-com.svg',
+                        'Land Rover' => 'land-rover-svgrepo-com.svg',
+                        'Lexus' => 'lexus-svgrepo-com.svg',
+                        'Mercedes' => 'mercedes-benz-svgrepo-com.svg',
+                        'Mitsubishi' => 'mitsubishi-svgrepo-com.svg',
+                        'Nissan' => 'nissan-svgrepo-com.svg',
+                        'Toyota' => 'toyota-svgrepo-com.svg',
+                    ];
+                    $fileName = $logos[$brand->name] ?? null;
+
+                    // ✅ Generate link to cars page
+                    $brandUrl = route('cars.index', ['make' => $brand->name]);
+                @endphp
+
+                <li class="d-flex align-items-center mb-2">
+                    @if($fileName && file_exists(public_path('images/brands/' . $fileName)))
+                        <img src="{{ asset('images/brands/' . $fileName) }}" 
+                             alt="{{ $brand->name }}" 
+                             style="width:22px; height:22px; margin-right:8px;">
+                    @else
+                        <i class="fas fa-car text-danger me-2"></i>
+                    @endif
+
+                    <a href="{{ $brandUrl }}" 
+                       class="text-decoration-none text-light small">
+                        {{ $brand->name }}
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+    @else
+        <ul class="list-unstyled footer-list">
+            <li><a href="{{ route('cars.index', ['make' => 'Chevrolet']) }}"><i class="fas fa-chevron-right me-2"></i>Chevrolet</a></li>
+            <li><a href="{{ route('cars.index', ['make' => 'Ford']) }}"><i class="fas fa-chevron-right me-2"></i>Ford</a></li>
+            <li><a href="{{ route('cars.index', ['make' => 'Toyota']) }}"><i class="fas fa-chevron-right me-2"></i>Toyota</a></li>
+            <li><a href="{{ route('cars.index', ['make' => 'BMW']) }}"><i class="fas fa-chevron-right me-2"></i>BMW</a></li>
+        </ul>
+    @endif
+</div>
+
 
                 <!-- Newsletter Column -->
                 <div class="col-12 col-md-3">
