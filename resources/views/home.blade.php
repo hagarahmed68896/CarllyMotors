@@ -408,19 +408,36 @@ document.addEventListener('shown.bs.modal', function (event) {
                             </button>
                         </a>
 
-                        @if($os == 'Android' || $os == 'iOS')
-                            <a href="tel:{{ $car->user->phone }}" class="flex-fill text-decoration-none">
-                                <button class="btn btn-outline-danger w-100 rounded-4">
-                                    <i class="fas fa-phone me-1"></i>
-                                </button>
-                            </a>
-                        @else
-                            <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="flex-fill text-decoration-none">
-                                <button class="btn btn-outline-danger w-100 rounded-4">
-                                    <i class="fas fa-phone me-1"></i>
-                                </button>
-                            </a>
-                        @endif
+            @if(!empty($car->user?->phone))
+    @php
+        $phone = preg_replace('/\D/', '', $car->user?->phone); // إزالة أي رموز غير أرقام
+    @endphp
+
+    @if($os === 'Android')
+        {{-- 📱 Android: اتصال مباشر --}}
+        <a href="tel:{{ $phone }}" class="text-decoration-none flex-grow-1">
+            <button class="btn btn-outline-danger rounded-4 w-100">
+                <i class="fas fa-phone me-1"></i>
+            </button>
+        </a>
+
+    @elseif($os === 'iOS')
+        {{-- 🍎 iPhone: اتصال فقط --}}
+        <a href="tel:{{ $phone }}" class="text-decoration-none flex-grow-1" onclick="event.stopPropagation();">
+            <button class="btn btn-outline-danger rounded-4 w-100">
+                <i class="fas fa-phone me-1"></i>
+            </button>
+        </a>
+
+    @else
+        {{-- 💻 Desktop أو غيرهم: واتساب --}}
+        <a href="https://wa.me/{{ $phone }}" target="_blank" class="text-decoration-none flex-grow-1">
+            <button class="btn btn-outline-danger rounded-4 w-100">
+                <i class="fas fa-phone me-1"></i>
+            </button>
+        </a>
+    @endif
+@endif
                     </div>
 
                     <style>

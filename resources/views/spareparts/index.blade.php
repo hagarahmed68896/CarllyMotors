@@ -194,30 +194,110 @@
     </h5>
 
 <form id="filterForm" method="GET" action="{{ route('spareParts.index') }}">
-      <!-- ✅ MAKE -->
-      <div class="mb-3">
-        <label class="form-label fw-semibold small text-muted">Make</label>
-        <select class="form-select" id="brand" name="make" required>
-          <option value="">All Makes</option>
-          @foreach($makes as $make)
-            @php $normalizedMake = strtolower(trim($make)); @endphp
-            <option value="{{ $normalizedMake }}" {{ strtolower(request('make')) == $normalizedMake ? 'selected' : '' }}>
-              {{ $make }}
-            </option>
-          @endforeach
-        </select>
-      </div>
+<!-- ✅ MAKE -->
+<div class="mb-3">
+  <label class="form-label fw-semibold small text-muted">Car Brand</label>
 
-      <!-- ✅ MODEL -->
-      <div class="mb-3">
-        <label class="form-label fw-semibold small text-muted">Model</label>
-        <select class="form-select" id="model" name="model" disabled required>
-          <option value="">All Models</option>
-          @if(request('make') && request('model'))
-            <option value="{{ request('model') }}" selected>{{ request('model') }}</option>
-          @endif
-        </select>
-      </div>
+  @php
+      $sortedMakes = collect($makes)->filter()->sort(function($a, $b) {
+          return strcasecmp($a, $b);
+      });
+  @endphp
+
+  <select class="form-select rounded-4" id="brand" name="make" required>
+    <option value="">All Brands</option>
+    @foreach($sortedMakes as $make)
+      @php $normalizedMake = strtolower(trim($make)); @endphp
+      <option value="{{ $normalizedMake }}" {{ strtolower(request('make')) == $normalizedMake ? 'selected' : '' }}>
+        {{ $make }}
+      </option>
+    @endforeach
+  </select>
+</div>
+
+<!-- ✅ MODEL -->
+<div class="mb-3">
+  <label class="form-label fw-semibold small text-muted">Model</label>
+  <select class="form-select rounded-4" id="model" name="model" disabled required>
+    <option value="">All Models</option>
+    @if(request('make') && request('model'))
+      <option value="{{ request('model') }}" selected>{{ request('model') }}</option>
+    @endif
+  </select>
+</div>
+
+<!-- ✅ Same Style for Brand & Model -->
+<style>
+  /* نفس الشكل والحجم */
+  .form-select {
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem !important; /* rounded-4 */
+    background-color: #fff;
+    color: #333;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .form-select:focus {
+    border-color: #760e13;
+    box-shadow: 0 0 0 0.2rem rgba(118, 14, 19, 0.15);
+  }
+
+  .form-label {
+    color: #6c757d !important;
+  }
+</style>
+
+<!-- ✅ Choices.js disabled (if you don’t want enhanced dropdown) -->
+<!-- إذا عايز تحتفظ بخاصية البحث في البراند -->
+<!-- ممكن تخلي نفس الشكل كده -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    new Choices('#brand', {
+        searchEnabled: true,
+        searchPlaceholderValue: 'Search brand...',
+        shouldSort: false,
+        itemSelectText: '',
+        classNames: {
+          containerOuter: 'choices form-select rounded-4',
+        }
+    });
+});
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<style>
+/* ✅ خلي الألوان والحواف زي الـ Model */
+.choices__inner {
+  border-radius: 0.75rem !important;
+  border: 1px solid #dee2e6 !important;
+  background-color: #fff !important;
+  color: #333 !important;
+  padding: 10px 12px !important;
+  font-size: 0.95rem;
+}
+
+.choices__list--dropdown {
+  border-radius: 0.75rem !important;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  background-color: #fff;
+  z-index: 1050;
+}
+
+.choices__list--dropdown .choices__item--selectable.is-highlighted {
+  background-color: #760e13 !important;
+  color: #fff !important;
+}
+
+.choices[data-type*=select-one]:after {
+  border-color: #760e13 transparent transparent transparent !important;
+}
+</style>
+
 
       <!-- ✅ YEAR -->
       <div class="mb-3">
@@ -230,18 +310,55 @@
         </select>
       </div>
 
-      <!-- ✅ CITY -->
-      <div class="mb-3">
-        <label class="form-label fw-semibold small text-muted">City</label>
-        <select class="form-select" name="city" required>
-          <option value="">All Cities</option>
-          @foreach($cities as $city)
-            @if(!empty($city))
-              <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
-            @endif
-          @endforeach
-        </select>
-      </div>
+   <!-- ✅ CITY -->
+<div class="mb-3">
+  <label class="form-label fw-semibold small text-muted">City</label>
+
+  @php
+      // 🏙️ نفس المدن الثابتة مثل المثال الثاني
+      $uaeCities = [
+          'Abu Dhabi',
+          'Ajman',
+          'Al Ain',
+          'Dibba',
+          'Dubai',
+          'Fujairah',
+          'Hatta',
+          'Kalba',
+          'Khor Fakkan',
+          'Ras Al Khaimah',
+          'Sharjah',
+          'Umm Al Quwain',
+      ];
+
+      sort($uaeCities); // ✅ ترتيب أبجدي
+  @endphp
+
+  <select class="form-select rounded-4" id="city" name="city" required>
+    <option value="" {{ empty(request('city')) ? 'selected' : '' }}>All Cities</option>
+    @foreach($uaeCities as $city)
+      <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+        {{ $city }}
+      </option>
+    @endforeach
+  </select>
+</div>
+
+<!-- ✅ Choices.js Search for City (optional) -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  new Choices('#city', {
+    searchEnabled: true,
+    searchPlaceholderValue: 'Search city...',
+    shouldSort: false,
+    itemSelectText: '',
+    classNames: {
+      containerOuter: 'choices form-select rounded-4',
+    }
+  });
+});
+</script>
+
 
     <!-- ✅ CATEGORY ICONS (always visible) -->
 <div class="mb-3">
@@ -331,6 +448,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const conditionButtons = document.querySelectorAll('.condition-btn');
   const vinContainer = document.getElementById('vin-input-container');
   const conditionInput = document.getElementById('conditionInput');
+  const subcategorySelect = document.getElementById('subcategorySelect');
+  const subcategoryDropdown = document.getElementById('subcategoryDropdown');
+  const categoryInput = document.getElementById('categoryInput');
+  const categoryNameInput = document.getElementById('categoryNameInput');
 
   // ✅ CATEGORY CLICK
   categoryIcons.forEach(icon => {
@@ -339,10 +460,6 @@ document.addEventListener('DOMContentLoaded', function() {
       icon.classList.add('selected');
 
       const subs = JSON.parse(icon.dataset.subs || '[]');
-      const categoryInput = document.getElementById('categoryInput');
-      const categoryNameInput = document.getElementById('categoryNameInput');
-      const subcategorySelect = document.getElementById('subcategorySelect');
-      const subcategoryDropdown = document.getElementById('subcategoryDropdown');
 
       categoryInput.value = icon.dataset.id;
       categoryNameInput.value = icon.dataset.name;
@@ -354,22 +471,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (subs.length) {
         subs.forEach(sub => {
-          // Add option to regular select
           const opt = document.createElement('option');
           opt.value = sub.id;
           opt.textContent = sub.name;
           subcategorySelect.appendChild(opt);
 
-          // ✅ Build correct image path like category
-          let imgSrc = '';
-          if (sub.image) {
-            const imagePath = sub.image.replace("{{ url('/') }}/", '');
-            imgSrc = fileBaseUrl + imagePath;
-          } else {
-            imgSrc = 'https://via.placeholder.com/40';
-          }
+          let imgSrc = sub.image
+            ? fileBaseUrl + sub.image.replace("{{ url('/') }}/", '')
+            : 'https://via.placeholder.com/40';
 
-          // ✅ Create list-style option (horizontal)
           const div = document.createElement('div');
           div.classList.add('sub-option');
           div.innerHTML = `
@@ -384,53 +494,50 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         subcategorySelect.disabled = false;
-
-       // ✅ Always rebuild subcategory dropdown with images when opened
-subcategorySelect.addEventListener('mousedown', (e) => {
-  e.preventDefault();
-  const selectedIcon = document.querySelector('.category-icon.selected');
-  if (!selectedIcon) return;
-
-  const subs = JSON.parse(selectedIcon.dataset.subs || '[]');
-  const subcategoryDropdown = document.getElementById('subcategoryDropdown');
-  const fileBaseUrl = "{{ config('app.file_base_url') ? rtrim(config('app.file_base_url'), '/') . '/' : '' }}";
-
-  // Rebuild dropdown every time
-  subcategoryDropdown.innerHTML = '';
-  subs.forEach(sub => {
-    let imgSrc = sub.image
-      ? fileBaseUrl + sub.image.replace("{{ url('/') }}/", '')
-      : 'https://via.placeholder.com/40';
-
-    const div = document.createElement('div');
-    div.classList.add('sub-option');
-    div.innerHTML = `
-      <img src="${imgSrc}" alt="" width="35" height="35" style="border-radius:6px; object-fit:cover;">
-      <span style="font-size:0.9rem; color:#333;">${sub.name}</span>
-    `;
-    div.addEventListener('click', () => {
-      subcategorySelect.value = sub.id;
-      subcategoryDropdown.style.display = 'none';
-    });
-    subcategoryDropdown.appendChild(div);
-  });
-
-  // Toggle visibility
-  subcategoryDropdown.style.display =
-    subcategoryDropdown.style.display === 'none' ? 'block' : 'none';
-});
-
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-          if (!subcategoryDropdown.contains(e.target) && e.target !== subcategorySelect) {
-            subcategoryDropdown.style.display = 'none';
-          }
-        });
       } else {
         subcategorySelect.disabled = true;
       }
     });
+  });
+
+  // ✅ SINGLE LISTENER for subcategory dropdown
+  subcategorySelect.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    const selectedIcon = document.querySelector('.category-icon.selected');
+    if (!selectedIcon) return;
+
+    const subs = JSON.parse(selectedIcon.dataset.subs || '[]');
+
+    // Rebuild dropdown every time it's opened
+    subcategoryDropdown.innerHTML = '';
+    subs.forEach(sub => {
+      let imgSrc = sub.image
+        ? fileBaseUrl + sub.image.replace("{{ url('/') }}/", '')
+        : 'https://via.placeholder.com/40';
+
+      const div = document.createElement('div');
+      div.classList.add('sub-option');
+      div.innerHTML = `
+        <img src="${imgSrc}" alt="" width="35" height="35" style="border-radius:6px; object-fit:cover;">
+        <span style="font-size:0.9rem; color:#333;">${sub.name}</span>
+      `;
+      div.addEventListener('click', () => {
+        subcategorySelect.value = sub.id;
+        subcategoryDropdown.style.display = 'none';
+      });
+      subcategoryDropdown.appendChild(div);
+    });
+
+    // Toggle visibility
+    subcategoryDropdown.style.display =
+      subcategoryDropdown.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // ✅ Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!subcategoryDropdown.contains(e.target) && e.target !== subcategorySelect) {
+      subcategoryDropdown.style.display = 'none';
+    }
   });
 
   // ✅ CONDITION BUTTONS
@@ -443,25 +550,20 @@ subcategorySelect.addEventListener('mousedown', (e) => {
     });
   });
 
-  // ✅ ADDED: ENABLE MODEL AND YEAR WHEN MAKE IS SELECTED
+  // ✅ BRAND / MODEL / YEAR logic
   const brandSelect = document.getElementById('brand');
   const modelSelect = document.getElementById('model');
   const yearSelect = document.getElementById('yearSelect');
-
-  // ✅ Preload brandModels (passed from Laravel)
   const brandModels = @json($brandModels);
   const years = @json($years);
 
-  // Function to populate models and years dynamically
   function updateModelAndYearDropdowns(make) {
     const normalizedMake = make.trim().toLowerCase();
     const models = brandModels[normalizedMake] || [];
 
-    // Reset dropdowns
     modelSelect.innerHTML = '<option value="">All Models</option>';
     yearSelect.innerHTML = '<option value="">All Years</option>';
 
-    // Populate models
     if (models.length > 0) {
       models.forEach(m => {
         const opt = document.createElement('option');
@@ -474,7 +576,6 @@ subcategorySelect.addEventListener('mousedown', (e) => {
       modelSelect.disabled = true;
     }
 
-    // Populate years
     if (years.length > 0) {
       years.forEach(y => {
         const opt = document.createElement('option');
@@ -488,35 +589,31 @@ subcategorySelect.addEventListener('mousedown', (e) => {
     }
   }
 
-  // On Make change
   brandSelect.addEventListener('change', function() {
-    const make = this.value;
-    updateModelAndYearDropdowns(make);
+    updateModelAndYearDropdowns(this.value);
   });
 
-  // ✅ ADDED: Keep model/year enabled if page reloaded with filters
+  // ✅ Restore state after reload
   const currentMake = "{{ request('make') }}";
   if (currentMake) {
     updateModelAndYearDropdowns(currentMake);
-
     const currentModel = "{{ request('model') }}";
     const currentYear = "{{ request('year') }}";
     if (currentModel) modelSelect.value = currentModel;
     if (currentYear) yearSelect.value = currentYear;
   }
-// ✅ Keep condition active after reload
-const currentCondition = "{{ request('condition') }}";
-if (currentCondition) {
-  conditionButtons.forEach(btn => {
-    if (btn.dataset.value === currentCondition) {
-      btn.classList.add('active');
-      conditionInput.value = currentCondition;
-      vinContainer.style.display = currentCondition === 'New' ? 'block' : 'none';
-    }
-  });
-}
 
-  // ✅ ADDED: Keep selected category & subcategory active after reload
+  const currentCondition = "{{ request('condition') }}";
+  if (currentCondition) {
+    conditionButtons.forEach(btn => {
+      if (btn.dataset.value === currentCondition) {
+        btn.classList.add('active');
+        conditionInput.value = currentCondition;
+        vinContainer.style.display = currentCondition === 'New' ? 'block' : 'none';
+      }
+    });
+  }
+
   const currentCategoryId = "{{ request('category') }}";
   const currentSubcategoryId = "{{ request('subcategory') }}";
 
@@ -526,9 +623,6 @@ if (currentCondition) {
       selectedIcon.classList.add('selected');
 
       const subs = JSON.parse(selectedIcon.dataset.subs || '[]');
-      const subcategorySelect = document.getElementById('subcategorySelect');
-      const subcategoryDropdown = document.getElementById('subcategoryDropdown');
-
       subcategorySelect.innerHTML = '<option value="">All Subcategories</option>';
       subcategoryDropdown.innerHTML = '';
 
@@ -558,7 +652,6 @@ if (currentCondition) {
 
         subcategorySelect.disabled = false;
 
-        // ✅ Select current subcategory
         if (currentSubcategoryId) {
           subcategorySelect.value = currentSubcategoryId;
         }
@@ -569,6 +662,7 @@ if (currentCondition) {
   }
 });
 </script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('filterForm');

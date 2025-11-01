@@ -366,19 +366,23 @@ class="flex-fill text-decoration-none">
 </a>
 
 
-    @php
-        $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
-    @endphp
+  @php
+    $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
+    $phone = $car->user?->phone;
+@endphp
 
+@if(!empty($phone))
     @if($isMobile)
-        <a href="tel:{{ $car->user?->phone }}" class="btn btn-outline-danger flex-fill rounded-4">
+        <a href="tel:{{ $phone }}" class="btn btn-outline-danger flex-fill rounded-4">
             <i class="fa fa-phone"></i>
         </a>
     @else
-        <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="btn btn-outline-danger flex-fill rounded-4">
+        <a href="https://wa.me/{{ $phone }}" target="_blank" class="btn btn-outline-danger flex-fill rounded-4">
             <i class="fa fa-phone"></i>
         </a>
     @endif
+@endif
+
 
   <a href="https://wa.me/?text={{ urlencode(
     'Check out this car on Carlly Motors:' . "\n\n" .

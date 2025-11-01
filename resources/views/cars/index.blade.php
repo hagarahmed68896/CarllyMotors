@@ -228,25 +228,68 @@ $currentMake = request('make'); // Get the currently selected make for highlight
   <div class="filter-bar-top">
     <form id="topFilterForm" method="GET" action="{{ route('cars.index') }}" class="filter-form-grid">
 
-      <!-- 🏙️ City -->
-      <select class="form-select" name="city" onchange="submitTopFilter()">
-        <option value="" disabled {{ empty(request('city')) ? 'selected' : '' }}>City</option>
-        @foreach($cities as $city)
-          @if(!empty($city))
-            <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-              {{ $city }}
-            </option>
-          @endif
-        @endforeach
-      </select>
+<!-- 🏙️ City -->
+<select class="form-select" name="city" onchange="submitTopFilter()">
+    <option value="" {{ empty(request('city')) ? 'selected' : '' }}>All Cities</option>
 
-      <!-- 🚗 Make -->
-      <select class="form-select" name="make" onchange="submitTopFilter()">
-        <option value="">Make</option>
-        @foreach($makes as $make)
-          <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>{{ $make }}</option>
-        @endforeach
-      </select>
+    @php
+        $uaeCities = [
+            'Abu Dhabi',
+            'Dubai',
+            'Sharjah',
+            'Ajman',
+            'Umm Al Quwain',
+            'Ras Al Khaimah',
+            'Fujairah',
+            'Al Ain',
+            'Dibba',
+            'Khor Fakkan',
+            'Kalba',
+            'Hatta',
+        ];
+
+        sort($uaeCities); // ✅ ترتيب المدن أبجديًا
+    @endphp
+
+    @foreach($uaeCities as $city)
+        <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+            {{ $city }}
+        </option>
+    @endforeach
+</select>
+
+
+
+   <!-- 🚗 Car Brand -->
+<select class="form-select" id="makeSelect" name="make">
+    <option value="">Car Brand</option>
+    @foreach(collect($makes)->filter()->sort()->values() as $make)
+        <option value="{{ $make }}" {{ request('make') == $make ? 'selected' : '' }}>
+            {{ $make }}
+        </option>
+    @endforeach
+</select>
+
+<!-- 🧠 مكتبة Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#makeSelect').select2({
+        placeholder: "Search brand...",
+        allowClear: true,
+        width: '100%'
+    });
+
+    // 🟢 لما المستخدم يختار ماركة، نفّذ الفلترة
+    $('#makeSelect').on('change', function() {
+        submitTopFilter();
+    });
+});
+</script>
+
 
       <!-- 💰 Price Modal -->
       <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#priceModal">
@@ -254,12 +297,21 @@ $currentMake = request('make'); // Get the currently selected make for highlight
       </button>
 
       <!-- 📅 Year -->
-      <select class="form-select" name="year" onchange="submitTopFilter()">
-        <option value="">Year</option>
-        @foreach($years as $year)
-          <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
-        @endforeach
-      </select>
+@php
+    $currentYear = date('Y');
+    // توليد السنين من السنة الحالية إلى 1990
+    $years = range($currentYear, 1990);
+@endphp
+
+<select class="form-select" name="year" onchange="submitTopFilter()">
+    <option value="">Year</option>
+    @foreach($years as $year)
+        <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>
+            {{ $year }}
+        </option>
+    @endforeach
+</select>
+
 
       <!-- 🛞 Mileage Modal -->
       <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#mileageModal">
@@ -366,7 +418,13 @@ function submitTopFilter() {
 
 <div class="container-xl">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h1 class="listing-header mb-0">Cars for sale in Dubai • {{ number_format($carlisting->total()) }} Ads</h1>
+@php
+    $selectedCity = request('city') ?: 'UAE';
+@endphp
+
+<h1 class="listing-header mb-0">
+    Cars for sale in {{ $selectedCity }} 
+</h1>
     </div>
 
 <div class="d-flex flex-wrap gap-2 mb-4" id="brandPillsContainer">
@@ -374,7 +432,7 @@ function submitTopFilter() {
         <a href="{{ route('cars.index', array_merge(request()->query(), ['make' => $brand->name])) }}"
            class="brand-pill {{ $brand->name == $currentMake ? 'active' : '' }}"
            @if($index >= 10) style="display: none;" @endif>
-            {{ $brand->name }} ({{ $brand->cars_count ?? 0 }})
+            {{ $brand->name }} 
         </a>
     @endforeach
 
@@ -440,15 +498,16 @@ function submitTopFilter() {
     </div>
   </a>
 <!-- 🔍 Zoom Button -->
-@if($images && count($images) > 0)
-<button type="button"
-        class="btn btn-light position-absolute top-0 start-0 m-2"
-        style="z-index: 1055; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;"
-        data-bs-toggle="modal"
-        data-bs-target="#zoomModal-{{ $key }}">
-    <i class="fas fa-search-plus" style="color:#760e13;"></i>
-</button>
-@endif
+  @if($images && count($images) > 0)
+        <!-- 🔍 Zoom Button -->
+        <button type="button"
+                class="btn btn-light position-absolute top-0 start-0 m-2"
+                style="width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; z-index: 10;"
+                data-bs-toggle="modal"
+                data-bs-target="#zoomModal-{{ $key }}">
+            <i class="fas fa-search-plus" style="color:#760e13;"></i>
+        </button>
+    @endif
 
   <!-- ❤️ Favorite & Share Buttons -->
   <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
@@ -619,20 +678,36 @@ class="flex-fill text-decoration-none">
 
 
 @if(!empty($car->user?->phone))
-    @if($os == 'Android' || $os == 'iOS')
-        <a href="tel:{{ $car->user?->phone }}" class="text-decoration-none flex-grow-1">
+    @php
+        $phone = preg_replace('/\D/', '', $car->user?->phone); // إزالة أي رموز غير أرقام
+    @endphp
+
+    @if($os === 'Android')
+        {{-- 📱 Android: اتصال مباشر --}}
+        <a href="tel:{{ $phone }}" class="text-decoration-none flex-grow-1">
             <button class="btn btn-outline-danger rounded-4 w-100">
                 <i class="fas fa-phone me-1"></i>
             </button>
         </a>
+
+    @elseif($os === 'iOS')
+        {{-- 🍎 iPhone: اتصال فقط --}}
+        <a href="tel:{{ $phone }}" class="text-decoration-none flex-grow-1" onclick="event.stopPropagation();">
+            <button class="btn btn-outline-danger rounded-4 w-100">
+                <i class="fas fa-phone me-1"></i>
+            </button>
+        </a>
+
     @else
-        <a href="https://wa.me/{{ $car->user?->phone }}" target="_blank" class="text-decoration-none flex-grow-1">
+        {{-- 💻 Desktop أو غيرهم: واتساب --}}
+        <a href="https://wa.me/{{ $phone }}" target="_blank" class="text-decoration-none flex-grow-1">
             <button class="btn btn-outline-danger rounded-4 w-100">
                 <i class="fas fa-phone me-1"></i>
             </button>
         </a>
     @endif
 @endif
+
 
 </div>
 

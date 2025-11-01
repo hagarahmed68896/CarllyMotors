@@ -115,12 +115,14 @@
 <div class="col-12 col-md-3">
     <h5 class="footer-title">Popular Used Cars</h5>
 
-    @if(isset($brands) && count($brands) > 0)
+    {{-- @if(isset($brands) && count($brands) > 0)
         <ul class="list-unstyled footer-list">
-            @foreach ($brands->reject(fn($brand) => !in_array($brand->name, [
-                'BMW', 'Chevrolet', 'Ford', 'Hyundai', 'Jeep', 'Kia', 
-                'Land Rover', 'Lexus', 'Mercedes', 'Mitsubishi', 'Nissan', 'Toyota'
-            ]))->take(8) as $brand)
+ @foreach (collect($brands)->reject(fn($brand) => !in_array($brand, [
+    'BMW', 'Chevrolet', 'Ford', 'Hyundai', 'Jeep', 'Kia',
+    'Land Rover', 'Lexus', 'Mercedes', 'Mitsubishi', 'Nissan', 'Toyota'
+]))->take(8) as $brand)
+
+
                 @php
                     $logos = [
                         'BMW' => 'bmw-svgrepo-com.svg',
@@ -158,14 +160,14 @@
                 </li>
             @endforeach
         </ul>
-    @else
+    @else --}}
         <ul class="list-unstyled footer-list">
             <li><a href="{{ route('cars.index', ['make' => 'Chevrolet']) }}"><i class="fas fa-chevron-right me-2"></i>Chevrolet</a></li>
             <li><a href="{{ route('cars.index', ['make' => 'Ford']) }}"><i class="fas fa-chevron-right me-2"></i>Ford</a></li>
             <li><a href="{{ route('cars.index', ['make' => 'Toyota']) }}"><i class="fas fa-chevron-right me-2"></i>Toyota</a></li>
             <li><a href="{{ route('cars.index', ['make' => 'BMW']) }}"><i class="fas fa-chevron-right me-2"></i>BMW</a></li>
         </ul>
-    @endif
+    {{-- @endif --}}
 </div>
 
 
