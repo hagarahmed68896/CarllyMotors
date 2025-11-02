@@ -25,30 +25,28 @@
     <h2 class="fw-bold mb-4" style="color: #760e13;">Browse from our services</h2>
 
     <!-- ✅ Scrollable container -->
-    <div class="services-scroll">
-      <div class="d-flex gap-3 flex-nowrap justify-content-center">
+    <div class="services-scroll overflow-auto px-3">
+      <div class="d-flex gap-4 flex-nowrap justify-content-center justify-content-md-center justify-content-sm-start">
 
-        <!-- Buy Car -->
+        <!-- ✅ Service Card -->
         <a href="{{ route('cars.index') }}" class="service-card text-decoration-none text-dark flex-shrink-0">
-          <div class="card-inner">
+          <div class="card-inner text-center border rounded-4 p-4 shadow-sm bg-white" style="width: 180px;">
             <i class="fas fa-car fa-2x mb-2" style="color:#760e13;"></i>
             <h5 class="fw-bold mb-1 text-truncate">Cars</h5>
             <p class="text-muted small mb-0 text-wrap">Best in class cars</p>
           </div>
         </a>
 
-        <!-- Spare Parts -->
         <a href="{{ route('spareParts.index') }}" class="service-card text-decoration-none text-dark flex-shrink-0">
-          <div class="card-inner">
+          <div class="card-inner text-center border rounded-4 p-4 shadow-sm bg-white" style="width: 180px;">
             <i class="fas fa-cog fa-2x mb-2" style="color:#760e13;"></i>
             <h5 class="fw-bold mb-1 text-truncate">Spare Parts</h5>
             <p class="text-muted small mb-0 text-wrap">Find genuine parts easily</p>
           </div>
         </a>
 
-        <!-- Workshops -->
         <a href="{{ route('workshops.index') }}" class="service-card text-decoration-none text-dark flex-shrink-0">
-          <div class="card-inner">
+          <div class="card-inner text-center border rounded-4 p-4 shadow-sm bg-white" style="width: 180px;">
             <i class="fas fa-wrench fa-2x mb-2" style="color:#760e13;"></i>
             <h5 class="fw-bold mb-1 text-truncate">Workshops</h5>
             <p class="text-muted small mb-0 text-wrap">Expert car service near you</p>
@@ -59,6 +57,47 @@
     </div>
   </div>
 </section>
+
+<style>
+/* ✅ Smooth horizontal scrolling */
+.services-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #760e13 #f1f1f1;
+  scroll-padding: 1rem;
+}
+
+/* ✅ Custom scrollbar */
+.services-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.services-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.services-scroll::-webkit-scrollbar-thumb {
+  background-color: #760e13;
+  border-radius: 10px;
+}
+
+/* ✅ Responsive layout behavior */
+@media (max-width: 767.98px) {
+  .services-scroll .d-flex {
+    justify-content: flex-start !important;
+  }
+  .card-inner {
+    width: 150px !important;
+    padding: 1rem !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .services-scroll .d-flex {
+    justify-content: center !important;
+  }
+}
+</style>
+
 
 <!-- ✅ Styles -->
 <style>
