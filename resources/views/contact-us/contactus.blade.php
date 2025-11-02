@@ -123,22 +123,107 @@
                             <label for="email" class="form-label">Your Email</label>
                             <input type="email" class="form-control" id="email" name="email" required>
                         </div>
-                        <div class="col-md-6">
-                            <label for="phone" class="form-label">Your Phone</label>
-                            <input type="number" class="form-control" id="phone" name="phone">
-                        </div>
+                      <div class="col-md-6">
+  <label for="phone" class="form-label">Your Phone</label>
+  <div class="input-group">
+    <span class="input-group-text bg-light text-muted fw-semibold border-end-0">+971</span>
+    <input type="tel" 
+           class="form-control border-start-0" 
+           id="phone" 
+           name="phone"
+           placeholder="5XXXXXXXX"
+           pattern="[0-9]{9}" 
+           maxlength="9"
+           required>
+  </div>
+</div>
+
+<style>
+/* ✅ Optional styling for cleaner look */
+.input-group-text {
+  border-radius: 8px 0 0 8px !important;
+}
+
+.form-control {
+  border-radius: 0 8px 8px 0 !important;
+}
+
+@media (max-width: 576px) {
+  .input-group-text, 
+  .form-control {
+    font-size: 0.95rem;
+  }
+}
+</style>
+
                         <div class="col-12">
                             <label for="body" class="form-label">Your Message</label>
                             <textarea class="form-control" id="body" name="body" rows="5" required></textarea>
                         </div>
                     </div>
+<!-- ✅ Buttons Section (Stay in one line on all screens) -->
+<div class="action-buttons d-flex justify-content-between align-items-center mt-4 flex-nowrap">
+  <a href="https://wa.me/971566350025" 
+     class="btn btn-whatsapp d-flex justify-content-center align-items-center py-2 px-3 flex-fill me-2">
+    <i class="fab fa-whatsapp me-2"></i> WhatsApp
+  </a>
 
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <a href="https://wa.me/971566350025" class="btn btn-whatsapp px-4 py-2">
-                            <i class="fab fa-whatsapp me-2"></i> WhatsApp
-                        </a>
-                        <button type="submit" class="btn btn-custom px-5 py-2">Send Message</button>
-                    </div>
+  <button type="submit" 
+          class="btn btn-custom py-2 px-3 flex-fill ms-2">
+    Send Message
+  </button>
+</div>
+
+<style>
+/* ✅ WhatsApp Button */
+.btn-whatsapp {
+  background-color: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.3s;
+  white-space: nowrap; /* prevent text from wrapping */
+}
+.btn-whatsapp:hover {
+  background-color: #1eb85b;
+  color: #fff;
+}
+
+/* ✅ Custom Button */
+.btn-custom {
+  background-color: #760e13;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.3s;
+  white-space: nowrap;
+}
+.btn-custom:hover {
+  background-color: #5b0b0f;
+  color: #fff;
+}
+
+/* ✅ Responsive behavior (no wrapping) */
+.action-buttons {
+  overflow-x: auto; /* allows horizontal scroll if too narrow */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* hide scrollbar for modern browsers */
+}
+.action-buttons::-webkit-scrollbar {
+  display: none; /* hide scrollbar for Safari/Chrome */
+}
+
+/* Optional: Make buttons scale slightly smaller on very narrow screens */
+@media (max-width: 400px) {
+  .action-buttons .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.8rem;
+  }
+}
+</style>
+
                 </form>
             </div>
         </div>

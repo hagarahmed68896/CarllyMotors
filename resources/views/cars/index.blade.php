@@ -548,24 +548,33 @@ style="width: 32px; height: 32px; border-radius: 50%;">
 <style>
 .carSwiper-{{ $key }} {
   width: 100%;
-  aspect-ratio: 16 / 9; /* keeps a nice responsive proportion */
+  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
 
 .carSwiper-{{ $key }} img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* ensures full coverage without black borders */
+  object-fit: cover;
   display: block;
   border-radius: 10px;
 }
 
+/* ✅ Swiper Arrows */
 .swiper-button-next,
 .swiper-button-prev {
   color: #fff;
   text-shadow: 0 0 5px rgba(0,0,0,0.6);
+  transform: scale(0.7); /* 👈 يقلل الحجم العام للسهم */
 }
 
+/* أو ممكن بدلها تستخدم الطريقة الدقيقة دي لتغيير حجم الأيقونة فقط */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 20px; /* 👈 الحجم الافتراضي عادة 44px — فده أصغر */
+}
+
+/* ✅ Pagination Bullets */
 .swiper-pagination-bullet {
   background: #fff;
   opacity: 0.8;
@@ -575,6 +584,7 @@ style="width: 32px; height: 32px; border-radius: 50%;">
   opacity: 1;
 }
 </style>
+
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -722,7 +732,7 @@ class="flex-fill text-decoration-none">
 
       <!-- 🔒 Close Button -->
       <button type="button" 
-      class="btn-close btn-close-white position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+      class="btn-close btn-close-black position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
 
       <div class="modal-body p-0">
         <div class="swiper zoomSwiper-{{ $key }}">
@@ -774,7 +784,7 @@ new Swiper('.zoomSwiper-{{ $key }}', {
   
 }
 .modal-content {
-  background-color: rgba(0,0,0,0.5); /* خلفية مظللة خفيفة */
+  /* background-color: rgba(0,0,0,0.5);  */
   border: none;
 }
 </style>
