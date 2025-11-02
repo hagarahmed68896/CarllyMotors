@@ -93,65 +93,31 @@ input[type="text"], select {
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
+{{-- 📞 Phone Input (UAE only) --}}
+<div class="mb-3">
+    <label for="phone" class="form-label fw-semibold">Phone</label>
+    <div class="input-group">
+        <!-- 🇦🇪 Fixed UAE Code -->
+        <span class="input-group-text bg-light">+971</span>
 
-            {{-- Country Code Dropdown + Phone Input --}}
-            <div class="mb-3">
-                <label for="phone" class="form-label" style="font: bold">Phone</label>
-                <div class="input-group">
-                    <select name="country_code" class="form-select" style="max-width: 120px;" required>
-                        <option value="91">India (+91)</option>
-                        <option value="62">Indonesia (+62)</option>
-                        <option value="98">Iran (+98)</option>
-                        <option value="964">Iraq (+964)</option>
-                        <option value="353">Ireland (+353)</option>
-                        <option value="972">Israel (+972)</option>
-                        <option value="39">Italy (+39)</option>
-                        <option value="81">Japan (+81)</option>
-                        <option value="962">Jordan (+962)</option>
-                        <option value="254">Kenya (+254)</option>
-                        <option value="965">Kuwait (+965)</option>
-                        <option value="961">Lebanon (+961)</option>
-                        <option value="218">Libya (+218)</option>
-                        <option value="60">Malaysia (+60)</option>
-                        <option value="212">Morocco (+212)</option>
-                        <option value="31">Netherlands (+31)</option>
-                        <option value="64">New Zealand (+64)</option>
-                        <option value="234">Nigeria (+234)</option>
-                        <option value="47">Norway (+47)</option>
-                        <option value="968">Oman (+968)</option>
-                        <option value="92">Pakistan (+92)</option>
-                        <option value="970">Palestine (+970)</option>
-                        <option value="507">Panama (+507)</option>
-                        <option value="595">Paraguay (+595)</option>
-                        <option value="51">Peru (+51)</option>
-                        <option value="63">Philippines (+63)</option>
-                        <option value="48">Poland (+48)</option>
-                        <option value="351">Portugal (+351)</option>
-                        <option value="974">Qatar (+974)</option>
-                        <option value="40">Romania (+40)</option>
-                        <option value="7">Russia (+7)</option>
-                        <option value="966">Saudi Arabia (+966)</option>
-                        <option value="221">Senegal (+221)</option>
-                        <option value="381">Serbia (+381)</option>
-                        <option value="65">Singapore (+65)</option>
-                        <option value="27">South Africa (+27)</option>
-                        <option value="82">South Korea (+82)</option>
-                        <option value="34">Spain (+34)</option>
-                        <option value="94">Sri Lanka (+94)</option>
-                        <option value="963">Syria (+963)</option>
-                        <option value="46">Sweden (+46)</option>
-                        <option value="41">Switzerland (+41)</option>
-                        <option value="66">Thailand (+66)</option>
-                        <option value="216">Tunisia (+216)</option>
-                        <option value="90">Turkey (+90)</option>
-                        <option value="971">UAE (+971)</option>
-                    </select>
-                    <input type="text" class="form-control" id="phone" name="phone" required placeholder="Please enter phone">
-                </div>
-                @error('phone')
-                <div class="text-danger mt-1">{{ $message }}</div>
-                @enderror
-            </div>
+        <!-- 📱 Phone Input -->
+        <input 
+            type="tel" 
+            class="form-control" 
+            id="phone" 
+            name="phone" 
+            placeholder="Enter your phone number" 
+            required
+            pattern="[0-9]{8,12}" 
+            title="Enter a valid UAE phone number"
+        >
+    </div>
+
+    @error('phone')
+        <div class="text-danger mt-1">{{ $message }}</div>
+    @enderror
+</div>
+
 
             <button type="submit" class="btn bg-carlly w-100">Submit</button>
 

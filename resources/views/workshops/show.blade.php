@@ -165,7 +165,7 @@
     @endif
 
 @php
-    $shareUrl = request()->url() . '?id=' . $workshop->id;
+$shareUrl = route('workshops.show', $workshop->id);
 
     $mapUrl = $workshop->latitude && $workshop->longitude
         ? "https://www.google.com/maps?q={$workshop->latitude},{$workshop->longitude}"
@@ -209,16 +209,14 @@
     @endif
 
     <!-- ✅ Share -->
-    <a href="https://wa.me/?text={{ urlencode(
-        'Workshop Name: ' . $workshop->workshop_name . "\n" .
-        'Phone: ' . ($workshop->user?->phone ?? 'N/A') . "\n" . $shareUrl
-    ) }}" 
-       target="_blank" 
-       class="btn btn-info rounded-4 px-4 py-2 d-flex align-items-center justify-content-center"
-       style="min-width: 60px;"
-       onclick="event.stopPropagation();">
-        <i class="fa fa-share fs-5"></i>
-    </a>
+ <a href="https://wa.me/?text={{ urlencode('Check out my latest find on Carlly! This workshop: ' . $shareUrl) }}" 
+   target="_blank" 
+   class="btn btn-info rounded-4 px-4 py-2 d-flex align-items-center justify-content-center"
+   style="min-width: 60px;"
+   onclick="event.stopPropagation();">
+    <i class="fa fa-share fs-5"></i>
+</a>
+
 
     <!-- ✅ Map -->
     @if($mapUrl)

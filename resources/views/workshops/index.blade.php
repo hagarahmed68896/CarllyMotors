@@ -305,7 +305,7 @@ use Illuminate\Support\Str;
 <div class="row g-4">
     @forelse ($workshops as $workshop)
         @php
-            $shareUrl = request()->url() . '?id=' . $workshop->id;
+$shareUrl = route('workshops.show', $workshop->id);
             $image = $workshop->workshop_logo
                 ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
                     ? $workshop->workshop_logo
@@ -389,15 +389,13 @@ use Illuminate\Support\Str;
                                     <i class="fas fa-phone"></i>
                                 </a>
                             @endif
-                <a href="https://wa.me/?text={{ urlencode(
-                    'Workshop Name: ' . $workshop->workshop_name . "\n" .
-                    'Phone: ' . ($workshop->user?->phone ?? 'N/A') . "\n" . $shareUrl
-                ) }}" 
-                   target="_blank" 
-                   class="btn btn-outline-info flex-fill rounded-4 mx-1"
-                   onclick="event.stopPropagation();">
-                    <i class="fa fa-share"></i>
-                </a>
+            <a href="https://wa.me/?text={{ urlencode('Check out my latest find on Carlly! This workshop: ' . $shareUrl) }}" 
+   target="_blank" 
+   class="btn btn-outline-info flex-fill rounded-4 mx-1"
+   onclick="event.stopPropagation();">
+    <i class="fa fa-share"></i>
+</a>
+
             </div>
         </div>
     </div>

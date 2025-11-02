@@ -447,36 +447,20 @@ document.addEventListener('shown.bs.modal', function (event) {
                             </button>
                         </a>
 
-            @if(!empty($car->user?->phone))
-    @php
-        $phone = preg_replace('/\D/', '', $car->user?->phone); // إزالة أي رموز غير أرقام
-    @endphp
+@php
+    $userAgent = request()->header('User-Agent');
+    $isMobile = Str::contains($userAgent, ['Android', 'iPhone', 'iPad']);
+    $phone = preg_replace('/\D/', '', $car->user?->phone);
+@endphp
 
-    @if($os === 'Android')
-        {{-- 📱 Android: اتصال مباشر --}}
-        <a href="tel:{{ $phone }}" class="text-decoration-none flex-grow-1">
-            <button class="btn btn-outline-danger rounded-4 w-100">
-                <i class="fas fa-phone me-1"></i>
-            </button>
-        </a>
-
-    @elseif($os === 'iOS')
-        {{-- 🍎 iPhone: اتصال فقط --}}
-        <a href="tel:{{ $phone }}" class="text-decoration-none flex-grow-1" onclick="event.stopPropagation();">
-            <button class="btn btn-outline-danger rounded-4 w-100">
-                <i class="fas fa-phone me-1"></i>
-            </button>
-        </a>
-
-    @else
-        {{-- 💻 Desktop أو غيرهم: واتساب --}}
-        <a href="https://wa.me/{{ $phone }}" target="_blank" class="text-decoration-none flex-grow-1">
-            <button class="btn btn-outline-danger rounded-4 w-100">
-                <i class="fas fa-phone me-1"></i>
-            </button>
-        </a>
-    @endif
+@if(!empty($phone))
+    <a href="{{ $isMobile ? 'tel:' . $phone : 'https://wa.me/' . $phone }}"
+       target="{{ $isMobile ? '_self' : '_blank' }}"
+       class="btn btn-outline-danger flex-fill rounded-4">
+        <i class="fa fa-phone"></i>
+    </a>
 @endif
+
                     </div>
 
                     <style>
@@ -912,9 +896,8 @@ document.addEventListener('shown.bs.modal', function (event) {
                <div class="row g-4">
     @foreach ($workshops as $key => $workshop)
         @php
-            $shareUrl = request()->path() == 'home'
-                ? request()->url() . '?workshop_id=' . $workshop->id
-                : request()->fullUrl() . '&workshop_id=' . $workshop->id;
+           $shareUrl = route('workshops.show', $workshop->id);
+
 
             $image = $workshop->workshop_logo
                 ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
@@ -1021,7 +1004,7 @@ document.addEventListener('shown.bs.modal', function (event) {
                             </button>
                         </a>
 
-                        <a href="https://wa.me/?text={{ urlencode('Check out this workshop: ' . $shareUrl) }}" 
+                        <a href="https://wa.me/?text={{ urlencode('Check out my latest find on Carlly!this workshop: ' . $shareUrl) }}" 
                            target="_blank" class="flex-grow-1">
                             <button class="btn btn-outline-info w-100 action-btn rounded-4">
                                 <i class="fas fa-share-alt"></i>

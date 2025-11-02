@@ -234,18 +234,14 @@ $currentMake = request('make'); // Get the currently selected make for highlight
 
     @php
         $uaeCities = [
-            'Abu Dhabi',
-            'Dubai',
-            'Sharjah',
-            'Ajman',
-            'Umm Al Quwain',
-            'Ras Al Khaimah',
-            'Fujairah',
-            'Al Ain',
-            'Dibba',
-            'Khor Fakkan',
-            'Kalba',
-            'Hatta',
+           'Dubai',
+          'Abu Dhabi',
+          'Sharjah',
+          'Ras Al Khaimah',
+          'Fujairah',
+          'Ajman',
+          'Umm Al Quwain',
+          'Al Ain',
         ];
 
         sort($uaeCities); // ✅ ترتيب المدن أبجديًا

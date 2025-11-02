@@ -317,18 +317,14 @@ document.addEventListener('DOMContentLoaded', function () {
   @php
       // 🏙️ نفس المدن الثابتة مثل المثال الثاني
       $uaeCities = [
-          'Abu Dhabi',
-          'Ajman',
-          'Al Ain',
-          'Dibba',
           'Dubai',
-          'Fujairah',
-          'Hatta',
-          'Kalba',
-          'Khor Fakkan',
-          'Ras Al Khaimah',
+          'Abu Dhabi',
           'Sharjah',
+          'Ras Al Khaimah',
+          'Fujairah',
+          'Ajman',
           'Umm Al Quwain',
+          'Al Ain',
       ];
 
       sort($uaeCities); // ✅ ترتيب أبجدي
