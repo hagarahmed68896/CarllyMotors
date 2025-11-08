@@ -13,11 +13,10 @@ html, body {
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    
 }
 
 .login-form {
-    width: 400px; /* أكبر شويه */
+    width: 400px;
     padding: 2.5rem 2rem;
     border-radius: 20px;
     box-shadow: 0 6px 20px rgba(0,0,0,0.1);
@@ -32,19 +31,23 @@ html, body {
 }
 
 input[type="text"]:focus,
+input[type="tel"]:focus,
 select:focus {
     border-color: #760e13;
     box-shadow: 0 0 5px rgba(118,14,19,0.3);
 }
 
 input[type="text"],
+input[type="tel"],
 select,
 .btn,
 .alert {
     border-radius: 15px;
 }
 
-input[type="text"], select {
+input[type="text"], 
+input[type="tel"],
+select {
     font-size: 1rem;
 }
 
@@ -57,6 +60,7 @@ input[type="text"], select {
 .btn.bg-carlly:hover {
     background-color: #a31218;
     color: #fff;
+    text-decoration: none;
 }
 
 .sign-up {
@@ -74,7 +78,6 @@ input[type="text"], select {
 .sign-up a:hover {
     text-decoration: underline;
 }
-
 </style>
 
 <div class="container login">
@@ -93,23 +96,23 @@ input[type="text"], select {
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
-{{-- 📞 Phone Input (UAE only) --}}
-<div class="mb-3">
+
+       <div class="mb-3">
     <label for="phone" class="form-label fw-semibold">Phone</label>
     <div class="input-group">
-        <!-- 🇦🇪 Fixed UAE Code -->
         <span class="input-group-text bg-light">+971</span>
 
-        <!-- 📱 Phone Input -->
         <input 
             type="tel" 
             class="form-control" 
             id="phone" 
             name="phone" 
-            placeholder="Enter your phone number" 
+            placeholder="5xxxxxxxx"
             required
-            pattern="[0-9]{8,12}" 
-            title="Enter a valid UAE phone number"
+            pattern="[0-9]{9}" 
+            maxlength="9"
+            title="Enter 9 digits"
+            value="{{ old('phone') }}"
         >
     </div>
 
@@ -117,6 +120,21 @@ input[type="text"], select {
         <div class="text-danger mt-1">{{ $message }}</div>
     @enderror
 </div>
+
+<script>
+document.getElementById('phone').addEventListener('input', function (e) {
+    let value = e.target.value;
+
+    // لو الرقم يبدأ بـ 0 تجاهله
+    if (value.startsWith('0')) {
+        value = value.substring(1);
+    }
+
+    // خليه أرقام فقط وبحد أقصى 9
+    value = value.replace(/\D/g, '').substring(0, 9);
+    e.target.value = value;
+});
+</script>
 
 
             <button type="submit" class="btn bg-carlly w-100">Submit</button>

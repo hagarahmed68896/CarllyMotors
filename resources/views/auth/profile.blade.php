@@ -11,7 +11,7 @@
     }
 
     .profile-wrapper {
-        max-width: 1100px;
+        max-width: 1350px;
         margin: 40px auto;
         background: #fff;
         border-radius: 20px;
@@ -79,7 +79,7 @@
         padding: 40px;
     }
 
-    .profile-right h5 {
+    .profile-right h2 {
         font-weight: 700;
         color: #760e13;
         margin-bottom: 25px;
@@ -145,27 +145,125 @@
 </style>
 
 <div class="profile-wrapper row g-0">
-    <!-- 🧭 Left profile -->
-    <div class="col-lg-4 profile-left d-flex flex-column align-items-center justify-content-center">
-        <div class="profile-img-container">
-<img id="profileImage" 
-     src="{{ $user->getFirstMediaUrl('profile') ?: asset('user.png') }}" 
-     alt="Profile">
-            <button class="edit-icon" data-bs-toggle="modal" data-bs-target="#editImageModal">
-                <i class="bi bi-pencil-fill text-danger"></i>
-            </button>
-        </div>
+  <!-- 🧭 Left profile -->
+<div class="col-lg-4 profile-left d-flex flex-column align-items-center justify-content-center">
 
-        <h4>{{ $user->fname != 'user' ? $user->fname . ' ' . $user->lname : 'New User' }}</h4>
-        <p><i class="fas fa-user"></i> {{ $user->userType ?? 'User' }}</p>
-        <p><i class="fas fa-map-marker-alt"></i> {{ $user->city ?? 'Unknown City' }}</p>
-        <p><i class="fas fa-envelope"></i> {{ $user->email ?? 'No email' }}</p>
-        <p><i class="fas fa-phone"></i> {{ $user->phone ?? 'No phone' }}</p>
-    </div>
+ <div class="profile-img-container position-relative">
+@php
+    $imagePath = $user->image && file_exists(public_path($user->image))
+        ? asset($user->image)
+        : asset('user-201.png');
+@endphp
+
+
+<div class="profile-img-container position-relative">
+    <img id="profileImage"
+     src="{{ $user->image ? asset($user->image) : asset('user-201.png') }}"
+     alt="Profile"
+     class="profile-img rounded-circle shadow-sm"
+     onerror="this.onerror=null;this.src='{{ asset('user-201.png') }}';">
+
+
+    <button class="edit-icon" data-bs-toggle="modal" data-bs-target="#editImageModal">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+</div>
+
+    <button class="edit-icon" data-bs-toggle="modal" data-bs-target="#editImageModal">
+      <i class="bi bi-pencil-fill"></i>
+    </button>
+  </div> 
+
+  <h4 class="mt-3">
+    {{ (!empty($user->fname) && $user->fname !== 'user') ? trim($user->fname . ' ' . ($user->lname ?? '')) : 'New User' }}
+  </h4>
+
+  @if(!empty($user->userType))
+      <p><i class="fas fa-user"></i> {{ $user->userType }}</p>
+  @endif
+
+
+
+  @if(!empty($user->email))
+      <p><i class="fas fa-envelope"></i> {{ $user->email }}</p>
+  @endif
+
+  @if(!empty($user->phone))
+      <p><i class="fas fa-phone"></i> {{ $user->phone }}</p>
+  @endif
+    @if(!empty($user->city))
+      <p><i class="fas fa-map-marker-alt"></i> {{ $user->city }}</p>
+  @endif
+</div>
+
+<style>
+/* ✅ Container: perfect circle + soft shadow */
+.profile-img-container {
+  /* width: 160px;
+  height: 160px; */
+  border-radius: 50%;
+  position: relative;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.3s ease;
+}
+
+
+
+/* ✅ Image fills the circle perfectly */
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%; /* ensures clean circle */
+  background-color: #f3f3f3;
+}
+
+/* ✅ Placeholder image handling */
+.profile-img[src*="user.png"] {
+  object-fit: contain;
+  background-color: #f8f8f8;
+  opacity: 0.9;
+}
+
+/* ✅ Floating Pencil Button */
+.edit-icon {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background-color: #fff;
+  color: #760e13;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  z-index: 2; /* ✅ keeps it visible even with overflow hidden */
+}
+
+.edit-icon:hover {
+  background-color: #a3121b;
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.edit-icon i {
+  font-size: 17px;
+}
+</style>
+
+
 
     <!-- 📝 Right form -->
     <div class="col-lg-8 profile-right">
-        <h5>Edit Profile</h5>
+        <h2>Edit Profile</h2>
 
         <form action="{{ route('users.update', auth()->user()->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -178,7 +276,7 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Last Name</label>
-                    <input type="text" name="lname" value="{{ $user->lname }}" class="form-control" required>
+                    <input type="text" name="lname" value="{{ $user->lname }}" class="form-control">
                 </div>
 
                 <div class="col-md-6">
@@ -231,12 +329,17 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body text-center">
-        <img id="previewImage" src="{{ $user->image ? asset('storage/'.$user->image) : asset('user.png') }}" alt="Preview">
-        <input type="file" id="imageInput" accept="image/*" class="form-control mb-3 mt-3">
+<img id="previewImage"
+     src="{{ $user->image ? asset($user->image) : asset('user-201.png') }}"
+     onerror="this.onerror=null;this.src='{{ asset('user-201.png') }}';"
+     alt="Preview"
+     class="profile-img">
+
+<input type="file" id="imageInput" name="image" accept="image/*" class="form-control mb-3 mt-3">
         <button id="removeImage" class="btn btn-outline-danger w-100 mb-2">
           <i class="bi bi-trash3 me-1"></i> Remove Image
         </button>
-        <button id="saveImage" class="btn btn-primary w-100">
+        <button id="saveImage" class="btn  w-100" style="background-color: #760e13; color: #fff;">
           <i class="bi bi-check2-circle me-1"></i> Save Changes
         </button>
       </div>
@@ -291,15 +394,16 @@ function initMap() {
         updateAddress(latLng);
     });
 }
-
-// ✅ Live image preview + remove + save
-document.addEventListener('DOMContentLoaded', function() {
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
   const imageInput = document.getElementById('imageInput');
   const previewImage = document.getElementById('previewImage');
   const profileImage = document.getElementById('profileImage');
   const removeBtn = document.getElementById('removeImage');
   const saveBtn = document.getElementById('saveImage');
-  let newImage = null;
+  const userId = "{{ auth()->user()->id }}";
+  let newImageFile = null;
 
   imageInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -307,24 +411,51 @@ document.addEventListener('DOMContentLoaded', function() {
       const reader = new FileReader();
       reader.onload = function(event) {
         previewImage.src = event.target.result;
-        newImage = event.target.result;
       };
       reader.readAsDataURL(file);
+      newImageFile = file;
     }
   });
 
   removeBtn.addEventListener('click', function() {
-    previewImage.src = "{{ asset('user.png') }}";
-    newImage = null;
+    previewImage.src = "{{ asset('user-201.png') }}";
+    newImageFile = null;
     imageInput.value = '';
   });
 
   saveBtn.addEventListener('click', function() {
-    profileImage.src = newImage ? newImage : "{{ asset('user.png') }}";
-    const modal = bootstrap.Modal.getInstance(document.getElementById('editImageModal'));
-    modal.hide();
+    if (!newImageFile) {
+      alert("يرجى اختيار صورة أولاً");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', newImageFile);
+    formData.append('_token', '{{ csrf_token() }}');
+
+    fetch(`/users/${userId}/update-image`, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        profileImage.src = data.image + '?t=' + new Date().getTime();
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editImageModal'));
+        if (modal) modal.hide();
+      } else {
+        alert(data.error || "حدث خطأ أثناء رفع الصورة");
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      alert("حدث خطأ في الاتصال بالسيرفر");
+    });
   });
 });
+
 </script>
+
 
 @endsection

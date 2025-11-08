@@ -141,6 +141,8 @@ Route::post('/verify-token', [AuthController::class, 'verifyToken']);
 Route::get('/profile/{id}', [AuthController::class, 'profile'])->name('profile')->middleware('auth');
 Route::get('/users/edit/{id}', [AuthController::class, 'edit'])->name('users.edit')->middleware('auth');
 Route::put('/users/{id}', [AuthController::class, 'update'])->name('users.update')->middleware('auth');
+Route::post('/users/{id}/update-image', [AuthController::class, 'updateImage'])
+     ->name('users.updateImage');
 
 // Workshops
 Route::resource('workshops', WorkshopController::class)->except(['index', 'show']);

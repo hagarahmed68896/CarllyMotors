@@ -53,7 +53,7 @@
             <!-- Footer Content -->
             <div class="row footer-links g-4 text-md-start">
                 <!-- Brand Column -->
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-4">
                     <a href="{{ route('home') }}" class="footer-logo d-block mb-3">
                         <img src="{{ asset('carllymotors_logo_white-2048x526.png') }}" 
                              alt="AutoDecar" 
@@ -101,7 +101,7 @@
                 </div>
 
                 <!-- About Column -->
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-4">
                     <h5 class="footer-title">About Auto Decar</h5>
                     <ul class="list-unstyled footer-list">
                         <li><a href="{{ route('aboutus') }}"><i class="fas fa-chevron-right me-2"></i>About us</a></li>
@@ -125,25 +125,7 @@
 </div>
 
 
-                <!-- Newsletter Column -->
-                <div class="col-12 col-md-3">
-                    <h5 class="footer-title">Newsletter</h5>
-                    <p class=" mb-3">Stay on top of the latest car trends, tips, and tricks for selling your car.</p>
-
-                    <form class="newsletter-form" action="#" method="POST">
-                        @csrf
-                        <div class="input-group mb-3">
-                            <input type="email" 
-                                   class="form-control" 
-                                   placeholder="Your email address"
-                                   aria-label="Your email address"
-                                   required>
-                            <button class="btn bg-carlly" type="submit">
-                                <i class="fas fa-paper-plane me-1"></i>Send
-                            </button>
-                        </div>
-                    </form>
-                </div>
+       
             </div>
 
             <!-- Footer Bottom -->
@@ -288,15 +270,15 @@
         }
 
         // Enhanced error handling for images
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('img').forEach(img => {
-                img.addEventListener('error', function() {
-                    this.src = '{{ asset("workshopNotFound.png") }}';
-                    this.alt = 'Image not available';
-                    this.classList.add('error-image');
-                });
-            });
-        });
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     document.querySelectorAll('img').forEach(img => {
+        //         img.addEventListener('error', function() {
+        //             // this.src = '{{ asset("workshopNotFound.png") }}';
+        //             this.alt = 'Image not available';
+        //             this.classList.add('error-image');
+        //         });
+        //     });
+        // });
 
         // Accessibility: Skip to main content
         document.addEventListener('keydown', function(e) {

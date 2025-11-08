@@ -106,7 +106,7 @@ $carlisting->getCollection()->transform(function ($car) {
     public function create()
     {
         $brands        = CarBrand::pluck('name')->toArray();
-        $bodyTypes     = BodyType::pluck('name')->toArray();
+        $bodyTypes = collect(BodyType::pluck('name'));
         $regionalSpecs = RegionalSpec::pluck('name')->toArray();
         $colors        = Color::get();
 

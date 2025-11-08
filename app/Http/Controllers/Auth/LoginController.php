@@ -48,27 +48,30 @@ class LoginController extends Controller
      * @return \Illuminate\Http\Response
      */
 public function login(Request $request)
-{
-    $request->validate([
-        'phone' => ['required', 'regex:/^[0-9]{9,15}$/'],
-        'country_code' => ['required'],
-    ]);
+    {
+        // ✅ Validate only 9 digits
+        $request->validate([
+            'phone' => ['required', 'regex:/^[0-9]{9}$/'],
+        ]);
 
-    $fullPhone = $request->input('country_code') . $request->input('phone');
+        // ✅ Prepend UAE code
+        $fullPhone = '+971' . $request->phone;
 
-    \Log::info('Attempting login with: ' . $fullPhone);
+        // ✅ Find user
+        $user = allUsersModel::where('phone', $fullPhone)
+                             ->where('userType', 'user')
+                             ->first();
 
-    $user = allUsersModel::where('phone', $fullPhone)
-                         ->where('userType', 'user')
-                         ->first();
+        if ($user) {
+            Auth::login($user);
+            return redirect()->route('home')->with('success', 'Logged in successfully.');
+        }
 
-    if ($user) {
-        Auth::login($user);
-        return redirect()->route('home')->with('success', 'Logged in successfully.');
+        return back()->with('error', 'Phone Number not found.');
     }
 
-    return back()->with('error', 'Wrong Phone Number');
-}
+
+
 
 
 
@@ -86,6 +89,6 @@ public function login(Request $request)
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login')->with('success', 'Logged out successfully.');
+        return redirect('/login');
     }
 }

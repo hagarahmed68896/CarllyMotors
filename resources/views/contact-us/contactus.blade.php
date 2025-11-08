@@ -161,35 +161,27 @@
                             <textarea class="form-control" id="body" name="body" rows="5" required></textarea>
                         </div>
                     </div>
-<!-- ✅ Buttons Section (Stay in one line on all screens) -->
-<div class="action-buttons d-flex justify-content-between align-items-center mt-4 flex-nowrap">
-  <a href="https://wa.me/971566350025" 
-     class="btn btn-whatsapp d-flex justify-content-center align-items-center py-2 px-3 flex-fill me-2">
-    <i class="fab fa-whatsapp me-2"></i> WhatsApp
-  </a>
-
+<!-- ✅ Buttons Section -->
+<div class="action-buttons d-flex flex-column align-items-center mt-4">
+  
+  <!-- Send Button -->
   <button type="submit" 
-          class="btn btn-custom py-2 px-3 flex-fill ms-2">
+          class="btn btn-custom py-2 px-4 w-100 mb-3">
     Send Message
   </button>
+
+  <!-- OR Line -->
+  <div class="or-text my-2">or</div>
+
+  <!-- WhatsApp Link -->
+  <a href="https://wa.me/971566350025" 
+     target="_blank"
+     class="btn btn-whatsapp-outline w-100 d-flex justify-content-center align-items-center py-2">
+    <i class="fab fa-whatsapp me-2"></i> Contact us on WhatsApp
+  </a>
 </div>
 
 <style>
-/* ✅ WhatsApp Button */
-.btn-whatsapp {
-  background-color: #25D366;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: 0.3s;
-  white-space: nowrap; /* prevent text from wrapping */
-}
-.btn-whatsapp:hover {
-  background-color: #1eb85b;
-  color: #fff;
-}
-
 /* ✅ Custom Button */
 .btn-custom {
   background-color: #760e13;
@@ -198,31 +190,45 @@
   border-radius: 8px;
   font-weight: 600;
   transition: 0.3s;
-  white-space: nowrap;
 }
 .btn-custom:hover {
   background-color: #5b0b0f;
   color: #fff;
 }
 
-/* ✅ Responsive behavior (no wrapping) */
-.action-buttons {
-  overflow-x: auto; /* allows horizontal scroll if too narrow */
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* hide scrollbar for modern browsers */
-}
-.action-buttons::-webkit-scrollbar {
-  display: none; /* hide scrollbar for Safari/Chrome */
+/* ✅ OR text */
+.or-text {
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
 }
 
-/* Optional: Make buttons scale slightly smaller on very narrow screens */
+/* ✅ WhatsApp Outline Button */
+.btn-whatsapp-outline {
+  background-color: transparent;
+  border: 2px solid #25D366;
+  color: #25D366;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.3s;
+  text-decoration: none;
+}
+.btn-whatsapp-outline:hover {
+  background-color: #25D366;
+  color: #fff;
+}
+
+/* ✅ Responsive tweaks */
 @media (max-width: 400px) {
-  .action-buttons .btn {
+  .btn-custom, .btn-whatsapp-outline {
     font-size: 0.9rem;
-    padding: 0.5rem 0.8rem;
+    padding: 0.6rem 0.8rem;
   }
 }
 </style>
+
 
                 </form>
             </div>

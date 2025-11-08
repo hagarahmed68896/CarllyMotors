@@ -22,21 +22,23 @@ class AuthController extends Controller
 
 public function verifyToken(Request $request)
 {
-    $idTokenString = $request->input('token'); // ✅ الأفضل استخدام input()
-
     try {
-        // ===============================
-        // 🔧 1️⃣ Debug mode (FAKE OTP)
-        // ===============================
-        if ($idTokenString === 'FAKE_ID_TOKEN_FOR_DEV') {
+        $idTokenString = $request->input('token');
+        $frontendPhone = $request->input('phone'); // ✅ new line
 
-            $uid = 'DEBUG_UID';
-
-            $user = allUsersModel::firstOrCreate(
+        // ========== DEBUG MODE ==========
+        if ($idTokenString === 'FAKE_ID_TOKEN_FOR_DEV' || $request->boolean('debug')) {
+            $uid = $request->input('uid') ?? 'DEBUG_UID_' . uniqid();
+            $phone = $frontendPhone ?? null;
+            $email = $request->input('email') ?? '';
+            
+            $user = allUsersModel::updateOrCreate(
                 ['firebase_uid' => $uid],
                 [
-                    'fname'    => 'Debug User',
-                    'email'    => 'debug@local.test',
+                    'fname'    => null,
+                    'lname'    => null,
+                    'email'    => $email,
+                    'phone'    => $phone,
                     'password' => bcrypt('123456'),
                     'userType' => 'user',
                 ]
@@ -44,29 +46,24 @@ public function verifyToken(Request $request)
 
             Auth::guard('web')->login($user);
 
-            return response()->json([
-                'success'  => true,
-                'uid'      => $uid,
-                'redirect' => route('home'),
-                'note'     => '✅ Debug OTP accepted successfully',
-            ]);
+            return response()->json(['success' => true, 'redirect' => route('home')]);
         }
 
-        // ===============================
-        // 🔒 2️⃣ Real Firebase token
-        // ===============================
-        if (empty($idTokenString)) {
-            throw new \Exception('Missing ID Token in request');
-        }
-
+        // ========== REAL FIREBASE MODE ==========
         $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idTokenString);
         $uid = $verifiedIdToken->claims()->get('sub');
+        $firebaseUser = $this->firebaseAuth->getUser($uid);
 
-        $user = allUsersModel::firstOrCreate(
+        $phone = $frontendPhone ?? $firebaseUser->phoneNumber ?? null;
+        $email = $firebaseUser->email ?? '';
+
+        $user = allUsersModel::updateOrCreate(
             ['firebase_uid' => $uid],
             [
-                'fname'    => 'User',
-                'email'    => 'user@firebase.com',
+                'fname'    => null,
+                'lname'    => null,
+                'email'    => $email,
+                'phone'    => $phone,
                 'password' => bcrypt('123456'),
                 'userType' => 'user',
             ]
@@ -74,27 +71,15 @@ public function verifyToken(Request $request)
 
         Auth::guard('web')->login($user);
 
-        return response()->json([
-            'success'  => true,
-            'uid'      => $uid,
-            'redirect' => route('home'),
-        ]);
-
-    } catch (\Kreait\Firebase\Exception\Auth\InvalidToken $e) {
-        Log::error('❌ Invalid Firebase Token: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'error'   => 'Invalid Firebase Token: ' . $e->getMessage(),
-        ], 401);
+        return response()->json(['success' => true, 'redirect' => route('home')]);
 
     } catch (\Throwable $e) {
-        Log::error('❌ Firebase Verify Error: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'error'   => $e->getMessage(),
-        ], 401);
+        \Log::error('Firebase verify error: ' . $e->getMessage());
+        return response()->json(['success' => false, 'error' => $e->getMessage()], 401);
     }
 }
+
+
 
 
 
@@ -120,38 +105,110 @@ public function verifyToken(Request $request)
             return redirect()->route('home');
         }
     }
-
-    public function update(Request $request, $id)
-    {
-        try {
-            if ($id == auth()->user()->id) {
-                $user           = allUsersModel::find($id);
-                $user->fname    = $request->fname;
-                $user->lname    = $request->lname;
-                $user->phone    = $request->phone;
-                $user->email    = $request->email;
-                $user->city     = $request->city;
-                $user->location = $request->location;
-                $user->lat      = $request->latitude;
-                $user->lng      = $request->longitude;
-                $user->save();
-                if ($request->hasFile('image')) {
-                
-                    if(count($user->getMedia('profile')) == 0){
-                        $user->addMedia($request->file('image'))->toMediaCollection('profile');
-                    }else{
-                        $user->getMedia('profile')[0]->delete();
-                        $user->addMedia($request->file('image'))->toMediaCollection('profile');
-                    }
-                }
-                return redirect()->route('profile', $id);
-            } else {
-                return redirect()->route('home');
-            }
-        } catch (\Exception $e) {
-            dd($e->getMessage());
-            return redirect()->back()->with('error', $e->getMessage());
+public function update(Request $request, $id)
+{
+    try {
+        // ✅ السماح فقط للمستخدم بتحديث بروفايله
+        if ($id != auth()->user()->id) {
+            return redirect()->route('home');
         }
-    }
 
+        $user = allUsersModel::findOrFail($id);
+
+        // تجهيز رقم الهاتف
+        $rawPhone = preg_replace('/\s+/', '', $request->phone);
+        $rawPhone = ltrim($rawPhone, '0');
+        if (!str_starts_with($rawPhone, '+971')) {
+            $rawPhone = '+971' . $rawPhone;
+        }
+
+        // تحديث البيانات النصية
+        $user->fname    = $request->fname;
+        $user->lname    = $request->lname;
+        $user->phone    = $rawPhone;
+        $user->email    = $request->email;
+        $user->city     = $request->city;
+        $user->location = $request->location;
+        $user->lat      = $request->latitude;
+        $user->lng      = $request->longitude;
+
+        $user->save();
+
+        // رفع صورة البروفايل
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            
+            // إنشاء مجلد users إذا لم يكن موجود
+            if (!file_exists(public_path('users'))) {
+                mkdir(public_path('users'), 0755, true);
+            }
+
+            // نقل الصورة مباشرة إلى public/users
+            $file->move(public_path('users'), $filename);
+
+            // حفظ المسار في قاعدة البيانات
+            $user->image = 'users/' . $filename;
+            $user->save();
+        }
+
+        return redirect()->route('profile', $id)
+                         ->with('success', 'Profile updated successfully!');
+        
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', $e->getMessage());
+    }
+}
+
+public function updateImage(Request $request, $id)
+{
+    try {
+        if ($id != auth()->user()->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $user = allUsersModel::findOrFail($id);
+
+        if (!$request->hasFile('image')) {
+            return response()->json(['error' => 'No image uploaded'], 400);
+        }
+
+        // حذف الصورة القديمة لو موجودة
+        if ($user->image && file_exists(public_path($user->image))) {
+            unlink(public_path($user->image));
+        }
+
+        // حفظ الصورة الجديدة مباشرة في public/users
+        $file = $request->file('image');
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+
+        if (!file_exists(public_path('users'))) {
+            mkdir(public_path('users'), 0755, true);
+        }
+
+        $file->move(public_path('users'), $filename);
+
+        // حفظ المسار في قاعدة البيانات
+        $user->image = 'users/' . $filename;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'image' => asset($user->image),
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
+
+
+
+
+
+
+
+
+    
 }

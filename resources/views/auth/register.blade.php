@@ -113,7 +113,7 @@ button.btn-secondary, button.btn-primary {
             <!-- ✅ STEP 2 — OTP Input -->
             <div class="step step-2 text-center">
                 <h3 class="mb-3" style="color:#760e13;">Verify Code</h3>
-                <p id="otp-timer">OTP expires in <span id="countdown">60</span> seconds</p>
+                <p id="otp-timer">OTP expires in <span id="countdown">30</span> seconds</p>
                 <input type="text" id="otp" class="form-control mb-3" placeholder="Enter OTP">
                 <button type="button" class="btn  w-100 rounded-4 mb-2" style="background-color: #760e13; color: white;" onclick="verifyOTP()">Verify OTP</button>
                 <button type="button" class="btn rounded-4 btn-secondary w-100" id="resend-otp" onclick="sendOTP()" disabled>Resend OTP</button>
@@ -224,7 +224,7 @@ function sendOTP() {
     };
 
     // alert("🧪 Debug OTP generated — check console!");
-    startCountdown(60);
+    startCountdown(30);
         showStep(2); // ✅ move to Step 2 in debug mode
 
     return;
@@ -236,7 +236,7 @@ function sendOTP() {
       lastConfirmationResult = confirmationResult;
       console.log("✅ confirmationResult:", confirmationResult);
     //   alert("OTP sent successfully!");
-      startCountdown(60);
+      startCountdown(30);
           showStep(2); // ✅ move to Step 2 in debug mode
 
     })
@@ -302,15 +302,19 @@ function handleVerifiedFirebaseUser(user) {
       headers: { // ✅ CSRF token هنا
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      data: {
-        token: idToken
-      }
+     data: {
+    token: idToken,
+    phone: user.phoneNumber || $('#phone').val() || null
+  },
+      
+
     }).then(function (response) {
-  if (response.success) {
-    showStep(3); // ✅ نعرض Step 2 بعد النجاح
-    setTimeout(() => {
-        window.location.href = response.redirect || "/";
-    }, 2000); // بعد ثانيتين
+if (response.success) {
+    // ✅ نعرض Step 3 بعد النجاح (تم التعديل إلى 3 بناءً على الكود الأصلي)
+    showStep(3); 
+    
+    // 🚀 التحويل الفوري بدون انتظار
+    window.location.href = response.redirect || "/";
 }
  else {
         alert("Server error: " + (response.error || "Unknown"));
