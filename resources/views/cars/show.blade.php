@@ -128,6 +128,25 @@
                 height: 300px;
             }
         }
+        
+        /* ❤️ Heart icon on top of image */
+        .carSwiper form {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        .carSwiper i.fa-heart {
+            font-size: 28px;
+            color: white;
+            text-shadow: 0 0 5px rgba(0,0,0,0.6);
+            transition: transform 0.3s;
+        }
+
+        .carSwiper i.fa-heart:hover {
+            transform: scale(1.2);
+        }
     </style>
 </head>
 <!-- Swiper CSS -->
@@ -152,6 +171,18 @@
             <!-- Carousel -->
            <div class="card shadow-sm border-0 rounded-3 mb-4 overflow-hidden">
   <div class="swiper carSwiper rounded-3">
+            <!-- Heart Icon -->
+                    @auth
+                        @php
+                            $favCars = auth()->user()->favCars()->pluck('id')->toArray();
+                        @endphp
+                        <form action="{{ route('cars.addTofav', $car->id) }}" method="post">
+                            @csrf
+                            <button class="btn btn-link p-0">
+                                <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#760e13' : 'white' }}"></i>
+                            </button>
+                        </form>
+                    @endauth
     <div class="swiper-wrapper">
       @if($images && count($images) > 0)
         @foreach ($images as $image)
@@ -316,7 +347,7 @@
                     {{ $car->listing_price }}
                 </p>
 
-                @auth
+                {{-- @auth
                     @php
                         $favCars = auth()->user()->favCars()->pluck('id')->toArray();
                     @endphp
@@ -326,7 +357,7 @@
                             <i class="fas fa-heart" style="font-size: 22px; color: {{ in_array($car->id, $favCars) ? '#760e13' : 'gray' }}"></i>
                         </button>
                     </form>
-                @endauth
+                @endauth --}}
             </div>
 
             <!-- Dealer -->
@@ -349,21 +380,24 @@
 
                 <h6 class="fw-bold mt-4 mb-2">Contact Dealer</h6>
           <div class="d-flex gap-2">
- <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode(
-    'Hi, I would like to ask if this car is still available:' . "\n\n" .
-    $car->listing_type . ' • ' . $car->listing_model . "\n" .
-    'Year: ' . $car->listing_year . "\n" .
-    'Price: AED ' . number_format($car->listing_price) . "\n" .
-    'Fuel Type: ' . $car->features_fuel_type . "\n" .
-    'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
-    'View full details here: ' . route('car.detail', $car->id)
-) }}"
-target="_blank"
-class="flex-fill text-decoration-none">
-    <button class="btn btn-outline-success w-100 rounded-4">
-        <i class="fab fa-whatsapp me-1"></i> 
-    </button>
-</a>
+@if(!empty($car->user?->phone))
+    <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode(
+        'Hi, I would like to ask if this car is still available:' . "\n\n" .
+        $car->listing_type . ' • ' . $car->listing_model . "\n" .
+        'Year: ' . $car->listing_year . "\n" .
+        'Price: AED ' . number_format($car->listing_price) . "\n" .
+        'Fuel Type: ' . $car->features_fuel_type . "\n" .
+        'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
+        'View full details here: ' . route('car.detail', $car->id)
+    ) }}"
+    target="_blank"
+    class="flex-fill text-decoration-none">
+        <button class="btn btn-outline-success w-100 rounded-4">
+            <i class="fab fa-whatsapp me-1"></i> 
+        </button>
+    </a>
+@endif
+
 
 
   @php
