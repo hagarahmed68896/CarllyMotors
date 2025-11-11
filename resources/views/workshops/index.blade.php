@@ -197,6 +197,40 @@ use Illuminate\Support\Str;
         </div>
       </div>
 
+      <style>
+.service-option .service-card {
+    width: 100%;
+    height: 140px; /* ارتفاع ثابت للكارت */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease-in-out;
+}
+
+.service-option .service-card img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* اسم الخدمة */
+.service-option .service-card .fw-semibold {
+    font-size: 0.9rem;
+    margin-top: 8px;
+    text-align: center;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* شكل الكارت لما يكون محدد */
+.selected-service {
+    border: 2px solid #007bff !important;
+    background-color: #f0f8ff;
+}
+      </style>
+
       <!-- Buttons -->
       <div class="d-flex gap-2 border-top pt-3">
         <button type="submit"
@@ -283,9 +317,11 @@ use Illuminate\Support\Str;
    <!-- Workshops List -->
 <div class="col-lg-9 col-md-8">
 
-  @php
-      $hasFilters = request()->filled('city') && request()->filled('brand_id') && request()->filled('category_id');
-  @endphp
+@php
+    $hasFilters = (request()->filled('city') && request()->filled('brand_id') && request()->filled('category_id'))
+                  || request()->filled('workshop_id');
+@endphp
+
 
   @if(!$hasFilters)
     <!-- 💤 Waiting for Filters Section -->
@@ -305,7 +341,9 @@ use Illuminate\Support\Str;
 <div class="row g-4">
     @forelse ($workshops as $workshop)
         @php
-$shareUrl = route('workshops.show', $workshop->id);
+// الرابط اللي عايزة تشتغل على المتصفح فقط
+$shareUrl = route('workshops.show.web', $workshop->id);
+
             $image = $workshop->workshop_logo
                 ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
                     ? $workshop->workshop_logo

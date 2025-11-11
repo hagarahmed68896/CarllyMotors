@@ -371,13 +371,38 @@ function initMap() {
 
     const geocoder = new google.maps.Geocoder();
 
-    function updateAddress(latLng) {
-        geocoder.geocode({ location: latLng }, (results, status) => {
-            if (status === "OK" && results[0]) {
-                document.getElementById("location").value = results[0].formatted_address;
+function updateAddress(latLng) {
+    geocoder.geocode({ location: latLng }, (results, status) => {
+        if (status === "OK" && results[0]) {
+            let neighborhood = "";
+            let city = "";
+            let country = "";
+
+            results[0].address_components.forEach(component => {
+                if (component.types.includes("sublocality") || component.types.includes("neighborhood")) {
+                    neighborhood = component.long_name;
+                }
+                if (component.types.includes("locality")) {
+                    city = component.long_name;
+                }
+                if (component.types.includes("country")) {
+                    country = component.long_name;
+                }
+            });
+
+            // ✅ نبني العنوان المختصر
+            let shortAddress = [neighborhood, city, country].filter(Boolean).join(", ");
+
+            // ✅ في حالة مفيش بيانات كافية، نستخدم آخر جزئين من العنوان الكامل
+            if (!shortAddress) {
+                shortAddress = results[0].formatted_address.split(',').slice(-3).join(', ');
             }
-        });
-    }
+
+            document.getElementById("location").value = shortAddress;
+        }
+    });
+}
+
 
     google.maps.event.addListener(marker, 'dragend', function (event) {
         const latLng = event.latLng;

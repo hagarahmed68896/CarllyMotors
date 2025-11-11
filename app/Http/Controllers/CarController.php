@@ -79,6 +79,10 @@ $carlisting->getCollection()->transform(function ($car) {
     return $car;
 });
 
+    // ✅ لو الطلب Ajax، رجّعي partial view فقط
+    if ($request->ajax()) {
+        return view('cars.load_more', compact('carlisting'))->render();
+    }
 
     // Other filters
     $fueltypes = CarListingModel::select('features_fuel_type')->distinct()->orderBy('features_fuel_type')->pluck('features_fuel_type');
@@ -113,63 +117,68 @@ $carlisting->getCollection()->transform(function ($car) {
         return view('cars.create', compact('brands', 'bodyTypes', 'regionalSpecs', 'colors'));
     }
 
-    public function store(Request $request)
-    {
-        try {
-            $car                        = new CarListingModel();
-            $car->user_id               = $request->user_id;
-            $car->listing_type          = $request->make;
-            $car->listing_model         = $request->model;
-            $car->listing_year          = $request->year;
-            $car->body_type             = $request->bodyType;
-            $car->regional_specs        = $request->regionalSpec;
-            $car->city                  = $request->city;
-            $car->features_others       = $request->features;
-            $car->vin_number            = $request->vin_number;
-            $car->features_gear         = $request->gear;
-            $car->features_speed        = $request->mileage;
-            $car->car_color             = $request->color;
-            $car->features_climate_zone = $request->warranty;
-            $car->features_fuel_type    = $request->fuelType;
-            $car->features_seats        = $request->seats;
-            $car->listing_title         = $request->name;
-            $car->wa_number             = '+971' . $request->phone;
-            $car->listing_price         = $request->price;
-            $car->lat                   = $request->latitude;
-            $car->lng                   = $request->longitude;
-            $car->max                   = 10;
-            $car->save();
+public function store(Request $request)
+{
+    try {
+        $car = new CarListingModel();
+        $car->user_id               = $request->user_id;
+        $car->listing_type          = $request->make;
+        $car->listing_model         = $request->model;
+        $car->listing_year          = $request->year;
+        $car->body_type             = $request->bodyType;
+        $car->regional_specs        = $request->regionalSpec;
+        $car->city = auth()->user()->city ?? null;
+        $car->features_others       = $request->features;
+        $car->vin_number            = $request->vin_number;
+        $car->features_gear         = $request->gear;
+        $car->features_speed        = $request->mileage;
+        $car->car_color             = $request->color;
+        $car->features_climate_zone = $request->warranty;
+        $car->features_fuel_type    = $request->fuelType;
+        $car->features_seats        = $request->seats;
+        $car->listing_title         = $request->name;
+        $car->wa_number             = '+971' . $request->phone;
+        $car->listing_price         = $request->price;
+        $car->lat                   = $request->latitude;
+        $car->lng                   = $request->longitude;
+        $car->max                   = 10;
+        $car->save();
 
-            // uploading Image
-            if ($request->images) {
+        // ✅ رفع الصور وحفظها في جدول images
+        if ($request->hasFile('images')) {
+            $i = 1;
 
-                $uploadedImages = $request->images;
-                foreach ($uploadedImages as $index => $uploadedImage) {
-                    if ($index >= $car->max) {
-                        break;
-                    }
-    
-                    $imgName = time() . '_' . $index . '.' . $uploadedImage->getClientOriginalExtension();
-    
-                    $path = Storage::disk('r2')->put('listings/' . $imgName, file_get_contents($uploadedImage));   
-                    
-                    // $uploadedImage->move(public_path('listings'), $imgName);
-                    $imagePath = 'listings/' . $imgName;
-    
-                    $car->images()->create([
-                        'image' => $imagePath,
-                    ]);
+            foreach ($request->file('images') as $index => $uploadedImage) {
+                if ($index >= $car->max) break;
+
+                $imgName = time() . '_' . $index . '.' . $uploadedImage->getClientOriginalExtension();
+                $path = $uploadedImage->storeAs('listings', $imgName, 'r2');
+
+                // ✅ حفظ الصورة في جدول images
+                $car->images()->create([
+                    'image' => $path,
+                ]);
+
+                // ✅ أول 5 صور نحفظهم في أعمدة carlisting
+                if ($i <= 5) {
+                    $column = "listing_img{$i}";
+                    $car->$column = $path;
+                    $i++;
                 }
-                $car->current = count($car->images);
-                $car->save();
             }
 
-            return redirect()->route('car.detail', $car->id)->with('success', 'Car Added successfully');
-
-        } catch (\Exception $e) {
-            dd($e->getMessage());
+            $car->current = $car->images()->count();
+            $car->save();
         }
+
+        return redirect()->route('car.detail', $car->id)
+                         ->with('success', 'Car added successfully');
+
+    } catch (\Exception $e) {
+        dd($e->getMessage());
     }
+}
+
 
     public function getModels(Request $request)
     {

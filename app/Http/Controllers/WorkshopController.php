@@ -12,75 +12,66 @@ class WorkshopController extends Controller
 {
 public function index(Request $request)
 {
-    $currentUrl = url()->current();
-
-    // --- Fetch distinct filter data ---
-    $cities = WorkshopProvider::select('branch')
-        ->whereNotNull('branch')
-        ->distinct()
-        ->orderBy('branch')
-        ->pluck('branch');
-
-    $brands = DB::table('car_brand_workshop_provider')
-        ->distinct()
-        ->pluck('car_brand_id')
-        ->toArray();
-
-    $brands = CarBrand::whereIn('id', $brands)
-        ->select('id', 'name')
-        ->orderBy('name')
-        ->pluck('name', 'id')
-        ->toArray();
-
-    $categories = DB::table('workshop_category_provider')
-        ->distinct()
-        ->pluck('workshop_category_id')
-        ->toArray();
-
-    $categories = WorkshopCategory::whereIn('id', $categories)
-        ->select('id', 'name', 'image')
-        ->get();
+    // --- Fetch filter data ---
+    $cities = WorkshopProvider::select('branch')->whereNotNull('branch')->distinct()->orderBy('branch')->pluck('branch');
+    
+    $brands = DB::table('car_brand_workshop_provider')->distinct()->pluck('car_brand_id')->toArray();
+    $brands = CarBrand::whereIn('id', $brands)->select('id', 'name')->orderBy('name')->pluck('name', 'id')->toArray();
+    
+    $categories = DB::table('workshop_category_provider')->distinct()->pluck('workshop_category_id')->toArray();
+    $categories = WorkshopCategory::whereIn('id', $categories)->select('id', 'name', 'image')->get();
 
     // --- Build query ---
     $query = WorkshopProvider::query();
 
-    $hasFilters = $request->filled(['city', 'brand_id', 'category_id']);
+    // ✅ Filter by workshop_id first
+    if ($request->filled('workshop_id')) {
+        $query->where('id', $request->workshop_id);
+    } else {
+        // --- Normal filters ---
+        $hasFilters = $request->filled(['city', 'brand_id', 'category_id']);
 
-    if ($hasFilters) {
-        if ($request->city) {
-            $query->where('branch', $request->city);
-        }
+        if ($hasFilters) {
+            if ($request->city) {
+                $query->where('branch', $request->city);
+            }
 
-        if ($request->brand_id) {
-            $brand = CarBrand::find($request->brand_id);
-            $workshop_ids = $brand?->providers()->pluck('workshop_provider_id')->toArray() ?? [];
-            $query->whereIn('id', $workshop_ids);
-        }
+            if ($request->brand_id) {
+                $brand = CarBrand::find($request->brand_id);
+                $workshop_ids = $brand?->providers()->pluck('workshop_provider_id')->toArray() ?? [];
+                $query->whereIn('id', $workshop_ids);
+            }
 
-        if ($request->category_id) {
-            $category = WorkshopCategory::find($request->category_id);
-            $workshop_ids = $category?->providers()->pluck('workshop_provider_id')->toArray() ?? [];
-            $query->whereIn('id', $workshop_ids);
+            if ($request->category_id) {
+                $category = WorkshopCategory::find($request->category_id);
+                $workshop_ids = $category?->providers()->pluck('workshop_provider_id')->toArray() ?? [];
+                $query->whereIn('id', $workshop_ids);
+            }
         }
     }
 
-    // ✅ لو المستخدم بعت الموقع بتاعه (latitude & longitude)
+    // ✅ Handle latitude & longitude for distance
     if ($request->filled(['latitude', 'longitude'])) {
         $lat = $request->latitude;
         $lng = $request->longitude;
 
-        // معادلة Haversine لحساب المسافة بالكيلومتر
         $query->selectRaw("workshop_providers.*, 
             (6371 * acos(cos(radians(?)) * cos(radians(latitude)) 
             * cos(radians(longitude) - radians(?)) + sin(radians(?)) 
             * sin(radians(latitude)))) AS distance", [$lat, $lng, $lat])
-              ->orderBy('distance', 'asc'); // الأقرب فالأبعد
+              ->orderBy('distance', 'asc');
     }
 
-    $workshops = $hasFilters ? $query->with(['images', 'user', 'days'])->get() : collect();
+    // ✅ Always get the data if workshop_id exists OR filters exist
+    if ($request->filled('workshop_id') || ($hasFilters ?? false)) {
+        $workshops = $query->with(['images', 'user', 'days'])->get();
+    } else {
+        $workshops = collect();
+    }
 
     return view('workshops.index', compact('cities', 'brands', 'categories', 'workshops'));
 }
+
 
 
 

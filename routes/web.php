@@ -34,10 +34,7 @@ Route::get('/.well-known/apple-app-site-association', function () {
                             "/" => "/spare-part/*",
                             "comment" => "Spare part deep links - matches /spare-part/456"
                         ],
-                        [
-                            "/" => "/workshops/*",
-                            "comment" => "Workshop deep links - matches /workshops/43"
-                        ]
+                 
                     ]
                 ]
             ]
@@ -109,7 +106,7 @@ Route::post('/addTofav/{carId}', [CarController::class, 'addTofav'])->name('cars
 Route::get('/favList', [CarController::class, 'favList'])->name('cars.favList')->middleware('auth');
 Route::get('/myCarListing', [CarController::class, 'myCarListing'])->name('myCarListing')->middleware('auth');
 Route::get('cars/homeSection', [CarController::class, 'homeSection'])->name('cars.homeSection');
-Route::post('getModels', [CarController::class, 'getModels'])->name('getModels');
+Route::get('getModels', [CarController::class, 'getModels'])->name('getModels');
 
 //  Car Listing Deep Links
 Route::get('/car-listing/{id}', [HomeController::class, 'detail'])->name('carlisting.detail')->where('id', '[0-9]+');
@@ -150,13 +147,20 @@ Route::resource('workshops', WorkshopController::class)->except(['index', 'show'
 // Workshop Routes - Properly ordered for deep linking
 Route::get('/workshops-list', [WorkshopController::class, 'index'])->name('workshops.index');
 
+
 // ✅ Workshop Deep Links - CRITICAL ORDER: Specific routes BEFORE wildcard routes
 Route::get('/workshops/my-workshops', [WorkshopController::class, 'myWorkshops'])->name('workshops.my')->middleware('auth');
 Route::get('/workshops/favorites', [WorkshopController::class, 'favorites'])->name('workshops.favorites')->middleware('auth');
 Route::get('/workshops/search', [WorkshopController::class, 'search'])->name('workshops.search');
 
 // ✅ Deep Link Workshop Details (This handles /workshops/43)
-Route::get('/workshops/{workshop}', [WorkshopController::class, 'show'])->name('workshops.show')->where('workshop', '[0-9]+');
+Route::get('web/ws/{workshop}', [WorkshopController::class, 'show'])->name('workshops.show')->where('workshop', '[0-9]+');
+// الرابط الجديد اللي يفتح ويب فقط
+Route::get('/web-only/ws/{workshop}', [WorkshopController::class, 'show'])
+     ->name('workshops.show.web');
+
+
+
 
 //  Workshop Query Handler (This handles /workshops?id=43)
 Route::get('/workshops', [WorkshopController::class, 'showFromQuery'])->name('workshops.query');
@@ -232,17 +236,17 @@ Route::get('/app/spare-part', function (Request $request) {
 })->name('app.spare-part');
 
 // 🔨 Workshop app redirect
-Route::get('/app/workshop/{id}', function ($id) {
-    $appUrl = "carllymotors://workshops?id=" . $id;
+// Route::get('/app/workshop/{id}', function ($id) {
+//     $appUrl = "carllymotors://workshops?id=" . $id;
     
-    return view('app-redirect', [
-        'appUrl' => $appUrl,
-        'title' => 'Workshop Details - Carlly',
-        'description' => 'View this workshop on Carlly app',
-        'image' => asset('images/carlly-logo.png'),
-        'fallbackUrl' => route('workshops.show', $id),
-        'type' => 'workshop'
-    ]);
-})->name('app.workshop')->where('id', '[0-9]+');
+//     return view('app-redirect', [
+//         'appUrl' => $appUrl,
+//         'title' => 'Workshop Details - Carlly',
+//         'description' => 'View this workshop on Carlly app',
+//         'image' => asset('images/carlly-logo.png'),
+//         'fallbackUrl' => route('workshops.show', $id),
+//         'type' => 'workshop'
+//     ]);
+// })->name('app.workshop')->where('id', '[0-9]+');
 // 🔍 Global Search Route
 Route::get('/search', [App\Http\Controllers\SearchController::class, 'search'])->name('global.search');

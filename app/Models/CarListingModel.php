@@ -44,9 +44,13 @@ class CarListingModel extends Model
         return $this->belongsTo(Color::class, 'car_color', 'uid');
     }
 
-    public function images(){
-        return $this->hasMany(Image::class,'carlisting_id');
-    }
+    // public function images(){
+    //     return $this->hasMany(Image::class,'carlisting_id');
+    // }
+public function images()
+{
+    return $this->hasMany(Image::class, 'carlisting_id', 'id');
+}
 
     // public function getCreatedAtAttribute($val)
     // {

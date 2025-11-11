@@ -27,120 +27,116 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-public function index(Request $request)
-{
-    // ✅ Most Recent Cars (last 4 cars by created_at)
-    $recentCars = CarListingModel::with(['user', 'images'])
-        ->orderBy('created_at', 'desc')
-        ->take(4)
-        ->get();
+    public function index(Request $request)
+        {
+            // ✅ Most Recent Cars (last 4 cars by created_at)
+            $recentCars = CarListingModel::with(['user', 'images'])
+                ->orderBy('created_at', 'desc')
+                ->take(4)
+                ->get();
 
-    // ✅ Featured Cars (latest by year, excluding recent cars)
-    $featuredCars = CarListingModel::with(['user', 'images'])
-        ->whereNotIn('id', $recentCars->pluck('id'))
-        ->orderBy('listing_year', 'desc')
-        ->take(8)
-        ->get();
+            // ✅ Featured Cars (latest by year, excluding recent cars)
+            $featuredCars = CarListingModel::with(['user', 'images'])
+                ->whereNotIn('id', $recentCars->pluck('id'))
+                ->orderBy('listing_year', 'desc')
+                ->take(8)
+                ->get();
 
-    // ✅ Filters columns
-    $filters = [
-        'cities'        => 'city',
-        'makes'         => 'listing_type',
-        'models'        => 'listing_model',
-        'years'         => 'listing_year',
-        'bodyTypes'     => 'body_type',
-        'regionalSpecs' => 'regional_specs',
-        'fueltypes'     => 'features_fuel_type',
-        'gears'         => 'features_gear',
-        'doors'         => 'features_door',
-        'cylinders'     => 'features_cylinders',
-        'colors'        => 'car_color',
-    ];
+            // ✅ Filters columns
+            $filters = [
+                'cities'        => 'city',
+                'makes'         => 'listing_type',
+                'models'        => 'listing_model',
+                'years'         => 'listing_year',
+                'bodyTypes'     => 'body_type',
+                'regionalSpecs' => 'regional_specs',
+                'fueltypes'     => 'features_fuel_type',
+                'gears'         => 'features_gear',
+                'doors'         => 'features_door',
+                'cylinders'     => 'features_cylinders',
+                'colors'        => 'car_color',
+            ];
 
-    $distinctValues = [];
-    foreach ($filters as $key => $column) {
-        $distinctValues[$key] = CarListingModel::select($column)
-            ->whereNotNull($column)
-            ->distinct()
-            ->orderBy($column)
-            ->pluck($column);
+            $distinctValues = [];
+            foreach ($filters as $key => $column) {
+                $distinctValues[$key] = CarListingModel::select($column)
+                    ->whereNotNull($column)
+                    ->distinct()
+                    ->orderBy($column)
+                    ->pluck($column);
+            }
+
+            // ✅ Min & Max values
+            $minPrice = CarListingModel::min('listing_price');
+            $maxPrice = CarListingModel::max('listing_price');
+            $minYear  = CarListingModel::min('listing_year');
+            $maxYear  = CarListingModel::max('listing_year');
+
+            // ✅ Sorting setup
+            $sortBy = $request->input('sortBy', 'default');
+            $sortOptions = [
+                'Price: Low to High' => ['listing_price', 'asc'],
+                'Price: High to Low' => ['listing_price', 'desc'],
+                'Newest' => ['created_at', 'desc'],
+                'Oldest' => ['created_at', 'asc'],
+                'default' => ['id', 'desc'],
+            ];
+
+            // ✅ Base Query (no brand relationship)
+            $carlisting = CarListingModel::with(['user', 'images']);
+
+            if ($request->filled('model')) {
+                $carlisting->where('listing_model', $request->model);
+            }
+
+            if ($request->filled('year')) {
+                $carlisting->where('listing_year', $request->year);
+            }
+
+            if ($request->filled('type')) {
+                $carlisting->where('body_type', $request->type);
+            }
+
+            // ✅ Apply sorting and pagination
+            $carlisting = $carlisting->orderBy(...$sortOptions[$sortBy])->paginate(8);
+
+            // ✅ Add first available image to each car
+            $carlisting->setCollection(
+                $carlisting->getCollection()->transform(function ($car) {
+                    $car->image = $car->images->first(fn($image) => Storage::disk('r2')->exists($image->image));
+                    return $car;
+                })
+            );
+
+            // ✅ Random dealers and workshops
+            $users = SparePart::select('user_id')->distinct()->inRandomOrder()->limit(4)->pluck('user_id');
+            $dealers = CarDealer::whereIn('user_id', $users)->get();
+            $workshops = WorkshopProvider::with('days')->inRandomOrder()->take(4)->get();
+
+            // ✅ Distinct dropdowns
+            $bodyTypes = CarListingModel::whereNotNull('body_type')->distinct()->pluck('body_type');
+            $models    = CarListingModel::whereNotNull('listing_model')->distinct()->pluck('listing_model');
+            $years     = CarListingModel::whereNotNull('listing_year')->distinct()->orderBy('listing_year', 'desc')->pluck('listing_year');
+
+            // ✅ Return to view
+            return view('home', array_merge(
+                compact(
+                    'carlisting',
+                    'dealers',
+                    'workshops',
+                    'minPrice',
+                    'maxPrice',
+                    'minYear',
+                    'maxYear',
+                    'bodyTypes',
+                    'models',
+                    'years',
+                    'recentCars',
+                    'featuredCars'
+                ),
+                $distinctValues
+            ));
     }
-
-    // ✅ Min & Max values
-    $minPrice = CarListingModel::min('listing_price');
-    $maxPrice = CarListingModel::max('listing_price');
-    $minYear  = CarListingModel::min('listing_year');
-    $maxYear  = CarListingModel::max('listing_year');
-
-    // ✅ Sorting setup
-    $sortBy = $request->input('sortBy', 'default');
-    $sortOptions = [
-        'Price: Low to High' => ['listing_price', 'asc'],
-        'Price: High to Low' => ['listing_price', 'desc'],
-        'Newest' => ['created_at', 'desc'],
-        'Oldest' => ['created_at', 'asc'],
-        'default' => ['id', 'desc'],
-    ];
-
-    // ✅ Base Query (no brand relationship)
-    $carlisting = CarListingModel::with(['user', 'images']);
-
-    if ($request->filled('model')) {
-        $carlisting->where('listing_model', $request->model);
-    }
-
-    if ($request->filled('year')) {
-        $carlisting->where('listing_year', $request->year);
-    }
-
-    if ($request->filled('type')) {
-        $carlisting->where('body_type', $request->type);
-    }
-
-    // ✅ Apply sorting and pagination
-    $carlisting = $carlisting->orderBy(...$sortOptions[$sortBy])->paginate(8);
-
-    // ✅ Add first available image to each car
-    $carlisting->setCollection(
-        $carlisting->getCollection()->transform(function ($car) {
-            $car->image = $car->images->first(fn($image) => Storage::disk('r2')->exists($image->image));
-            return $car;
-        })
-    );
-
-    // ✅ Random dealers and workshops
-    $users = SparePart::select('user_id')->distinct()->inRandomOrder()->limit(4)->pluck('user_id');
-    $dealers = CarDealer::whereIn('user_id', $users)->get();
-    $workshops = WorkshopProvider::with('days')->inRandomOrder()->take(4)->get();
-
-    // ✅ Distinct dropdowns
-    $bodyTypes = CarListingModel::whereNotNull('body_type')->distinct()->pluck('body_type');
-    $models    = CarListingModel::whereNotNull('listing_model')->distinct()->pluck('listing_model');
-    $years     = CarListingModel::whereNotNull('listing_year')->distinct()->orderBy('listing_year', 'desc')->pluck('listing_year');
-
-    // ✅ Return to view
-    return view('home', array_merge(
-        compact(
-            'carlisting',
-            'dealers',
-            'workshops',
-            'minPrice',
-            'maxPrice',
-            'minYear',
-            'maxYear',
-            'bodyTypes',
-            'models',
-            'years',
-            'recentCars',
-            'featuredCars'
-        ),
-        $distinctValues
-    ));
-}
-
-
-
-
 
     public function filters(Request $request)
     {

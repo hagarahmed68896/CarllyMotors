@@ -152,8 +152,8 @@ public function update(Request $request, $id)
             $user->save();
         }
 
-        return redirect()->route('profile', $id)
-                         ->with('success', 'Profile updated successfully!');
+return redirect()->route('home')->with('success', 'Profile updated successfully!');
+
         
     } catch (\Exception $e) {
         return redirect()->back()->with('error', $e->getMessage());

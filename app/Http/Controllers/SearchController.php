@@ -37,10 +37,9 @@ class SearchController extends Controller
     // ================= CAR SEARCH =================
 protected function searchCars(Request $request, $query)
 {
-    // ===== إنشاء الاستعلام الأساسي مع العلاقات =====
     $cars = CarListingModel::with(['user', 'images']);
 
-    // ===== البحث العام =====
+    // البحث العام
     if ($query) {
         $cars->where(function($q) use ($query) {
             $q->where('listing_type', 'like', "%{$query}%")
@@ -49,7 +48,7 @@ protected function searchCars(Request $request, $query)
         });
     }
 
-    // ===== تطبيق الفلاتر من الـ request =====
+    // الفلاتر
     $filters = [
         'make' => 'listing_type',
         'model' => 'listing_model',
@@ -65,12 +64,12 @@ protected function searchCars(Request $request, $query)
         }
     }
 
-    // ===== فلتر السعر =====
+    // السعر
     if ($request->filled('priceFrom') && $request->filled('priceTo')) {
         $cars->whereBetween('listing_price', [$request->priceFrom, $request->priceTo]);
     }
 
-    // ===== فلتر حالة السيارة (Used / New) =====
+    // الحالة
     if ($request->filled('car_type')) {
         if ($request->car_type === 'UsedOrNew') {
             $cars->whereIn('car_type', ['Used', 'New']);
@@ -79,10 +78,15 @@ protected function searchCars(Request $request, $query)
         }
     }
 
-    // ===== تنفيذ الباجينيشن =====
     $carlisting = $cars->paginate(12)->withQueryString();
 
-    // ===== تجهيز البيانات للفلتر في الشريط الجانبي =====
+    // ✅ هنا الحل
+    if ($request->ajax()) {
+        // ارجعي فقط الكروت
+        return view('cars.load_more', compact('carlisting'))->render();
+    }
+
+    // باقي البيانات (للأول تحميل فقط)
     $cities        = CarListingModel::select('city')->distinct()->pluck('city');
     $makes         = CarListingModel::select('listing_type')->distinct()->pluck('listing_type');
     $models        = CarListingModel::select('listing_model')->distinct()->pluck('listing_model');
@@ -90,25 +94,19 @@ protected function searchCars(Request $request, $query)
     $bodyTypes     = CarListingModel::select('body_type')->distinct()->pluck('body_type');
     $regionalSpecs = CarListingModel::select('regional_specs')->distinct()->pluck('regional_specs');
     $conditions    = CarListingModel::select('car_type')->distinct()->pluck('car_type');
+    $minPrice      = CarListingModel::min('listing_price');
+    $maxPrice      = CarListingModel::max('listing_price');
 
-    // ===== أسعار السيارات =====
-    $minPrice = CarListingModel::min('listing_price');
-    $maxPrice = CarListingModel::max('listing_price');
-
-    // ===== قائمة الـ brands =====
-    $brands = CarListingModel::select('listing_type')->distinct()->get();
-
-    // ===== العلامة المختارة حاليا =====
+    $brands = $cars->select('listing_type as name')->distinct()->get();
     $currentMake = $request->make;
 
-    // ===== إعادة العرض مع جميع البيانات =====
     return view('cars.index', compact(
-        'carlisting',
-        'cities', 'makes', 'models', 'years',
+        'carlisting', 'cities', 'makes', 'models', 'years',
         'bodyTypes', 'regionalSpecs', 'minPrice', 'maxPrice', 'conditions',
         'brands', 'currentMake'
     ));
 }
+
 
 
     // ================= SPARE PARTS SEARCH =================

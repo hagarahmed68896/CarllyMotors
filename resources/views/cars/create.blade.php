@@ -16,17 +16,16 @@
 }
 
 #car-create-page .fileInput {
-    height: 200px; 
+    min-height: 200px; 
     cursor: pointer; 
     background-color: #f5f5f5;
     border: 2px dashed #ccc;
     border-radius: 10px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    color: #999;
-    transition: background-color 0.2s, border-color 0.2s;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 10px;
+    gap: 10px;
     position: relative;
     overflow: hidden;
 }
@@ -37,20 +36,7 @@
 }
 
 #car-create-page .fileInput img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-    display: block;
-    z-index: 1;
-}
-
-#car-create-page .fileInput span {
-    position: relative;
-    z-index: 2;
+    cursor: pointer;
 }
 
 #car-create-page .form-control,
@@ -92,44 +78,105 @@
 #car-create-page button[type='submit']:hover {
     background-color: #990f1c;
 }
+
+/* Modal for Image Preview */
+#imageModal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.8);
+}
+
+#imageModal img {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 80%;
+    border-radius: 10px;
+}
+
+#imageModal span.close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
 </style>
 
 <div id="car-create-page">
 <div id="container">
     <div class="card">
 
-        <!-- Image Upload -->
-        <div class="fileInput" onclick="document.getElementById('imageInput').click()">
-            <img id="imagePreview" class="d-none" />
-            <span id="placeholderText">Click to Upload Images</span>
-        </div>
-
-        <input type="file" id="imageInput" name="images[]" class="d-none" multiple accept="image/*">
-
+  
         <!-- Car Form -->
         <form action="{{ route('cars.store') }}" method="POST" enctype="multipart/form-data" class="mt-4">
             @csrf
+
             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+      <!-- Image Upload -->
+        <div class="fileInput" id="fileInputContainer">
+            <span id="placeholderText">Click to Upload Images</span>
+        </div>
+        <input type="file" id="imageInput" name="images[]" class="d-none" multiple accept="image/*">
 
             <div class="row g-3">
-                <!-- Brand -->
-                <div class="col-md-6">
-                    <label for="brand" class="form-label">Brand</label>
-                    <select class="form-select" name="make" id="brand" required>
-                        <option value="">Select Brand</option>
-                        @foreach($brands as $brand)
-                            <option value="{{ $brand }}">{{ $brand }}</option>
-                        @endforeach
-                    </select>
-                </div>
+           <!-- Brand -->
+<div class="col-md-6">
+    <label for="brand" class="form-label">Brand</label>
+    <select class="form-select" name="make" id="brand" required>
+        <option value="">Select Brand</option>
+        @foreach($brands as $brand)
+            <option value="{{ $brand }}">{{ $brand }}</option>
+        @endforeach
+    </select>
+</div>
 
-                <!-- Model -->
-                <div class="col-md-6">
-                    <label for="model" class="form-label">Model</label>
-                    <select class="form-select" name="model" id="model" required>
-                        <option value="">Select Model</option>
-                    </select>
-                </div>
+<!-- Model -->
+<div class="col-md-6">
+    <label for="model" class="form-label">Model</label>
+    <select class="form-select" name="model" id="model" disabled required>
+        <option value="">Select Model</option>
+    </select>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#brand').on('change', function() {
+        var brandName = $(this).val();
+        var modelSelect = $('#model');
+
+        if(brandName) {
+            $.ajax({
+                url: "{{ route('getModels') }}",
+                type: "GET",
+                data: { brand: brandName },
+                success: function(response) {
+                    modelSelect.empty(); // فرّغ القديم
+                    modelSelect.append('<option value="">Select Model</option>');
+                    $.each(response.models, function(index, model) {
+                        modelSelect.append('<option value="'+model+'">'+model+'</option>');
+                    });
+                    modelSelect.prop('disabled', false); // فعل الـ input
+                }
+            });
+        } else {
+            modelSelect.empty();
+            modelSelect.append('<option value="">Select Model</option>');
+            modelSelect.prop('disabled', true); // رجعها مقفولة
+        }
+    });
+});
+</script>
+
 
                 <!-- Year -->
                 <div class="col-md-6">
@@ -204,11 +251,21 @@
                         <option value="Electric">Electric</option>
                     </select>
                 </div>
+       <!-- ✅ Seats -->
+                <div class="col-md-6">
+                    <label for="seats" class="form-label">Seats</label>
+                    <input type="number" name="seats" class="form-control" id="seats" placeholder="Number of Seats" min="1" required>
+                </div>
 
+                 <!-- Price -->
+                <div class="col-md-6">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="text" name="price" class="form-control" id="price" placeholder="Price" value="{{ auth()->user()->price }}" required>
+                </div>
                 <!-- Features -->
                 <div class="col-12">
                     <label for="features" class="form-label">Features</label>
-                    <input type="text" name="features" class="form-control" id="features" placeholder="Features" required data-role="tagsinput">
+                    <input type="text" name="features" class="form-control" id="features" placeholder="Features" data-role="tagsinput">
                 </div>
 
                 <!-- VIN -->
@@ -234,11 +291,7 @@
                     <textarea name="description" class="form-control" id="description" placeholder="Description"></textarea>
                 </div>
 
-                <!-- Price -->
-                <div class="col-12">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="text" name="price" class="form-control" id="price" placeholder="Price" value="{{ auth()->user()->price }}" required>
-                </div>
+            
 
                 <!-- Location -->
                 <div class="col-12">
@@ -252,53 +305,101 @@
     </div>
 </div>
 
+<!-- Modal for Image Preview -->
+<div id="imageModal">
+    <span class="close">&times;</span>
+    <img id="modalImage" src="">
+</div>
+
 <!-- Scripts -->
-@push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script>
-    // Image preview
-    document.querySelector("#car-create-page #imageInput").addEventListener("change", function(event){
-        const file = event.target.files[0];
-        if(file){
-            const reader = new FileReader();
-            reader.onload = function(){
-                const preview = document.querySelector("#car-create-page #imagePreview");
-                preview.src = reader.result;
-                preview.classList.remove("d-none");
-                document.querySelector("#car-create-page #placeholderText").style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+document.addEventListener("DOMContentLoaded", function() {
+    const imageInput = document.getElementById("imageInput");
+    const fileInputContainer = document.getElementById("fileInputContainer");
+    let uploadedFiles = [];
 
-    // Load models based on brand
-    $('#car-create-page #brand').on('change', function(){
-        let brand = $(this).val();
-        $('#car-create-page #model').empty().append('<option value="">Select Model</option>');
+    fileInputContainer.addEventListener("click", () => imageInput.click());
 
-        if(brand){
-            $.ajax({
-                url: "{{ route('getModels') }}",
-                method: "POST",
-                data: { brand: brand, _token: '{{ csrf_token() }}' },
-                success: function(response){
-                    response.models.forEach(function(model){
-                        $('#car-create-page #model').append('<option value="'+model+'">'+model+'</option>');
-                    });
-                }
+    function createThumbnail(file, index) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const wrapper = document.createElement("div");
+            wrapper.style.position = "relative";
+            wrapper.style.display = "inline-block";
+            wrapper.style.margin = "5px";
+
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.style.width = "100px";
+            img.style.height = "100px";
+            img.style.objectFit = "cover";
+            img.style.borderRadius = "10px";
+
+            // Click to enlarge
+            img.addEventListener("click", () => {
+                document.getElementById("modalImage").src = img.src;
+                document.getElementById("imageModal").style.display = "block";
             });
-        }
+
+            const removeBtn = document.createElement("span");
+            removeBtn.innerHTML = "×";
+            removeBtn.style.position = "absolute";
+            removeBtn.style.top = "0";
+            removeBtn.style.right = "0";
+            removeBtn.style.background = "rgba(0,0,0,0.6)";
+            removeBtn.style.color = "#fff";
+            removeBtn.style.width = "20px";
+            removeBtn.style.height = "20px";
+            removeBtn.style.textAlign = "center";
+            removeBtn.style.cursor = "pointer";
+            removeBtn.style.borderRadius = "50%";
+            removeBtn.style.fontWeight = "bold";
+            removeBtn.addEventListener("click", () => {
+                uploadedFiles.splice(index, 1);
+                wrapper.remove();
+                updateInputFiles();
+            });
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(removeBtn);
+            fileInputContainer.appendChild(wrapper);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function updateInputFiles() {
+        const dataTransfer = new DataTransfer();
+        uploadedFiles.forEach(file => dataTransfer.items.add(file));
+        imageInput.files = dataTransfer.files;
+    }
+
+    imageInput.addEventListener("change", function(event) {
+        const placeholder = document.getElementById("placeholderText");
+        if (placeholder) placeholder.remove();
+
+        [...event.target.files].forEach(file => {
+            uploadedFiles.push(file);
+            createThumbnail(file, uploadedFiles.length - 1);
+        });
+
+        updateInputFiles();
     });
 
-    // Initialize tags input
-    $('#car-create-page input[name="features"]').tagsinput({
-        trimValue: true,
-        confirmKeys: [13,44,32]
+    // Modal close
+    document.querySelector("#imageModal .close").addEventListener("click", () => {
+        document.getElementById("imageModal").style.display = "none";
     });
+
+    // Make thumbnails sortable
+    new Sortable(fileInputContainer, {
+        animation: 150
+    });
+});
 </script>
-@endpush
 
 </div> <!-- end car-create-page -->
 @endsection

@@ -404,14 +404,6 @@ function submitTopFilter() {
 </script>
 
 
-<script>
-function submitTopFilter() {
-    document.getElementById('topFilterForm').submit();
-}
-</script>
-
-
-
 <div class="container-xl">
     <div class="d-flex align-items-center justify-content-between mb-4">
 @php
@@ -915,191 +907,79 @@ new Swiper('.zoomSwiper-{{ $key }}', {
 
 
 
-
-@php
-  use Illuminate\Pagination\LengthAwarePaginator;
-@endphp
-
-@if ($carlisting instanceof LengthAwarePaginator && $carlisting->hasPages())
-  @php
-    $current = $carlisting->currentPage();
-    $last = $carlisting->lastPage();
-    $maxFull = 10; // if pages <= this -> show all pages
-    $window = 2;   // pages to show around current when condensing
-    // build pages array to render
-    $pages = [];
-
-    if ($last <= $maxFull) {
-        for ($p = 1; $p <= $last; $p++) {
-            $pages[] = $p;
-        }
-    } else {
-        // always show first 2
-        $pages[] = 1;
-        $pages[] = 2;
-
-        // determine left and right window
-        $start = max(3, $current - $window);
-        $end = min($last - 2, $current + $window);
-
-        if ($start > 3) {
-            $pages[] = '...';
-        } else {
-            // include 3 if window touches
-            for ($p = 3; $p < $start; $p++) $pages[] = $p;
-        }
-
-        for ($p = $start; $p <= $end; $p++) $pages[] = $p;
-
-        if ($end < $last - 2) {
-            $pages[] = '...';
-        } else {
-            for ($p = $end + 1; $p <= $last - 2; $p++) $pages[] = $p;
-        }
-
-        // always show last 2
-        $pages[] = $last - 1;
-        $pages[] = $last;
-
-        // remove duplicates while preserving order
-        $pages = array_values(array_unique($pages));
-    }
-  @endphp
-
-  <nav aria-label="Page navigation" class="mt-4">
-    <ul class="custom-pagination d-flex justify-content-center align-items-center flex-wrap">
-
-      {{-- Previous --}}
-      @if ($carlisting->onFirstPage())
-        <li class="disabled"><span class="page-btn" aria-hidden="true">‹</span></li>
-      @else
-        <li><a href="{{ $carlisting->previousPageUrl() }}" class="page-btn" rel="prev" aria-label="Previous">‹</a></li>
-      @endif
-
-      {{-- Page Numbers --}}
-      @foreach ($pages as $p)
-        @if ($p === '...')
-          <li><span class="page-btn dots">…</span></li>
-        @else
-          @php $p = (int) $p; @endphp
-          @if ($p === $current)
-            <li><span class="page-btn active" aria-current="page">{{ $p }}</span></li>
-          @else
-            <li><a href="{{ $carlisting->url($p) }}" class="page-btn" aria-label="Go to page {{ $p }}">{{ $p }}</a></li>
-          @endif
-        @endif
-      @endforeach
-
-      {{-- Next --}}
-      @if ($carlisting->hasMorePages())
-        <li><a href="{{ $carlisting->nextPageUrl() }}" class="page-btn" rel="next" aria-label="Next">›</a></li>
-      @else
-        <li class="disabled"><span class="page-btn" aria-hidden="true">›</span></li>
-      @endif
-    </ul>
-  </nav>
-
-  {{-- Page Info --}}
-  <div class="d-flex justify-content-center mt-3">
-    <div class="page-info text-center" role="status" aria-live="polite">
-      Page <strong>{{ $carlisting->currentPage() }}</strong> of <strong>{{ $carlisting->lastPage() }}</strong>
-    </div>
+<div class="container py-4">
+  <div class="row g-4 mb-4" id="car-list-load-more">
+      @include('cars.load_more', ['carlisting' => $carlisting])
   </div>
-@endif
+</div>
 
-<style>
-/* container */
-.custom-pagination {
-  gap: 6px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+
+<!-- سبينر التحميل -->
+<div id="load-more-loader" class="text-center py-4" style="display: none;">
+  <div class="spinner-border text-danger" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<!-- العنصر الوهمي للـ Infinite Scroll -->
+<div id="infinite-scroll-trigger"></div>
+
+
+<script>
+let page = 1;
+let loading = false;
+let lastPage = {{ $carlisting->lastPage() }};
+let reachedEnd = false;
+
+function getQueryString() {
+    const params = new URLSearchParams(window.location.search);
+    return params.toString() ? '&' + params.toString() : '';
 }
 
-/* item */
-.custom-pagination li {
-  display: inline-block;
+function loadMoreCars() {
+    if (loading || reachedEnd) return;
+    loading = true;
+    document.getElementById('load-more-loader').style.display = 'block';
+
+    fetch(`?page=${page + 1}${getQueryString()}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(res => res.text())
+    .then(data => {
+        if (!data.trim()) {
+            reachedEnd = true;
+            observer.disconnect();
+            return;
+        }
+        document.querySelector('#car-list-load-more').insertAdjacentHTML('beforeend', data);
+        page++;
+        loading = false;
+        document.getElementById('load-more-loader').style.display = 'none';
+
+        if(page >= lastPage) {
+            reachedEnd = true;
+            observer.disconnect();
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        loading = false;
+        document.getElementById('load-more-loader').style.display = 'none';
+    });
 }
 
-/* buttons */
-.page-btn {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 36px;
-  height: 36px;
-  padding: 0 8px;
-  border-radius: 50px; /* pill */
-  font-weight: 600;
-  text-decoration: none;
-  color: #760e13;           /* primary color */
-  background-color: #fff;
-  border: 1px solid #e6e6e6;
-  transition: transform .18s ease, background-color .18s ease, color .18s ease, box-shadow .18s ease;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.05);
-}
+const trigger = document.getElementById('infinite-scroll-trigger');
+const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !loading && !reachedEnd) {
+        loadMoreCars();
+    }
+}, { rootMargin: '400px' });
 
-/* hover */
-.page-btn:hover {
-  background-color: #760e13;
-  color: #fff;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 18px rgba(118,14,19,0.22);
-}
+observer.observe(trigger);
+</script>
 
-/* active */
-.page-btn.active {
-  background-color: #760e13;
-  color: #fff;
-  border-color: #760e13;
-  box-shadow: 0 6px 14px rgba(118,14,19,0.28);
-}
 
-/* disabled/dots */
-.custom-pagination li.disabled .page-btn,
-.page-btn.dots {
-  background: #f7f7f7;
-  color: #888;
-  border-color: #eee;
-  transform: none;
-  pointer-events: none;
-  box-shadow: none;
-}
 
-/* page info pill */
-.page-info {
-  color: #760e13;
-  font-weight: 600;
-  font-size: 0.95rem;
-  background: #fff;
-  padding: 6px 16px;
-  border-radius: 50px;
-  border: 1px solid #eee;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
-  display: inline-block;
-}
 
-/* responsive sizing */
-@media (max-width: 576px) {
-  .page-btn { min-width: 32px; height: 32px; font-size: 0.87rem; padding: 0 6px; }
-  .custom-pagination { gap: 6px; padding: 6px 8px; }
-}
 
-/* make container horizontally scrollable instead of wrapping (optional) */
-/* Uncomment if you prefer a single-line horizontal scroll on mobile:
-.custom-pagination {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 4px;
-}
-.custom-pagination::-webkit-scrollbar { display: none; }
-*/
-</style>
 
 
 
