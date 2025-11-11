@@ -845,75 +845,78 @@ $image = asset('carllymotorsmainlogo.png');
                 @endif
             </div>
 
-            <div class="actions-dealer d-flex align-items-center mt-2">
-                @if ($phone !== 'N/A')
- @php
-    $dealerUrl = route('spareParts.index', [
-        'dealer_id'   => $dealer->id,
-        'make'        => request('make'),
-        'model'       => request('model'),
-        'year'        => request('year'),
-        'category'    => request('category'),
-        'sub-category'=> request('sub-category'),
-        'city'        => request('city'),
-        'condition'   => request('condition'),
-    ]);
+         <div class="actions-dealer d-flex align-items-center justify-content-between gap-2 mt-2 flex-wrap">
 
-    $message = "((Carlly Motors))\n\n" .
-               "I'm interested in buying your spare parts!\n\n" .
-               "Car Type : " . (request('make') ?? '-') . "\n" .
-               "Car Model : " . (request('model') ?? '-') . "\n" .
-               "Car Year : " . (request('year') ?? '-') . "\n" .
-               "Category : " . (request('category') ?? '-') . "\n" .
-               "Sub-category : " . (request('sub-category') ?? '-') . "\n" .
-               "City : " . (request('city') ?? '-') . "\n" .
-               "Condition : " . (request('condition') ?? '-') . "\n\n" .
-               "Spare Part Url : " . $dealerUrl;
-@endphp
+    @if ($phone !== 'N/A')
+        @php
+            $dealerUrl = route('spareParts.index', [
+                'dealer_id'   => $dealer->id,
+                'make'        => request('make'),
+                'model'       => request('model'),
+                'year'        => request('year'),
+                'category'    => request('category'),
+                'sub-category'=> request('sub-category'),
+                'city'        => request('city'),
+                'condition'   => request('condition'),
+            ]);
 
-<a href="https://wa.me/{{ $phone }}?text={{ urlencode($message) }}"
-   target="_blank"
-   class="text-decoration-none flex-grow-1">
-   <button class="btn btn-outline-success w-100 action-btn rounded-4">
-       <i class="fab fa-whatsapp"></i>
-   </button>
-</a>
+            $message = "((Carlly Motors))\n\n" .
+                       "مرحباً، أرغب في الاستفسار عن قطع الغيار المتوفّرة لديكم \n\n" .
+                       "I'm interested in buying your spare parts!\n\n" .
+                       "Car Type : " . (request('make') ?? '-') . "\n" .
+                       "Car Model : " . (request('model') ?? '-') . "\n" .
+                       "Car Year : " . (request('year') ?? '-') . "\n" .
+                       "Category : " . (request('category') ?? '-') . "\n" .
+                       "Sub-category : " . (request('sub-category') ?? '-') . "\n" .
+                       "City : " . (request('city') ?? '-') . "\n" .
+                       "Condition : " . (request('condition') ?? '-') . "\n\n" .
+                       "Spare Part Url : " . $dealerUrl;
+        @endphp
 
+        <!-- زر واتساب -->
+        <a href="https://wa.me/{{ $phone }}?text={{ urlencode($message) }}"
+           target="_blank"
+           class="flex-fill text-decoration-none">
+            <button class="btn btn-outline-success w-100 action-btn rounded-4">
+                <i class="fab fa-whatsapp"></i>
+            </button>
+        </a>
 
+        <!-- زر الاتصال -->
+        <a href="tel:{{ $phone }}" class="flex-fill text-decoration-none">
+            <button class="btn btn-outline-danger w-100 action-btn rounded-4">
+                <i class="fas fa-phone"></i>
+            </button>
+        </a>
+    @endif
 
+    @php
+        $dealerUrl = route('spareParts.index', [
+            'dealer_id'   => $dealer->id,
+            'make'        => request('make'),
+            'model'       => request('model'),
+            'year'        => request('year'),
+            'category'    => request('category'),
+            'sub-category'=> request('sub-category'),
+            'city'        => request('city'),
+            'condition'   => request('condition'),
+        ]);
 
-                    <a href="tel:{{ $phone }}" class="action-link">
-                        <button class="btn btn-outline-danger action-btn rounded-4">
-                            <i class="fas fa-phone"></i>
-                        </button>
-                    </a>
-                @endif
+        $shareMessage = "اكتشف أفضل تجار قطع الغيار على موقع Carlly! عروض وخدمات مميّزة بانتظارك \n\n" .
+                        "Check out my latest find on Carlly! Great deals await. Don't miss out!: " . $dealerUrl;
+    @endphp
 
-     @php
-    $dealerUrl = route('spareParts.index', [
-        'dealer_id'   => $dealer->id,
-        'make'        => request('make'),
-        'model'       => request('model'),
-        'year'        => request('year'),
-        'category'    => request('category'),
-        'sub-category'=> request('sub-category'),
-        'city'        => request('city'),
-        'condition'   => request('condition'),
-    ]);
+    <!-- زر المشاركة -->
+    <a href="https://wa.me/?text={{ urlencode($shareMessage) }}" 
+       target="_blank" 
+       class="flex-fill text-decoration-none">
+        <button class="btn btn-outline-info w-100 action-btn rounded-4" title="Share via WhatsApp">
+            <i class="fas fa-share-alt"></i>
+        </button>
+    </a>
 
-    $shareMessage = "Check out my latest find on Carlly! Great deals await. Don't miss out!: " . $dealerUrl;
-@endphp
+</div>
 
-<a href="https://wa.me/?text={{ urlencode($shareMessage) }}" 
-   target="_blank" 
-   class="action-link">
-  <button class="btn btn-outline-info w-100 action-btn rounded-4" title="Share via WhatsApp">
-        <i class="fas fa-share-alt"></i>
-    </button>
-</a>
-
-
-            </div>
         </div>
     </div>
 @empty

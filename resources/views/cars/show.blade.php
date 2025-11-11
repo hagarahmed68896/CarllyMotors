@@ -382,14 +382,15 @@
           <div class="d-flex gap-2">
 @if(!empty($car->user?->phone))
     <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode(
-        'Hi, I would like to ask if this car is still available:' . "\n\n" .
-        $car->listing_type . ' • ' . $car->listing_model . "\n" .
-        'Year: ' . $car->listing_year . "\n" .
-        'Price: AED ' . number_format($car->listing_price) . "\n" .
-        'Fuel Type: ' . $car->features_fuel_type . "\n" .
-        'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
-        'View full details here: ' . route('car.detail', $car->id)
-    ) }}"
+    "Carlly Motors\n\n" .
+    "مرحبًا، أتواصل معك للاستفسار عن السيارة المعروضة للبيع، " . $car->listing_type . " " . $car->listing_model . "، في Carlly Motors. هل لا تزال متوفرة؟\n\n" .
+    "Hello, We are contacting you about the car for sale, " . $car->listing_type . " " . $car->listing_model . ", at Carlly Motors. Is it available?\n\n" .
+    "Car Model : " . $car->listing_model . "\n" .
+    "Car Type : " . $car->listing_type . "\n" .
+    "Year Of Manufacture : " . $car->listing_year . "\n" .
+    "Car Price : " . number_format($car->listing_price) . " AED\n" .
+    "Car URL : " . route('car.detail', $car->id)
+) }}"
     target="_blank"
     class="flex-fill text-decoration-none">
         <button class="btn btn-outline-success w-100 rounded-4">
@@ -419,14 +420,10 @@
 
 
   <a href="https://wa.me/?text={{ urlencode(
-    'Check out this car on Carlly Motors:' . "\n\n" .
-    $car->listing_make . ' • ' . $car->listing_model . "\n" .
-    'Year: ' . $car->listing_year . "\n" .
-    'Price: AED ' . number_format($car->listing_price) . "\n" .
-    'Fuel Type: ' . $car->features_fuel_type . "\n" .
-    'Location: ' . ($car->city ?? 'N/A') . "\n\n" .
-    'View full details here: ' . route('car.detail', $car->id)
-) }}" 
+    'اطّلع على هذه السيارة على موقع Carlly! عروض مميّزة بانتظارك' . "\n\n" .
+    'Check out my latest find on Carlly! Great deals await. Don’t miss out!' . "\n" .
+    route('car.detail', $car->id)
+) }}"
 target="_blank" 
 title="Share via WhatsApp"
 aria-label="Share via WhatsApp"

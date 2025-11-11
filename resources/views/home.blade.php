@@ -382,16 +382,18 @@ document.addEventListener('shown.bs.modal', function (event) {
                             </a>
                         @endif
 
-                        <a href="https://wa.me/?text={{ urlencode(
-                        'Check out my latest find on Carlly! Great deals await. Don’t miss out!' . "\n" .
-                        route('car.detail', $car->id)
-                    ) }}"
-                    target="_blank"
-                    title="Share via WhatsApp"
-                    class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                    style="width: 32px; height: 32px; border-radius: 50%;">
-                        <i class="fas fa-share-alt" style="color: #25d366;"></i>
-                    </a>
+                    <a href="https://wa.me/?text={{ urlencode(
+    'اطّلع على هذه السيارة على موقع Carlly! عروض مميّزة بانتظارك' . "\n\n" .
+    'Check out my latest find on Carlly! Great deals await. Don’t miss out!' . "\n" .
+    route('car.detail', $car->id)
+) }}"
+target="_blank"
+title="شارك عبر واتساب"
+class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+style="width: 32px; height: 32px; border-radius: 50%;">
+    <i class="fas fa-share-alt" style="color: #25d366;"></i>
+</a>
+
                     </div>
                 </div>
 
@@ -696,16 +698,9 @@ document.addEventListener('shown.bs.modal', function (event) {
         'condition'   => request('condition'),
     ]);
 
-    $message = "((Carlly Motors))\n\n" .
-               "I'm interested in buying your spare parts!\n\n" .
-               "Car Type : " . (request('make') ?? '-') . "\n" .
-               "Car Model : " . (request('model') ?? '-') . "\n" .
-               "Car Year : " . (request('year') ?? '-') . "\n" .
-               "Category : " . (request('category') ?? '-') . "\n" .
-               "Sub-category : " . (request('sub-category') ?? '-') . "\n" .
-               "City : " . (request('city') ?? '-') . "\n" .
-               "Condition : " . (request('condition') ?? '-') . "\n\n" .
-               "Spare Part Url : " . $dealerUrl;
+               $message = "اكتشف أفضل تجار قطع الغيار على موقع Carlly! عروض وخدمات مميّزة بانتظارك \n\n" .
+                "Check out my latest find on Carlly! Great deals await. Don't miss out!: " . $dealerUrl;
+
 @endphp
 
 <a href="https://wa.me/{{ $phone }}?text={{ urlencode($message) }}"
@@ -744,7 +739,8 @@ document.addEventListener('shown.bs.modal', function (event) {
         'condition'   => request('condition'),
     ]);
 
-    $shareMessage = "Check out my latest find on Carlly! Great deals await. Don't miss out!: " . $dealerUrl;
+$shareMessage = "اكتشف أفضل تجار قطع الغيار على موقع Carlly! عروض وخدمات مميّزة بانتظارك \n\n" .
+                "Check out my latest find on Carlly! Great deals await. Don't miss out!: " . $dealerUrl;
 @endphp
 
 <a href="https://wa.me/?text={{ urlencode($shareMessage) }}" 
@@ -988,11 +984,13 @@ document.addEventListener('shown.bs.modal', function (event) {
                     <!-- Workshop Actions -->
                     <div class="actions-workshop d-flex gap-2">
                         <a href="https://wa.me/{{ $workshop->user->phone }}?text={{ urlencode(
-                            'Hello, I’m interested in your workshop services. Are you still available for maintenance or repair work?' . "\n\n" .
-                            'Workshop Name: ' . $workshop->workshop_name . "\n" .
-                            'Address: ' . ($workshop->address ?? 'Not specified') . "\n\n" .
-                            'View Workshop on Website: ' . $shareUrl
-                        ) }}" target="_blank" class="flex-grow-1">
+                    'السلام عليكم، شفت ورشتكم ' . $workshop->workshop_name . ' في تطبيق Carlly Motors، وعندي شغل ' .
+                    ($workshop->workshop_categories ?? 'صيانة') . ' بسيارتي. متى أقدر آييبها؟' . "\n\n" .
+                    'Hello, I saw your ' . $workshop->workshop_name . ' workshop on the Carlly app. I need some ' .
+                    ($workshop->workshop_categories ?? 'maintenance') . ' work done on my car. When can I bring it in?' . "\n\n" .
+                    $shareUrl
+                ) }}" 
+                 target="_blank" class="flex-grow-1">
                             <button class="btn btn-outline-success w-100 action-btn rounded-4">
                                 <i class="fab fa-whatsapp"></i>
                             </button>
@@ -1004,12 +1002,17 @@ document.addEventListener('shown.bs.modal', function (event) {
                             </button>
                         </a>
 
-                        <a href="https://wa.me/?text={{ urlencode('Check out my latest find on Carlly!this workshop: ' . $shareUrl) }}" 
-                           target="_blank" class="flex-grow-1">
-                            <button class="btn btn-outline-info w-100 action-btn rounded-4">
-                                <i class="fas fa-share-alt"></i>
-                            </button>
-                        </a>
+                    <a href="https://wa.me/?text={{ urlencode(
+    'اطّلع على هذه الورشة على موقع Carlly! خدمات مميّزة بانتظارك ' . "\n\n" .
+    'Check out my latest find on Carlly! This workshop: ' . $shareUrl
+) }}" 
+target="_blank" 
+class="flex-grow-1">
+    <button class="btn btn-outline-info w-100 action-btn rounded-4">
+        <i class="fas fa-share-alt"></i>
+    </button>
+</a>
+
                     </div>
                 </div>
             </div>

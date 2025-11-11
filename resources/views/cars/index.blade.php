@@ -514,6 +514,7 @@ function submitTopFilter() {
     @endif
 
   <a href="https://wa.me/?text={{ urlencode(
+    'اطّلع على هذه السيارة على موقع Carlly! عروض مميّزة بانتظارك' . "\n\n" .
     'Check out my latest find on Carlly! Great deals await. Don’t miss out!' . "\n" .
     route('car.detail', $car->id)
 ) }}"

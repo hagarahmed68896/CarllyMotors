@@ -239,11 +239,11 @@
                     <i class="fas fa-user-circle me-2"></i> My Profile
                 </a>
             </li>
-            <li>
+            {{-- <li>
                 <a href="{{ route('cars.create') }}" class="dropdown-item">
                     <i class="fas fa-bullhorn me-2 text-secondary"></i> My Ads
                 </a>
-            </li>
+            </li> --}}
             <li><hr class="dropdown-divider"></li>
             <li>
                 <form method="post" action="{{ route('logout') }}">

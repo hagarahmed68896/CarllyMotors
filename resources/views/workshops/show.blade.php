@@ -209,8 +209,11 @@ $shareUrl = route('workshops.show', $workshop->id);
     @endif
 
     <!-- ✅ Share -->
- <a href="https://wa.me/?text={{ urlencode('Check out my latest find on Carlly! This workshop: ' . $shareUrl) }}" 
-   target="_blank" 
+ <a
+href="https://wa.me/?text={{ urlencode(
+    'اطّلع على هذه الورشة على موقع Carlly! خدمات مميّزة بانتظارك ' . "\n\n" .
+    'Check out my latest find on Carlly! This workshop: ' . $shareUrl
+) }}"    target="_blank" 
    class="btn btn-info rounded-4 px-4 py-2 d-flex align-items-center justify-content-center"
    style="min-width: 60px;"
    onclick="event.stopPropagation();">
