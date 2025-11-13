@@ -254,8 +254,6 @@ $currentMake = request('make'); // Get the currently selected make for highlight
     @endforeach
 </select>
 
-
-
    <!-- 🚗 Car Brand -->
 <select class="form-select" id="makeSelect" name="make">
     <option value="">Car Brand</option>

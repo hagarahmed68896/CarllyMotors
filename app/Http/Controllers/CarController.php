@@ -120,15 +120,18 @@ $carlisting->getCollection()->transform(function ($car) {
 public function store(Request $request)
 {
     try {
+
+
         $car = new CarListingModel();
+
+        // Basic details
         $car->user_id               = $request->user_id;
         $car->listing_type          = $request->make;
         $car->listing_model         = $request->model;
         $car->listing_year          = $request->year;
         $car->body_type             = $request->bodyType;
         $car->regional_specs        = $request->regionalSpec;
-        $car->city = auth()->user()->city ?? null;
-        $car->features_others       = $request->features;
+        $car->city                  = $request->city ?? auth()->user()->city ?? null;
         $car->vin_number            = $request->vin_number;
         $car->features_gear         = $request->gear;
         $car->features_speed        = $request->mileage;
@@ -139,27 +142,33 @@ public function store(Request $request)
         $car->listing_title         = $request->name;
         $car->wa_number             = '+971' . $request->phone;
         $car->listing_price         = $request->price;
-        $car->lat                   = $request->latitude;
-        $car->lng                   = $request->longitude;
-        $car->max                   = 10;
+
+        // ✅ Features Others (convert string to JSON array)
+        $features = $request->features ?? '';
+        $featuresArray = array_filter(array_map('trim', explode(',', $features))); // remove empty items
+        $car->features_others = json_encode($featuresArray);
+
+        // ✅ Location
+        $car->location = $request->location ?? null;  // textual location (region, city, country)
+        $car->lat = $request->latitude ?: null;
+        $car->lng = $request->longitude ?: null;
+
+        $car->max = 10;
         $car->save();
 
-        // ✅ رفع الصور وحفظها في جدول images
+        // ✅ Upload Images
         if ($request->hasFile('images')) {
             $i = 1;
-
             foreach ($request->file('images') as $index => $uploadedImage) {
                 if ($index >= $car->max) break;
 
                 $imgName = time() . '_' . $index . '.' . $uploadedImage->getClientOriginalExtension();
                 $path = $uploadedImage->storeAs('listings', $imgName, 'r2');
 
-                // ✅ حفظ الصورة في جدول images
-                $car->images()->create([
-                    'image' => $path,
-                ]);
+                // Save in images table
+                $car->images()->create(['image' => $path]);
 
-                // ✅ أول 5 صور نحفظهم في أعمدة carlisting
+                // Save first 5 images in carlisting columns
                 if ($i <= 5) {
                     $column = "listing_img{$i}";
                     $car->$column = $path;
@@ -180,6 +189,98 @@ public function store(Request $request)
 }
 
 
+
+
+public function edit(CarListingModel $car)
+{
+    $brands        = CarBrand::pluck('name')->toArray(); // array من أسماء الماركات
+    $bodyTypes     = BodyType::pluck('name');            // Collection زي ما هي
+    $bodyTypesArray = $bodyTypes->toArray();            // نسخة array للـ Blade فقط
+    $regionalSpecs = RegionalSpec::pluck('name')->toArray();
+    $colors        = Color::get();
+
+    return view('cars.edit', compact('car', 'brands', 'bodyTypes', 'bodyTypesArray', 'regionalSpecs', 'colors'));
+}
+
+
+
+public function update(Request $request, CarListingModel $car)
+{
+    try {
+        $car->listing_type          = $request->make;
+        $car->listing_model         = $request->model;
+        $car->listing_year          = $request->year;
+        $car->body_type             = $request->bodyType;
+        $car->regional_specs        = $request->regionalSpec;
+        $car->city                  = auth()->user()->city ?? null;
+        $car->features_others       = $request->features;
+        $car->vin_number            = $request->vin_number;
+        $car->features_gear         = $request->gear;
+        $car->features_speed        = $request->mileage;
+        $car->car_color             = $request->color;
+        $car->features_climate_zone = $request->warranty;
+        $car->features_fuel_type    = $request->fuelType;
+        $car->features_seats        = $request->seats;
+        $car->listing_title         = $request->name;
+        $car->wa_number             = '+971' . $request->phone;
+        $car->listing_price         = $request->price;
+        $car->lat                   = $request->latitude;
+        $car->lng                   = $request->longitude;
+        $car->save();
+
+        // 🔥 حذف الصور القديمة المحددة
+        if ($request->filled('removed_images')) {
+            foreach ($request->removed_images as $imgPath) {
+                $car->images()->where('image', $imgPath)->delete();
+                Storage::disk('r2')->delete($imgPath);
+            }
+        }
+
+        // ✅ رفع صور جديدة
+        if ($request->hasFile('images')) {
+            $i = 1;
+            foreach ($request->file('images') as $index => $uploadedImage) {
+                $imgName = time() . '_' . $index . '.' . $uploadedImage->getClientOriginalExtension();
+                $path = $uploadedImage->storeAs('listings', $imgName, 'r2');
+
+                $car->images()->create([
+                    'image' => $path,
+                ]);
+
+                if ($i <= 5) {
+                    $column = "listing_img{$i}";
+                    $car->$column = $path;
+                    $i++;
+                }
+            }
+            $car->current = $car->images()->count();
+            $car->save();
+        }
+
+        return redirect()->route('car.detail', $car->id)
+                         ->with('success', 'Car updated successfully');
+
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', $e->getMessage());
+    }
+}
+
+public function destroy(CarListingModel $car)
+{
+    // Delete all images from storage
+    foreach ($car->images as $image) {
+        Storage::disk('r2')->delete($image->image);
+    }
+
+    $car->images()->delete();
+    $car->delete();
+
+    return redirect()->route('myCarListing')->with('success', 'Car deleted successfully');
+}
+ 
+
+
+
     public function getModels(Request $request)
     {
         // dd(gettype($request->brand));
@@ -190,10 +291,7 @@ public function store(Request $request)
         return response()->json(['models' => $brand_models], 200);
     }
 
-    public function destroy(CarListingModel $carListingModel)
-    {
-        //
-    }
+
     public function loadMoreCars(Request $request)
     {
         $cars = CarlistingModel::with(['user', 'images'])->orderBy('id', 'desc')->paginate(9); // تحميل 8 سيارات في كل مرة
@@ -236,12 +334,14 @@ public function store(Request $request)
         return view('cars.favList', compact('carlisting'));
     }
 
-    public function myCarListing()
-    {
-        $user       = auth()->user();
-        $carlisting = $user->cars;
-        return view('cars.favList', compact('carlisting'));
-    }
+   public function myCarListing()
+{
+    $user = auth()->user();
+    $carlisting = $user->cars()->with('images')->latest()->get();
+
+    return view('cars.my_listings', compact('carlisting'));
+}
+
   
   // ✅ Add this for deep linking support
 public function detailFromQuery(Request $request)

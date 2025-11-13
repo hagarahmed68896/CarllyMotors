@@ -5,7 +5,23 @@ use Illuminate\Support\Str;
 
 @section('content')
 
-<div class="custom-container main-car-list-sec">
+<div class="custom-container main-car-list-sec" style="margin-top:30px;">
+<h2 class="mb-4 text-center fw-bold position-relative"
+    style="color:#760e13; margin-top:30px;">
+   Favorites
+</h2>
+
+<style>
+h2.text-center::after {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 5px;
+    background-color: #760e13;
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+</style>
     <div class="row g-4">
         @forelse ($carlisting as $key => $car)
             @php
@@ -56,9 +72,10 @@ use Illuminate\Support\Str;
                             @endif
 
                           <a href="https://wa.me/?text={{ urlencode(
-                        'Check out my latest find on Carlly! Great deals await. Don’t miss out!' . "\n" .
-                        route('car.detail', $car->id)
-                    ) }}"
+    'اطّلع على هذه السيارة على موقع Carlly! عروض مميّزة بانتظارك' . "\n\n" .
+    'Check out my latest find on Carlly! Great deals await. Don’t miss out!' . "\n" .
+    route('car.detail', $car->id)
+) }}"
                     target="_blank"
                     title="Share via WhatsApp"
                     class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"

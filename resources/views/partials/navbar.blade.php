@@ -132,12 +132,13 @@
                     <li class="nav-item">
                         @guest
                             <a href="{{ route('login') }}" class="text-dark fw-semibold text-decoration-none nav-link">
-                                Sell Your Car
+                                My Listing
                             </a>
                         @else
-                            <a href="{{ route('cars.create') }}" class="text-dark fw-semibold text-decoration-none nav-link">
-                                Sell Your Car
-                            </a>
+                         <a href="{{ route('cars.my') }}" class="text-dark fw-semibold text-decoration-none nav-link">
+                            My Listing
+                        </a>
+
                         @endguest
                     </li>
  
@@ -241,7 +242,7 @@
             </li>
             {{-- <li>
                 <a href="{{ route('cars.create') }}" class="dropdown-item">
-                    <i class="fas fa-bullhorn me-2 text-secondary"></i> My Ads
+                    <i class="fas fa-bullhorn me-2 text-secondary"></i> My Listings
                 </a>
             </li> --}}
             <li><hr class="dropdown-divider"></li>

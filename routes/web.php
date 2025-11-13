@@ -107,6 +107,13 @@ Route::get('/favList', [CarController::class, 'favList'])->name('cars.favList')-
 Route::get('/myCarListing', [CarController::class, 'myCarListing'])->name('myCarListing')->middleware('auth');
 Route::get('cars/homeSection', [CarController::class, 'homeSection'])->name('cars.homeSection');
 Route::get('getModels', [CarController::class, 'getModels'])->name('getModels');
+Route::get('/my-cars', [CarController::class, 'myCarListing'])->name('cars.my');
+ // Edit & Update car
+    Route::get('{car}/edit', [CarController::class, 'edit'])->name('car.edit');
+    Route::put('{car}', [CarController::class, 'update'])->name('car.update');
+
+    // Delete car
+    Route::delete('{car}', [CarController::class, 'destroy'])->name('car.destroy');
 
 //  Car Listing Deep Links
 Route::get('/car-listing/{id}', [HomeController::class, 'detail'])->name('carlisting.detail')->where('id', '[0-9]+');
