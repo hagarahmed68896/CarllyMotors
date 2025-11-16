@@ -907,10 +907,15 @@ new Swiper('.zoomSwiper-{{ $key }}', {
 
 
 <div class="container py-4">
-  <div class="row g-4 mb-4" id="car-list-load-more">
-      @include('cars.load_more', ['carlisting' => $carlisting])
-  </div>
+
+    @if($carlisting->count() > 0)
+        <div class="row g-4 mb-4" id="car-list-load-more">
+            @include('cars.load_more', ['carlisting' => $carlisting])
+        </div>
+    @endif
+
 </div>
+
 
 
 <!-- سبينر التحميل -->
