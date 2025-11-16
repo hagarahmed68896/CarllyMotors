@@ -337,7 +337,6 @@
     <img id="modalImage" alt="Preview" style="max-width:90%; max-height:90%; border-radius:8px;">
 </div>
 
-<!-- Script -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const imageInput = document.getElementById("imageInput");
@@ -352,18 +351,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
     let uploadedFiles = [];
 
+    // CSS class for first image cover
+    const coverClass = "first-cover";
+
     // فتح نافذة اختيار الصور عند الضغط على الصندوق
     fileInputContainer.addEventListener("click", () => imageInput.click());
 
     function updateImageCount() {
-        const existingImages = document.querySelectorAll('.existing-image').length;
-        imageCount.textContent = `${uploadedFiles.length + existingImages} / 8`;
+        const existingImages = document.querySelectorAll('.existing-image, .new-image').length;
+        imageCount.textContent = `${existingImages} / 8`;
+        markFirstAsCover();
     }
 
-    function updateInputFiles() {
-        const dataTransfer = new DataTransfer();
-        uploadedFiles.forEach(file => dataTransfer.items.add(file));
-        imageInput.files = dataTransfer.files;
+    // Mark first image as cover visually
+    function markFirstAsCover() {
+        const allImages = previewContainer.querySelectorAll('.existing-image, .new-image');
+        allImages.forEach(div => div.classList.remove(coverClass));
+        if(allImages.length > 0) allImages[0].classList.add(coverClass);
     }
 
     function createThumbnail(file) {
@@ -380,31 +384,42 @@ document.addEventListener("DOMContentLoaded", function() {
             img.style.objectFit = "cover";
             img.classList.add("rounded", "viewable-image");
 
+            // Open modal on click
             img.addEventListener("click", () => {
                 modalImage.src = e.target.result;
                 imageModal.style.display = "flex";
             });
 
+            // Remove button
             const removeBtn = document.createElement("span");
             removeBtn.classList.add("remove-btn");
             removeBtn.textContent = "×";
+            removeBtn.style.cssText = "position:absolute; top:2px; right:3px; cursor:pointer;";
             removeBtn.addEventListener("click", (ev) => {
                 ev.stopPropagation();
                 const index = uploadedFiles.indexOf(file);
-                if (index > -1) uploadedFiles.splice(index, 1);
+                if(index > -1) uploadedFiles.splice(index,1);
                 wrapper.remove();
-                updateInputFiles();
                 updateImageCount();
+                updateInputFiles();
             });
 
             wrapper.appendChild(img);
             wrapper.appendChild(removeBtn);
             previewContainer.appendChild(wrapper);
+
+            updateImageCount();
         };
         reader.readAsDataURL(file);
     }
 
-    // التعامل مع رفع الصور الجديدة
+    function updateInputFiles() {
+        const dataTransfer = new DataTransfer();
+        uploadedFiles.forEach(file => dataTransfer.items.add(file));
+        imageInput.files = dataTransfer.files;
+    }
+
+    // Handle new uploads
     imageInput.addEventListener("change", function(event) {
         const remaining = 8 - (uploadedFiles.length + document.querySelectorAll('.existing-image').length);
         const newFiles = [...event.target.files].slice(0, remaining);
@@ -414,26 +429,24 @@ document.addEventListener("DOMContentLoaded", function() {
             createThumbnail(file);
         });
 
-        if (event.target.files.length > remaining) {
+        if(event.target.files.length > remaining) {
             errorMessage.textContent = "⚠️ You can upload up to 8 images only.";
         } else {
             errorMessage.textContent = "";
         }
 
         updateInputFiles();
-        updateImageCount();
     });
 
-    // حذف الصور الموجودة مسبقًا
+    // Remove existing images
     document.querySelectorAll(".remove-existing").forEach(btn => {
         btn.addEventListener("click", function() {
-            const parent = btn.closest('.existing-image');
-            parent.remove();
+            btn.closest('.existing-image').remove();
             updateImageCount();
         });
     });
 
-    // عرض الصور الموجودة عند الضغط عليها في المودال
+    // Open modal for existing images
     document.querySelectorAll(".viewable-image").forEach(img => {
         img.addEventListener("click", () => {
             modalImage.src = img.src;
@@ -441,25 +454,41 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // إغلاق المودال عند الضغط على زر الإغلاق
+    // Close modal
     modalClose.addEventListener("click", () => imageModal.style.display = "none");
-
-    // إغلاق المودال عند الضغط خارج الصورة
     imageModal.addEventListener("click", (e) => {
-        if (e.target === imageModal) imageModal.style.display = "none";
+        if(e.target === imageModal) imageModal.style.display = "none";
     });
 
+    // Initial setup
     updateImageCount();
 });
 </script>
 
+<style>
+/* First image as cover */
+.first-cover {
+    border: 3px solid #0d6efd;
+    position: relative;
+}
+
+.first-cover::after {
+    content: "Cover";
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    background: #0d6efd;
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+</style>
 
 
-    <!-- Image Modal -->
-    <div id="imageModal" class="image-modal">
-        <span class="close">&times;</span>
-        <img id="modalImage" alt="Preview">
-    </div>
+
+
+
 
     <!-- Car Details -->
     <div class="row g-3">
@@ -759,6 +788,11 @@ document.addEventListener("DOMContentLoaded", function() {
                                 <i class="fas fa-chair fa-2x text-secondary"></i>
                                 <div class="small mt-1">Seats</div>
                             </div>
+                            @if(session('spec_error'))
+<div class="alert alert-danger mt-2">
+    {{ session('spec_error') }}
+</div>
+@endif
                         </div>
                     </div>
 
@@ -784,6 +818,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             </div>
                         </div>
                     </div>
+
 
 
                     <!-- Mileage Modal -->
@@ -821,19 +856,15 @@ document.addEventListener("DOMContentLoaded", function() {
                                 </div>
                                 <div class="modal-body d-flex flex-column gap-2">
                                     @foreach($colors as $color)
-                                    <div class="color-option spec-option d-flex align-items-center gap-2 p-2 rounded"
-                                        data-spec="color" data-value="{{ $color->name }}"
-                                        style="border: 1px solid #ccc; cursor: pointer;">
-                                        <span style="
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: {{ $color->code }};
-            border: 1px solid #aaa;
-            flex-shrink: 0;
-          "></span>
-                                        <span>{{ $color->name }}</span>
-                                    </div>
+                         <div class="color-option spec-option d-flex align-items-center gap-2 p-2 rounded"
+     data-spec="color" 
+     data-value="{{ $color->uid }}" 
+     data-text="{{ $color->name }}"   
+     style="border: 1px solid #ccc; cursor: pointer;">
+    <span style="width: 20px; height: 20px; border-radius: 50%; background-color: {{ $color->code }}; border: 1px solid #aaa;"></span>
+    <span>{{ $color->name }}</span>
+</div>
+
                                     @endforeach
                                 </div>
                             </div>
@@ -841,42 +872,45 @@ document.addEventListener("DOMContentLoaded", function() {
                     </div>
 
                     <!-- Script -->
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function() {
-  const colorInput = document.getElementById("colorInput");
+               <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const colorInput = document.getElementById("colorInput");
+    const colorLabel = document.getElementById("colorLabel");
 
-  // عند الضغط على أي لون
-  document.querySelectorAll("#colorModal .color-option").forEach(option => {
-    option.addEventListener("click", function() {
-      const value = this.dataset.value;
+    // عند فتح الصفحة، عرض الاسم المخزن تحت الأيقونة
+    if (colorInput.value) {
+        const selectedOption = document.querySelector(`#colorModal .color-option[data-value="${colorInput.value}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add("selected");
+            colorLabel.innerText = selectedOption.dataset.text; // عرض الاسم
+        }
+    }
 
-      // حفظ اللون في hidden input
-      colorInput.value = value;
-
-      // إبراز اللون المختار
-      document.querySelectorAll("#colorModal .color-option").forEach(el => el.classList.remove("selected"));
-      this.classList.add("selected");
-
-      // إغلاق المودال
-      const modal = bootstrap.Modal.getInstance(document.getElementById("colorModal"));
-      modal.hide();
-    });
-  });
-
-  // عند فتح المودال، إبراز اللون المحفوظ سابقًا
-  const colorModalEl = document.getElementById("colorModal");
-  colorModalEl.addEventListener('show.bs.modal', () => {
-    const savedValue = colorInput.value;
+    // عند اختيار اللون
     document.querySelectorAll("#colorModal .color-option").forEach(option => {
-      if(option.dataset.value === savedValue){
-        option.classList.add("selected");
-      } else {
-        option.classList.remove("selected");
-      }
+        option.addEventListener("click", function () {
+            const uid  = this.dataset.value;
+            const name = this.dataset.text;
+
+            // خزّن الـ ID في الهيدن
+            colorInput.value = uid;
+
+            // عرض الاسم تحت الأيقونة
+            colorLabel.innerText = name;
+
+            // فعّل اختيار اللون الحالي
+            document.querySelectorAll("#colorModal .color-option")
+                .forEach(el => el.classList.remove("selected"));
+            this.classList.add("selected");
+
+            // اقفل المودال
+            const modal = bootstrap.Modal.getInstance(document.getElementById("colorModal"));
+            modal.hide();
+        });
     });
-  });
 });
-                    </script>
+</script>
+
 
                     <!-- Warranty Modal -->
                     <div class="modal fade" id="warrantyModal" tabindex="-1" aria-labelledby="warrantyModalLabel"
@@ -961,6 +995,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
              <!-- Hidden inputs for specs (edit mode) -->
+<!-- Hidden Inputs -->
 <input type="hidden" name="gear" id="gearInput" value="{{ old('gear', $car->features_gear ?? '') }}">
 <input type="hidden" name="mileage" id="mileageHidden" value="{{ old('mileage', $car->features_speed ?? '') }}">
 <input type="hidden" name="color" id="colorInput" value="{{ old('color', $car->car_color ?? '') }}">
@@ -968,10 +1003,8 @@ document.addEventListener("DOMContentLoaded", function() {
 <input type="hidden" name="fuelType" id="fuelInput" value="{{ old('fuelType', $car->features_fuel_type ?? '') }}">
 <input type="hidden" name="seats" id="seatsInput" value="{{ old('seats', $car->features_seats ?? '') }}">
 
-<!-- ===================== SPECIFICATIONS SCRIPT ===================== -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // Hidden inputs
     const specs = {
         gear: document.getElementById("gearInput"),
         color: document.getElementById("colorInput"),
@@ -981,26 +1014,44 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     const mileageHidden = document.getElementById("mileageHidden");
 
-    // Load saved/old values safely
-const oldValues = {
-    gear: @json(old('gear', $car->features_gear ?? '')),
-    color: @json(old('color', $car->car_color ?? '')),
-    warranty: @json(old('warranty', $car->features_climate_zone ?? '')),
-    fuel: @json(old('fuelType', $car->features_fuel_type ?? '')),
-    seats: @json(old('seats', $car->features_seats ?? '')),
-    mileage: @json(old('mileage', $car->features_speed ?? '')),
-};
+    const oldValues = {
+        gear: @json(old('gear', $car->features_gear ?? '')),
+        color: @json(old('color', $car->car_color ?? '')),
+        warranty: @json(old('warranty', $car->features_climate_zone ?? '')),
+        fuel: @json(old('fuelType', $car->features_fuel_type ?? '')),
+        seats: @json(old('seats', $car->features_seats ?? '')),
+        mileage: @json(old('mileage', $car->features_speed ?? '')),
+    };
 
-
-    // Assign them to hidden inputs
+    // Assign saved values
     for (const key in specs) specs[key].value = oldValues[key] || '';
     mileageHidden.value = oldValues.mileage || '';
 
-    // Helper: highlight selected option
     function updateSelection(spec) {
         const value = spec === 'mileage' ? mileageHidden.value : specs[spec]?.value;
         document.querySelectorAll(`#${spec}Modal .spec-option`).forEach(btn => {
             btn.classList.toggle("selected", btn.dataset.value == value);
+        });
+    }
+
+    function updateIconLabels() {
+        const labels = {
+            gear: "Gear",
+            mileage: "Mileage",
+            color: "Color",
+            warranty: "Warranty",
+            fuel: "Fuel",
+            seats: "Seats",
+        };
+        Object.keys(labels).forEach(spec => {
+            let value = spec === "mileage" ? mileageHidden.value : specs[spec]?.value;
+            if(spec === 'color') {
+                // اللون: اعرض الاسم بدل الـ ID
+                const selectedOption = document.querySelector(`#colorModal .color-option[data-value="${value}"]`);
+                if(selectedOption) value = selectedOption.dataset.text;
+            }
+            const iconLabel = document.querySelector(`.spec-icon[data-bs-target="#${spec}Modal"] .small`);
+            if (iconLabel) iconLabel.textContent = value || labels[spec];
         });
     }
 
@@ -1009,7 +1060,7 @@ const oldValues = {
         Object.keys(specs).forEach(spec => updateSelection(spec));
         updateSelection("mileage");
         updateIconLabels();
-    }, 100); // small delay ensures modals are in DOM
+    }, 100);
 
     // When opening a modal
     Object.keys(specs).forEach(spec => {
@@ -1018,7 +1069,6 @@ const oldValues = {
             modalEl.addEventListener("show.bs.modal", () => updateSelection(spec));
         }
     });
-
     document.getElementById("mileageModal").addEventListener("show.bs.modal", () => {
         document.getElementById("mileageInput").value = mileageHidden.value;
     });
@@ -1038,8 +1088,7 @@ const oldValues = {
     });
 
     // Mileage save
-    const saveMileageBtn = document.getElementById("saveMileageBtn");
-    saveMileageBtn.addEventListener("click", () => {
+    document.getElementById("saveMileageBtn").addEventListener("click", () => {
         const mileageInput = document.getElementById("mileageInput");
         mileageHidden.value = mileageInput.value;
         updateSelection("mileage");
@@ -1047,28 +1096,28 @@ const oldValues = {
         const modal = bootstrap.Modal.getInstance(document.getElementById("mileageModal"));
         if (modal) modal.hide();
     });
-
-    // Update icon labels
-    function updateIconLabels() {
-        const labels = {
-            gear: "Gear",
-            mileage: "Mileage",
-            color: "Color",
-            warranty: "Warranty",
-            fuel: "Fuel",
-            seats: "Seats",
-        };
-        Object.keys(labels).forEach(spec => {
-            const value = spec === "mileage" ? mileageHidden.value : specs[spec]?.value;
-            const iconLabel = document.querySelector(
-                `.spec-icon[data-bs-target="#${spec}Modal"] .small`
-            );
-            if (iconLabel) iconLabel.textContent = value || labels[spec];
-        });
-    }
 });
 </script>
 
+
+<!-- Name & Phone -->
+<div class="col-md-6">
+    <label for="name" class="form-label">Your Name</label>
+    <input type="text" name="name" class="form-control" id="name" placeholder="Your Name"
+        value="{{ old('name', $car->name ?? auth()->user()->fname) }}" required>
+</div>
+
+<div class="col-md-6">
+    <label for="phone" class="form-label">Phone Number</label>
+    <input type="tel" name="phone" class="form-control" id="phone" placeholder="Phone"
+        value="{{ old('phone', $car->phone ?? auth()->user()->phone) }}" required>
+</div>
+
+<!-- Description -->
+<div class="col-12">
+    <label for="description" class="form-label">Description</label>
+    <textarea name="description" class="form-control" id="description" placeholder="Description">{{ old('description', $car->listing_desc ?? '') }}</textarea>
+</div>
 
 
 
@@ -1081,7 +1130,7 @@ const oldValues = {
     <div class="input-group">
         <input type="text" name="location" class="form-control" id="location" 
                placeholder="Select Location" readonly
-               value="{{ old('location', $car->location_name ?? '') }}">
+               value="{{ old('location', $car->location_name ?? '') }}" required>
         <button type="button" class="btn btn-outline-secondary" id="clearLocationBtn">Clear</button>
     </div>
 

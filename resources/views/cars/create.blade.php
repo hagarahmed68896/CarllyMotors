@@ -451,36 +451,41 @@
                     <div class="col-12 mt-3">
                         <label class="form-label fw-semibold">Specifications</label>
                         <div class="d-flex flex-wrap gap-3">
-                            <!-- Gear -->
-                            <div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#gearModal">
-                                <i class="fas fa-cogs fa-2x text-primary"></i>
-                                <div class="small mt-1">Gear</div>
-                            </div>
-                            <!-- Mileage -->
-                            <div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#mileageModal">
-                                <i class="fas fa-tachometer-alt fa-2x text-success"></i>
-                                <div class="small mt-1">Mileage</div>
-                            </div>
-                            <!-- Color -->
-                            <div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#colorModal">
-                                <i class="fas fa-palette fa-2x text-warning"></i>
-                                <div class="small mt-1">Color</div>
-                            </div>
-                            <!-- Warranty -->
-                            <div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#warrantyModal">
-                                <i class="fas fa-shield-alt fa-2x text-info"></i>
-                                <div class="small mt-1">Warranty</div>
-                            </div>
-                            <!-- Fuel Type -->
-                            <div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#fuelModal">
-                                <i class="fas fa-gas-pump fa-2x text-danger"></i>
-                                <div class="small mt-1">Fuel</div>
-                            </div>
-                            <!-- Seats -->
-                            <div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#seatsModal">
-                                <i class="fas fa-chair fa-2x text-secondary"></i>
-                                <div class="small mt-1">Seats</div>
-                            </div>
+                      <div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#gearModal">
+    <i class="fas fa-cogs fa-2x text-primary"></i>
+    <div class="small mt-1" id="gearLabel">Gear</div>
+</div>
+
+<div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#mileageModal">
+    <i class="fas fa-tachometer-alt fa-2x text-success"></i>
+    <div class="small mt-1" id="mileageLabel">Mileage</div>
+</div>
+
+<div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#colorModal">
+    <i class="fas fa-palette fa-2x text-warning"></i>
+    <div class="small mt-1" id="colorLabel">Color</div>
+</div>
+
+<div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#warrantyModal">
+    <i class="fas fa-shield-alt fa-2x text-info"></i>
+    <div class="small mt-1" id="warrantyLabel">Warranty</div>
+</div>
+
+<div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#fuelModal">
+    <i class="fas fa-gas-pump fa-2x text-danger"></i>
+    <div class="small mt-1" id="fuelLabel">Fuel</div>
+</div>
+
+<div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#seatsModal">
+    <i class="fas fa-chair fa-2x text-secondary"></i>
+    <div class="small mt-1" id="seatsLabel">Seats</div>
+</div>
+@if(session('spec_error'))
+<div class="alert alert-danger mt-2">
+    {{ session('spec_error') }}
+</div>
+@endif
+
                         </div>
                     </div>
 
@@ -541,64 +546,74 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body d-flex flex-column gap-2">
-                                    @foreach($colors as $color)
-                                    <div class="color-option spec-option d-flex align-items-center gap-2 p-2 rounded"
-                                        data-spec="color" data-value="{{ $color->name }}"
-                                        style="border: 1px solid #ccc; cursor: pointer;">
-                                        <span style="
+                              <div class="modal-body d-flex flex-column gap-2">
+    @foreach($colors as $color)
+    <div class="color-option spec-option d-flex align-items-center gap-2 p-2 rounded"
+         data-spec="color"
+         data-value="{{ $color->uid }}"      
+         data-text="{{ $color->name }}"       
+         style="border: 1px solid #ccc; cursor: pointer;">
+
+        <span style="
             width: 20px;
             height: 20px;
             border-radius: 50%;
             background-color: {{ $color->code }};
             border: 1px solid #aaa;
-            flex-shrink: 0;
-          "></span>
-                                        <span>{{ $color->name }}</span>
-                                    </div>
-                                    @endforeach
-                                </div>
+            flex-shrink: 0;">
+        </span>
+
+        <span>{{ $color->name }}</span>
+    </div>
+    @endforeach
+</div>
+
                             </div>
                         </div>
                     </div>
 
-                    <!-- Script -->
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function() {
-  const colorInput = document.getElementById("colorInput");
+     <script>
+        document.addEventListener("DOMContentLoaded", function() {
 
-  // عند الضغط على أي لون
-  document.querySelectorAll("#colorModal .color-option").forEach(option => {
-    option.addEventListener("click", function() {
-      const value = this.dataset.value;
+    const colorInput = document.getElementById("colorInput");
+    const colorLabel = document.getElementById("colorLabel");
 
-      // حفظ اللون في hidden input
-      colorInput.value = value;
-
-      // إبراز اللون المختار
-      document.querySelectorAll("#colorModal .color-option").forEach(el => el.classList.remove("selected"));
-      this.classList.add("selected");
-
-      // إغلاق المودال
-      const modal = bootstrap.Modal.getInstance(document.getElementById("colorModal"));
-      modal.hide();
-    });
-  });
-
-  // عند فتح المودال، إبراز اللون المحفوظ سابقًا
-  const colorModalEl = document.getElementById("colorModal");
-  colorModalEl.addEventListener('show.bs.modal', () => {
-    const savedValue = colorInput.value;
     document.querySelectorAll("#colorModal .color-option").forEach(option => {
-      if(option.dataset.value === savedValue){
-        option.classList.add("selected");
-      } else {
-        option.classList.remove("selected");
-      }
+        option.addEventListener("click", function () {
+
+            const uid  = this.dataset.value;  // اللون id
+            const name = this.dataset.text;   // اللون اسم
+
+            colorInput.value = uid;            // حفظ ID
+            colorLabel.textContent = name;     // إظهار الاسم
+
+            document.querySelectorAll("#colorModal .color-option")
+                .forEach(el => el.classList.remove("selected"));
+
+            this.classList.add("selected");
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById("colorModal"));
+            modal.hide();
+        });
     });
-  });
+
+    document.getElementById("colorModal").addEventListener('show.bs.modal', () => {
+        const savedUID = colorInput.value;
+
+        document.querySelectorAll("#colorModal .color-option").forEach(option => {
+            if (option.dataset.value === savedUID) {
+                option.classList.add("selected");
+                colorLabel.textContent = option.dataset.text;  // إظهار الاسم
+            } else {
+                option.classList.remove("selected");
+            }
+        });
+    });
+
 });
-                    </script>
+
+     </script>
+
 
                     <!-- Warranty Modal -->
                     <div class="modal fade" id="warrantyModal" tabindex="-1" aria-labelledby="warrantyModalLabel"
@@ -683,12 +698,113 @@
 
 
                     <!-- Hidden inputs for specs -->
-                    <input type="hidden" name="gear" id="gearInput">
-                    <input type="hidden" name="mileage" id="mileageHidden">
-                    <input type="hidden" name="color" id="colorInput">
-                    <input type="hidden" name="warranty" id="warrantyInput">
-                    <input type="hidden" name="fuelType" id="fuelInput">
-                    <input type="hidden" name="seats" id="seatsInput">
+                    <input type="hidden" name="gear" id="gearInput" required>
+                    <input type="hidden" name="mileage" id="mileageHidden" required>
+                    <input type="hidden" name="color" id="colorInput"required>
+                    <input type="hidden" name="warranty" id="warrantyInput" required>
+                    <input type="hidden" name="fuelType" id="fuelInput" required>
+                    <input type="hidden" name="seats" id="seatsInput" required>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const colorInput = document.getElementById("colorInput");
+    const colorLabel = document.getElementById("colorLabel");
+
+    // عند فتح الصفحة، عرض الاسم المخزن تحت الأيقونة
+    const selectedColorOption = document.querySelector(`#colorModal .color-option[data-value="${colorInput.value}"]`);
+    if (selectedColorOption) {
+        selectedColorOption.classList.add("selected");
+        colorLabel.innerText = selectedColorOption.dataset.text;
+    }
+
+    // عند اختيار اللون فقط
+    document.querySelectorAll("#colorModal .color-option").forEach(option => {
+        option.addEventListener("click", function () {
+            const uid  = this.dataset.value;  // ID
+            const name = this.dataset.text;   // NAME
+
+            // خزّن الـ ID في الهيدن
+            colorInput.value = uid;
+
+            // اعرض الاسم فقط
+            colorLabel.innerText = name;
+
+            // فعّلي اختيار اللون الحالي
+            document.querySelectorAll("#colorModal .color-option")
+                .forEach(el => el.classList.remove("selected"));
+
+            this.classList.add("selected");
+
+            // اقفل المودال
+            const modal = bootstrap.Modal.getInstance(document.getElementById("colorModal"));
+            modal.hide();
+        });
+    });
+
+});
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const specs = {
+        gear: document.getElementById("gearInput"),
+        warranty: document.getElementById("warrantyInput"),
+        fuel: document.getElementById("fuelInput"),
+        seats: document.getElementById("seatsInput"),
+    };
+    const mileageHidden = document.getElementById("mileageHidden");
+
+    // عند فتح صفحة التعديل، عرض القيم تحت الأيقونات
+    function updateIconLabels() {
+        const labels = {
+            gear: "Gear",
+            mileage: "Mileage",
+            color: "Color",
+            warranty: "Warranty",
+            fuel: "Fuel",
+            seats: "Seats",
+        };
+        Object.keys(labels).forEach(spec => {
+            const value = spec === "mileage" ? mileageHidden.value : (specs[spec]?.value || '');
+            const iconLabel = document.querySelector(`.spec-icon[data-bs-target="#${spec}Modal"] .small`);
+            if (iconLabel) iconLabel.textContent = value || labels[spec];
+        });
+    }
+    updateIconLabels();
+
+    // عند اختيار عنصر من أي مودال (باستثناء اللون لأنه له سكربت خاص)
+    document.querySelectorAll(".spec-option").forEach(option => {
+        if (option.closest('#colorModal')) return;
+
+        option.addEventListener("click", function () {
+            const spec = this.dataset.spec;
+            const value = this.dataset.value;
+            if (spec === "mileage") return;
+            if (specs[spec]) specs[spec].value = value;
+
+            // إظهار الاختيار تحت الأيقونة
+            updateIconLabels();
+
+            // اغلق المودال
+            const modal = bootstrap.Modal.getInstance(this.closest(".modal"));
+            if (modal) modal.hide();
+        });
+    });
+
+    // حفظ الميليج (خاص)
+    document.getElementById("saveMileageBtn").addEventListener("click", function () {
+        const mileageInput = document.getElementById("mileageInput");
+        mileageHidden.value = mileageInput.value;
+        updateIconLabels();
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById("mileageModal"));
+        if (modal) modal.hide();
+    });
+
+});
+</script>
 
 
 
@@ -718,7 +834,7 @@
 <div class="col-12">
     <label for="location" class="form-label">Location</label>
 <div class="input-group">
-    <input type="text" name="location" class="form-control" id="location" placeholder="Select Location" readonly>
+    <input type="text" name="location" class="form-control" id="location" placeholder="Select Location" readonly required>
     <button type="button" class="btn btn-outline-secondary" id="clearLocationBtn">Clear</button>
 </div>
 
@@ -842,101 +958,165 @@ document.getElementById('saveLocationBtn').addEventListener('click', function() 
             </form>
         </div>
     </div>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-  const imageInput = document.getElementById("imageInput");
-  const fileInputContainer = document.getElementById("fileInputContainer");
-  const previewContainer = document.getElementById("previewContainer");
-  const errorMessage = document.getElementById("errorMessage");
-  const modal = document.getElementById("imageModal");
-  const modalImage = document.getElementById("modalImage");
-  const closeModal = document.querySelector("#imageModal .close");
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const imageInput = document.getElementById("imageInput");
+    const fileInputContainer = document.getElementById("fileInputContainer");
+    const previewContainer = document.getElementById("previewContainer");
+    const errorMessage = document.getElementById("errorMessage");
+    const modal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+    const closeModal = document.querySelector("#imageModal .close");
 
-  let uploadedFiles = [];
+    let uploadedFiles = [];
 
-  // Click upload box → open file dialog
-  fileInputContainer.addEventListener("click", () => imageInput.click());
+    const coverClass = "first-cover";
 
-  function updateImageCount() {
-    const countEl = document.getElementById("imageCount");
-    countEl.textContent = `${uploadedFiles.length} / 8`;
-  }
+    fileInputContainer.addEventListener("click", () => imageInput.click());
 
-  function updateInputFiles() {
-    const dataTransfer = new DataTransfer();
-    uploadedFiles.forEach(file => dataTransfer.items.add(file));
-    imageInput.files = dataTransfer.files;
-  }
-
-  function createThumbnail(file, index) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const wrapper = document.createElement("div");
-
-      const img = document.createElement("img");
-      img.src = e.target.result;
-      img.setAttribute("data-index", index);
-
-      // 🖼️ Click to open modal
-      img.addEventListener("click", () => {
-        modal.style.display = "block";
-        modalImage.src = img.src;
-      });
-
-      const removeBtn = document.createElement("span");
-      removeBtn.classList.add("remove-btn");
-      removeBtn.textContent = "×";
-      removeBtn.addEventListener("click", (ev) => {
-        ev.stopPropagation();
-        uploadedFiles.splice(index, 1);
-        wrapper.remove();
-        updateInputFiles();
-        updateImageCount();
-        errorMessage.textContent = ""; // clear error if any
-      });
-
-      wrapper.appendChild(img);
-      wrapper.appendChild(removeBtn);
-      previewContainer.appendChild(wrapper);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  imageInput.addEventListener("change", function(event) {
-    const remaining = 8 - uploadedFiles.length;
-    const newFiles = [...event.target.files].slice(0, remaining);
-
-    // Add only allowed number of files
-    newFiles.forEach(file => {
-      uploadedFiles.push(file);
-      createThumbnail(file, uploadedFiles.length - 1);
-    });
-
-    // If user tried to upload too many
-    if (event.target.files.length > remaining) {
-      errorMessage.textContent = "⚠️ You can upload up to 8 images only.";
-    } else {
-      errorMessage.textContent = "";
+    function updateImageCount() {
+        const countEl = document.getElementById("imageCount");
+        countEl.textContent = `${previewContainer.children.length} / 8`;
+        markFirstAsCover();
     }
 
-    updateInputFiles();
+    function updateInputFiles() {
+        const dataTransfer = new DataTransfer();
+        uploadedFiles.forEach(file => dataTransfer.items.add(file));
+        imageInput.files = dataTransfer.files;
+    }
+
+    function markFirstAsCover() {
+        const allWrappers = previewContainer.querySelectorAll('.image-wrapper');
+        allWrappers.forEach(div => div.classList.remove(coverClass));
+        if(allWrappers.length > 0) allWrappers[0].classList.add(coverClass);
+    }
+
+    function createThumbnail(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const wrapper = document.createElement("div");
+            wrapper.classList.add("image-wrapper");
+            wrapper.style.position = "relative";
+            wrapper.style.display = "inline-block";
+            wrapper.style.margin = "5px";
+
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.style.width = "100px";
+            img.style.height = "100px";
+            img.style.objectFit = "cover";
+            img.style.borderRadius = "8px";
+            img.style.cursor = "pointer";
+            img.classList.add("viewable-image");
+
+            img.addEventListener("click", () => {
+                modal.style.display = "block";
+                modalImage.src = img.src;
+            });
+
+            // ✅ Remove button like previous
+            const removeBtn = document.createElement("span");
+            removeBtn.textContent = "×";
+            removeBtn.style.position = "absolute";
+            removeBtn.style.top = "2px";
+            removeBtn.style.right = "5px";
+            removeBtn.style.cursor = "pointer";
+            removeBtn.style.color = "red";
+            removeBtn.style.fontWeight = "bold";
+            removeBtn.style.fontSize = "1.1rem";
+            removeBtn.style.background = "white";
+            removeBtn.style.borderRadius = "50%";
+            removeBtn.style.width = "20px";
+            removeBtn.style.height = "20px";
+            removeBtn.style.display = "flex";
+            removeBtn.style.alignItems = "center";
+            removeBtn.style.justifyContent = "center";
+            removeBtn.style.boxShadow = "0 0 2px rgba(0,0,0,0.5)";
+
+            removeBtn.addEventListener("click", (ev) => {
+                ev.stopPropagation();
+                const index = Array.from(previewContainer.children).indexOf(wrapper);
+                uploadedFiles.splice(index, 1);
+                wrapper.remove();
+                updateInputFiles();
+                updateImageCount();
+                errorMessage.textContent = "";
+            });
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(removeBtn);
+            previewContainer.appendChild(wrapper);
+
+            updateImageCount();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    imageInput.addEventListener("change", function(event) {
+        const remaining = 8 - uploadedFiles.length;
+        const newFiles = [...event.target.files].slice(0, remaining);
+
+        newFiles.forEach(file => {
+            uploadedFiles.push(file);
+            createThumbnail(file);
+        });
+
+        if (event.target.files.length > remaining) {
+            errorMessage.textContent = "⚠️ You can upload up to 8 images only.";
+        } else {
+            errorMessage.textContent = "";
+        }
+
+        updateInputFiles();
+    });
+
+    // Close modal
+    closeModal.addEventListener("click", () => modal.style.display = "none");
+    modal.addEventListener("click", (e) => { if(e.target===modal) modal.style.display = "none"; });
+
+    // Make preview sortable
+    new Sortable(previewContainer, {
+        animation: 150,
+        onEnd: function () {
+            const newOrder = [];
+            previewContainer.querySelectorAll(".image-wrapper img").forEach(img => {
+                const src = img.src;
+                const file = uploadedFiles.find(f => URL.createObjectURL(f) === src || img.src.startsWith('data:'));
+                if (file) newOrder.push(file);
+            });
+            uploadedFiles = newOrder;
+            updateInputFiles();
+            markFirstAsCover();
+        }
+    });
+
     updateImageCount();
-  });
-
-  // 🧭 Close modal
-  closeModal.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-
-  // Close when clicking outside the image
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.style.display = "none";
-  });
-
-  updateImageCount();
 });
-    </script>
+</script>
+
+<style>
+/* Style first image as cover */
+.first-cover {
+    border: 3px solid #0d6efd;
+    position: relative;
+}
+
+.first-cover::after {
+    content: "Cover";
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    background: #0d6efd;
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+</style>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -950,16 +1130,22 @@ document.getElementById('saveLocationBtn').addEventListener('click', function() 
                 url: "{{ route('getModels') }}",
                 type: "GET",
                 data: { brand: brandName },
-                success: function(response) {
-                    // Reset and populate model select
-                    modelSelect.empty();
-                    modelSelect.append('<option value="">Select Model</option>');
-                    $.each(response.models, function(index, model) {
-                        modelSelect.append('<option value="'+model+'">'+model+'</option>');
-                    });
-                    modelSelect.prop('disabled', false); // Enable model
-                    yearSelect.prop('disabled', false);  // Enable year
-                }
+          success: function(response) {
+
+    // ✨ ترتيب الموديلات أبجدياً قبل إضافتها
+    response.models.sort((a, b) => a.localeCompare(b));
+
+    modelSelect.empty();
+    modelSelect.append('<option value="">Select Model</option>');
+
+    $.each(response.models, function(index, model) {
+        modelSelect.append('<option value="'+model+'">'+model+'</option>');
+    });
+
+    modelSelect.prop('disabled', false);
+    yearSelect.prop('disabled', false);
+}
+
             });
         } else {
             // Disable both fields if no brand selected

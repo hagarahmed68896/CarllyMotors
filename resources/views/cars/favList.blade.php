@@ -109,7 +109,7 @@ h2.text-center::after {
                             <p class="mb-1"><strong>Make:</strong> {{$car->listing_type}}</p>
                             <p class="mb-1"><strong>Year:</strong> {{$car->listing_year}}</p>
                             <p class="mb-1"><strong>Model:</strong> {{$car->listing_model}}</p>
-                            <p class="mb-0"><strong>Mileage:</strong> {{$car->mileage ?? '215K'}} km</p>
+                            <p class="mb-0"><strong>Mileage:</strong> {{$car->features_speed }} km</p>
                         </div>
 
                         <!-- Actions -->

@@ -120,7 +120,15 @@ $carlisting->getCollection()->transform(function ($car) {
 public function store(Request $request)
 {
     try {
+        // Required specifications
+        $requiredSpecs = ['gear', 'mileage', 'color', 'warranty', 'fuelType', 'seats'];
+        $missingSpecs = array_filter($requiredSpecs, fn($spec) => empty($request->input($spec)));
 
+        if (!empty($missingSpecs)) {
+            return redirect()->back()
+                             ->with('spec_error', 'Please fill all specifications')
+                             ->withInput();
+        }
 
         $car = new CarListingModel();
 
@@ -142,21 +150,22 @@ public function store(Request $request)
         $car->listing_title         = $request->name;
         $car->wa_number             = '+971' . $request->phone;
         $car->listing_price         = $request->price;
+        $car->listing_desc          = $request->description;
 
-        // ✅ Features Others (convert string to JSON array)
+        // Features Others
         $features = $request->features ?? '';
-        $featuresArray = array_filter(array_map('trim', explode(',', $features))); // remove empty items
+        $featuresArray = array_filter(array_map('trim', explode(',', $features)));
         $car->features_others = json_encode($featuresArray);
 
-        // ✅ Location
-        $car->location = $request->location ?? null;  // textual location (region, city, country)
+        // Location
+        $car->location = $request->location ?? null;
         $car->lat = $request->latitude ?: null;
         $car->lng = $request->longitude ?: null;
 
         $car->max = 10;
         $car->save();
 
-        // ✅ Upload Images
+        // Upload Images
         if ($request->hasFile('images')) {
             $i = 1;
             foreach ($request->file('images') as $index => $uploadedImage) {
@@ -184,9 +193,10 @@ public function store(Request $request)
                          ->with('success', 'Car added successfully');
 
     } catch (\Exception $e) {
-        dd($e->getMessage());
+        return redirect()->back()->with('error', $e->getMessage());
     }
 }
+
 
 
 
@@ -207,14 +217,23 @@ public function edit(CarListingModel $car)
 public function update(Request $request, CarListingModel $car)
 {
     try {
+        // ✅ Validate required specs
+        $requiredSpecs = ['gear', 'mileage', 'color', 'warranty', 'fuelType', 'seats'];
+        $missingSpecs = array_filter($requiredSpecs, fn($spec) => empty($request->input($spec)));
+
+        if (!empty($missingSpecs)) {
+            return redirect()->back()
+                             ->with('spec_error', 'Please fill all specifications')
+                             ->withInput();
+        }
+
+        // ✅ Update car basic info
         $car->listing_type          = $request->make;
         $car->listing_model         = $request->model;
         $car->listing_year          = $request->year;
         $car->body_type             = $request->bodyType;
         $car->regional_specs        = $request->regionalSpec;
         $car->city                  = auth()->user()->city ?? null;
-        $car->features_others       = $request->features;
-        $car->vin_number            = $request->vin_number;
         $car->features_gear         = $request->gear;
         $car->features_speed        = $request->mileage;
         $car->car_color             = $request->color;
@@ -226,26 +245,53 @@ public function update(Request $request, CarListingModel $car)
         $car->listing_price         = $request->price;
         $car->lat                   = $request->latitude;
         $car->lng                   = $request->longitude;
-        $car->save();
+        $car->listing_desc          = $request->description;
 
-        // 🔥 حذف الصور القديمة المحددة
-        if ($request->filled('removed_images')) {
-            foreach ($request->removed_images as $imgPath) {
-                $car->images()->where('image', $imgPath)->delete();
-                Storage::disk('r2')->delete($imgPath);
-            }
+        // ✅ Features Others (تصحيح الـ JSON)
+        $features = $request->features ?? '[]';
+
+        // إذا كانت string، حاول تحويلها لـ array
+        if (is_string($features)) {
+            $features = json_decode($features, true);
         }
 
-        // ✅ رفع صور جديدة
+        // تأكد إنها array
+        if (!is_array($features)) {
+            $features = [];
+        }
+
+        // إزالة الفراغات والعناصر الفارغة
+        $features = array_filter(array_map('trim', $features));
+
+        $car->features_others = json_encode($features);
+
+        $car->save();
+
+        // ✅ Handle images
+
+        // 1. Delete images that are not in existing_images[]
+        $existingImageIds = $request->input('existing_images', []); // IDs of images to keep
+        $imagesToDelete = $car->images()->whereNotIn('id', $existingImageIds)->get();
+
+        foreach ($imagesToDelete as $img) {
+            Storage::disk('r2')->delete($img->image);
+            $img->delete();
+        }
+
+        // 2. Upload new images
         if ($request->hasFile('images')) {
+            $currentCount = $car->images()->count();
+            $maxImages = 8;
+            $remainingSlots = $maxImages - $currentCount;
+
             $i = 1;
             foreach ($request->file('images') as $index => $uploadedImage) {
+                if ($index >= $remainingSlots) break;
+
                 $imgName = time() . '_' . $index . '.' . $uploadedImage->getClientOriginalExtension();
                 $path = $uploadedImage->storeAs('listings', $imgName, 'r2');
 
-                $car->images()->create([
-                    'image' => $path,
-                ]);
+                $car->images()->create(['image' => $path]);
 
                 if ($i <= 5) {
                     $column = "listing_img{$i}";
@@ -253,9 +299,10 @@ public function update(Request $request, CarListingModel $car)
                     $i++;
                 }
             }
-            $car->current = $car->images()->count();
-            $car->save();
         }
+
+        $car->current = $car->images()->count();
+        $car->save();
 
         return redirect()->route('car.detail', $car->id)
                          ->with('success', 'Car updated successfully');
@@ -264,6 +311,9 @@ public function update(Request $request, CarListingModel $car)
         return redirect()->back()->with('error', $e->getMessage());
     }
 }
+
+
+
 
 public function destroy(CarListingModel $car)
 {

@@ -104,14 +104,21 @@ h2.text-center::after {
 
                         </div>
 
-                        <h4 class="text-start mb-2" style="font-size:1.1rem">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
 
-                        <div class="car-details mt-2 text-start">
-                            <p class="mb-1"><strong>Make:</strong> {{$car->listing_type}}</p>
-                            <p class="mb-1"><strong>Year:</strong> {{$car->listing_year}}</p>
-                            <p class="mb-1"><strong>Model:</strong> {{$car->listing_model}}</p>
-                            <p class="mb-0"><strong>Mileage:</strong> {{$car->mileage ?? '215K'}} km</p>
-                        </div>
+                   <div class="car-details mt-3 text-start">
+    <div class="row g-2">
+        <div class="col-6">
+            <p class="mb-1"><strong>Make:</strong> {{ $car->listing_type }}</p>
+            <p class="mb-1"><strong>Model:</strong> {{ $car->listing_model }}</p>
+        </div>
+
+        <div class="col-6">
+            <p class="mb-1"><strong>Year:</strong> {{ $car->listing_year }}</p>
+            <p class="mb-1"><strong>Mileage:</strong> {{ $car->features_speed }} km</p>
+        </div>
+    </div>
+</div>
+
 
                      <!-- Actions -->
 <div class="d-flex align-items-center gap-2 mt-2 flex-nowrap" style="flex-wrap: nowrap !important;">

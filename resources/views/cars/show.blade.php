@@ -303,7 +303,7 @@
                     </div>
                     <div class="col-md-6">
                         <ul class="list-unstyled">
-                            <li class="mb-2 overview-item"><i class="fas fa-cogs"></i><strong>Cylinders:</strong> {{ $car->features_cylinders }}</li>
+                            {{-- <li class="mb-2 overview-item"><i class="fas fa-cogs"></i><strong>Cylinders:</strong> {{ $car->features_cylinders }}</li> --}}
                             <li class="mb-2 overview-item"><i class="fas fa-gas-pump"></i><strong>Fuel:</strong> {{ $car->features_fuel_type }}</li>
                             <li class="mb-2 overview-item"><i class="fas fa-door-closed"></i><strong>Doors:</strong> {{ $car->features_door }}</li>
                             <li class="mb-2 overview-item"><i class="fas fa-palette"></i><strong>Color:</strong> {{ $car->color?->name }}</li>
@@ -337,7 +337,7 @@
             <div class="card shadow-sm border-0 mb-4 p-3">
                 <h4 class="fw-bold">{{ $car->listing_type }} | {{ $car->listing_model }}</h4>
                 <p class="text-muted small mb-2">
-                    <i class="fas fa-road"></i> {{ $car->features_speed }} km &nbsp;
+                    <i class="fas fa-road"></i> {{ $car->features_speed  }} km &nbsp;
                     <i class="fas fa-gas-pump"></i> {{ $car->features_fuel_type }} <br>
                     <i class="fas fa-cogs"></i> {{ $car->features_gear }} &nbsp;
                     <i class="fas fa-user"></i> {{ $car->user?->fname }} {{ $car->user?->lname }}
