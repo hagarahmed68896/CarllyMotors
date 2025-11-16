@@ -102,11 +102,11 @@
                 class="d-flex align-items-center w-100" 
                 style="max-width: 700px;">
                 
-                <select name="type" class="form-select me-2" style="max-width: 130px; border-radius: 8px;">
+                {{-- <select name="type" class="form-select me-2" style="max-width: 130px; border-radius: 8px;">
                     <option value="cars" {{ request('type') == 'cars' ? 'selected' : '' }}>Cars</option>
                     <option value="spareparts" {{ request('type') == 'spareparts' ? 'selected' : '' }}>Spare Parts</option>
                     <option value="workshops" {{ request('type') == 'workshops' ? 'selected' : '' }}>Workshops</option>
-                </select>
+                </select> --}}
 
                 <div class="input-group flex-grow-1 shadow-sm" style="border-radius: 10px; overflow: hidden; max-width: 500px;">
                     <span class="input-group-text bg-white border-0 d-none d-md-block">
@@ -115,11 +115,11 @@
                     <input type="search" 
                         name="q" 
                         class="form-control border-0" 
-                        placeholder="Search "
+                        placeholder="Search Cars"
                         value="{{ request('q') }}" 
                         style="box-shadow: none;">
                     <button type="submit" class="btn px-4" style="background-color:#5a0b0f; color:#fff; border-radius:0;">
-                        Search
+                        Search 
                     </button>
                 </div>
             </form>

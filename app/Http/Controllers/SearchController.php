@@ -162,63 +162,84 @@ public function searchSpareParts(Request $request)
 
 
     // ================= WORKSHOPS SEARCH =================
-    protected function searchWorkshops(Request $request, $query)
-    {
-        $workshops = WorkshopProvider::query();
+protected function searchWorkshops(Request $request, $query)
+{
+    $workshops = WorkshopProvider::query();
 
-        if ($query) {
-            $workshops->where(function($q) use ($query) {
-                $q->where('workshop_name', 'like', "%{$query}%")
-                  ->orWhere('branch', 'like', "%{$query}%");
-            });
-        }
-
-        // Apply filters dynamically
-        foreach (['city'=>'branch', 'area'=>'area', 'rating'=>'rating'] as $input => $column) {
-            if ($request->filled($input)) {
-                if ($column === 'rating') {
-                    $workshops->where($column, '>=', $request->$input);
-                } else {
-                    $workshops->where($column, $request->$input);
-                }
-            }
-        }
-
-        // Brand & Category filters
-        if ($request->filled('brand_id')) {
-            $brand = CarBrand::find($request->brand_id);
-            if ($brand) {
-                $ids = $brand->providers()->pluck('workshop_provider_id')->toArray();
-                $workshops->whereIn('id', $ids);
-            }
-        }
-        if ($request->filled('category_id')) {
-            $category = WorkshopCategory::find($request->category_id);
-            if ($category) {
-                $ids = $category->providers()->pluck('workshop_provider_id')->toArray();
-                $workshops->whereIn('id', $ids);
-            }
-        }
-
-        // Sorting
-        switch ($request->input('sortBy', 'random')) {
-            case 'rating_high': $workshops->orderBy('rating','desc'); break;
-            case 'rating_low':  $workshops->orderBy('rating','asc'); break;
-            case 'name_asc':    $workshops->orderBy('workshop_name','asc'); break;
-            case 'name_desc':   $workshops->orderBy('workshop_name','desc'); break;
-            case 'latest':      $workshops->latest(); break;
-            case 'oldest':      $workshops->orderBy('created_at','asc'); break;
-            default:            $workshops->inRandomOrder(); break;
-        }
-
-        $results = $workshops->paginate(12)->withQueryString();
-
-        // Sidebar filters
-        $cities     = WorkshopProvider::select('branch')->distinct()->pluck('branch');
-        $brands     = CarBrand::whereIn('id', DB::table('car_brand_workshop_provider')->distinct()->pluck('car_brand_id'))->pluck('name','id');
-        $categories = WorkshopCategory::whereIn('id', DB::table('workshop_category_provider')->distinct()->pluck('workshop_category_id'))->pluck('name');
-
-$workshops = $results;
-return view('workshops.index', compact('workshops', 'cities', 'brands', 'categories'));
+    // 🔍 Search by name or branch
+    if ($query) {
+        $workshops->where(function($q) use ($query) {
+            $q->where('workshop_name', 'like', "%{$query}%")
+              ->orWhere('branch', 'like', "%{$query}%");
+        });
     }
+
+    // 🔧 Dynamic Filters: city, area, rating
+    foreach (['city'=>'branch', 'area'=>'area', 'rating'=>'rating'] as $input => $column) {
+        if ($request->filled($input)) {
+            if ($column === 'rating') {
+                $workshops->where($column, '>=', $request->$input);
+            } else {
+                $workshops->where($column, $request->$input);
+            }
+        }
+    }
+
+    // 🚘 Brand Filter
+    if ($request->filled('brand_id')) {
+        $brand = CarBrand::find($request->brand_id);
+        if ($brand) {
+            $ids = $brand->providers()->pluck('workshop_provider_id')->toArray();
+            $workshops->whereIn('id', $ids);
+        }
+    }
+
+    // 🛠 Category Filter
+    if ($request->filled('category_id')) {
+        $category = WorkshopCategory::find($request->category_id);
+        if ($category) {
+            $ids = $category->providers()->pluck('workshop_provider_id')->toArray();
+            $workshops->whereIn('id', $ids);
+        }
+    }
+
+    // 🔄 Sorting
+    switch ($request->input('sortBy', 'random')) {
+        case 'rating_high': $workshops->orderBy('rating','desc'); break;
+        case 'rating_low':  $workshops->orderBy('rating','asc'); break;
+        case 'name_asc':    $workshops->orderBy('workshop_name','asc'); break;
+        case 'name_desc':   $workshops->orderBy('workshop_name','desc'); break;
+        case 'latest':      $workshops->latest(); break;
+        case 'oldest':      $workshops->orderBy('created_at','asc'); break;
+        default:            $workshops->inRandomOrder(); break;
+    }
+
+    // 📌 Paginate results
+    $results = $workshops->paginate(12)->withQueryString();
+
+    // ==================== SIDEBAR FILTERS ====================
+
+    // Cities list
+    $cities = WorkshopProvider::select('branch')->distinct()->pluck('branch');
+
+    // Brands list
+    $brands = CarBrand::whereIn(
+                    'id',
+                    DB::table('car_brand_workshop_provider')->distinct()->pluck('car_brand_id')
+                )
+                ->pluck('name','id');
+
+    // Categories list (✔️ FIXED — return id + name + image)
+    $categories = WorkshopCategory::whereIn(
+                        'id',
+                        DB::table('workshop_category_provider')->distinct()->pluck('workshop_category_id')
+                   )
+                   ->select('id','name','image')
+                   ->get();
+
+    $workshops = $results;
+
+    return view('workshops.index', compact('workshops', 'cities', 'brands', 'categories'));
+}
+
 }
