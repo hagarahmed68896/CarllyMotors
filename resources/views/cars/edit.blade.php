@@ -294,9 +294,12 @@
         <h2 class="mb-4 mt-2 text-center fw-bold" style="color:#760e13;">Edit Your Car</h2>
         <div class="card">
      <!-- Car Edit Form -->
-<form action="{{ route('cars.update', $car->id) }}" method="POST" enctype="multipart/form-data" class="mt-4">
+<form id="carForm" enctype="multipart/form-data" class="mt-4">
     @csrf
-    @method('PUT')
+    @method('PUT') <!-- Important for Laravel route -->
+    
+<div id="formErrors" class="alert alert-danger d-none"></div>
+
     <input type="hidden" name="user_id" value="{{ $car->user_id }}">
 
 <!-- Image Upload -->
@@ -524,20 +527,25 @@ document.addEventListener("DOMContentLoaded", function() {
         </div>
 
         <!-- Year -->
-        <div class="col-md-6">
-            <label for="year" class="form-label">Year</label>
-            @php
-                $currentYear = date('Y');
-                $years = range($currentYear, 1990);
-            @endphp
-            <select class="form-select" name="year" id="year" required>
-                <option value="">Select Year</option>
-             @foreach($years as $year)
-    <option value="{{ $year }}" {{ $car->listing_year == $year ? 'selected' : '' }}>{{ $year }}</option>
-@endforeach
+<div class="col-md-6">
+    <label for="year" class="form-label">Year</label>
+    @php
+        $currentYear = date('Y') + 1; // السنة القادمة
+        $years = range($currentYear, 1990);
+    @endphp
 
-            </select>
-        </div>
+    <select class="form-select" name="year" id="year" required>
+        <option value="">Select Year</option>
+
+        @foreach($years as $year)
+            <option value="{{ $year }}" {{ $car->listing_year == $year ? 'selected' : '' }}>
+                {{ $year }}
+            </option>
+        @endforeach
+
+    </select>
+</div>
+
 
         <!-- Body Type -->
         <div class="col-md-6">
@@ -600,7 +608,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <div class="col-md-6">
             <label for="vin_number" class="form-label">VIN Number</label>
             <input type="text" name="vin_number" class="form-control" id="vin_number"
-                placeholder="VIN Number" value="{{ $car->vin_number }}" required>
+                placeholder="VIN Number" value="{{ $car->vin_number }}" >
         </div>
 
 <!-- Price -->
@@ -1317,7 +1325,57 @@ $(document).ready(function() {
   }
 });
 </script>
+<script>
+document.getElementById('carForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
+    let formData = new FormData(this);
+    const errorsDiv = document.getElementById('formErrors');
+
+    // Reset error box
+    errorsDiv.classList.add('d-none');
+    errorsDiv.innerHTML = '';
+
+    fetch("{{ route('cars.update', $car->id) }}", {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) {
+
+            // Build error messages inside red box
+            let html = '<ul class="mb-0">';
+            for (let key in data.errors) {
+                html += `<li>${data.errors[key]}</li>`;
+            }
+            html += '</ul>';
+
+            // Show the danger alert box
+            errorsDiv.innerHTML = html;
+            errorsDiv.classList.remove('d-none');
+
+            // Scroll so user sees the errors
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        } else {
+            // Redirect on success
+            window.location.href = `/car/${data.car_id}`;
+        }
+    })
+    .catch(err => {
+        console.error(err);
+
+        errorsDiv.innerHTML = '<p>Something went wrong. Please try again.</p>';
+        errorsDiv.classList.remove('d-none');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+</script>
 
 
 

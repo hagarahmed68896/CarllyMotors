@@ -5,22 +5,83 @@ use Illuminate\Support\Str;
 
 @section('content')
 
-<h2 class="mb-4 text-center fw-bold position-relative"
-    style="color:#760e13; margin-top:30px;">
-    My Cars
-</h2>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mycars-header">
+    
+    <h2 class="fw-bold page-title mb-0">My Cars</h2>
+
+    <a href="{{ route('cars.create') }}" 
+       class="btn btn-add-car d-flex align-items-center gap-2">
+        <i class="fas fa-plus"></i>
+        Add New Car
+    </a>
+
+</div>
 
 <style>
-h2.text-center::after {
+    .mycars-header {
+    margin-left: 80px;
+    margin-right: 80px;
+    margin-top: 20px;
+}
+@media (max-width: 576px) {
+    .mycars-header {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+}
+
+/* ===== TITLE STYLE ===== */
+.page-title {
+    color: #760e13;
+    position: relative;
+}
+
+.page-title::after {
     content: "";
     display: block;
-    width: 40px;
-    height: 5px;
+    width: 45px;
+    height: 4px;
     background-color: #760e13;
-    margin: 10px auto 0;
+    margin-top: 6px;
     border-radius: 2px;
 }
+
+/* ===== BUTTON ===== */
+.btn-add-car {
+    background: #760e13;
+    color: white !important;
+    padding: 10px 22px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    transition: 0.25s ease;
+}
+
+.btn-add-car:hover {
+    background: #8a0f17;
+    transform: translateY(-2px);
+}
+
+/* ===== RESPONSIVE FIXES ===== */
+@media (max-width: 576px) {
+    .mycars-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .page-title::after {
+        margin-left: auto;
+        margin-right: auto; /* الخط تحت العنوان في النص */
+    }
+
+    .btn-add-car {
+        width: 100%;
+        justify-content: center;
+    }
+}
 </style>
+
+
 
 <div class="custom-container main-car-list-sec" style="margin-top:30px;">
     <div class="row g-4">
@@ -203,27 +264,7 @@ h2.text-center::after {
 
 
 </div>
-<!-- Floating Add Button -->
-<div class="position-relative">
-    <a href="{{ route('cars.create') }}" 
-       class="btn btn-danger rounded-circle shadow-lg d-flex align-items-center justify-content-center add-btn-inside"
-       style="width:60px; height:60px; font-size:2rem;">
-        <i class="fas fa-plus"></i>
-    </a>
-</div>
 
-<style>
-.add-btn-inside {
-    position: absolute;
-    bottom: 10px;
-    right: 20px;
-    z-index: 10;
-}
-.custom-container {
-    position: relative; /* ensures the absolute button stays inside */
-    padding-bottom: 50px; /* add space so it doesn't overlap content */
-}
-</style>
 
 
 <!-- Swiper JS & CSS -->

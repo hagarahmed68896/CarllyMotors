@@ -292,8 +292,9 @@
         <h2 class="mb-4 mt-2 text-center fw-bold" style="color:#760e13;">Add Your Car</h2>
         <div class="card">
             <!-- Car Form -->
-            <form action="{{ route('cars.store') }}" method="POST" enctype="multipart/form-data" class="mt-4">
-                @csrf
+<form id="carForm" enctype="multipart/form-data">
+    @csrf
+<div id="formErrors" class="alert alert-danger d-none mt-2"></div>
                 <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                 <!-- Image Upload -->
                 <div class="upload-section w-100">
@@ -319,6 +320,49 @@
                     <span class="close">&times;</span>
                     <img id="modalImage" alt="Preview">
                 </div>
+                <style>
+                    .image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+}
+
+.image-grid .preview-image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.image-grid .preview-image:hover {
+    transform: scale(1.05);
+}
+
+.image-grid .preview-image-container {
+    position: relative;
+}
+
+.image-grid .delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+                </style>
                 <!-- Car Details -->
                 <div class="row g-3">
                     <!-- Brand -->
@@ -343,16 +387,17 @@
                     <!-- Year -->
                     <div class="col-md-6">
                         <label for="year" class="form-label">Year</label>
-                        @php
-                        $currentYear = date('Y');
-                        $years = range($currentYear, 1990);
-                        @endphp
-                        <select class="form-select" name="year" id="year" disabled required>
-                            <option value="">Select Year</option>
-                            @foreach($years as $year)
-                            <option value="{{ $year }}">{{ $year }}</option>
-                            @endforeach
-                        </select>
+                 @php
+$currentYear = date('Y') + 1; // السنة القادمة
+$years = range($currentYear, 1990);
+@endphp
+<select class="form-select" name="year" id="year" disabled required>
+    <option value="">Select Year</option>
+    @foreach($years as $year)
+        <option value="{{ $year }}">{{ $year }}</option>
+    @endforeach
+</select>
+
                     </div>
 
 
@@ -413,7 +458,7 @@
                     <div class="col-md-6">
                         <label for="vin_number" class="form-label">VIN Number</label>
                         <input type="text" name="vin_number" class="form-control" id="vin_number"
-                            placeholder="VIN Number" required>
+                            placeholder="VIN Number">
                     </div>
 
                     <div class="col-12 position-relative">
@@ -755,23 +800,32 @@ document.addEventListener("DOMContentLoaded", function () {
         seats: document.getElementById("seatsInput"),
     };
     const mileageHidden = document.getElementById("mileageHidden");
+function updateIconLabels() {
+    const labels = {
+        gear: "Gear",
+        mileage: "Mileage",
+        color: "Color",
+        warranty: "Warranty",
+        fuel: "Fuel",
+        seats: "Seats",
+    };
 
-    // عند فتح صفحة التعديل، عرض القيم تحت الأيقونات
-    function updateIconLabels() {
-        const labels = {
-            gear: "Gear",
-            mileage: "Mileage",
-            color: "Color",
-            warranty: "Warranty",
-            fuel: "Fuel",
-            seats: "Seats",
-        };
-        Object.keys(labels).forEach(spec => {
-            const value = spec === "mileage" ? mileageHidden.value : (specs[spec]?.value || '');
-            const iconLabel = document.querySelector(`.spec-icon[data-bs-target="#${spec}Modal"] .small`);
-            if (iconLabel) iconLabel.textContent = value || labels[spec];
-        });
-    }
+    Object.keys(labels).forEach(spec => {
+        let value;
+
+        if (spec === "mileage") {
+            value = mileageHidden.value;
+        } else if (spec === "color") {
+            value = colorLabel.textContent; // خليه ياخد الاسم من اللون
+        } else {
+            value = specs[spec]?.value || '';
+        }
+
+        const iconLabel = document.querySelector(`.spec-icon[data-bs-target="#${spec}Modal"] .small`);
+        if (iconLabel) iconLabel.textContent = value || labels[spec];
+    });
+}
+
     updateIconLabels();
 
     // عند اختيار عنصر من أي مودال (باستثناء اللون لأنه له سكربت خاص)
@@ -971,7 +1025,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const closeModal = document.querySelector("#imageModal .close");
 
     let uploadedFiles = [];
-
     const coverClass = "first-cover";
 
     fileInputContainer.addEventListener("click", () => imageInput.click());
@@ -995,71 +1048,69 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function createThumbnail(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const wrapper = document.createElement("div");
-            wrapper.classList.add("image-wrapper");
-            wrapper.style.position = "relative";
-            wrapper.style.display = "inline-block";
-            wrapper.style.margin = "5px";
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("image-wrapper");
+        wrapper.style.position = "relative";
+        wrapper.style.display = "inline-block";
+        wrapper.style.margin = "5px";
 
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            img.style.width = "100px";
-            img.style.height = "100px";
-            img.style.objectFit = "cover";
-            img.style.borderRadius = "8px";
-            img.style.cursor = "pointer";
-            img.classList.add("viewable-image");
+        const img = document.createElement("img");
+        const blobUrl = URL.createObjectURL(file);
+        img.src = blobUrl;
+        img.dataset.id = file._id; // ✅ معرف ثابت لكل ملف
+        img.style.width = "100px";
+        img.style.height = "100px";
+        img.style.objectFit = "cover";
+        img.style.borderRadius = "8px";
+        img.style.cursor = "pointer";
+        img.classList.add("viewable-image");
 
-            img.addEventListener("click", () => {
-                modal.style.display = "block";
-                modalImage.src = img.src;
-            });
+        img.addEventListener("click", () => {
+            modal.style.display = "block";
+            modalImage.src = img.src;
+        });
 
-            // ✅ Remove button like previous
-            const removeBtn = document.createElement("span");
-            removeBtn.textContent = "×";
-            removeBtn.style.position = "absolute";
-            removeBtn.style.top = "2px";
-            removeBtn.style.right = "5px";
-            removeBtn.style.cursor = "pointer";
-            removeBtn.style.color = "red";
-            removeBtn.style.fontWeight = "bold";
-            removeBtn.style.fontSize = "1.1rem";
-            removeBtn.style.background = "white";
-            removeBtn.style.borderRadius = "50%";
-            removeBtn.style.width = "20px";
-            removeBtn.style.height = "20px";
-            removeBtn.style.display = "flex";
-            removeBtn.style.alignItems = "center";
-            removeBtn.style.justifyContent = "center";
-            removeBtn.style.boxShadow = "0 0 2px rgba(0,0,0,0.5)";
+        const removeBtn = document.createElement("span");
+        removeBtn.textContent = "×";
+        removeBtn.style.position = "absolute";
+        removeBtn.style.top = "2px";
+        removeBtn.style.right = "5px";
+        removeBtn.style.cursor = "pointer";
+        removeBtn.style.color = "red";
+        removeBtn.style.fontWeight = "bold";
+        removeBtn.style.fontSize = "1.1rem";
+        removeBtn.style.background = "white";
+        removeBtn.style.borderRadius = "50%";
+        removeBtn.style.width = "20px";
+        removeBtn.style.height = "20px";
+        removeBtn.style.display = "flex";
+        removeBtn.style.alignItems = "center";
+        removeBtn.style.justifyContent = "center";
+        removeBtn.style.boxShadow = "0 0 2px rgba(0,0,0,0.5)";
 
-            removeBtn.addEventListener("click", (ev) => {
-                ev.stopPropagation();
-                const index = Array.from(previewContainer.children).indexOf(wrapper);
-                uploadedFiles.splice(index, 1);
-                wrapper.remove();
-                updateInputFiles();
-                updateImageCount();
-                errorMessage.textContent = "";
-            });
-
-            wrapper.appendChild(img);
-            wrapper.appendChild(removeBtn);
-            previewContainer.appendChild(wrapper);
-
+        removeBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            const index = uploadedFiles.findIndex(f => f._id === file._id);
+            if(index > -1) uploadedFiles.splice(index, 1);
+            wrapper.remove();
+            updateInputFiles();
             updateImageCount();
-        };
-        reader.readAsDataURL(file);
+            errorMessage.textContent = "";
+        });
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(removeBtn);
+        previewContainer.appendChild(wrapper);
+
+        updateImageCount();
     }
 
     imageInput.addEventListener("change", function(event) {
         const remaining = 8 - uploadedFiles.length;
         const newFiles = [...event.target.files].slice(0, remaining);
 
-        newFiles.forEach(file => {
+        newFiles.forEach((file) => {
+            file._id = crypto.randomUUID(); // ✅ معرف ثابت لكل ملف
             uploadedFiles.push(file);
             createThumbnail(file);
         });
@@ -1073,7 +1124,6 @@ document.addEventListener("DOMContentLoaded", function() {
         updateInputFiles();
     });
 
-    // Close modal
     closeModal.addEventListener("click", () => modal.style.display = "none");
     modal.addEventListener("click", (e) => { if(e.target===modal) modal.style.display = "none"; });
 
@@ -1083,8 +1133,7 @@ document.addEventListener("DOMContentLoaded", function() {
         onEnd: function () {
             const newOrder = [];
             previewContainer.querySelectorAll(".image-wrapper img").forEach(img => {
-                const src = img.src;
-                const file = uploadedFiles.find(f => URL.createObjectURL(f) === src || img.src.startsWith('data:'));
+                const file = uploadedFiles.find(f => f._id === img.dataset.id);
                 if (file) newOrder.push(file);
             });
             uploadedFiles = newOrder;
@@ -1096,6 +1145,7 @@ document.addEventListener("DOMContentLoaded", function() {
     updateImageCount();
 });
 </script>
+
 
 <style>
 /* Style first image as cover */
@@ -1260,6 +1310,56 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
     </script>
+<script>
+document.getElementById('carForm').addEventListener('submit', function(e){
+    e.preventDefault(); // منع إعادة تحميل الصفحة
+
+    const formData = new FormData(this);
+    const url = "{{ route('cars.store') }}";
+    const errorsDiv = document.getElementById('formErrors');
+
+    // reset
+    errorsDiv.classList.add('d-none');
+    errorsDiv.innerHTML = '';
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('input[name=_token]').value
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = `/car/${data.car_id}`;
+        } 
+        else if (data.errors) {
+
+            // build error list with red background box
+            let html = '<ul class="mb-0">';
+            for (const key in data.errors) {
+                html += `<li>${data.errors[key]}</li>`;
+            }
+            html += '</ul>';
+
+            errorsDiv.innerHTML = html;
+            errorsDiv.classList.remove('d-none');
+
+            // scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        errorsDiv.innerHTML = '<p>Something went wrong. Please try again.</p>';
+        errorsDiv.classList.remove('d-none');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+</script>
+
+
 
 </div> 
 @endsection

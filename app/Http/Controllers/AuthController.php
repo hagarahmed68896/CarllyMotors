@@ -203,7 +203,29 @@ public function updateImage(Request $request, $id)
 }
 
 
+public function deleteProfile($id)
+{
+    // 1. Ensure the authenticated user is the one they are trying to delete
+    if ($id != auth()->user()->id) {
+        // You might redirect with an error message or throw an unauthorized exception
+        return redirect()->route('home')->with('error', 'Unauthorized action.');
+    }
 
+    $user = allUsersModel::find($id);
+
+    if (!$user) {
+        return redirect()->route('home')->with('error', 'User not found.');
+    }
+
+    // 2. Perform the deletion
+    $user->delete();
+
+    // 3. Log the user out after deletion
+    auth()->logout();
+
+    // 4. Redirect to the homepage or login page with a success message
+    return redirect('/')->with('success', 'Your profile has been successfully deleted.');
+}
 
 
 

@@ -102,7 +102,9 @@ Route::get('grid', [HomeController::class, 'carListing'])->name('listing.grid');
 // Cars
 Route::resource('cars', CarController::class);
 Route::get('/car/{id}', [HomeController::class, 'detail'])->name('car.detail');
-Route::post('/addTofav/{carId}', [CarController::class, 'addTofav'])->name('cars.addTofav')->middleware('auth');
+Route::post('/cars/addTofav/{carId}', [CarController::class, 'addTofav'])
+    ->name('cars.addTofav')
+    ->middleware('auth');
 Route::get('/favList', [CarController::class, 'favList'])->name('cars.favList')->middleware('auth');
 Route::get('/myCarListing', [CarController::class, 'myCarListing'])->name('myCarListing')->middleware('auth');
 Route::get('cars/homeSection', [CarController::class, 'homeSection'])->name('cars.homeSection');
@@ -147,7 +149,10 @@ Route::get('/users/edit/{id}', [AuthController::class, 'edit'])->name('users.edi
 Route::put('/users/{id}', [AuthController::class, 'update'])->name('users.update')->middleware('auth');
 Route::post('/users/{id}/update-image', [AuthController::class, 'updateImage'])
      ->name('users.updateImage');
+// routes/web.php
 
+// This should typically be protected by 'auth' middleware
+Route::delete('/profile/{id}', [AuthController::class, 'deleteProfile'])->name('delete.profile');
 // Workshops
 Route::resource('workshops', WorkshopController::class)->except(['index', 'show']);
 

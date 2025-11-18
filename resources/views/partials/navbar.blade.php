@@ -142,78 +142,7 @@
                         @endguest
                     </li>
  
-                 <li class="nav-item dropdown position-static">
-  <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" id="dropdownMegaMenu" role="button"
-      data-bs-toggle="dropdown" aria-expanded="false">
-      Browse Cars
-  </a>
 
-<div class="dropdown-menu p-4 shadow border-0 mt-2 mega-menu"
-    aria-labelledby="dropdownMegaMenu">
-    
-    <div class="row g-4">
-
-        {{-- ✅ By Model --}}
-        <div class="col-md-4 border-end">
-            <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Model</h6>
-            <ul class="list-unstyled mb-0">
-                @foreach($car_models->take(10) as $model)
-                    <li>
-                        <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['model' => $model]) }}">
-                            {{ $model }}
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-            <div class="mt-2">
-                <a href="{{ route('cars.index', ['type' => 'car_models']) }}" class="small fw-semibold text-decoration-none text-muted">
-                    Show All Models →
-                </a>
-            </div>
-        </div>
-
-        {{-- ✅ By Year --}}
-        <div class="col-md-4 border-end">
-            <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Year</h6>
-            <ul class="list-unstyled mb-0">
-                @foreach(collect($years)->take(10) as $year)
-                    <li>
-                        <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['year' => $year]) }}">
-                            {{ $year }}
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-            <div class="mt-2">
-                <a href="{{ route('cars.index', ['type' => 'years']) }}" class="small fw-semibold text-decoration-none text-muted">
-                    Show All Years →
-                </a>
-            </div>
-        </div>
-
-        {{-- ✅ By Type --}}
-        <div class="col-md-4">
-            <h6 class="fw-bold mb-3 text-uppercase text-secondary small">By Type</h6>
-            <ul class="list-unstyled mb-0">
-                @foreach($bodyTypes->take(10) as $type)
-                    <li>
-                        <a class="dropdown-item py-1 small" href="{{ route('cars.index', ['type' => $type]) }}">
-                            {{ $type }}
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-            <div class="mt-2">
-                <a href="{{ route('cars.index', ['type' => 'bodyTypes']) }}" class="small fw-semibold text-decoration-none text-muted">
-                    Show All Types →
-                </a>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-</li>
 
                 </ul>
 
@@ -224,9 +153,9 @@
 @else
     <!-- My Favorites -->
     <a href="{{ route('cars.favList') }}" class="nav-link text-dark fw-semibold d-flex align-items-center">
-<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
   <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
-</svg>
+</svg>  <span class="m-1">Favorites</span>
     </a>
 
     <!-- Profile Dropdown -->

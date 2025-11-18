@@ -194,6 +194,53 @@
     @if(!empty($user->city))
       <p><i class="fas fa-map-marker-alt"></i> {{ $user->city }}</p>
   @endif
+<form id="deleteProfileForm" action="{{ route('delete.profile', $user->id) }}" method="POST">
+    @csrf
+    @method('DELETE')
+    
+    <button type="button" 
+            class="btn btn-danger mt-4"
+            data-bs-toggle="modal" 
+            data-bs-target="#confirmDeleteModal">
+        <i class="fas fa-trash"></i> Delete Profile
+    </button>
+</form>
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark" id="confirmDeleteModalLabel">Confirm Profile Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+         <div class="modal-body text-dark"> <p>
+        <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+        Are you absolutely sure you want to delete your profile?
+    </p>
+    <p class="fw-bold text-danger">This action cannot be undone and all your data will be permanently lost.</p>
+</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">
+                    Yes, Delete Profile
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const confirmButton = document.getElementById('confirmDeleteButton');
+        const deleteForm = document.getElementById('deleteProfileForm');
+
+        if (confirmButton && deleteForm) {
+            confirmButton.addEventListener('click', function() {
+                // Submit the hidden form when the modal's confirm button is clicked
+                deleteForm.submit();
+            });
+        }
+    });
+</script>
 </div>
 
 <style>

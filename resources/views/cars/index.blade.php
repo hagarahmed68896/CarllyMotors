@@ -292,8 +292,8 @@ $(document).ready(function() {
 
       <!-- 📅 Year -->
 @php
-    $currentYear = date('Y');
-    // توليد السنين من السنة الحالية إلى 1990
+    $currentYear = date('Y') + 1; // السنة القادمة
+    // توليد السنين من السنة القادمة إلى 1990
     $years = range($currentYear, 1990);
 @endphp
 
@@ -305,6 +305,7 @@ $(document).ready(function() {
         </option>
     @endforeach
 </select>
+
 
 
       <!-- 🛞 Mileage Modal -->
@@ -497,19 +498,25 @@ function submitTopFilter() {
 
   <!-- ❤️ Favorite & Share Buttons -->
   <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
-    @if(auth()->check())
-      @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
-      <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
-        @csrf
-        <button class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" type="submit" style="width:32px; height:32px; border-radius:50%;">
-          <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
-        </button>
-      </form>
-    @else
-      <a href="{{ route('login') }}" class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" style="width:32px; height:32px; border-radius:50%;">
-        <i class="fas fa-heart" style="color:#6c757d;"></i>
-      </a>
-    @endif
+@php
+    $favCars = auth()->check() ? auth()->user()->favCars()->pluck('id')->toArray() : [];
+    $isFav = in_array($car->id, $favCars);
+@endphp
+
+<form action="{{ route('cars.addTofav', $car->id) }}" method="POST" class="d-inline">
+    @csrf
+    <button class="btn btn-light btn-sm border-0" style="width:32px; height:32px; border-radius:50%;">
+        <i class="fas fa-heart {{ $isFav ? 'text-danger' : 'text-secondary' }}"></i>
+    </button>
+</form>
+
+<a id="car-{{ $car->id }}"></a>
+
+
+
+
+
+
 
   <a href="https://wa.me/?text={{ urlencode(
     'اطّلع على هذه السيارة على موقع Carlly! عروض مميّزة بانتظارك' . "\n\n" .
@@ -674,37 +681,23 @@ class="flex-fill text-decoration-none">
 </a>
 
 
-@if(!empty($car->user?->phone))
-    @php
-        $phone = preg_replace('/\D/', '', $car->user?->phone); // إزالة أي رموز غير أرقام
-    @endphp
 
-    @if($os === 'Android')
-        {{-- 📱 Android: اتصال مباشر --}}
-        <a href="tel:{{ $phone }}" class="text-decoration-none flex-grow-1">
-            <button class="btn btn-outline-danger rounded-4 w-100">
-                <i class="fas fa-phone me-1"></i>
-            </button>
+  @php
+    $isMobile = Str::contains(request()->header('User-Agent'), ['Android', 'iPhone', 'iPad']);
+    $phone = $car->user?->phone;
+@endphp
+
+@if(!empty($phone))
+    @if($isMobile)
+        <a href="tel:{{ $phone }}" class="btn btn-outline-danger flex-fill rounded-4">
+            <i class="fa fa-phone"></i>
         </a>
-
-    @elseif($os === 'iOS')
-        {{-- 🍎 iPhone: اتصال فقط --}}
-        <a href="tel:{{ $phone }}" class="text-decoration-none flex-grow-1" onclick="event.stopPropagation();">
-            <button class="btn btn-outline-danger rounded-4 w-100">
-                <i class="fas fa-phone me-1"></i>
-            </button>
-        </a>
-
     @else
-        {{-- 💻 Desktop أو غيرهم: واتساب --}}
-        <a href="https://wa.me/{{ $phone }}" target="_blank" class="text-decoration-none flex-grow-1">
-            <button class="btn btn-outline-danger rounded-4 w-100">
-                <i class="fas fa-phone me-1"></i>
-            </button>
+        <a href="https://wa.me/{{ $phone }}" target="_blank" class="btn btn-outline-danger flex-fill rounded-4">
+            <i class="fa fa-phone"></i>
         </a>
     @endif
 @endif
-
 
 </div>
 

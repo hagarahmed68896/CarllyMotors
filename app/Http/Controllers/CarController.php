@@ -8,7 +8,7 @@ use App\Models\Color;
 use App\Models\RegionalSpec;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Validator;
 class CarController extends Controller
 {
 public function index(Request $request)
@@ -120,19 +120,42 @@ $carlisting->getCollection()->transform(function ($car) {
 public function store(Request $request)
 {
     try {
-        // Required specifications
         $requiredSpecs = ['gear', 'mileage', 'color', 'warranty', 'fuelType', 'seats'];
-        $missingSpecs = array_filter($requiredSpecs, fn($spec) => empty($request->input($spec)));
+        $errors = [];
 
-        if (!empty($missingSpecs)) {
-            return redirect()->back()
-                             ->with('spec_error', 'Please fill all specifications')
-                             ->withInput();
+        // Validate required specs
+ foreach ($requiredSpecs as $spec) {
+    $value = $request->input($spec);
+    if ($value === null || $value === '') {
+        $errors[$spec] = ucfirst($spec) . ' is required.';
+    }
+}
+
+
+        // Validate location
+        if (empty($request->input('location')) || empty($request->input('latitude')) || empty($request->input('longitude'))) {
+            $errors['location'] = 'Please select a location on the map.';
         }
 
-        $car = new CarListingModel();
+        // Validate title + phone
+        if (empty($request->input('name'))) {
+            $errors['name'] = 'Name is required.';
+        }
+        if (empty($request->input('phone'))) {
+            $errors['phone'] = 'Phone is required.';
+        }
 
-        // Basic details
+        if (!empty($errors)) {
+            return response()->json([
+                'success' => false,
+                'errors' => $errors
+            ]);
+        }
+
+        // -----------------------------------------
+        // ✅ CREATE CAR
+        // -----------------------------------------
+        $car = new CarListingModel();
         $car->user_id               = $request->user_id;
         $car->listing_type          = $request->make;
         $car->listing_model         = $request->model;
@@ -152,50 +175,65 @@ public function store(Request $request)
         $car->listing_price         = $request->price;
         $car->listing_desc          = $request->description;
 
-        // Features Others
+        // Save features_others
         $features = $request->features ?? '';
-        $featuresArray = array_filter(array_map('trim', explode(',', $features)));
-        $car->features_others = json_encode($featuresArray);
+        $car->features_others = json_encode(
+            array_filter(array_map('trim', explode(',', $features)))
+        );
 
-        // Location
-        $car->location = $request->location ?? null;
-        $car->lat = $request->latitude ?: null;
-        $car->lng = $request->longitude ?: null;
+        $car->location = $request->location;
+        $car->lat      = $request->latitude;
+        $car->lng      = $request->longitude;
 
         $car->max = 10;
         $car->save();
 
-        // Upload Images
-        if ($request->hasFile('images')) {
-            $i = 1;
-            foreach ($request->file('images') as $index => $uploadedImage) {
-                if ($index >= $car->max) break;
 
+        // -----------------------------------------
+        // ✅ HANDLE IMAGES (same as UPDATE)
+        // -----------------------------------------
+        if ($request->hasFile('images')) {
+
+            $maxImages = 8;
+            $images = $request->file('images');
+            $images = array_slice($images, 0, $maxImages);
+
+            $i = 1;
+            foreach ($images as $index => $uploadedImage) {
+
+                // Store image in Cloudflare R2
                 $imgName = time() . '_' . $index . '.' . $uploadedImage->getClientOriginalExtension();
                 $path = $uploadedImage->storeAs('listings', $imgName, 'r2');
 
-                // Save in images table
+                // Save image relation
                 $car->images()->create(['image' => $path]);
 
-                // Save first 5 images in carlisting columns
+                // First 5 go to listing_img1..5
                 if ($i <= 5) {
                     $column = "listing_img{$i}";
                     $car->$column = $path;
                     $i++;
                 }
             }
-
-            $car->current = $car->images()->count();
-            $car->save();
         }
 
-        return redirect()->route('car.detail', $car->id)
-                         ->with('success', 'Car added successfully');
+        // Update current image count
+        $car->current = $car->images()->count();
+        $car->save();
+
+        return response()->json([
+            'success' => true,
+            'car_id'  => $car->id
+        ]);
 
     } catch (\Exception $e) {
-        return redirect()->back()->with('error', $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'errors' => ['general' => $e->getMessage()]
+        ]);
     }
 }
+
 
 
 
@@ -217,17 +255,40 @@ public function edit(CarListingModel $car)
 public function update(Request $request, CarListingModel $car)
 {
     try {
-        // ✅ Validate required specs
-        $requiredSpecs = ['gear', 'mileage', 'color', 'warranty', 'fuelType', 'seats'];
-        $missingSpecs = array_filter($requiredSpecs, fn($spec) => empty($request->input($spec)));
+        $errors = [];
 
-        if (!empty($missingSpecs)) {
-            return redirect()->back()
-                             ->with('spec_error', 'Please fill all specifications')
-                             ->withInput();
+        // ✅ Validate required specifications
+        $requiredSpecs = ['gear', 'mileage', 'color', 'warranty', 'fuelType', 'seats'];
+   foreach ($requiredSpecs as $spec) {
+    $value = $request->input($spec);
+    if ($value === null || $value === '') {
+        $errors[$spec] = ucfirst($spec) . ' is required.';
+    }
+}
+
+
+        // ✅ Individual validation for Location
+        if (empty($request->input('location')) || empty($request->input('latitude')) || empty($request->input('longitude'))) {
+            $errors['location'] = 'Please select a location on the map.';
         }
 
-        // ✅ Update car basic info
+        // ✅ Validate basic fields
+        if (empty($request->input('name'))) {
+            $errors['name'] = 'Name is required.';
+        }
+        if (empty($request->input('phone'))) {
+            $errors['phone'] = 'Phone is required.';
+        }
+
+        // Return errors if any
+        if (!empty($errors)) {
+            return response()->json([
+                'success' => false,
+                'errors' => $errors
+            ]);
+        }
+
+        // ✅ Update car data
         $car->listing_type          = $request->make;
         $car->listing_model         = $request->model;
         $car->listing_year          = $request->year;
@@ -243,34 +304,23 @@ public function update(Request $request, CarListingModel $car)
         $car->listing_title         = $request->name;
         $car->wa_number             = '+971' . $request->phone;
         $car->listing_price         = $request->price;
+        $car->listing_desc          = $request->description;
+        $car->location              = $request->location;
         $car->lat                   = $request->latitude;
         $car->lng                   = $request->longitude;
-        $car->listing_desc          = $request->description;
 
-        // ✅ Features Others (تصحيح الـ JSON)
-        $features = $request->features ?? '[]';
-
-        // إذا كانت string، حاول تحويلها لـ array
+        // ✅ Handle features_others
+        $features = $request->features ?? [];
         if (is_string($features)) {
-            $features = json_decode($features, true);
+            $features = json_decode($features, true) ?: [];
         }
-
-        // تأكد إنها array
-        if (!is_array($features)) {
-            $features = [];
-        }
-
-        // إزالة الفراغات والعناصر الفارغة
         $features = array_filter(array_map('trim', $features));
-
         $car->features_others = json_encode($features);
 
         $car->save();
 
         // ✅ Handle images
-
-        // 1. Delete images that are not in existing_images[]
-        $existingImageIds = $request->input('existing_images', []); // IDs of images to keep
+        $existingImageIds = $request->input('existing_images', []);
         $imagesToDelete = $car->images()->whereNotIn('id', $existingImageIds)->get();
 
         foreach ($imagesToDelete as $img) {
@@ -278,7 +328,6 @@ public function update(Request $request, CarListingModel $car)
             $img->delete();
         }
 
-        // 2. Upload new images
         if ($request->hasFile('images')) {
             $currentCount = $car->images()->count();
             $maxImages = 8;
@@ -304,13 +353,20 @@ public function update(Request $request, CarListingModel $car)
         $car->current = $car->images()->count();
         $car->save();
 
-        return redirect()->route('car.detail', $car->id)
-                         ->with('success', 'Car updated successfully');
+        return response()->json([
+            'success' => true,
+            'car_id' => $car->id,
+            'message' => 'Car updated successfully'
+        ]);
 
     } catch (\Exception $e) {
-        return redirect()->back()->with('error', $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'errors' => ['general' => 'Something went wrong. Please try again.']
+        ]);
     }
 }
+
 
 
 
@@ -360,22 +416,27 @@ public function destroy(CarListingModel $car)
         ]);
     }
 
-    public function addTofav(Request $request, $carId)
-    {
-        try {
-            $user    = auth()->user();
-            $favList = $user->favCars->pluck('id')->toArray();
+ // app/Http/Controllers/YourController.php
 
-            if (in_array($carId, $favList)) {
-                $user->favCars()->detach($carId);
-            } else {
-                $user->favCars()->attach($carId);
-            }
-            return redirect()->back();
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+public function addTofav(Request $request, $carId)
+{
+    $user = auth()->user();
+
+    if ($user->favCars->contains($carId)) {
+        $user->favCars()->detach($carId);
+    } else {
+        $user->favCars()->attach($carId);
     }
+
+    return redirect()->back()->withFragment('car-' . $carId);
+}
+
+
+
+
+
+
+
 
     public function favList()
     {
