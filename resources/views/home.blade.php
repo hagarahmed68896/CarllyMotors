@@ -318,7 +318,7 @@ document.addEventListener('shown.bs.modal', function (event) {
         <!-- Enhanced Car Listings -->
         <div class="custom-container main-car-list-sec">
         <div class="row g-4">
-    @forelse ($carlisting as $key => $car)
+    @forelse ($featuredCars as $key => $car)
         @php
             // <-- ensure images for this car are loaded (required for zoom button & modal)
             $images = $car->images()->pluck('image');
@@ -328,20 +328,20 @@ document.addEventListener('shown.bs.modal', function (event) {
             <div class="car-card animate__animated animate__fadeInUp" style="animation-delay: {{ $key * 0.1 }}s">
                 <!-- Enhanced Car Image -->
                 <div class="car-image">
-                    @if($car->image != null)
-                        <a href="{{ route('car.detail', $car->id) }}" aria-label="View details for {{$car->listing_type}} {{$car->listing_model}}">
-                            <img src="{{ env("CLOUDFLARE_R2_URL") . $car->image->image}}" 
-                                 alt="{{$car->listing_type}} {{$car->listing_model}}" 
-                                 loading="lazy"
-                                 onerror="this.src='{{ asset('carNotFound.jpg') }}'">
-                        </a>
-                    @else
-                        <a href="{{ route('car.detail', $car->id) }}" aria-label="View details for {{$car->listing_type}} {{$car->listing_model}}">
-                            <img src="{{ asset('carNotFound.jpg') }}" 
-                                 alt="{{$car->listing_type}} {{$car->listing_model}}" 
-                                 loading="lazy">
-                        </a>
-                    @endif
+                @php
+    // Use the first related image if available, otherwise fallback
+    $firstImage = $car->images->first();
+    $firstImageUrl = $firstImage ? env('CLOUDFLARE_R2_URL') . $firstImage->image : asset('carNotFound.jpg');
+@endphp
+
+<a href="{{ route('car.detail', $car->id) }}" aria-label="View details for {{ $car->listing_type }} {{ $car->listing_model }}">
+    <img src="{{ $firstImageUrl }}"
+         alt="{{ $car->listing_type }} {{ $car->listing_model }}"
+         loading="lazy"
+         onerror="this.src='{{ asset('carNotFound.jpg') }}'"
+         class="img-fluid">
+</a>
+
 @php
     $images = $car->images ? $car->images->map(fn($img) => env('CLOUDFLARE_R2_URL') . $img->image)->toArray() : [];
 @endphp
@@ -684,7 +684,7 @@ document.addEventListener('shown.bs.modal', function (event) {
                                         @endif
                                     </div>
 
-<!-- Dealer Actions -->
+ <!-- Dealer Actions -->
 <div class="actions-dealer d-flex justify-content-between align-items-center mt-2">
  @php
     $dealerUrl = route('spareParts.index', [

@@ -36,11 +36,12 @@ class HomeController extends Controller
                 ->get();
 
             // ✅ Featured Cars (latest by year, excluding recent cars)
-            $featuredCars = CarListingModel::with(['user', 'images'])
-                ->whereNotIn('id', $recentCars->pluck('id'))
-                ->orderBy('listing_year', 'desc')
-                ->take(8)
-                ->get();
+      $featuredCars = CarListingModel::with(['user', 'images'])
+    ->orderBy('listing_year', 'desc')  // أحدث موديل
+    ->orderBy('listing_price', 'desc') // أعلى سعر
+    ->take(8)
+    ->get();
+
 
             // ✅ Filters columns
             $filters = [
