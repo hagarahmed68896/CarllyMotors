@@ -100,15 +100,56 @@ button.btn-secondary, button.btn-primary {
         <div id="multi-step-form">
             
             <!-- ✅ STEP 1 — Phone Input -->
-            <div class="step step-1 text-center">
-                <h3 class="mb-4" style="color:#760e13;">Enter Your Phone Number</h3>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">+971</span>
-                    <input type="text" class="form-control" id="phone" name="phone" placeholder="5xxxxxxxx" maxlength="9" required>
-                </div>
-                <div id="recaptcha-container"></div>
-                <button type="button" class="btn rounded-4  w-100" style="background-color: #760e13; color: white;" onclick="sendOTP()">Send OTP</button>
-            </div>
+       <!-- STEP 1 — User Info + Phone Input -->
+<div class="step step-1 text-center">
+    <h3 class="mb-4" style="color:#760e13;">Enter Your Details</h3>
+    
+    <div class="mb-2 text-start">
+        <label for="fname" class="form-label fw-bold">First Name</label>
+        <input type="text" id="fname" class="form-control" placeholder="Enter your first name" required>
+    </div>
+
+    <div class="mb-2 text-start">
+        <label for="lname" class="form-label fw-bold">Last Name</label>
+        <input type="text" id="lname" class="form-control" placeholder="Enter your last name" required>
+    </div>
+
+    <div class="mb-2 text-start">
+        <label for="email" class="form-label fw-bold">Email Address</label>
+        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+    </div>
+
+    <div class="mb-3 text-start">
+        <label for="phone" class="form-label fw-bold">Phone Number</label>
+        <div class="input-group">
+            <span class="input-group-text">+971</span>
+            <input type="text" class="form-control" id="phone" name="phone" placeholder="5xxxxxxxx" maxlength="9" required>
+        </div>
+    </div>
+
+    <div id="recaptcha-container"></div>
+
+    <button type="button" class="btn rounded-4 w-100 mb-2" style="background-color: #760e13; color: white;" onclick="sendOTP()">Send OTP</button>
+
+<div class="login-link mt-3 text-center">
+    Already have an account? 
+    <a href="{{ route('login') }}">Login</a>
+</div>
+
+<style>
+.login-link a {
+    color: #760e13;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+</style>
+</div>
+
+
 
             <!-- ✅ STEP 2 — OTP Input -->
             <div class="step step-2 text-center">
@@ -296,16 +337,17 @@ function handleVerifiedFirebaseUser(user) {
   return user.getIdToken().then(function (idToken) {
     console.log("✅ Firebase User verified:", user);
 
-    return $.ajax({
-      url: "/verify-token",
-      method: "POST",
-      headers: { // ✅ CSRF token هنا
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-     data: {
-    token: idToken,
-    phone: user.phoneNumber || $('#phone').val() || null
-  },
+ return $.ajax({
+    url: "/verify-token",
+    method: "POST",
+    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+    data: {
+        token: idToken,
+        phone: user.phoneNumber || $('#phone').val() || null,
+        fname: $('#fname').val(),
+        lname: $('#lname').val(),
+        email: $('#email').val()
+    },
       
 
     }).then(function (response) {

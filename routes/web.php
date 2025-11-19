@@ -150,6 +150,11 @@ Route::put('/users/{id}', [AuthController::class, 'update'])->name('users.update
 Route::post('/users/{id}/update-image', [AuthController::class, 'updateImage'])
      ->name('users.updateImage');
 // routes/web.php
+Route::post('/verify-login-token', [AuthController::class, 'verifyLoginToken']);
+Route::post('/check-phone-exists', function (Illuminate\Http\Request $request) {
+    $exists = \App\Models\allUsersModel::where('phone', $request->phone)->exists();
+    return response()->json(['exists' => $exists]);
+});
 
 // This should typically be protected by 'auth' middleware
 Route::delete('/profile/{id}', [AuthController::class, 'deleteProfile'])->name('delete.profile');

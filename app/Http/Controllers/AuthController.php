@@ -32,17 +32,21 @@ public function verifyToken(Request $request)
             $phone = $frontendPhone ?? null;
             $email = $request->input('email') ?? '';
             
-            $user = allUsersModel::updateOrCreate(
-                ['firebase_uid' => $uid],
-                [
-                    'fname'    => null,
-                    'lname'    => null,
-                    'email'    => $email,
-                    'phone'    => $phone,
-                    'password' => bcrypt('123456'),
-                    'userType' => 'user',
-                ]
-            );
+        $fname = $request->input('fname') ?? null;
+$lname = $request->input('lname') ?? null;
+
+$user = allUsersModel::updateOrCreate(
+    ['firebase_uid' => $uid],
+    [
+        'fname'    => $fname,
+        'lname'    => $lname,
+        'email'    => $email,
+        'phone'    => $phone,
+        'password' => bcrypt('123456'),
+        'userType' => 'user',
+    ]
+);
+
 
             Auth::guard('web')->login($user);
 
@@ -78,6 +82,42 @@ public function verifyToken(Request $request)
         return response()->json(['success' => false, 'error' => $e->getMessage()], 401);
     }
 }
+
+public function verifyLoginToken(Request $request)
+{
+    try {
+        $idToken = $request->input('token');
+        $frontendPhone = $request->input('phone');
+
+        // ===== تنظيف الرقم =====
+        $phone = $frontendPhone; // لا نضيف +971 مرة أخرى
+        $phoneNumbers = preg_replace('/[^0-9]/', '', $phone); // فقط أرقام
+
+        // ===== استخدام Raw Query لمطابقة أي تنسيق =====
+        $user = allUsersModel::whereRaw("
+            REPLACE(REPLACE(REPLACE(REPLACE(phone,'+',''),'-',''),' ',''),'(','' )
+        = ?", [$phoneNumbers])->first();
+
+        if (!$user) {
+            return response()->json(['success'=>false,'error'=>'Phone not registered']);
+        }
+
+        // ===== تسجيل الدخول =====
+        Auth::guard('web')->login($user);
+        $request->session()->regenerate();
+
+        return response()->json(['success'=>true,'redirect'=>route('home')]);
+
+    } catch (\Throwable $e) {
+        \Log::error("Firebase login verify error: ".$e->getMessage());
+        return response()->json(['success'=>false,'error'=>$e->getMessage()], 500);
+    }
+}
+
+
+
+
+
 
 
 
