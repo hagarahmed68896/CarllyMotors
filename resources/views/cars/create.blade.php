@@ -525,6 +525,11 @@ $years = range($currentYear, 1990);
     <i class="fas fa-chair fa-2x text-secondary"></i>
     <div class="small mt-1" id="seatsLabel">Seats</div>
 </div>
+<div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#doorsModal">
+    <i class="fas fa-door-closed fa-2x text-dark"></i>
+    <div class="small mt-1" id="doorsLabel">Doors</div>
+</div>
+
 @if(session('spec_error'))
 <div class="alert alert-danger mt-2">
     {{ session('spec_error') }}
@@ -741,6 +746,29 @@ $years = range($currentYear, 1990);
                         </div>
                     </div>
 
+                    <!-- Doors Modal -->
+<div class="modal fade" id="doorsModal" tabindex="-1" aria-labelledby="doorsModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="doorsModalLabel">Select Number of Doors</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" style="max-height: 300px; overflow-y: auto;">
+                <ul class="list-group list-group-flush">
+                    @for($i = 1; $i <= 6; $i++)
+                        <li class="list-group-item spec-option"
+                            data-spec="doors" data-value="{{ $i }}" style="cursor:pointer;">
+                            {{ $i }}
+                        </li>
+                    @endfor
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
 
                     <!-- Hidden inputs for specs -->
                     <input type="hidden" name="gear" id="gearInput" required>
@@ -749,6 +777,8 @@ $years = range($currentYear, 1990);
                     <input type="hidden" name="warranty" id="warrantyInput" required>
                     <input type="hidden" name="fuelType" id="fuelInput" required>
                     <input type="hidden" name="seats" id="seatsInput" required>
+                    <input type="hidden" name="door" id="doorsInput">
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -798,6 +828,8 @@ document.addEventListener("DOMContentLoaded", function () {
         warranty: document.getElementById("warrantyInput"),
         fuel: document.getElementById("fuelInput"),
         seats: document.getElementById("seatsInput"),
+        doors: document.getElementById("doorsInput"),
+
     };
     const mileageHidden = document.getElementById("mileageHidden");
 function updateIconLabels() {
@@ -808,6 +840,8 @@ function updateIconLabels() {
         warranty: "Warranty",
         fuel: "Fuel",
         seats: "Seats",
+        doors: "Doors",
+
     };
 
     Object.keys(labels).forEach(spec => {

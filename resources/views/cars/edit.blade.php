@@ -519,12 +519,13 @@ document.addEventListener("DOMContentLoaded", function() {
         </div>
 
         <!-- Model -->
-        <div class="col-md-6">
-            <label for="model" class="form-label">Model</label>
-            <select class="form-select" name="model" id="model" required>
-<option value="{{ $car->listing_model }}" selected>{{ $car->listing_model }}</option>
-            </select>
-        </div>
+<div class="col-md-6">
+    <label for="model" class="form-label">Model</label>
+    <select class="form-select" name="model" id="model" required disabled>
+        {{-- هنا نكتفي بخيار واحد فارغ أو بقيمة placeholder حتى يقوم AJAX بتحميل الخيارات --}}
+        <option value="">Select Model</option>
+    </select>
+</div>
 
         <!-- Year -->
 <div class="col-md-6">
@@ -796,6 +797,12 @@ document.addEventListener("DOMContentLoaded", function() {
                                 <i class="fas fa-chair fa-2x text-secondary"></i>
                                 <div class="small mt-1">Seats</div>
                             </div>
+                            <!-- Doors -->
+<div class="spec-icon text-center" data-bs-toggle="modal" data-bs-target="#doorsModal">
+    <i class="fas fa-door-closed fa-2x text-dark"></i>
+    <div class="small mt-1">Doors</div>
+</div>
+
                             @if(session('spec_error'))
 <div class="alert alert-danger mt-2">
     {{ session('spec_error') }}
@@ -1000,6 +1007,26 @@ document.addEventListener("DOMContentLoaded", function () {
                             </div>
                         </div>
                     </div>
+<!-- Doors Modal -->
+<div class="modal fade" id="doorsModal" tabindex="-1" aria-labelledby="doorsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="doorsModalLabel">Select Number of Doors</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0" style="max-height: 300px; overflow-y: auto;">
+                <ul class="list-group list-group-flush">
+                    @for($i = 1; $i <= 6; $i++)
+                        <li class="list-group-item spec-option" data-spec="doors" data-value="{{ $i }}" style="cursor:pointer;">
+                            {{ $i }}
+                        </li>
+                    @endfor
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
 
              <!-- Hidden inputs for specs (edit mode) -->
@@ -1010,6 +1037,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <input type="hidden" name="warranty" id="warrantyInput" value="{{ old('warranty', $car->features_climate_zone ?? '') }}">
 <input type="hidden" name="fuelType" id="fuelInput" value="{{ old('fuelType', $car->features_fuel_type ?? '') }}">
 <input type="hidden" name="seats" id="seatsInput" value="{{ old('seats', $car->features_seats ?? '') }}">
+<input type="hidden" name="door" id="doorsInput" value="{{ old('door', $car->features_door ?? '') }}">
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -1019,6 +1047,8 @@ document.addEventListener("DOMContentLoaded", function () {
         warranty: document.getElementById("warrantyInput"),
         fuel: document.getElementById("fuelInput"),
         seats: document.getElementById("seatsInput"),
+        doors: document.getElementById("doorsInput"),  
+
     };
     const mileageHidden = document.getElementById("mileageHidden");
 
@@ -1029,6 +1059,8 @@ document.addEventListener("DOMContentLoaded", function () {
         fuel: @json(old('fuelType', $car->features_fuel_type ?? '')),
         seats: @json(old('seats', $car->features_seats ?? '')),
         mileage: @json(old('mileage', $car->features_speed ?? '')),
+        doors: @json(old('door', $car->features_door ?? '')),  
+
     };
 
     // Assign saved values
@@ -1050,6 +1082,7 @@ document.addEventListener("DOMContentLoaded", function () {
             warranty: "Warranty",
             fuel: "Fuel",
             seats: "Seats",
+            doors: "Doors",
         };
         Object.keys(labels).forEach(spec => {
             let value = spec === "mileage" ? mileageHidden.value : specs[spec]?.value;
@@ -1288,41 +1321,74 @@ document.getElementById('saveLocationBtn').addEventListener('click', function() 
 <!-- ===================== BRAND / MODEL SCRIPT ===================== -->
 <script>
 $(document).ready(function() {
-  const brandSelect = $('#brand');
-  const modelSelect = $('#model');
-  const yearSelect = $('#year');
-  
-  // ✅ تحميل الموديلات عند تعديل البراند
-  brandSelect.on('change', function() {
-      const brandName = $(this).val();
-      if (brandName) {
-          $.ajax({
-              url: "{{ route('getModels') }}",
-              type: "GET",
-              data: { brand: brandName },
-              success: function(response) {
-                  modelSelect.empty();
-                  modelSelect.append('<option value="">Select Model</option>');
-                  $.each(response.models, function(index, model) {
-                      modelSelect.append('<option value="'+model+'">'+model+'</option>');
-                  });
-                  modelSelect.prop('disabled', false);
-                  yearSelect.prop('disabled', false);
-              }
-          });
-      } else {
-          modelSelect.empty().append('<option value="">Select Model</option>').prop('disabled', true);
-          yearSelect.prop('disabled', true).val('');
-      }
-  });
+    const brandSelect = $('#brand');
+    const modelSelect = $('#model');
+    const yearSelect = $('#year');
+    
+    // 🚨 القيم الحالية للسيارة في وضع التعديل (يجب أن تكون موجودة في Blade)
+    const existingBrand = "{{ $car->listing_type ?? '' }}"; 
+    const existingModel = "{{ $car->listing_model ?? '' }}";
+    const existingYear = "{{ $car->listing_year ?? '' }}"; // القيمة المحفوظة للسنة
 
-  // ✅ تهيئة الموديل الحالي من قاعدة البيانات
-  const existingBrand = "{{ $car->brand ?? '' }}";
-  const existingModel = "{{ $car->model ?? '' }}";
-  if (existingBrand) {
-      brandSelect.val(existingBrand).trigger('change');
-      setTimeout(() => modelSelect.val(existingModel), 1000);
-  }
+    // ✅ دالة تحميل الموديلات (تعمل عند تغيير الماركة أو تحميل الصفحة)
+    brandSelect.on('change', function() {
+        const brandName = $(this).val();
+        
+        // 1. مسح وإعادة تعيين حقل الموديل
+        modelSelect.empty().append('<option value="">Select Model</option>');
+        
+        // 2. 💡 نقطة الحل: منع مسح قيمة السنة إذا كنا في وضع التعديل (existingBrand) 
+        // ولم يتم اختيار ماركة جديدة يدوياً.
+        if (brandName !== existingBrand) {
+            yearSelect.val(''); // يتم المسح فقط عند اختيار ماركة مختلفة
+        }
+        
+        if (brandName) {
+            $.ajax({
+                url: "{{ route('getModels') }}",
+                type: "GET",
+                data: { brand: brandName },
+                success: function(response) {
+                    
+                    // 3. ملء قائمة الموديلات الجديدة
+                    $.each(response.models, function(index, model) {
+                        modelSelect.append('<option value="'+model+'">'+model+'</option>');
+                    });
+                    
+                    // 4. تهيئة الموديل القديم بعد تحميل الخيارات
+                    if (existingModel && brandName === existingBrand) {
+                        modelSelect.val(existingModel);
+                    }
+
+                    // 5. 💡 نقطة الحل 2: إعادة تعيين قيمة السنة القديمة (للتأكيد بعد أي مسح محتمل)
+                    if (existingYear && brandName === existingBrand) {
+                        yearSelect.val(existingYear);
+                    }
+                    
+                    modelSelect.prop('disabled', false);
+                    yearSelect.prop('disabled', false);
+                },
+                error: function() {
+                    console.error("Failed to load models.");
+                    modelSelect.prop('disabled', true);
+                }
+            });
+        } else {
+            // حالة عدم اختيار ماركة
+            modelSelect.prop('disabled', true);
+            yearSelect.prop('disabled', true);
+        }
+    });
+
+    // ✅ تهيئة الصفحة عند التحميل
+    if (existingBrand) {
+        // تعيين قيمة البراند
+        brandSelect.val(existingBrand); 
+        
+        // تشغيل حدث الـ'change' مباشرة لجلب الموديلات
+        // (وهنا يتم تشغيل المنطق أعلاه مع الحفاظ على السنة)
+        brandSelect.trigger('change');
+    }
 });
 </script>
 <script>

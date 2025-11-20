@@ -1,5 +1,5 @@
 <style>
-    /* Custom Button Styles */
+/* (لا توجد تغييرات في الـCSS) */
     .custom-btn {
         background-color: #185D31;
         color: white;
@@ -28,6 +28,12 @@
         padding-top: 1rem;
         padding-bottom: 1rem;
     }
+    
+    /* تحديد لون التفعيل بشكل واضح */
+    .nav-link.active {
+        color: #5a0b0f !important; 
+        border-bottom: 2px solid #5a0b0f;
+    }
 
     /* Centering the Search Bar on Desktop (lg and up) */
     @media (min-width: 992px) {
@@ -50,7 +56,6 @@
             align-items: center;
         }
 
-        /* ✅ Logo and toggler in same row */
         .navbar-brand {
             flex: 1;
             order: 1;
@@ -61,7 +66,6 @@
             margin-left: auto;
         }
 
-        /* ✅ Search bar takes full width below */
         .search-container {
             width: 100%;
             margin: 0.75rem 0 !important;
@@ -82,7 +86,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm navbar-top-bar">
     <div class="container-fluid d-flex align-items-center">
 
-        <!-- ✅ Logo -->
         <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
             <img src="{{ asset('carllymotorsmainlogo_dark.png') }}" 
                  alt="Carl Motors Logo" 
@@ -90,24 +93,15 @@
                  style="max-height: 45px;">
         </a>
 
-        <!-- ✅ Burger icon (in same row on small screens) -->
         <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
             aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <i class="fas fa-bars fs-4"></i>
         </button>
 
-        <!-- ✅ Search Bar -->
         <div class="d-flex search-container">
             <form action="{{ route('global.search') }}" method="GET" 
                 class="d-flex align-items-center w-100" 
                 style="max-width: 700px;">
-                
-                {{-- <select name="type" class="form-select me-2" style="max-width: 130px; border-radius: 8px;">
-                    <option value="cars" {{ request('type') == 'cars' ? 'selected' : '' }}>Cars</option>
-                    <option value="spareparts" {{ request('type') == 'spareparts' ? 'selected' : '' }}>Spare Parts</option>
-                    <option value="workshops" {{ request('type') == 'workshops' ? 'selected' : '' }}>Workshops</option>
-                </select> --}}
-
                 <div class="input-group flex-grow-1 shadow-sm" style="border-radius: 10px; overflow: hidden; max-width: 500px;">
                     <span class="input-group-text bg-white border-0 d-none d-md-block">
                         <i class="fas fa-search text-muted"></i>
@@ -125,135 +119,81 @@
             </form>
         </div>
 
-        <!-- ✅ Collapsible Menu -->
         <div class="collapse navbar-collapse justify-content-end" id="navbarMenu">
-            <div class="d-flex flex-column flex-lg-row align-items-center gap-4 text-center text-lg-start">
-                <ul class="navbar-nav d-flex align-items-center gap-2 gap-lg-4 mb-0">
-                    <li class="nav-item">
-                        @guest
-                            <a href="{{ route('login') }}" class="text-dark fw-semibold text-decoration-none nav-link">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-car-front-fill" viewBox="0 0 16 16">
-  <path d="M2.52 3.515A2.5 2.5 0 0 1 4.82 2h6.362c1 0 1.904.596 2.298 1.515l.792 1.848c.075.175.21.319.38.404.5.25.855.715.965 1.262l.335 1.679q.05.242.049.49v.413c0 .814-.39 1.543-1 1.997V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.338c-1.292.048-2.745.088-4 .088s-2.708-.04-4-.088V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.892c-.61-.454-1-1.183-1-1.997v-.413a2.5 2.5 0 0 1 .049-.49l.335-1.68c.11-.546.465-1.012.964-1.261a.8.8 0 0 0 .381-.404l.792-1.848ZM3 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2m10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2M6 8a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2zM2.906 5.189a.51.51 0 0 0 .497.731c.91-.073 3.35-.17 4.597-.17s3.688.097 4.597.17a.51.51 0 0 0 .497-.731l-.956-1.913A.5.5 0 0 0 11.691 3H4.309a.5.5 0 0 0-.447.276L2.906 5.19Z"/>
-</svg>                                My Listing
+            <ul class="navbar-nav d-flex align-items-center gap-2 gap-lg-4 mb-0">
+
+                <li class="nav-item">
+                    {{-- 💡 تغيير الـhref لـ'#' إذا كان ضيفاً لمنع التفعيل التلقائي --}}
+                    <a href="{{ auth()->check() ? route('cars.my') : '#' }}" 
+                        class="text-dark fw-semibold text-decoration-none nav-link login-trigger {{ request()->routeIs('cars.my') ? 'active' : '' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-car-front-fill me-1" viewBox="0 0 16 16">
+                            <path d="M2.52 3.515A2.5 2.5 0 0 1 4.82 2h6.362c1 0 1.904.596 2.298 1.515l.792 1.848c.075.175.21.319.38.404.5.25.855.715.965 1.262l.335 1.679q.05.242.049.49v.413c0 .814-.39 1.543-1 1.997V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.338c-1.292.048-2.745.088-4 .088s-2.708-.04-4-.088V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.892c-.61-.454-1-1.183-1-1.997v-.413a2.5 2.5 0 0 1 .049-.49l.335-1.68c.11-.546.465-1.012.964-1.261a.8.8 0 0 0 .381-.404l.792-1.848ZM3 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2m10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2M6 8a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2zM2.906 5.189a.51.51 0 0 0 .497.731c.91-.073 3.35-.17 4.597-.17s3.688.097 4.597.17a.51.51 0 0 0 .497-.731l-.956-1.913A.5.5 0 0 0 11.691 3H4.309a.5.5 0 0 0-.447.276L2.906 5.19Z"/>
+                        </svg>
+                        My Listing
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    {{-- 💡 تغيير الـhref لـ'#' إذا كان ضيفاً لمنع التفعيل التلقائي --}}
+                    <a href="{{ auth()->check() ? route('cars.favList') : '#' }}" 
+                        class="text-dark fw-semibold text-decoration-none nav-link login-trigger {{ request()->routeIs('cars.favList') ? 'active' : '' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-heart-fill me-1" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+                        </svg>
+                        Favorites
+                    </a>
+                </li>
+
+                @auth
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-dark fw-semibold d-flex align-items-center" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i> Profile
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
+                        <li>
+                            <a href="{{ route('profile', auth()->user()->id) }}" class="dropdown-item">
+                                <i class="fas fa-user-circle me-2"></i> My Profile
                             </a>
-                        @else
-                         <a href="{{ route('cars.my') }}" class="text-dark fw-semibold text-decoration-none nav-link">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-car-front-fill" viewBox="0 0 16 16">
-  <path d="M2.52 3.515A2.5 2.5 0 0 1 4.82 2h6.362c1 0 1.904.596 2.298 1.515l.792 1.848c.075.175.21.319.38.404.5.25.855.715.965 1.262l.335 1.679q.05.242.049.49v.413c0 .814-.39 1.543-1 1.997V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.338c-1.292.048-2.745.088-4 .088s-2.708-.04-4-.088V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.892c-.61-.454-1-1.183-1-1.997v-.413a2.5 2.5 0 0 1 .049-.49l.335-1.68c.11-.546.465-1.012.964-1.261a.8.8 0 0 0 .381-.404l.792-1.848ZM3 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2m10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2M6 8a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2zM2.906 5.189a.51.51 0 0 0 .497.731c.91-.073 3.35-.17 4.597-.17s3.688.097 4.597.17a.51.51 0 0 0 .497-.731l-.956-1.913A.5.5 0 0 0 11.691 3H4.309a.5.5 0 0 0-.447.276L2.906 5.19Z"/>
-</svg>                            My Listing
-                        </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="post" action="{{ route('logout') }}">
+                                @csrf
+                                <button class="dropdown-item" type="submit">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                @endauth
 
-                        @endguest
-                    </li>
- 
+            </ul>
 
-
-                </ul>
-
-@guest
-    <a class="btn custom-btn" href="{{ route('login') }}">
-        <i class="fas fa-sign-in-alt me-1"></i> Login
-    </a>
-@else
-    <!-- My Favorites -->
-    <a href="{{ route('cars.favList') }}" class="nav-link text-dark fw-semibold d-flex align-items-center">
-<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
-</svg>  <span class="m-1">Favorites</span>
-    </a>
-
-    <!-- Profile Dropdown -->
-    <div class="dropdown">
-        <a class="nav-link dropdown-toggle text-dark fw-semibold d-flex align-items-center" href="#" data-bs-toggle="dropdown">
-            <i class="fas fa-user me-1"></i> Profile
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
-            <li>
-                <a href="{{ route('profile', auth()->user()->id) }}" class="dropdown-item">
-                    <i class="fas fa-user-circle me-2"></i> My Profile
-                </a>
-            </li>
-            {{-- <li>
-                <a href="{{ route('cars.create') }}" class="dropdown-item">
-                    <i class="fas fa-bullhorn me-2 text-secondary"></i> My Listings
-                </a>
-            </li> --}}
-            <li><hr class="dropdown-divider"></li>
-            <li>
-                <form method="post" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="dropdown-item" type="submit">
-                        <i class="fas fa-sign-out-alt me-2"></i> Logout
-                    </button>
-                </form>
-            </li>
-        </ul>
-    </div>
-@endguest
-
-
-<style>
-/* Navbar Text Buttons (like "Sell Your Car") */
-.navbar .nav-link {
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: 6px 10px;
-    border-radius: 6px;
-    transition: color 0.3s ease, background-color 0.3s ease;
-}
-
-/* Hover effect similar to Sell Your Car */
-.navbar .nav-link:hover {
-    color: #185D31 !important;
-    background-color: rgba(24, 93, 49, 0.08);
-    text-decoration: none;
-}
-
-/* Adjust icon spacing */
-.navbar .nav-link i {
-    font-size: 0.95rem;
-}
-/* ✅ Desktop View */
-.mega-menu {
-    max-height: 400px;
-    overflow-y: auto;
-    border-radius: 12px;
-    min-width: 650px;
-}
-
-/* ✅ Mobile Fix */
-@media (max-width: 768px) {
-    .mega-menu {
-        position: absolute !important;
-        top: 100% !important;
-        left: 0 !important;
-        width: 100% !important;
-        min-width: auto !important;
-        max-height: 70vh !important; /* 👈 خليه يسحب بمساحة 70% من الشاشة */
-        overflow-y: auto !important; /* 👈 يفعّل السكرول */
-        border-radius: 0 0 12px 12px !important;
-        background-color: #fff !important;
-        z-index: 9999 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    .mega-menu .row {
-        flex-direction: column !important;
-    }
-
-    .mega-menu .col-md-4 {
-        border: none !important;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #eee;
-    }
-
-    .mega-menu .col-md-4:last-child {
-        border-bottom: none;
-    }
-}
-
-</style>
-            </div>
+            @guest
+            <a class="btn custom-btn ms-2 {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}">
+                <i class="fas fa-sign-in-alt me-1"></i> Login
+            </a>
+            @endguest
         </div>
     </div>
 </nav>
+
+<script>
+// تأكد من تحميل jQuery قبل هذا السكريبت
+$(document).ready(function() {
+    // تحديد الروابط التي تحمل الكلاس login-trigger
+    $('.login-trigger').on('click', function(e) {
+        
+        // التحقق مما إذا كان المستخدم غير مسجل وأن الـhref هو #
+        const isGuest = ! {{ auth()->check() ? 'true' : 'false' }};
+        const isHashHref = $(this).attr('href') === '#';
+
+        if (isGuest && isHashHref) {
+            e.preventDefault(); // منع المتصفح من محاولة الذهاب لـ #
+            // التوجيه القسري لصفحة الدخول باستخدام مسار Laravel
+            window.location.href = "{{ route('login') }}";
+        }
+    });
+});
+</script>

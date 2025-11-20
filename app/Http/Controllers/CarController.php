@@ -174,6 +174,8 @@ public function store(Request $request)
         $car->wa_number             = '+971' . $request->phone;
         $car->listing_price         = $request->price;
         $car->listing_desc          = $request->description;
+        $car->features_door         = $request->door;
+
 
         // Save features_others
         $features = $request->features ?? '';
@@ -308,6 +310,7 @@ public function update(Request $request, CarListingModel $car)
         $car->location              = $request->location;
         $car->lat                   = $request->latitude;
         $car->lng                   = $request->longitude;
+        $car->features_door         = $request->door;
 
         // ✅ Handle features_others
         $features = $request->features ?? [];
