@@ -1,10 +1,13 @@
 @forelse ($carlisting as $key => $car)
     @php
+        // تأكد أن $favCars يتم تمريرها إلى هذا الجزء الجزئي أو قم بجلبها هنا إذا كانت غير متوفرة
+        // إذا كنت تجلبها في الكنترولر وتمررها للصفحة الرئيسية، تأكد من تمريرها إلى الـLoad More أيضاً
+        $favCars = auth()->check() ? auth()->user()->favCars()->pluck('id')->toArray() : [];
         $images = $car->images->map(fn($img) => env('FILE_BASE_URL') . $img->image)->toArray();
     @endphp
 
     <div class="col-12 p-0 col-md-10 col-lg-9 mb-4">
-        <div class="car-card shadow-sm rounded-4 overflow-hidden hover-card d-flex flex-column flex-lg-row">
+        <div id="car-{{ $car->id }}" class="car-card shadow-sm rounded-4 overflow-hidden hover-card d-flex flex-column flex-lg-row">
 
             {{-- 🖼️ الصورة clickable --}}
             <div class="car-carousel-container position-relative flex-shrink-0">
@@ -47,23 +50,34 @@
                 {{-- Favorite & Share --}}
                 <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
                     @if(auth()->check())
-                        @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
-                        <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
+                        
+                        {{-- 🏆 فورم الـFAV الصحيح (AJAX) --}}
+                        <form action="{{ route('cars.addTofav', $car->id) }}" method="POST" class="d-inline ajax-fav-form">
                             @csrf
-                            <button class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" type="submit" style="width:32px; height:32px; border-radius:50%;">
-                                <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+                            
+                            {{-- يجب أن يكون type="button" ويحتوي على الكلاس fav-button --}}
+                            <button type="button" 
+                                    class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center fav-button" 
+                                    style="width:32px; height:32px; border-radius:50%;"
+                                    data-car-id="{{ $car->id }}">
+
+                                @php $isFav = in_array($car->id, $favCars ?? []); @endphp 
+                                <i class="fas fa-heart" 
+                                   style="color: {{ $isFav ? '#dc3545' : '#6c757d' }}"></i>
                             </button>
                         </form>
+                        
                     @else
+                        {{-- (رابط تسجيل الدخول للزوار) --}}
                         <a href="{{ route('login') }}" class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" style="width:32px; height:32px; border-radius:50%;">
                             <i class="fas fa-heart" style="color:#6c757d;"></i>
                         </a>
                     @endif
 
                     <a href="https://wa.me/?text={{ urlencode('Check out this car: ' . route('car.detail', $car->id)) }}"
-                       target="_blank"
-                       class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                       style="width: 32px; height: 32px; border-radius: 50%;">
+                        target="_blank"
+                        class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+                        style="width: 32px; height: 32px; border-radius: 50%;">
                         <i class="fas fa-share-alt" style="color: #25d366;"></i>
                     </a>
                 </div>
@@ -126,8 +140,8 @@
                 {{-- Action Buttons --}}
                 <div class="action d-flex gap-2 mt-2">
                     <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode('Interested in this car: ' . $car->listing_type . ' ' . $car->listing_model) }}"
-                       target="_blank"
-                       class="flex-fill text-decoration-none">
+                        target="_blank"
+                        class="flex-fill text-decoration-none">
                         <button class="btn btn-outline-success w-100 rounded-4">
                             <i class="fab fa-whatsapp me-1"></i>
                         </button>

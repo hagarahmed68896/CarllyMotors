@@ -360,27 +360,36 @@ document.addEventListener('shown.bs.modal', function (event) {
 
                     <!-- Favorite & Share Buttons (unchanged) -->
                     <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
-                        @if(auth()->check())
-                            @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
-                            <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
-                                @csrf
-                                <button title="Add to favorites" 
-                                        class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                                        type="submit" 
-                                        aria-label="Add to favorites"
-                                        style="width: 32px; height: 32px; border-radius: 50%;">
-                                    <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
-                                </button>
-                            </form>
-                        @else
-                            <a href="{{ route('login') }}" 
-                               title="Login to add to favorites" 
-                               class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
-                               aria-label="Login to add to favorites"
-                               style="width: 32px; height: 32px; border-radius: 50%;">
-                                <i class="fas fa-heart" style="color: #6c757d;"></i>
-                            </a>
-                        @endif
+                     @if(auth()->check())
+    @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
+    
+    {{-- 1. إضافة الكلاس ajax-fav-form للفورم --}}
+    <form action="{{ route('cars.addTofav', $car->id) }}" 
+          method="POST" 
+          class="m-0 d-inline ajax-fav-form">
+        @csrf
+        
+        {{-- 2. تغيير type="submit" إلى type="button" وإضافة الكلاس fav-button و data-car-id --}}
+        <button title="Add to favorites" 
+                class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center fav-button"
+                type="button" 
+                aria-label="Add to favorites"
+                data-car-id="{{ $car->id }}"
+                style="width: 32px; height: 32px; border-radius: 50%;">
+            
+            <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+        </button>
+    </form>
+@else
+    {{-- هذا الجزء يظل كما هو ليوجه المستخدمين غير المسجلين للدخول --}}
+    <a href="{{ route('login') }}" 
+        title="Login to add to favorites" 
+        class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center"
+        aria-label="Login to add to favorites"
+        style="width: 32px; height: 32px; border-radius: 50%;">
+        <i class="fas fa-heart" style="color: #6c757d;"></i>
+    </a>
+@endif
 
                     <a href="https://wa.me/?text={{ urlencode(
     'اطّلع على هذه السيارة على موقع Carlly! عروض مميّزة بانتظارك' . "\n\n" .
@@ -1326,7 +1335,86 @@ document.addEventListener('shown.bs.modal', function (event) {
         </div>
     </div>
 </div>
+<script>
+    // هام: تأكد أن هذا الوسم موجود في الـhead: <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // نستخدم Event Delegation للتعامل مع أي زر إعجاب (fav-button)
+        document.addEventListener('click', function(e) {
+            
+            const favButton = e.target.closest('.fav-button');
+            if (!favButton) return; 
 
+            e.preventDefault(); // منع الإرسال التقليدي للفورم
+            
+            const form = favButton.closest('.ajax-fav-form');
+            if (!form) return;
+
+            const carId = favButton.getAttribute('data-car-id');
+            const heartIcon = favButton.querySelector('.fas.fa-heart');
+            
+            // تعطيل الزر لمنع الضغط المتكرر
+            favButton.disabled = true;
+
+            // 🚀 إرسال طلب AJAX
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ car_id: carId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); 
+            })
+            .then(data => {
+                
+                if (data.success === true) {
+                    const isFavorite = data.is_favorite; 
+                    
+                    // تحديد الألوان المستخدمة في الـBlade
+                    const favoriteColor = '#dc3545'; 
+                    const defaultColor = '#6c757d'; 
+                    
+                    // 1. تحديث لون الأيقونة
+                    heartIcon.style.color = isFavorite ? favoriteColor : defaultColor;
+                    
+                    // -----------------------------------------------------------------
+                    // 2. المنطق الحصري لصفحة المفضلة (الإزالة الفورية)
+                    
+                    // قم بتعديل هذا المسار ليتطابق مع مسار صفحة المفضلة لديك (مثلاً: '/user/favorites')
+                    const isFavoritesPage = window.location.pathname.includes('/favorites'); 
+                    
+                    // إذا كان تم إلغاء الإعجاب (!isFavorite) وكنا في صفحة المفضلة
+                    if (isFavoritesPage && !isFavorite) {
+                        // نبحث عن أقرب عنصر أب يحمل كلاس العمود لتغليف الكرت بالكامل
+                        const carCardWrapper = favButton.closest('.col-sm-6.col-lg-4.col-xl-3'); 
+                        
+                        if (carCardWrapper) {
+                            carCardWrapper.remove(); // إزالة العنصر من الواجهة
+                        }
+                    }
+                    // -----------------------------------------------------------------
+                    
+                } else {
+                    alert('فشل في عملية الإعجاب. الرجاء المحاولة مرة أخرى.');
+                }
+            })
+            .catch(error => {
+                console.error('Favorite Toggle Error:', error);
+                alert('حدث خطأ فني أثناء الإرسال.');
+            })
+            .finally(() => {
+                favButton.disabled = false;
+            });
+        });
+    });
+</script>
 @push('carlistingscript')
     <!-- External Dependencies -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />

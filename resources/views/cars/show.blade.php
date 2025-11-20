@@ -158,8 +158,11 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-light p-3 rounded">
             <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('cars.index') }}">Used Cars</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ $car->listing_type }} {{ $car->listing_model }}</li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('cars.index', ['type' => strtolower($car->car_type)]) }}">
+            {{ $car->car_type }} Cars
+        </a>
+    </li>            <li class="breadcrumb-item active" aria-current="page">{{ $car->listing_type }} {{ $car->listing_model }}</li>
         </ol>
     </nav>
 
@@ -172,17 +175,27 @@
            <div class="card shadow-sm border-0 rounded-3 mb-4 overflow-hidden">
   <div class="swiper carSwiper rounded-3">
             <!-- Heart Icon -->
-                    @auth
-                        @php
-                            $favCars = auth()->user()->favCars()->pluck('id')->toArray();
-                        @endphp
-                        <form action="{{ route('cars.addTofav', $car->id) }}" method="post">
-                            @csrf
-                            <button class="btn btn-link p-0">
-                                <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#760e13' : 'white' }}"></i>
-                            </button>
-                        </form>
-                    @endauth
+                @auth
+    @php
+        $favCars = auth()->user()->favCars()->pluck('id')->toArray();
+    @endphp
+    
+    {{-- 1. إضافة الكلاس ajax-fav-form للفورم --}}
+    <form action="{{ route('cars.addTofav', $car->id) }}" 
+          method="POST" 
+          class="d-inline ajax-fav-form"> 
+        @csrf
+        
+        {{-- 2. تغيير نوع الزر إلى button وإضافة الكلاس fav-button و data-car-id --}}
+        <button type="button" 
+                class="btn btn-link p-0 fav-button"
+                data-car-id="{{ $car->id }}">
+            
+            <i class="fas fa-heart" 
+               style="color: {{ in_array($car->id, $favCars) ? '#760e13' : 'white' }}"></i>
+        </button>
+    </form>
+@endauth
     <div class="swiper-wrapper">
       @if($images && count($images) > 0)
         @foreach ($images as $image)
@@ -482,5 +495,88 @@ class="btn btn-outline-primary flex-fill rounded-4">
     function closeFullMap() {
         document.getElementById('fullMapModal').style.display = 'none';
     }
+</script>
+<script>
+    // يجب التأكد أن هذا الوسم موجود في الـhead: <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // نستخدم Event Delegation للتعامل مع العناصر التي يتم إضافتها لاحقاً (مثل Load More)
+        document.addEventListener('click', function(e) {
+            
+            const favButton = e.target.closest('.fav-button');
+            if (!favButton) return; 
+
+            e.preventDefault(); 
+            
+            const form = favButton.closest('.ajax-fav-form');
+            if (!form) return;
+
+            const carId = favButton.getAttribute('data-car-id');
+            const heartIcon = favButton.querySelector('.fas.fa-heart');
+            
+            // تعطيل الزر لمنع الضغط المتكرر
+            favButton.disabled = true;
+
+            // 🚀 إرسال طلب AJAX باستخدام Fetch API
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ car_id: carId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); 
+            })
+            .then(data => {
+                
+                if (data.success === true) {
+                    const isFavorite = data.is_favorite; 
+                    
+                    // 1. تحديث لون الأيقونة في الواجهة بناءً على حالة الإعجاب الجديدة
+                    // هنا نستخدم الألوان العامة التي ظهرت في معظم الأكواد لديك (#dc3545 أو #760e13 للمفضل، والرمادي/الأبيض لغير المفضل)
+                    // يفضل توحيد الألوان في ملف CSS بدلاً من الـinline style
+                    const favoriteColor = '#dc3545'; // أو '#760e13' حسب تصميمك
+                    const defaultColor = '#6c757d'; // أو 'white' حسب تصميمك
+                    
+                    heartIcon.style.color = isFavorite ? favoriteColor : defaultColor;
+                    
+                    // -----------------------------------------------------------------
+                    // 2. المنطق الحصري لصفحة المفضلة: إزالة العنصر من الواجهة
+                    
+                    // تحقق ما إذا كنا في صفحة المفضلة (يجب أن يتطابق مع مسار صفحتك)
+                    const isFavoritesPage = window.location.pathname.includes('/favorites') || 
+                                            window.location.pathname.includes('/your-favorite-route'); // قم بتعديل المسار
+                    
+                    // إذا كان تم إلغاء الإعجاب (!isFavorite) وكنا في صفحة المفضلة
+                    if (isFavoritesPage && !isFavorite) {
+                        // نبحث عن العنصر الأب الذي يمثل عمود الكرت بالكامل (col-sm-6...)
+                        const carCardWrapper = favButton.closest('.col-sm-6.col-lg-4.col-xl-3'); 
+                        
+                        if (carCardWrapper) {
+                            carCardWrapper.remove(); // إزالة العنصر من الـDOM
+                        }
+                    }
+                    // -----------------------------------------------------------------
+                    
+                } else {
+                    alert('فشل في عملية الإعجاب. الرجاء المحاولة مرة أخرى.');
+                }
+            })
+            .catch(error => {
+                console.error('Favorite Toggle Error:', error);
+                alert('حدث خطأ فني أثناء الإرسال.');
+            })
+            .finally(() => {
+                // إعادة تفعيل الزر
+                favButton.disabled = false;
+            });
+        });
+    });
 </script>
 @endsection

@@ -57,19 +57,27 @@ h2.text-center::after {
 
                         <!-- Favorite & Share -->
                         <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index:10;">
-                            @if(auth()->check())
-                                @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
-                                <form action="{{ route('cars.addTofav', $car->id) }}" method="post" class="m-0">
-                                    @csrf
-                                    <button type="submit" class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" style="width:32px;height:32px;border-radius:50%;">
-                                        <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
-                                    </button>
-                                </form>
-                            @else
-                                <a href="{{ route('login') }}" class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" style="width:32px;height:32px;border-radius:50%;">
-                                    <i class="fas fa-heart text-secondary"></i>
-                                </a>
-                            @endif
+                        @if(auth()->check())
+    @php $favCars = auth()->user()->favCars()->pluck('id')->toArray(); @endphp
+    
+    {{-- تم إضافة الكلاس ajax-fav-form --}}
+    <form action="{{ route('cars.addTofav', $car->id) }}" method="POST" class="d-inline ajax-fav-form m-0">
+        @csrf
+        
+        {{-- تم تغيير type="submit" إلى type="button" وتم إضافة الكلاس fav-button --}}
+        <button type="button" 
+                class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center fav-button" 
+                style="width:32px;height:32px;border-radius:50%;"
+                data-car-id="{{ $car->id }}">
+
+            <i class="fas fa-heart" style="color: {{ in_array($car->id, $favCars) ? '#dc3545' : '#6c757d' }}"></i>
+        </button>
+    </form>
+@else
+    <a href="{{ route('login') }}" class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center" style="width:32px;height:32px;border-radius:50%;">
+        <i class="fas fa-heart text-secondary"></i>
+    </a>
+@endif
 
                           <a href="https://wa.me/?text={{ urlencode(
     'اطّلع على هذه السيارة على موقع Carlly! عروض مميّزة بانتظارك' . "\n\n" .
@@ -209,5 +217,81 @@ document.addEventListener('shown.bs.modal', function(event){
     }
 });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('click', function(e) {
+            
+            const favButton = e.target.closest('.fav-button');
+            if (!favButton) return;
 
+            e.preventDefault(); 
+            const form = favButton.closest('.ajax-fav-form');
+            if (!form) return;
+
+            const carId = favButton.getAttribute('data-car-id');
+            const heartIcon = favButton.querySelector('.fas.fa-heart');
+            
+            favButton.disabled = true;
+
+            // 🚀 إرسال طلب AJAX
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ car_id: carId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); 
+            })
+            .then(data => {
+                // ✅ معالجة الرد الناجح
+                if (data.success === true) {
+                    const isFavorite = data.is_favorite; 
+
+                    // 1. تحديث لون الأيقونة
+                    if (isFavorite) {
+                        heartIcon.style.color = '#dc3545'; // اللون الأحمر (Favorite)
+                    } else {
+                        heartIcon.style.color = '#6c757d'; // اللون الرمادي (Not Favorite)
+                    }
+                    
+                    // -----------------------------------------------------------------
+                    // 💡 المنطق الحصري لصفحة المفضلة: إزالة العنصر من الواجهة (الـDOM)
+                    
+                    // بما أننا نعلم أن هذا السكريبت موجود في صفحة المفضلة، 
+                    // إذا كان الرد هو إلغاء الإعجاب (!isFavorite)
+                    if (!isFavorite) {
+                        // نبحث عن أقرب عنصر أب يحمل الكلاس car-card
+                        const carCardWrapper = favButton.closest('.col-sm-6.col-lg-4.col-xl-3'); 
+                        
+                        // يفضل استخدام العنصر الذي يحمل class الـcol لضمان إزالة العمود بالكامل
+                        // carCardWrapper هو: <div class="col-sm-6 col-lg-4 col-xl-3">
+                        
+                        if (carCardWrapper) {
+                            // إزالة العنصر من الـDOM
+                            carCardWrapper.remove();
+                        }
+                    }
+                    // -----------------------------------------------------------------
+                    
+                } else {
+                    alert('فشل في عملية الإعجاب. الرجاء المحاولة مرة أخرى.');
+                }
+            })
+            .catch(error => {
+                console.error('Favorite Toggle Error:', error);
+                alert('حدث خطأ فني أثناء الإرسال.');
+            })
+            .finally(() => {
+                favButton.disabled = false;
+            });
+        });
+    });
+</script>
 @endsection

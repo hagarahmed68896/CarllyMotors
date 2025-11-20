@@ -398,39 +398,66 @@ public function destroy(CarListingModel $car)
     }
 
 
-    public function loadMoreCars(Request $request)
-    {
-        $cars = CarlistingModel::with(['user', 'images'])->orderBy('id', 'desc')->paginate(9); // تحميل 8 سيارات في كل مرة
-
-        $cars->getCollection()->transform(function ($car) {
-            $firstValidImage = $car->images->first(function ($image) {
-                return Storage::disk('r2')->exists($image->image);
-            });
+public function loadMoreCars(Request $request)
+{
+    // ... جلب السيارات ($cars) ...
+    $cars = CarlistingModel::with(['user', 'images'])
+        ->orderBy('id', 'desc')
+        ->paginate(9);
         
-            $car->image = $firstValidImage;
-            return $car;
-        });
+    // ... معالجة الصور ...
 
-        return response()->json([
-            'cars' => view('partials.car_card', compact('cars'))->render(),
-        ]);
+    // 🚨 الخطوة الحاسمة: جلب وتمرير $favCars
+    if (auth()->check()) {
+        $favCars = auth()->user()->favCars()->pluck('id')->toArray();
+    } else {
+        $favCars = []; // قائمة فارغة إذا لم يسجل دخول
     }
+    
+    return response()->json([
+        // تمرير $favCars ضمن الـView
+        'cars' => view('partials.car_card', compact('cars', 'favCars'))->render(),
+    ]);
+}
 
  // app/Http/Controllers/YourController.php
 
 public function addTofav(Request $request, $carId)
 {
-    $user = auth()->user();
-
-    if ($user->favCars->contains($carId)) {
-        $user->favCars()->detach($carId);
-    } else {
-        $user->favCars()->attach($carId);
+    // التأكد من تسجيل الدخول
+    if (!auth()->check()) {
+        return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
     }
+    
+    // 🚨 الخطوة 1: تسجيل الـID لنرى هل تم استقباله
+    \Log::info("Attempting to toggle favorite for Car ID: " . $carId);
 
-    return redirect()->back()->withFragment('car-' . $carId);
+    $user = auth()->user();
+    $carId = (int) $carId; 
+    
+    try {
+        // 2. تنفيذ العملية ومحاولة التقاط النتيجة
+        $result = $user->favCars()->toggle($carId);
+        
+        // 3. التحقق من الحالة الجديدة
+        $isAdded = !empty($result['attached']); 
+
+        // 🚨 الخطوة 2: تسجيل نتيجة العملية في اللوغ
+        \Log::info("Toggle result for Car ID {$carId}: " . json_encode($result));
+
+        // 4. الرد بنجاح
+        return response()->json([
+            'success' => true,
+            'is_favorite' => $isAdded,
+            'car_id' => $carId
+        ]);
+
+    } catch (\Exception $e) {
+        // 🚨 الخطوة 3: تسجيل أي خطأ غير متوقع
+        \Log::error("Favorite Toggle Error: " . $e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Database error'], 500);
+    }
 }
-
 
 
 

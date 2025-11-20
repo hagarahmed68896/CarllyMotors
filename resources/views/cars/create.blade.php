@@ -1312,7 +1312,7 @@ document.addEventListener("DOMContentLoaded", function() {
     </script>
 <script>
 document.getElementById('carForm').addEventListener('submit', function(e){
-    e.preventDefault(); // منع إعادة تحميل الصفحة
+    e.preventDefault(); 
 
     const formData = new FormData(this);
     const url = "{{ route('cars.store') }}";
@@ -1322,42 +1322,49 @@ document.getElementById('carForm').addEventListener('submit', function(e){
     errorsDiv.classList.add('d-none');
     errorsDiv.innerHTML = '';
 
+    // Optional: show loading spinner
+    const submitBtn = this.querySelector('button[type=submit]');
+    submitBtn.disabled = true;
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = 'Submitting...';
+
     fetch(url, {
         method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('input[name=_token]').value
-        },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('input[name=_token]').value },
         body: formData
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            window.location.href = `/car/${data.car_id}`;
-        } 
-        else if (data.errors) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
 
-            // build error list with red background box
+        if (data.success) {
+            setTimeout(() => {
+                window.location.href = `/car/${data.car_id}`;
+            }, 200);
+        } else if (data.errors) {
             let html = '<ul class="mb-0">';
             for (const key in data.errors) {
                 html += `<li>${data.errors[key]}</li>`;
             }
             html += '</ul>';
-
             errorsDiv.innerHTML = html;
             errorsDiv.classList.remove('d-none');
-
-            // scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     })
     .catch(err => {
         console.error(err);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+
         errorsDiv.innerHTML = '<p>Something went wrong. Please try again.</p>';
         errorsDiv.classList.remove('d-none');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 });
 </script>
+
 
 
 

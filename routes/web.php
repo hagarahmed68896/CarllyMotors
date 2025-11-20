@@ -102,14 +102,17 @@ Route::get('grid', [HomeController::class, 'carListing'])->name('listing.grid');
 // Cars
 Route::resource('cars', CarController::class);
 Route::get('/car/{id}', [HomeController::class, 'detail'])->name('car.detail');
-Route::post('/cars/addTofav/{carId}', [CarController::class, 'addTofav'])
-    ->name('cars.addTofav')
-    ->middleware('auth');
+// Route::post('/cars/addTofav/{carId}', [CarController::class, 'addTofav'])
+//     ->name('cars.addTofav')
+//     ->middleware('auth');
+    // في ملف routes/web.php أو routes/api.php 
+Route::post('/cars/{carId}/favorite', [CarController::class, 'addTofav'])->name('cars.addTofav');
 Route::get('/favList', [CarController::class, 'favList'])->name('cars.favList')->middleware('auth');
 Route::get('/myCarListing', [CarController::class, 'myCarListing'])->name('myCarListing')->middleware('auth');
 Route::get('cars/homeSection', [CarController::class, 'homeSection'])->name('cars.homeSection');
 Route::get('getModels', [CarController::class, 'getModels'])->name('getModels');
 Route::get('/my-cars', [CarController::class, 'myCarListing'])->name('cars.my');
+
  // Edit & Update car
     Route::get('{car}/edit', [CarController::class, 'edit'])->name('car.edit');
     Route::put('{car}', [CarController::class, 'update'])->name('car.update');

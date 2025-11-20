@@ -456,7 +456,7 @@ function submitTopFilter() {
       @endphp
 
       <div class="col-12 p-0 col-md-10 col-lg-9">
-        <div class="car-card shadow-sm rounded-4 overflow-hidden hover-card d-flex flex-column flex-lg-row">
+        <div id="car-{{ $car->id }}" class="car-card shadow-sm rounded-4 overflow-hidden hover-card d-flex flex-column flex-lg-row">
  
           {{-- 🖼️ الصورة clickable --}}
          <div class="car-carousel-container position-relative flex-shrink-0">
@@ -503,14 +503,23 @@ function submitTopFilter() {
     $isFav = in_array($car->id, $favCars);
 @endphp
 
-<form action="{{ route('cars.addTofav', $car->id) }}" method="POST" class="d-inline">
+{{-- ... داخل الحلقة @forelse ... --}}
+
+<form action="{{ route('cars.addTofav', $car->id) }}" method="POST" class="d-inline ajax-fav-form">
     @csrf
-    <button class="btn btn-light btn-sm border-0" style="width:32px; height:32px; border-radius:50%;">
-        <i class="fas fa-heart {{ $isFav ? 'text-danger' : 'text-secondary' }}"></i>
+    
+    {{-- 💡 تأكد أن type="button" هنا لمنع الـSubmit العادي --}}
+    <button type="button" 
+            class="btn btn-light btn-sm shadow-sm border-0 d-flex align-items-center justify-content-center fav-button" 
+            style="width:32px; height:32px; border-radius:50%;"
+            data-car-id="{{ $car->id }}">
+        {{-- 💡 يجب أن يكون الـIcon داخل الزر ويحمل Class محدد بالـID --}}
+        <i class="fas fa-heart fav-icon-{{ $car->id }}" 
+           style="color: {{ $isFav ? '#dc3545' : '#6c757d' }}"></i>
     </button>
 </form>
 
-<a id="car-{{ $car->id }}"></a>
+{{-- <a id="car-{{ $car->id }}"></a> --}}
 
 
 
@@ -704,6 +713,7 @@ class="flex-fill text-decoration-none">
           </div>
 
         </div>
+
         <!-- 🔍 Zoom Modal -->
 @if($images && count($images) > 0)
 <div class="modal fade" id="zoomModal-{{ $key }}" tabindex="-1" aria-hidden="true">
@@ -1064,5 +1074,149 @@ observer.observe(trigger);
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{{-- <script>
+function performScroll() {
+    const fragment = window.location.hash; // #car-123
+    
+    if (fragment) {
+        const el = document.querySelector(fragment); 
+        
+        if (el) {
+            // 🎯 وجدنا العنصر: قم بعمل Scroll فورا
+            const headerOffset = 100; // قيمة الأوفسيت
+            const offsetPosition = el.offsetTop - headerOffset;
 
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+            });
+            
+            // إزالة الهاش من الـURL بعد الـScroll
+            history.replaceState(null, null, window.location.pathname + window.location.search);
+            
+            console.log('Scroll successful to:', fragment);
+            return true;
+        }
+    }
+    return false;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // إذا لم يكن هناك هاش في الرابط، توقف.
+    if (!window.location.hash) {
+        return;
+    }
+    
+    // 1. محاولة الـScroll فوراً
+    if (performScroll()) {
+        return;
+    }
+
+    // 2. إذا فشلت المحاولة الأولى، ابدأ التكرار (لانتظار محتوى الـLoad More)
+    let attempts = 0;
+    const maxAttempts = 50; // 5 ثواني كحد أقصى للبحث
+    
+    const scrollInterval = setInterval(() => {
+        
+        // 🚨 المحاولة الأساسية:
+        if (performScroll()) {
+            clearInterval(scrollInterval);
+            return;
+        }
+
+        attempts++;
+        
+        // إذا فشلنا بعد عدد كبير من المحاولات، توقف
+        if (attempts >= maxAttempts) {
+            clearInterval(scrollInterval);
+            console.log('Scroll failed after maximum attempts.');
+        }
+
+    }, 100); // حاول كل 100 ملي ثانية
+});
+</script> --}}
+<script>
+// ----------------------------------------------------------------------
+// دالة handleFavoriteAction (تبقى كما هي، وهي صحيحة)
+// ----------------------------------------------------------------------
+function handleFavoriteAction(formElement, buttonElement) {
+    buttonElement.disabled = true;
+
+    const carId = buttonElement.dataset.carId;
+    const actionUrl = formElement.action;
+    // ملاحظة: هذا السطر يجب أن يكون ناجحاً لجميع الفورمات، بما في ذلك المحملة عبر AJAX
+    const csrfToken = formElement.querySelector('input[name="_token"]').value; 
+    
+const favIcon = buttonElement.querySelector('.fas.fa-heart');
+    // 1. إرسال طلب AJAX (POST)
+    fetch(actionUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => {
+        // ... (معالجة الأخطاء) ...
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            
+            // 2. تحديث الـIcon
+            if (favIcon) {
+                favIcon.style.color = data.is_favorite ? '#dc3545' : '#6c757d';
+            }
+            
+            // 3. منطق الـScroll (يحدث فقط عند الإضافة)
+            if (data.is_favorite) { 
+                const targetElement = document.getElementById(`car-${carId}`);
+                if (targetElement) {
+                    const offsetPosition = targetElement.offsetTop - 230;
+                    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                    
+                    history.pushState(null, null, window.location.pathname + window.location.search + `#car-${carId}`);
+                    setTimeout(() => {
+                        history.replaceState(null, null, window.location.pathname + window.location.search);
+                    }, 1000);
+                }
+            } else {
+                history.replaceState(null, null, window.location.pathname + window.location.search);
+            }
+        } else {
+            console.error('AJAX request failed:', data);
+        }
+    })
+    .catch(error => {
+        console.error('Error during AJAX call:', error);
+    })
+    .finally(() => {
+        buttonElement.disabled = false;
+    });
+}
+
+// ----------------------------------------------------------------------
+// مُعالِج الحدث الموحد (Event Delegation)
+// ----------------------------------------------------------------------
+
+// 🚨 هذا هو المُعالِج الوحيد الذي يجب استخدامه.
+// يقوم بتعويض كل من 'submit' و 'click' ويعمل على كل المحتوى المحمل عبر AJAX.
+document.addEventListener('click', function(e) {
+    const button = e.target.closest('.fav-button');
+    
+    if (button) {
+        // منع أي سلوك افتراضي (مهم جداً!)
+        e.preventDefault(); 
+        
+        const form = button.closest('.ajax-fav-form');
+        
+        if (form) {
+            handleFavoriteAction(form, button);
+        }
+    }
+});
+</script>
 @endsection
