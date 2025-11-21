@@ -291,6 +291,21 @@ function startCountdown(seconds) {
         }
     }, 1000);
 }
+const phoneInput = document.getElementById("phone");
+
+phoneInput.addEventListener("input", function () {
+    let value = this.value.replace(/\D/g, ''); // يسمح بالأرقام فقط
+
+    // لو أول رقم 0 شيله
+    if (value.startsWith("0")) {
+        value = value.substring(1);
+    }
+
+    // اقصى طول 9 أرقام فقط
+    value = value.substring(0, 9);
+
+    this.value = value;
+});
 
 </script>
 
