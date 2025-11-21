@@ -302,12 +302,18 @@ document.addEventListener('DOMContentLoaded', function () {
       <!-- ✅ YEAR -->
       <div class="mb-3">
         <label class="form-label fw-semibold small text-muted">Year</label>
-        <select class="form-select" id="yearSelect" name="year" disabled required>
-          <option value="">All Years</option>
-          @foreach($years as $year)
-            <option value="{{ $year }}">{{ $year }}</option>
-          @endforeach
-        </select>
+        @php
+    $currentYear = date('Y') + 1; // السنة القادمة
+    $years = range($currentYear, 1990);
+@endphp
+
+      <select class="form-select" id="yearSelect" name="year" disabled required>
+    <option value="">All Years</option>
+    @foreach($years as $year)
+        <option value="{{ $year }}">{{ $year }}</option>
+    @endforeach
+</select>
+
       </div>
 
    <!-- ✅ CITY -->
