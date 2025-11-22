@@ -175,13 +175,14 @@
                 </li>
                 @endauth
 
-            </ul>
+          
 
             @guest
             <a class="btn custom-btn ms-2 {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}">
                 <i class="fas fa-sign-in-alt me-1"></i> Login
             </a>
             @endguest
+              </ul>
         </div>
     </div>
 </nav>
