@@ -1046,6 +1046,14 @@ document.getElementById('saveLocationBtn').addEventListener('click', function() 
             </form>
         </div>
     </div>
+<div id="pageFreeze"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(255,255,255,0.25); /* أخف من 0.6 */
+            z-index:9999; 
+            backdrop-filter:blur(3px);">
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script>
@@ -1356,6 +1364,10 @@ document.getElementById('carForm').addEventListener('submit', function(e){
     errorsDiv.classList.add('d-none');
     errorsDiv.innerHTML = '';
 
+    // FREEZE PAGE
+    document.getElementById('pageFreeze').style.display = 'block';
+    document.body.style.overflow = 'hidden'; // stop scrolling
+
     // Optional: show loading spinner
     const submitBtn = this.querySelector('button[type=submit]');
     submitBtn.disabled = true;
@@ -1369,6 +1381,11 @@ document.getElementById('carForm').addEventListener('submit', function(e){
     })
     .then(res => res.json())
     .then(data => {
+
+        // UNFREEZE PAGE
+        document.getElementById('pageFreeze').style.display = 'none';
+        document.body.style.overflow = 'auto';
+
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
 
@@ -1388,6 +1405,11 @@ document.getElementById('carForm').addEventListener('submit', function(e){
         }
     })
     .catch(err => {
+
+        // UNFREEZE PAGE
+        document.getElementById('pageFreeze').style.display = 'none';
+        document.body.style.overflow = 'auto';
+
         console.error(err);
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
@@ -1398,6 +1420,7 @@ document.getElementById('carForm').addEventListener('submit', function(e){
     });
 });
 </script>
+
 
 
 

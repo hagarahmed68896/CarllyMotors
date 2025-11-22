@@ -356,8 +356,9 @@
                 </div>
 
                 <!-- Hidden Lat & Lng -->
-                <input type="hidden" id="latitude" name="latitude" value="{{ $user->latitude }}">
-                <input type="hidden" id="longitude" name="longitude" value="{{ $user->longitude }}">
+<input type="hidden" id="latitude" name="latitude" value="{{ old('latitude', $user->lat) }}">
+<input type="hidden" id="longitude" name="longitude" value="{{ old('longitude', $user->lng) }}">
+
             </div>
 
             <div class="mt-4 text-end">
@@ -402,71 +403,86 @@
 
 <script>
 function initMap() {
-    const lat = parseFloat(@json($user->latitude ?? 25.276987));
-    const lng = parseFloat(@json($user->longitude ?? 55.296249));
-    const mapOptions = {
-        center: { lat, lng },
-        zoom: 10,
-    };
+    // 1. قراءة القيم من حقول الإدخال المخفية، أو استخدام إحداثيات دبي كافتراضي
+    const defaultLat = 25.276987; // إحداثيات افتراضية لدبي
+    const defaultLng = 55.296249; // إحداثيات افتراضية لدبي
 
-    const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    // قراءة القيم المحفوظة. إذا كانت فارغة أو غير صالحة، استخدم الافتراضية.
+    const savedLat = parseFloat(document.getElementById("latitude").value) || defaultLat;
+    const savedLng = parseFloat(document.getElementById("longitude").value) || defaultLng;
+    const initialLocation = { lat: savedLat, lng: savedLng };
+
+    const map = new google.maps.Map(document.getElementById("map"), {
+        center: initialLocation, // استخدم الموقع المحفوظ أو الافتراضي كمركز
+        zoom: 10,
+    });
+
     const marker = new google.maps.Marker({
-        position: { lat, lng },
+        position: initialLocation, // استخدم الموقع المحفوظ أو الافتراضي كمركز للمؤشر
         map: map,
         draggable: true,
     });
 
     const geocoder = new google.maps.Geocoder();
 
-function updateAddress(latLng) {
-    geocoder.geocode({ location: latLng }, (results, status) => {
-        if (status === "OK" && results[0]) {
-            let neighborhood = "";
-            let city = "";
-            let country = "";
+    function updateAddress(latLng) {
+        geocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                let neighborhood = "";
+                let city = "";
+                let country = "";
 
-            results[0].address_components.forEach(component => {
-                if (component.types.includes("sublocality") || component.types.includes("neighborhood")) {
-                    neighborhood = component.long_name;
-                }
-                if (component.types.includes("locality")) {
-                    city = component.long_name;
-                }
-                if (component.types.includes("country")) {
-                    country = component.long_name;
-                }
-            });
+                results[0].address_components.forEach(component => {
+                    if (component.types.includes("sublocality") || component.types.includes("neighborhood")) {
+                        neighborhood = component.long_name;
+                    }
+                    if (component.types.includes("locality")) {
+                        city = component.long_name;
+                    }
+                    if (component.types.includes("country")) {
+                        country = component.long_name;
+                    }
+                });
 
-            // ✅ نبني العنوان المختصر
-            let shortAddress = [neighborhood, city, country].filter(Boolean).join(", ");
+                let shortAddress = [neighborhood, city, country].filter(Boolean).join(", ");
+                
+                if (!shortAddress) {
+                    // fallback to last three components
+                    shortAddress = results[0].formatted_address.split(',').slice(-3).join(', ');
+                }
 
-            // ✅ في حالة مفيش بيانات كافية، نستخدم آخر جزئين من العنوان الكامل
-            if (!shortAddress) {
-                shortAddress = results[0].formatted_address.split(',').slice(-3).join(', ');
+                document.getElementById("location").value = shortAddress;
+            } else {
+                document.getElementById("location").value = `Coordinates: ${latLng.lat().toFixed(4)}, ${latLng.lng().toFixed(4)}`;
             }
+        });
+    }
 
-            document.getElementById("location").value = shortAddress;
-        }
-    });
-}
-
-
-    google.maps.event.addListener(marker, 'dragend', function (event) {
-        const latLng = event.latLng;
+    function updateLatLngInputs(latLng) {
+        // تحديث قيم خط الطول والعرض المخفية بدقة 6 أرقام عشرية للحفظ
         document.getElementById("latitude").value = latLng.lat().toFixed(6);
         document.getElementById("longitude").value = latLng.lng().toFixed(6);
-        updateAddress(latLng);
+    }
+
+    // 2. تحديث عند سحب المؤشر (Drag)
+    marker.addListener("dragend", (event) => {
+        updateLatLngInputs(event.latLng);
+        updateAddress(event.latLng);
     });
 
+    // 3. تحديث عند الضغط على الخريطة (Click)
     map.addListener("click", (event) => {
-        const latLng = event.latLng;
-        marker.setPosition(latLng);
-        document.getElementById("latitude").value = latLng.lat().toFixed(6);
-        document.getElementById("longitude").value = latLng.lng().toFixed(6);
-        updateAddress(latLng);
+        marker.setPosition(event.latLng);
+        updateLatLngInputs(event.latLng);
+        updateAddress(event.latLng);
     });
+
+    // 4. التشغيل عند تحميل الصفحة لأول مرة (لجلب العنوان الأول)
+    updateAddress(initialLocation);
 }
 </script>
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
   const imageInput = document.getElementById('imageInput');

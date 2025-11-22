@@ -24,32 +24,40 @@ public function verifyToken(Request $request)
 {
     try {
         $idTokenString = $request->input('token');
-        $frontendPhone = $request->input('phone'); // ✅ new line
+
+        // frontend data (مش مهمة لو Firebase موجود لكن لازم نخزنها)
+        $fname = $request->input('fname');
+        $lname = $request->input('lname');
+        $frontendPhone = $request->input('phone');
+        $frontendEmail = $request->input('email');
 
         // ========== DEBUG MODE ==========
         if ($idTokenString === 'FAKE_ID_TOKEN_FOR_DEV' || $request->boolean('debug')) {
+
             $uid = $request->input('uid') ?? 'DEBUG_UID_' . uniqid();
-            $phone = $frontendPhone ?? null;
-            $email = $request->input('email') ?? '';
-            
-        $fname = $request->input('fname') ?? null;
-$lname = $request->input('lname') ?? null;
 
-$user = allUsersModel::updateOrCreate(
-    ['firebase_uid' => $uid],
-    [
-        'fname'    => $fname,
-        'lname'    => $lname,
-        'email'    => $email,
-        'phone'    => $phone,
-        'password' => bcrypt('123456'),
-        'userType' => 'user',
-    ]
-);
+            // VALIDATION
+            if ($frontendPhone && allUsersModel::where('phone', $frontendPhone)->exists()) {
+                return response()->json(['success' => false, 'error' => 'Phone already exists'], 409);
+            }
+            if ($frontendEmail && allUsersModel::where('email', $frontendEmail)->exists()) {
+                return response()->json(['success' => false, 'error' => 'Email already exists'], 409);
+            }
 
+            // CREATE / UPDATE
+            $user = allUsersModel::updateOrCreate(
+                ['firebase_uid' => $uid],
+                [
+                    'fname' => $fname,
+                    'lname' => $lname,
+                    'email' => $frontendEmail,
+                    'phone' => $frontendPhone,
+                    'password' => bcrypt('123456'),
+                    'userType' => 'user',
+                ]
+            );
 
-            Auth::guard('web')->login($user);
-
+            Auth::login($user);
             return response()->json(['success' => true, 'redirect' => route('home')]);
         }
 
@@ -58,23 +66,32 @@ $user = allUsersModel::updateOrCreate(
         $uid = $verifiedIdToken->claims()->get('sub');
         $firebaseUser = $this->firebaseAuth->getUser($uid);
 
+        // ناخد من الـ frontend أولاً
         $phone = $frontendPhone ?? $firebaseUser->phoneNumber ?? null;
-        $email = $firebaseUser->email ?? '';
+        $email = $frontendEmail ?? $firebaseUser->email ?? null;
 
+        // VALIDATION
+        if ($phone && allUsersModel::where('phone', $phone)->where('firebase_uid', '!=', $uid)->exists()) {
+            return response()->json(['success' => false, 'error' => 'Phone already exists'], 409);
+        }
+        if ($email && allUsersModel::where('email', $email)->where('firebase_uid', '!=', $uid)->exists()) {
+            return response()->json(['success' => false, 'error' => 'Email already exists'], 409);
+        }
+
+        // CREATE / UPDATE
         $user = allUsersModel::updateOrCreate(
             ['firebase_uid' => $uid],
             [
-                'fname'    => null,
-                'lname'    => null,
-                'email'    => $email,
-                'phone'    => $phone,
+                'fname' => $fname,
+                'lname' => $lname,
+                'email' => $email,
+                'phone' => $phone,
                 'password' => bcrypt('123456'),
                 'userType' => 'user',
             ]
         );
 
-        Auth::guard('web')->login($user);
-
+        Auth::login($user);
         return response()->json(['success' => true, 'redirect' => route('home')]);
 
     } catch (\Throwable $e) {
@@ -82,6 +99,8 @@ $user = allUsersModel::updateOrCreate(
         return response()->json(['success' => false, 'error' => $e->getMessage()], 401);
     }
 }
+
+
 
 public function verifyLoginToken(Request $request)
 {
