@@ -126,7 +126,26 @@ button.btn-secondary, button.btn-primary {
             <input type="text" class="form-control" id="phone" name="phone" placeholder="5xxxxxxxx" maxlength="9" required>
         </div>
     </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const phoneInput = document.getElementById("phone");
 
+    // منع كتابة 0 كأول رقم
+    phoneInput.addEventListener("keypress", function (e) {
+        if (this.value.length === 0 && e.key === "0") {
+            e.preventDefault();
+        }
+    });
+
+    // إزالة أي 0 في البداية لو المستخدم لزق رقم
+    phoneInput.addEventListener("input", function () {
+        if (this.value.startsWith("0")) {
+            this.value = this.value.replace(/^0+/, "");
+        }
+    });
+});
+
+</script>
     <div id="recaptcha-container"></div>
 
     <button type="button" class="btn rounded-4 w-100 mb-2" style="background-color: #760e13; color: white;" onclick="sendOTP()">Send OTP</button>

@@ -341,10 +341,8 @@
                     <input type="email" name="email" value="{{ $user->email }}" class="form-control" required>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label">City</label>
-                    <input type="text" name="city" value="{{ $user->city }}" class="form-control" required>
-                </div>
+               <input type="hidden" id="city" name="city" value="{{ $user->city }}">
+
 
                 <div class="col-12">
                     <label class="form-label">Location</label>
@@ -425,38 +423,42 @@ function initMap() {
 
     const geocoder = new google.maps.Geocoder();
 
-    function updateAddress(latLng) {
-        geocoder.geocode({ location: latLng }, (results, status) => {
-            if (status === "OK" && results[0]) {
-                let neighborhood = "";
-                let city = "";
-                let country = "";
+ function updateAddress(latLng) {
+    geocoder.geocode({ location: latLng }, (results, status) => {
+        if (status === "OK" && results[0]) {
+            let neighborhood = "";
+            let city = "";
+            let country = "";
 
-                results[0].address_components.forEach(component => {
-                    if (component.types.includes("sublocality") || component.types.includes("neighborhood")) {
-                        neighborhood = component.long_name;
-                    }
-                    if (component.types.includes("locality")) {
-                        city = component.long_name;
-                    }
-                    if (component.types.includes("country")) {
-                        country = component.long_name;
-                    }
-                });
-
-                let shortAddress = [neighborhood, city, country].filter(Boolean).join(", ");
-                
-                if (!shortAddress) {
-                    // fallback to last three components
-                    shortAddress = results[0].formatted_address.split(',').slice(-3).join(', ');
+            results[0].address_components.forEach(component => {
+                if (component.types.includes("sublocality") || component.types.includes("neighborhood")) {
+                    neighborhood = component.long_name;
                 }
+                if (component.types.includes("locality")) {
+                    city = component.long_name;
+                }
+                if (component.types.includes("country")) {
+                    country = component.long_name;
+                }
+            });
 
-                document.getElementById("location").value = shortAddress;
-            } else {
-                document.getElementById("location").value = `Coordinates: ${latLng.lat().toFixed(4)}, ${latLng.lng().toFixed(4)}`;
+            let shortAddress = [neighborhood, city, country].filter(Boolean).join(", ");
+
+            if (!shortAddress) {
+                shortAddress = results[0].formatted_address.split(',').slice(-3).join(', ');
             }
-        });
-    }
+
+            document.getElementById("location").value = shortAddress;
+
+            // 🔥 أهم حاجة — حفظ المدينة تلقائيًا
+            document.getElementById("city").value = city;
+
+        } else {
+            document.getElementById("location").value =
+                `Coordinates: ${latLng.lat().toFixed(4)}, ${latLng.lng().toFixed(4)}`;
+        }
+    });
+}
 
     function updateLatLngInputs(latLng) {
         // تحديث قيم خط الطول والعرض المخفية بدقة 6 أرقام عشرية للحفظ
