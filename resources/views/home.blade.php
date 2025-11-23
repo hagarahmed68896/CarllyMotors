@@ -216,13 +216,14 @@ h5, p {
 
       <!-- 🔍 Zoom Button -->
       @if($car->images->count() > 0)
-        <button type="button"
-                class="btn btn-light position-absolute top-0 start-0 m-2 rounded-circle shadow-sm"
-                style="width:36px; height:36px;"
-                data-bs-toggle="modal"
-                data-bs-target="#recentZoomModal-{{ $key }}">
-          <i class="fas fa-search-plus" style="color:#760e13;"></i>
-        </button>
+   <button type="button"
+    class="btn btn-light position-absolute top-0 start-0 m-2 rounded-circle shadow-sm d-flex justify-content-center align-items-center"
+    style="width:36px; height:36px;"
+    data-bs-toggle="modal"
+    data-bs-target="#recentZoomModal-{{ $key }}">
+    <i class="fas fa-search-plus" style="color:#760e13;"></i>
+</button>
+
       @endif
     </div>
 
@@ -408,6 +409,7 @@ style="width: 32px; height: 32px; border-radius: 50%;">
 
                 <!-- Enhanced Car Content (unchanged) -->
                 <div class="car-card-body">
+                  
                     <div class="price-location d-flex align-items-center justify-content-between flex-wrap">
                         <!-- Price -->
                         <span class="price d-flex align-items-center me-3">
@@ -428,7 +430,7 @@ style="width: 32px; height: 32px; border-radius: 50%;">
                         @endif
                     </div>
 
-                    <h4 class="text-start mb-2" style="font-size:1.1rem">{{$car->user?->fname}} {{$car->user?->lname}}</h4>
+                    <h4 class="text-start mb-2" style="font-size:1.1rem">      {{ $car->listing_type ?? 'Unknown' }} {{ $car->listing_model }}</h4>
 
                     <div class="car-details mt-3 text-start">
                         <div class="row g-1">
@@ -1226,9 +1228,12 @@ document.addEventListener('shown.bs.modal', function (event) {
                     </div>
                     <h5 class="fw-bold mb-3">Do you want to sell a car?</h5>
                     <p class="text-muted mb-4">Find your perfect car match and sell your car quickly with our user-friendly online service.</p>
-                    <button class="btn btn-outline-danger btn-lg">
-                         Sell a Car
-                    </button>
+                <a href="{{ auth()->check() ? route('cars.create') : route('login') }}">
+    <button type="button" class="btn btn-outline-danger btn-lg">
+        Sell a Car
+    </button>
+</a>
+
                 </div>
             </div>
         </div>

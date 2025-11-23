@@ -385,6 +385,8 @@
         <button id="removeImage" class="btn btn-outline-danger w-100 mb-2">
           <i class="bi bi-trash3 me-1"></i> Remove Image
         </button>
+        <div id="imageError" class="alert alert-danger d-none"></div>
+
         <button id="saveImage" class="btn  w-100" style="background-color: #760e13; color: #fff;">
           <i class="bi bi-check2-circle me-1"></i> Save Changes
         </button>
@@ -484,68 +486,96 @@ function initMap() {
 }
 </script>
 
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+
   const imageInput = document.getElementById('imageInput');
   const previewImage = document.getElementById('previewImage');
   const profileImage = document.getElementById('profileImage');
   const removeBtn = document.getElementById('removeImage');
   const saveBtn = document.getElementById('saveImage');
-  const userId = "{{ auth()->user()->id }}";
-  let newImageFile = null;
+  const errorDiv = document.getElementById('imageError');
 
+  const userId = "{{ auth()->user()->id }}";
+
+  let newImageFile = null;
+  let removeImageFlag = false;
+
+  // عند اختيار صورة جديدة
   imageInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
+
     if (file) {
       const reader = new FileReader();
       reader.onload = function(event) {
         previewImage.src = event.target.result;
       };
       reader.readAsDataURL(file);
+
       newImageFile = file;
+      removeImageFlag = false; // لأنه مش حذف
+      errorDiv.classList.add("d-none");
     }
   });
 
+
+  // عند الضغط على زر الحذف
   removeBtn.addEventListener('click', function() {
     previewImage.src = "{{ asset('user-201.png') }}";
     newImageFile = null;
     imageInput.value = '';
+    removeImageFlag = true;
+    errorDiv.classList.add("d-none");
   });
 
+
+  // عند الحفظ
   saveBtn.addEventListener('click', function() {
-    if (!newImageFile) {
-      alert("يرجى اختيار صورة أولاً");
+
+    // لو لا رفع صورة جديدة ولا حذف -> خطأ
+    if (!newImageFile && !removeImageFlag) {
+      errorDiv.textContent = "Please select an image to upload ";
+      errorDiv.classList.remove("d-none");
       return;
     }
 
     const formData = new FormData();
-    formData.append('image', newImageFile);
+
+    if (newImageFile) {
+      formData.append('image', newImageFile);
+    }
+
+    formData.append('remove_image', removeImageFlag ? 1 : 0);
     formData.append('_token', '{{ csrf_token() }}');
 
     fetch(`/users/${userId}/update-image`, {
       method: 'POST',
       body: formData
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
       if (data.success) {
-        profileImage.src = data.image + '?t=' + new Date().getTime();
 
+        profileImage.src = data.image + "?t=" + Date.now();
+        
         const modal = bootstrap.Modal.getInstance(document.getElementById('editImageModal'));
         if (modal) modal.hide();
+
       } else {
-        alert(data.error || "حدث خطأ أثناء رفع الصورة");
+        errorDiv.textContent = data.error || "حدث خطأ أثناء حفظ الصورة";
+        errorDiv.classList.remove("d-none");
       }
     })
-    .catch(error => {
-      console.error(error);
-      alert("حدث خطأ في الاتصال بالسيرفر");
+    .catch(err => {
+      errorDiv.textContent = "حدث خطأ في الاتصال بالسيرفر";
+      errorDiv.classList.remove("d-none");
+      console.error(err);
     });
   });
-});
 
+});
 </script>
+
 
 
 @endsection

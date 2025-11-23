@@ -222,22 +222,40 @@ return redirect()->route('home')->with('success', 'Profile updated successfully!
 public function updateImage(Request $request, $id)
 {
     try {
+        // حماية
         if ($id != auth()->user()->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
         $user = allUsersModel::findOrFail($id);
 
+        // إذا طلب حذف الصورة
+        if ($request->remove_image == 1) {
+
+            if ($user->image && file_exists(public_path($user->image))) {
+                unlink(public_path($user->image));
+            }
+
+            $user->image = null;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'image' => asset('user-201.png'),
+            ]);
+        }
+
+        // لو مفيش صورة مرفوعة ومفيش حذف → خطأ
         if (!$request->hasFile('image')) {
             return response()->json(['error' => 'No image uploaded'], 400);
         }
 
-        // حذف الصورة القديمة لو موجودة
+        // حذف القديمة
         if ($user->image && file_exists(public_path($user->image))) {
             unlink(public_path($user->image));
         }
 
-        // حفظ الصورة الجديدة مباشرة في public/users
+        // حفظ الجديدة
         $file = $request->file('image');
         $filename = time() . '.' . $file->getClientOriginalExtension();
 
@@ -247,7 +265,6 @@ public function updateImage(Request $request, $id)
 
         $file->move(public_path('users'), $filename);
 
-        // حفظ المسار في قاعدة البيانات
         $user->image = 'users/' . $filename;
         $user->save();
 
