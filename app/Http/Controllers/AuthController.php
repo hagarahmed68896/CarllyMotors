@@ -105,33 +105,53 @@ public function verifyToken(Request $request)
 public function verifyLoginToken(Request $request)
 {
     try {
-        $idToken = $request->input('token');
         $frontendPhone = $request->input('phone');
 
         // ===== تنظيف الرقم =====
-        $phone = $frontendPhone; // لا نضيف +971 مرة أخرى
-        $phoneNumbers = preg_replace('/[^0-9]/', '', $phone); // فقط أرقام
+        $cleanPhone = preg_replace('/\D/', '', $frontendPhone); // فقط الأرقام
+        if (!$cleanPhone) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Invalid phone number'
+            ], 422);
+        }
 
-        // ===== استخدام Raw Query لمطابقة أي تنسيق =====
-        $user = allUsersModel::whereRaw("
-            REPLACE(REPLACE(REPLACE(REPLACE(phone,'+',''),'-',''),' ',''),'(','' )
-        = ?", [$phoneNumbers])->first();
+        // ===== جلب كل الـ users مع رقم موجود =====
+        $users = allUsersModel::where('usertype', 'user')
+            ->whereNotNull('phone')
+            ->get();
+
+        // ===== مطابقة الرقم بعد تنظيفه في PHP =====
+        $user = $users->first(function ($u) use ($cleanPhone) {
+            $dbPhone = preg_replace('/\D/', '', $u->phone);
+            return $dbPhone === $cleanPhone;
+        });
 
         if (!$user) {
-            return response()->json(['success'=>false,'error'=>'Phone not registered']);
+            return response()->json([
+                'success' => false,
+                'error' => 'Phone not registered as user'
+            ], 404);
         }
 
         // ===== تسجيل الدخول =====
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
 
-        return response()->json(['success'=>true,'redirect'=>route('home')]);
+        return response()->json([
+            'success' => true,
+            'redirect' => route('home')
+        ]);
 
     } catch (\Throwable $e) {
-        \Log::error("Firebase login verify error: ".$e->getMessage());
-        return response()->json(['success'=>false,'error'=>$e->getMessage()], 500);
+        \Log::error("User login verify error: ".$e->getMessage());
+        return response()->json([
+            'success' => false,
+            'error' => 'Unexpected server error'
+        ], 500);
     }
 }
+
 
 
 

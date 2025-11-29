@@ -98,10 +98,32 @@ Route::get('filters', [HomeController::class, 'filters'])->name('home.filters');
 Route::get('listing', [HomeController::class, 'carListing'])->name('carlisting');
 Route::get('filter-cars', [HomeController::class, 'filter'])->name('filter.cars');
 Route::get('grid', [HomeController::class, 'carListing'])->name('listing.grid');
+    Route::get('/cars/dashboard', [\App\Http\Controllers\CarsProviderController::class, 'index'])->name('cars.dashboard');
+
+    // لوحة التحكم حسب carType
+    Route::get('/my-cars/{carType}', [\App\Http\Controllers\CarsProviderController::class, 'myCarListing'])->name('my.cars');
 
 // Cars
 Route::resource('cars', CarController::class);
 Route::get('/car/{id}', [HomeController::class, 'detail'])->name('car.detail');
+
+    Route::get('/provider/cars/create/{type}', [\App\Http\Controllers\CarsProviderController::class, 'create'])
+    ->name('provider.cars.create');
+
+    Route::post('/provider/cars/store', [\App\Http\Controllers\CarsProviderController::class, 'store'])
+    ->name('provider.cars.store');
+Route::get('/provider/cars/{car}/edit', [\App\Http\Controllers\CarsProviderController::class, 'edit'])
+    ->name('provider.cars.edit');
+// Also ensure your POST route uses {car} for consistency:
+Route::put('/provider/cars/{car}/update', 
+    [\App\Http\Controllers\CarsProviderController::class, 'update']
+)->name('provider.cars.update');
+Route::get('/provider/cars/{id}/detail', 
+    [\App\Http\Controllers\CarsProviderController::class, 'detail']
+)->name('provider.cars.detail');
+
+
+
 // Route::post('/cars/addTofav/{carId}', [CarController::class, 'addTofav'])
 //     ->name('cars.addTofav')
 //     ->middleware('auth');
@@ -188,6 +210,19 @@ Route::get('/workshops', [WorkshopController::class, 'showFromQuery'])->name('wo
 // Additional Workshop Routes
 Route::post('/workshops/{workshop}/review', [WorkshopController::class, 'addReview'])->name('workshops.review')->middleware('auth');
 Route::post('/workshops/{workshop}/favorite', [WorkshopController::class, 'toggleFavorite'])->name('workshops.favorite')->middleware('auth');
+
+// Cars Provider Login
+Route::get('/provider/cars/login', [\App\Http\Controllers\CarsProviderController::class, 'login'])->name('providers.cars.login');
+Route::post('/verify-token-provider', [\App\Http\Controllers\AuthProviderController::class, 'verifyToken']);
+
+Route::post('/verify-login-token-dealer', [\App\Http\Controllers\AuthProviderController::class, 'verifyCarsLoginToken']);
+// Route::get('/dealer/dashboard', [\App\Http\Controllers\CarsProviderController::class, 'index'])->name('cars.dashboard');
+// Cars Provider Register
+Route::get('/providers/cars/register', function () {
+    return view('providers.cars.register');
+})->name('providers.cars.register');
+Route::post('/providers/logout', [\App\Http\Controllers\AuthProviderController::class, 'logout'])->name('providers.logout');
+
 
 /*
 |--------------------------------------------------------------------------

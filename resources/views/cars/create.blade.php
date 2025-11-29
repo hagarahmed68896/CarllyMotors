@@ -897,17 +897,114 @@ function updateIconLabels() {
 
 
                     <!-- Name & Phone -->
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Your Name</label>
-                        <input type="text" name="name" class="form-control" id="name" placeholder="Your Name"
-                            value="{{ auth()->user()->fname }}" required>
-                    </div>
+                              <div class="col-md-12">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" name="name" class="form-control" id="name"
+       placeholder="Name" readonly required>
 
-                    <div class="col-md-6">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <input type="tel" name="phone" class="form-control" id="phone" placeholder="Phone"
-                            value="{{ auth()->user()->phone }}" required>
                     </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const brandSelect = document.getElementById('brand');
+    const modelSelect = document.getElementById('model');
+    const nameInput  = document.getElementById('name');
+
+    function updateName() {
+        const brand = brandSelect.value || '';
+        const model = modelSelect.value || '';
+
+        if (brand && model) {
+            nameInput.value = `${brand} ${model}`;
+        }
+    }
+
+    brandSelect.addEventListener('change', updateName);
+    modelSelect.addEventListener('change', updateName);
+
+});
+</script>
+
+              <div class="col-md-6">
+    <label class="form-label">Contact Number</label>
+    <div class="input-group">
+        <span class="input-group-text">+971</span>
+        <input 
+            type="tel" 
+            name="contact_number" 
+            class="form-control" 
+            placeholder="Enter Phone number" 
+            maxlength="9"
+            value="{{ 
+                old(
+                    'contact_number',
+                    isset($car) 
+                        ? str_replace('+971', '', $car->contact_number)
+                        : str_replace('+971', '', auth()->user()->phone ?? '')
+                ) 
+            }}"
+            required
+        >
+    </div>
+</div>
+
+<div class="col-md-6 mt-3">
+    <label class="form-label">WhatsApp Number</label>
+    <div class="input-group">
+        <span class="input-group-text">+971</span>
+        <input 
+            type="tel" 
+            name="wa_number" 
+            class="form-control" 
+            placeholder="Enter WhatsApp number" 
+            maxlength="9"
+            value="{{ 
+                old(
+                    'wa_number',
+                    isset($car) 
+                        ? str_replace('+971', '', $car->wa_number)
+                        : str_replace('+971', '', auth()->user()->whatsapp ?? auth()->user()->phone ?? '')
+                ) 
+            }}"
+        >
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const phoneInputs = document.querySelectorAll('input[name="contact_number"], input[name="wa_number"]');
+
+    phoneInputs.forEach(input => {
+
+        input.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '');
+
+            if (this.value.length > 9) {
+                this.value = this.value.slice(0, 9);
+            }
+        });
+
+    });
+});
+</script>
+ <style>
+.input-group .input-group-text,
+.input-group .form-control {
+    border-radius: 0;
+    height: 42px;
+}
+
+.input-group .input-group-text:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-right: none;
+}
+
+.input-group .form-control {
+    border-left: none;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+</style>
 
                     <!-- Description -->
                     <div class="col-12">

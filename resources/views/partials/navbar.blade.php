@@ -187,21 +187,3 @@
     </div>
 </nav>
 
-{{-- <script>
-// تأكد من تحميل jQuery قبل هذا السكريبت
-$(document).ready(function() {
-    // تحديد الروابط التي تحمل الكلاس login-trigger
-    $('.login-trigger').on('click', function(e) {
-        
-        // التحقق مما إذا كان المستخدم غير مسجل وأن الـhref هو #
-        const isGuest = ! {{ auth()->check() ? 'true' : 'false' }};
-        const isHashHref = $(this).attr('href') === '#';
-
-        if (isGuest && isHashHref) {
-            e.preventDefault(); // منع المتصفح من محاولة الذهاب لـ #
-            // التوجيه القسري لصفحة الدخول باستخدام مسار Laravel
-            window.location.href = "{{ route('login') }}";
-        }
-    });
-});
-</script> --}}

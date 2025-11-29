@@ -175,6 +175,8 @@ button.btn-secondary, button.btn-primary {
                 <h3 class="mb-3" style="color:#760e13;">Verify Code</h3>
                 <p id="otp-timer">OTP expires in <span id="countdown">30</span> seconds</p>
                 <input type="text" id="otp" class="form-control mb-3" placeholder="Enter OTP">
+                <div id="otpError" class="text-danger mt-2 mb-2" style="display:none;"></div>
+
                 <button type="button" class="btn  w-100 rounded-4 mb-2" style="background-color: #760e13; color: white;" onclick="verifyOTP()">Verify OTP</button>
                 <button type="button" class="btn rounded-4 btn-secondary w-100" id="resend-otp" onclick="sendOTP()" disabled>Resend OTP</button>
             </div>
@@ -377,9 +379,12 @@ if (response.success) {
     // 🚀 التحويل الفوري بدون انتظار
     window.location.href = response.redirect || "/";
 }
- else {
-        alert("Server error: " + (response.error || "Unknown"));
-      }
+else {
+    const otpError = document.getElementById("otpError");
+    otpError.style.display = "block";
+    otpError.innerText = response.error || "Server error";
+}
+
     }).catch(function (err) {
       console.error("Backend verify-token error:", err);
       alert("Server verification failed");

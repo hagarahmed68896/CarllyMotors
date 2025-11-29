@@ -141,8 +141,8 @@ public function store(Request $request)
         if (empty($request->input('name'))) {
             $errors['name'] = 'Name is required.';
         }
-        if (empty($request->input('phone'))) {
-            $errors['phone'] = 'Phone is required.';
+         if (empty($request->input('contact_number'))) {
+            $errors['contact_number'] = 'Contact Number is required.';
         }
 
         if (!empty($errors)) {
@@ -171,7 +171,8 @@ public function store(Request $request)
         $car->features_fuel_type    = $request->fuelType;
         $car->features_seats        = $request->seats;
         $car->listing_title         = $request->name;
-        $car->wa_number             = '+971' . $request->phone;
+        $car->contact_number        = $request->contact_number;   // رقم التواصل الخاص بالإعلان
+        $car->wa_number             = $request->wa_number;  
         $car->listing_price         = $request->price;
         $car->listing_desc          = $request->description;
         $car->features_door         = $request->door;
@@ -278,8 +279,8 @@ public function update(Request $request, CarListingModel $car)
         if (empty($request->input('name'))) {
             $errors['name'] = 'Name is required.';
         }
-        if (empty($request->input('phone'))) {
-            $errors['phone'] = 'Phone is required.';
+         if (empty($request->input('contact_number'))) {
+            $errors['contact_number'] = 'Contact Number is required.';
         }
 
         // Return errors if any
@@ -304,7 +305,8 @@ public function update(Request $request, CarListingModel $car)
         $car->features_fuel_type    = $request->fuelType;
         $car->features_seats        = $request->seats;
         $car->listing_title         = $request->name;
-        $car->wa_number             = '+971' . $request->phone;
+        $car->contact_number        = $request->contact_number;   // رقم التواصل الخاص بالإعلان
+        $car->wa_number             = $request->wa_number;         
         $car->listing_price         = $request->price;
         $car->listing_desc          = $request->description;
         $car->location              = $request->location;

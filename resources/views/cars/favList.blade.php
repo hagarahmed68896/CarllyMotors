@@ -26,7 +26,7 @@ h2.text-center::after {
         @forelse ($carlisting as $key => $car)
             @php
                 $images = $car->images ? $car->images->map(fn($img) => env('CLOUDFLARE_R2_URL') . $img->image)->toArray() : [];
-                $phone = preg_replace('/\D/', '', $car->user?->phone);
+                $phone = preg_replace('/\D/', '', $car->contact_number);
                 $userAgent = request()->header('User-Agent');
                 $isMobile = Str::contains($userAgent, ['Android', 'iPhone', 'iPad']);
             @endphp
@@ -122,22 +122,27 @@ h2.text-center::after {
 
                         <!-- Actions -->
                         <div class="d-flex justify-content-between gap-2 flex-wrap mt-2">
-                              <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode(
-                            "Carlly Motors\n\n" .
-                            "مرحبًا، أتواصل معك للاستفسار عن السيارة المعروضة للبيع، " . $car->listing_type . " " . $car->listing_model . "، في Carlly Motors. هل لا تزال متوفرة؟\n\n" .
-                            "Hello, We are contacting you about the car for sale, " . $car->listing_type . " " . $car->listing_model . ", at Carlly Motors. Is it available?\n\n" .
-                            "Car Model : " . $car->listing_model . "\n" .
-                            "Car Type : " . $car->listing_type . "\n" .
-                            "Year Of Manufacture : " . $car->listing_year . "\n" .
-                            "Car Price : " . number_format($car->listing_price) . " AED\n" .
-                            "Car URL : " . route('car.detail', $car->id)
-                        ) }}"
-                        target="_blank"
-                        class="flex-fill text-decoration-none">
-                            <button class="btn btn-outline-success w-100 rounded-4">
-                                <i class="fab fa-whatsapp me-1"></i> 
-                            </button>
-                        </a>
+                         @php
+    $waNumber = $car->wa_number ? preg_replace('/\D/', '', $car->wa_number) : null;
+@endphp
+
+@if($waNumber)
+    <a href="https://wa.me/{{ $waNumber }}?text={{ urlencode(
+        "Carlly Motors\n\n" .
+        "مرحبًا، أتواصل معك للاستفسار عن السيارة المعروضة للبيع، {$car->listing_type} {$car->listing_model}، في Carlly Motors. هل لا تزال متوفرة؟\n\n" .
+        "Hello, We are contacting you about the car for sale, {$car->listing_type} {$car->listing_model}, at Carlly Motors. Is it available?\n\n" .
+        "Car Model : {$car->listing_model}\n" .
+        "Car Type : {$car->listing_type}\n" .
+        "Year Of Manufacture : {$car->listing_year}\n" .
+        "Car Price : " . number_format($car->listing_price) . " AED\n" .
+        "Car URL : " . route('car.detail', $car->id)
+    ) }}" target="_blank" class="flex-fill text-decoration-none">
+        <button class="btn btn-outline-success w-100 rounded-4">
+            <i class="fab fa-whatsapp me-1"></i>
+        </button>
+    </a>
+@endif
+
 
                             @if(!empty($phone))
                             <a href="{{ $isMobile ? 'tel:' . $phone : 'https://wa.me/' . $phone }}" target="{{ $isMobile ? '_self' : '_blank' }}" class="btn btn-outline-danger flex-fill rounded-4">

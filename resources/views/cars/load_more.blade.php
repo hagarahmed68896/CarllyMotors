@@ -138,15 +138,47 @@
                 </p>
 
                 {{-- Action Buttons --}}
-                <div class="action d-flex gap-2 mt-2">
-                    <a href="https://wa.me/{{ $car->user?->phone }}?text={{ urlencode('Interested in this car: ' . $car->listing_type . ' ' . $car->listing_model) }}"
-                        target="_blank"
-                        class="flex-fill text-decoration-none">
-                        <button class="btn btn-outline-success w-100 rounded-4">
-                            <i class="fab fa-whatsapp me-1"></i>
-                        </button>
-                    </a>
-                </div>
+                 {{-- Enhanced Action Buttons --}}
+<div class="action d-flex gap-2 mt-2">
+@php
+    $waNumber = $car->wa_number ? preg_replace('/\D/', '', $car->wa_number) : null;
+@endphp
+
+@if($waNumber)
+    <a href="https://wa.me/{{ $waNumber }}?text={{ urlencode(
+        "Carlly Motors\n\n" .
+        "مرحبًا، أتواصل معك للاستفسار عن السيارة المعروضة للبيع، {$car->listing_type} {$car->listing_model}، في Carlly Motors. هل لا تزال متوفرة؟\n\n" .
+        "Hello, We are contacting you about the car for sale, {$car->listing_type} {$car->listing_model}, at Carlly Motors. Is it available?\n\n" .
+        "Car Model : {$car->listing_model}\n" .
+        "Car Type : {$car->listing_type}\n" .
+        "Year Of Manufacture : {$car->listing_year}\n" .
+        "Car Price : " . number_format($car->listing_price) . " AED\n" .
+        "Car URL : " . route('car.detail', $car->id)
+    ) }}" target="_blank" class="flex-fill text-decoration-none">
+        <button class="btn btn-outline-success w-100 rounded-4">
+            <i class="fab fa-whatsapp me-1"></i>
+        </button>
+    </a>
+@endif
+
+
+
+
+@php
+    $userAgent = request()->header('User-Agent');
+    $isMobile = Str::contains($userAgent, ['Android', 'iPhone', 'iPad']);
+    $phone = preg_replace('/\D/', '', $car->contact_number);
+@endphp
+
+@if(!empty($phone))
+    <a href="{{ $isMobile ? 'tel:' . $phone : 'https://wa.me/' . $phone }}"
+       target="{{ $isMobile ? '_self' : '_blank' }}"
+       class="btn btn-outline-danger flex-fill rounded-4">
+        <i class="fa fa-phone"></i>
+    </a>
+@endif
+
+</div>
             </div>
         </div>
 

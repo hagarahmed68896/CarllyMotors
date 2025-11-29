@@ -88,7 +88,7 @@ use Illuminate\Support\Str;
         @forelse ($carlisting as $key => $car)
             @php
                 $images = $car->images ? $car->images->map(fn($img) => env('CLOUDFLARE_R2_URL') . $img->image)->toArray() : [];
-                $phone = preg_replace('/\D/', '', $car->user?->phone);
+                $phone = preg_replace('/\D/', '', $car->contact_number);
                 $userAgent = request()->header('User-Agent');
                 $isMobile = Str::contains($userAgent, ['Android', 'iPhone', 'iPad']);
             @endphp

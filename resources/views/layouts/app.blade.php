@@ -53,7 +53,7 @@
             <!-- Footer Content -->
             <div class="row footer-links g-4 text-md-start">
                 <!-- Brand Column -->
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <a href="{{ route('home') }}" class="footer-logo d-block mb-3">
                         <img src="{{ asset('carllymotors_logo_white-2048x526.png') }}" 
                              alt="AutoDecar" 
@@ -101,7 +101,7 @@
                 </div>
 
                 <!-- About Column -->
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <h5 class="footer-title">About Auto Decar</h5>
                     <ul class="list-unstyled footer-list">
                         <li><a href="{{ route('aboutus') }}"><i class="fas fa-chevron-right me-2"></i>About us</a></li>
@@ -124,6 +124,28 @@
         </ul>
 </div>
 
+<!-- Providers Column -->
+<div class="col-12 col-md-3">
+    <h5 class="footer-title">Providers</h5>
+    <ul class="list-unstyled footer-list">
+        <li>
+        <a href="{{ route('providers.cars.login') }}">
+    <i class="fas fa-chevron-right me-2"></i>Cars Provider
+</a>
+
+        </li>
+        <li>
+            <a href="">
+                <i class="fas fa-chevron-right me-2"></i>Workshops Provider
+            </a>
+        </li>
+        <li>
+            <a href="">
+                <i class="fas fa-chevron-right me-2"></i>Spare Parts Provider
+            </a>
+        </li>
+    </ul>
+</div>
 
        
             </div>
