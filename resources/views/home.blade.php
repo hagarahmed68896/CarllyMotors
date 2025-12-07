@@ -911,11 +911,18 @@ $shareMessage = "اكتشف أفضل تجار قطع الغيار على موق�
            $shareUrl = route('workshops.show', $workshop->id);
 
 
-            $image = $workshop->workshop_logo
-                ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
-                    ? $workshop->workshop_logo
-                    : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
-                : asset('workshopNotFound.png');
+        $firstImage = $workshop->images->first();
+
+$image = $firstImage
+    ? env('CLOUDFLARE_R2_URL') . $firstImage->image
+    : (
+        $workshop->workshop_logo
+            ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
+                ? $workshop->workshop_logo
+                : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
+            : asset('workshopNotFound.png')
+    );
+
              $mapUrl = $workshop->latitude && $workshop->longitude
         ? "https://www.google.com/maps?q={$workshop->latitude},{$workshop->longitude}"
         : null;

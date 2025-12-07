@@ -135,7 +135,7 @@
 
         </li>
         <li>
-            <a href="">
+            <a href="{{ route('providers.workshops.login') }}">
                 <i class="fas fa-chevron-right me-2"></i>Workshops Provider
             </a>
         </li>

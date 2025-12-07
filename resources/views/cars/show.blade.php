@@ -353,8 +353,9 @@
                     <i class="fas fa-road"></i> {{ $car->features_speed  }} km &nbsp;
                     <i class="fas fa-gas-pump"></i> {{ $car->features_fuel_type }} <br>
                     <i class="fas fa-cogs"></i> {{ $car->features_gear }} &nbsp;
-                    <i class="fas fa-user"></i> {{ $car->user?->fname }} {{ $car->user?->lname }}
-                </p>
+                    <i class="fas fa-user"></i> 
+                    {{ $car->user?->dealer?->company_name ?? $car->user?->fname . ' ' . $car->user?->lname }}
+                                    </p>
                 <p class="price mt-2">
                     <img src="{{ asset('assets/images/UAE_Dirham_Symbol.svg.png') }}" width="18" height="18" alt="AED">
                     {{ $car->listing_price }}

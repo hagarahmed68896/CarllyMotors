@@ -10,9 +10,16 @@ class WorkshopDay extends Model
     use HasFactory;
 
     protected $table = 'workshop_days';
-    protected $guarded = [];
+
+    protected $fillable = [
+        'workshop_provider_id',
+        'day',
+        'from',
+        'to',
+    ];
 
     public function workshop_provider(){
         return $this->belongsTo(WorkshopProvider::class, 'workshop_provider_id');
     }
 }
+

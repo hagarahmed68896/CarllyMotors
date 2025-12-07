@@ -308,7 +308,7 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mt-2">
-                        <span id="imageCount" class="text-muted small">0 / 8</span>
+                        <span id="imageCount" class="text-muted small">0 / 12</span>
                         <span id="errorMessage" class="text-danger small fw-semibold"></span>
                     </div>
 
@@ -897,6 +897,16 @@ function updateIconLabels() {
 });
 </script>
 
+<div class="col-md-12">
+    <label for="company_name" class="form-label">Company Name</label>
+    <input 
+        type="text" 
+        id="company_name" 
+        class="form-control" 
+        value="{{ auth()->user()->dealer->company_name ?? '' }}" 
+       readonly
+    >
+</div>
 
 
                     <!-- Name & Phone -->
@@ -1161,6 +1171,35 @@ document.getElementById('saveLocationBtn').addEventListener('click', function() 
             z-index:9999; 
             backdrop-filter:blur(3px);">
 </div>
+<!-- Modern Fullscreen Loader -->
+<div id="pageLoader" class="loader-overlay d-none">
+    <div class="loader"></div>
+</div>
+<style>
+.loader-overlay {
+    position: fixed;
+    inset: 0;
+background: rgba(255,255,255,0.30);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.loader {
+    width: 55px;
+    height: 55px;
+    border: 6px solid #ddd;
+    border-top-color: #163155;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
 
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -1182,7 +1221,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function updateImageCount() {
         const countEl = document.getElementById("imageCount");
-        countEl.textContent = `${previewContainer.children.length} / 8`;
+        countEl.textContent = `${previewContainer.children.length} / 12`;
         markFirstAsCover();
     }
 
@@ -1257,7 +1296,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     imageInput.addEventListener("change", function(event) {
-        const remaining = 8 - uploadedFiles.length;
+        const remaining = 12 - uploadedFiles.length;
         const newFiles = [...event.target.files].slice(0, remaining);
 
         newFiles.forEach((file) => {
@@ -1267,7 +1306,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         if (event.target.files.length > remaining) {
-            errorMessage.textContent = "⚠️ You can upload up to 8 images only.";
+            errorMessage.textContent = "⚠️ You can upload up to 12 images only.";
         } else {
             errorMessage.textContent = "";
         }
@@ -1462,74 +1501,70 @@ document.addEventListener("DOMContentLoaded", function() {
 });
     </script>
 <script>
-document.getElementById('carForm').addEventListener('submit', function(e){
+document.getElementById('carForm').addEventListener('submit', async function(e) {
     e.preventDefault(); 
 
-    const formData = new FormData(this);
+    const form = this;
+    const formData = new FormData(form);
     const url = "{{ route('provider.cars.store') }}";
     const errorsDiv = document.getElementById('formErrors');
 
-    // reset
+    // Reset errors
     errorsDiv.classList.add('d-none');
     errorsDiv.innerHTML = '';
 
-    // FREEZE PAGE
-    document.getElementById('pageFreeze').style.display = 'block';
-    document.body.style.overflow = 'hidden'; // stop scrolling
+    // Show loader
+    document.getElementById('pageLoader').classList.remove('d-none');
 
-    // Optional: show loading spinner
-    const submitBtn = this.querySelector('button[type=submit]');
-    submitBtn.disabled = true;
+    const submitBtn = form.querySelector('button[type=submit]');
     const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = 'Submitting...';
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = "Submitting...";
 
-    fetch(url, {
-        method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('input[name=_token]').value },
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': document.querySelector('input[name=_token]').value },
+            body: formData
+        });
 
-        // UNFREEZE PAGE
-        document.getElementById('pageFreeze').style.display = 'none';
-        document.body.style.overflow = 'auto';
+        const data = await res.json();
 
+        // Hide loader
+        document.getElementById('pageLoader').classList.add('d-none');
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
 
         if (data.success) {
-            setTimeout(() => {
-         window.location.href = `/provider/cars/${data.car_id}/detail`;
-
-            }, 200);
-        } else if (data.errors) {
+            window.location.href = `/provider/cars/${data.car_id}/detail`;
+        } 
+        else if (data.errors) {
             let html = '<ul class="mb-0">';
             for (const key in data.errors) {
                 html += `<li>${data.errors[key]}</li>`;
             }
             html += '</ul>';
+
             errorsDiv.innerHTML = html;
             errorsDiv.classList.remove('d-none');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-    })
-    .catch(err => {
 
-        // UNFREEZE PAGE
-        document.getElementById('pageFreeze').style.display = 'none';
-        document.body.style.overflow = 'auto';
-
+    } catch (err) {
         console.error(err);
+
+        // Hide loader
+        document.getElementById('pageLoader').classList.add('d-none');
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
 
         errorsDiv.innerHTML = '<p>Something went wrong. Please try again.</p>';
         errorsDiv.classList.remove('d-none');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    }
 });
 </script>
+
 
 
 

@@ -113,11 +113,11 @@ button.btn-secondary, button.btn-primary {
         <label for="lname" class="form-label fw-bold">Last Name</label>
         <input type="text" id="lname" class="form-control" placeholder="Enter your last name" required>
     </div>
-    <div class="mb-2 text-start">
-    <label for="company_name" class="form-label fw-bold">Company Name</label>
-    <input type="text" id="company_name" class="form-control" placeholder="Enter your company name" required>
-    </div>
 
+       <div class="mb-2 text-start">
+        <label for="cname" class="form-label fw-bold">Company Name</label>
+        <input type="text" id="cname" class="form-control" placeholder="Enter your Company" required>
+    </div>
 
     <div class="mb-2 text-start">
         <label for="email" class="form-label fw-bold">Email Address</label>
@@ -157,7 +157,7 @@ button.btn-secondary, button.btn-primary {
 
 <div class="login-link mt-3 text-center">
     Already have an account? 
-    <a href="{{ route('providers.cars.login') }}">Login</a>
+    <a href="{{ route('providers.workshops.login') }}">Login</a>
 </div>
 
 <style>
@@ -209,7 +209,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyDV5bqNaUUDmB3SBawLc7HXBI2WvAcOvV8",
     authDomain: "carlly-de5a1.firebaseapp.com",
     projectId: "carlly-de5a1",
-    storageBucket: "carlly-de5a1.appspot.com", // ✅ تصحيح هنا
+    storageBucket: "carlly-de5a1.appspot.com",
     messagingSenderId: "336138983965",
     appId: "1:336138983965:web:edd47ae145c033f05a44f4",
     measurementId: "G-416GMZTRZT"
@@ -259,47 +259,24 @@ function sendOTP() {
     return;
   }
 
-  // ✅ تأكد من وجود الكود الدولي
+  // 🔹 تأكد من الكود الدولي
   if (!phoneNumber.startsWith('+')) {
     phoneNumber = '+971' + phoneNumber.replace(/^0+/, '');
   }
 
-  console.log("📞 Full phone number:", phoneNumber);
-  // ⭐ Add test phone numbers even in production
-const testPhones = {
-    '+971555555555': '123456', // رقم وهمي + الكود الوهمي
-    '+971500000000': '654321'
-};
+  console.log("📞 User phone input:", phoneNumber);
 
-if (testPhones[phoneNumber]) {
-    console.log("🧪 Using TEST phone number on production:", phoneNumber);
+  /* ======================================================
+       ⭐⭐  HARD CODED NUMBER FOR PRODUCTION ⭐⭐
+     ====================================================== */
+  if (!isDebugMode()) {
+    phoneNumber = "+971599999999"; // ← دخّلي رقمك الثابت هنا
+    console.log("📌 Using HARDCODED PHONE:", phoneNumber);
+  }
 
-    lastConfirmationResult = {
-        _isFake: true,
-        _fakeOtp: testPhones[phoneNumber],
-        confirm: function (code) {
-            return new Promise((resolve, reject) => {
-                if (String(code) === String(this._fakeOtp)) {
-                    const fakeUser = {
-                        getIdToken: () => Promise.resolve('FAKE_ID_TOKEN_TEST_MODE'),
-                        phoneNumber,
-                        uid: 'FAKE_PROD_TEST_UID_' + Math.random().toString(36).substring(2, 8)
-                    };
-                    resolve({ user: fakeUser });
-                } else {
-                    reject({ code: 'auth/invalid-test-code', message: 'Invalid test OTP' });
-                }
-            });
-        }
-    };
+  /* ====================================================== */
 
-    startCountdown(30);
-    showStep(2);
-    return;
-}
-
-
-  // ✅ وضع DEBUG محلي أو إجباري
+  // 🔹 وضع DEBUG محلي
   if (isDebugMode()) {
     const fakeOtp = Math.floor(100000 + Math.random() * 900000).toString();
     console.log("🧪 (DEBUG) Fake OTP for", phoneNumber, "is:", fakeOtp);
@@ -311,7 +288,7 @@ if (testPhones[phoneNumber]) {
         return new Promise((resolve, reject) => {
           if (String(code) === String(this._fakeOtp)) {
             const fakeUser = {
-              getIdToken: () => Promise.resolve('FAKE_ID_TOKEN_FOR_DEV'),
+              getIdToken: () => Promise.resolve('FAKE_ID_TOKEN'),
               phoneNumber,
               uid: 'FAKE_UID_' + Math.random().toString(36).substring(2, 8)
             };
@@ -323,31 +300,21 @@ if (testPhones[phoneNumber]) {
       }
     };
 
-    // alert("🧪 Debug OTP generated — check console!");
     startCountdown(30);
-        showStep(2); // ✅ move to Step 2 in debug mode
-
+    showStep(2);
     return;
   }
 
-  // ✅ الوضع الحقيقي: إرسال OTP عبر Firebase
+  // 🔹 الوضع الحقيقي
   firebase.auth().signInWithPhoneNumber(phoneNumber, recaptchaVerifier)
     .then((confirmationResult) => {
       lastConfirmationResult = confirmationResult;
-          // 🔹 Debug only: show verificationId without exposing real OTP
-      if (isDebugMode()) {
-        console.log("🧪 (DEBUG) Firebase OTP request sent. VerificationId:", confirmationResult.verificationId);
-        console.log("🧪 Enter the OTP received on the phone for testing.");
-      }
       console.log("✅ confirmationResult:", confirmationResult);
-    //   alert("OTP sent successfully!");
       startCountdown(30);
-          showStep(2); // ✅ move to Step 2 in debug mode
-
+      showStep(2);
     })
     .catch((error) => {
       console.error("❌ Error sending OTP:", error);
-    //   alert(error.message || "Error sending OTP");
       try { grecaptcha && grecaptcha.reset(); } catch (e) {}
     });
 }
@@ -369,18 +336,15 @@ function verifyOTP() {
     return;
   }
 
-  // ✅ لو الوضع Debug
+  // 🔹 Debug
   if (lastConfirmationResult._isFake) {
     lastConfirmationResult.confirm(code)
       .then((result) => handleVerifiedFirebaseUser(result.user))
-      .catch((err) => {
-        console.error(err);
-        alert(err.message || "Invalid Debug OTP");
-      });
+      .catch((err) => alert(err.message));
     return;
   }
 
-  // ✅ التحقق الحقيقي من Firebase
+  // 🔹 حقيقي
   lastConfirmationResult.confirm(code)
     .then((result) => handleVerifiedFirebaseUser(result.user))
     .catch((error) => {
@@ -399,42 +363,27 @@ function verifyOTP() {
 ================================================================ */
 function handleVerifiedFirebaseUser(user) {
   return user.getIdToken().then(function (idToken) {
-    console.log("✅ Firebase User verified:", user);
 
- return $.ajax({
-    url: "/verify-token-provider",
-    method: "POST",
-    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-    data: {
+    return $.ajax({
+      url: "/verify-token-workshop",
+      method: "POST",
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      data: {
         token: idToken,
         phone: user.phoneNumber || $('#phone').val() || null,
         fname: $('#fname').val(),
         lname: $('#lname').val(),
-        email: $('#email').val(),
-        company_name: $('#company_name').val(),
-
-    },
-      
-
+        email: $('#email').val()
+      },
     }).then(function (response) {
-if (response.success) {
-    // ✅ نعرض Step 3 بعد النجاح (تم التعديل إلى 3 بناءً على الكود الأصلي)
-    showStep(3); 
-    
-    // 🚀 التحويل الفوري بدون انتظار
-    window.location.href = response.redirect || "/";
-}
-else {
-    const otpError = document.getElementById("otpError");
-    otpError.style.display = "block";
-    otpError.innerText = response.error || "Server error";
-}
 
-    }).catch(function (err) {
-      console.error("Backend verify-token error:", err);
-const otpError = document.getElementById("otpError");
-otpError.style.display = "block";
-otpError.innerText = err.responseJSON?.error || "Server verification failed";
+      if (response.success) {
+        showStep(3);
+        window.location.href = response.redirect || "/";
+      } else {
+        document.getElementById("otpError").innerText = response.error;
+      }
+
     });
   });
 }
@@ -460,20 +409,18 @@ function startCountdown(seconds) {
     }
   }, 1000);
 }
+
 function showStep(stepNumber) {
-  // Hide all steps
   document.querySelectorAll('.step').forEach(step => step.style.display = 'none');
   const stepElement = document.querySelector(`.step-${stepNumber}`);
   if (stepElement) stepElement.style.display = 'block';
-  
-  // Update active step circles
+
   const circles = document.querySelectorAll('.step-circle');
   circles.forEach((circle, index) => {
     if (index < stepNumber) circle.classList.add('active');
     else circle.classList.remove('active');
   });
 
-  // ✅ Update progress bar width
   const progressBar = document.querySelector('.progress-bar');
   const totalSteps = circles.length;
   const progress = ((stepNumber - 1) / (totalSteps - 1)) * 100;
@@ -481,6 +428,6 @@ function showStep(stepNumber) {
   progressBar.setAttribute('aria-valuenow', progress);
 }
 
-
 </script>
+
 @endsection

@@ -4,7 +4,13 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mycars-header">
     
-<h3>{{ ucfirst($carType ?? 'All') }} Cars</h3>
+<h3>
+    @if ($carType === 'used')
+        Used/New Cars
+    @else
+        {{ ucfirst($carType ?? 'All') }} Cars
+    @endif
+</h3>
 
     <a href="{{ route('provider.cars.create', ['type' => $carType ?? 'used']) }}"
        class="btn btn-add-car d-flex align-items-center gap-2">

@@ -42,10 +42,11 @@ class WorkshopProvider extends Authenticatable
         return $this->belongsTo(allUsersModel::class);
     }
 
-    public function days()
-    {
-        return $this->hasMany(WorkshopDay::class, 'workshop_provider_id');
-    }
+public function days()
+{
+    return $this->hasMany(WorkshopDay::class, 'workshop_provider_id', 'id');
+}
+
 
     public function images()
     {

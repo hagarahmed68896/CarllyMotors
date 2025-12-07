@@ -271,7 +271,7 @@
     </div>
 
     <div class="d-flex justify-content-between align-items-center mt-2">
-        <span id="imageCount" class="text-muted small">0 / 8</span>
+        <span id="imageCount" class="text-muted small">0 / 12</span>
         <span id="errorMessage" class="text-danger small fw-semibold"></span>
     </div>
 
@@ -322,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function updateImageCount() {
         const existingImages = document.querySelectorAll('.existing-image, .new-image').length;
-        imageCount.textContent = `${existingImages} / 8`;
+        imageCount.textContent = `${existingImages} / 12`;
         markFirstAsCover();
     }
 
@@ -384,7 +384,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Handle new uploads
     imageInput.addEventListener("change", function(event) {
-        const remaining = 8 - (uploadedFiles.length + document.querySelectorAll('.existing-image').length);
+        const remaining = 12 - (uploadedFiles.length + document.querySelectorAll('.existing-image').length);
         const newFiles = [...event.target.files].slice(0, remaining);
 
         newFiles.forEach(file => {
@@ -393,7 +393,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         if(event.target.files.length > remaining) {
-            errorMessage.textContent = "⚠️ You can upload up to 8 images only.";
+            errorMessage.textContent = "⚠️ You can upload up to 12 images only.";
         } else {
             errorMessage.textContent = "";
         }
@@ -1100,7 +1100,16 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-
+<div class="col-md-12">
+    <label for="company_name" class="form-label">Company Name</label>
+    <input 
+        type="text" 
+        id="company_name" 
+        class="form-control" 
+        value="{{ auth()->user()->dealer->company_name ?? '' }}" 
+       readonly
+    >
+</div>
 <!-- Name & Phone -->
 <!-- Name Input (readonly) -->
 <div class="col-md-12">
@@ -1247,7 +1256,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="input-group">
         <input type="text" name="location" class="form-control" id="location" 
                placeholder="Select Location" readonly
-               value="{{ old('location', $car->location_name ?? '') }}" required>
+               value="{{ old('location', $car->location ?? '') }}" required>
         <button type="button" class="btn btn-outline-secondary" id="clearLocationBtn">Clear</button>
     </div>
 
@@ -1282,11 +1291,6 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
   </div>
 </div>
-
-<!-- Leaflet CSS & JS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
 <script>
 let map, marker;
 const locationInput = document.getElementById('location');
@@ -1383,6 +1387,13 @@ document.getElementById('saveLocationBtn').addEventListener('click', function() 
     bootstrap.Modal.getInstance(document.getElementById('mapModal')).hide();
 });
 </script>
+
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+
 
 
 

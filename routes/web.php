@@ -98,7 +98,7 @@ Route::get('filters', [HomeController::class, 'filters'])->name('home.filters');
 Route::get('listing', [HomeController::class, 'carListing'])->name('carlisting');
 Route::get('filter-cars', [HomeController::class, 'filter'])->name('filter.cars');
 Route::get('grid', [HomeController::class, 'carListing'])->name('listing.grid');
-    Route::get('/cars/dashboard', [\App\Http\Controllers\CarsProviderController::class, 'index'])->name('cars.dashboard');
+Route::get('/cars/dashboard', [\App\Http\Controllers\CarsProviderController::class, 'index'])->name('cars.dashboard');
 
     // لوحة التحكم حسب carType
     Route::get('/my-cars/{carType}', [\App\Http\Controllers\CarsProviderController::class, 'myCarListing'])->name('my.cars');
@@ -218,11 +218,76 @@ Route::post('/verify-token-provider', [\App\Http\Controllers\AuthProviderControl
 Route::post('/verify-login-token-dealer', [\App\Http\Controllers\AuthProviderController::class, 'verifyCarsLoginToken']);
 // Route::get('/dealer/dashboard', [\App\Http\Controllers\CarsProviderController::class, 'index'])->name('cars.dashboard');
 // Cars Provider Register
+
 Route::get('/providers/cars/register', function () {
     return view('providers.cars.register');
 })->name('providers.cars.register');
+// عرض بروفايل المزود
+Route::get('/provider/profile/{id}', [\App\Http\Controllers\AuthProviderController::class, 'profile'])
+    ->name('provider.profile');
+// صفحة تعديل بيانات المزود
+Route::get('/provider/edit/{id}', [\App\Http\Controllers\AuthProviderController::class, 'edit'])
+    ->name('provider.edit');
+
+// تحديث بيانات المزود
+Route::put('/provider/{id}', [\App\Http\Controllers\AuthProviderController::class, 'update'])
+    ->name('provider.update');
+
+// تحديث صورة المزود
+Route::post('/provider/{id}/update-image', [\App\Http\Controllers\AuthProviderController::class, 'updateImage'])
+    ->name('provider.updateImage');
 Route::post('/providers/logout', [\App\Http\Controllers\AuthProviderController::class, 'logout'])->name('providers.logout');
 
+// -------------------------
+// Workshops Provider Login
+// -------------------------
+Route::get('/provider/workshops/login', 
+    [\App\Http\Controllers\AuthWorkshopProviderController::class, 'login']
+)->name('providers.workshops.login');
+
+Route::post('/verify-login-token-workshop', 
+    [\App\Http\Controllers\AuthWorkshopProviderController::class, 'verifyWorkshopLoginToken']
+);
+
+// -------------------------
+// Workshops Provider Register
+// -------------------------
+Route::get('/providers/workshops/register', function () {
+    return view('providers.workshops.register');
+})->name('providers.workshops.register');
+Route::post('/verify-token-workshop', [\App\Http\Controllers\AuthWorkshopProviderController::class, 'verifyToken']);
+
+// -------------------------
+//my Workshop
+// -------------------------
+
+Route::get('/provider/workshop/my-workshop', [\App\Http\Controllers\WorkshopProviderController::class, 'myWorkshop'])
+    ->name('workshops.myWorkshop');
+Route::post('/workshops/update/{workshop}', 
+    [\App\Http\Controllers\WorkshopProviderController::class, 'update']
+)->name('workshops.update');
+
+//profile 
+Route::get('/workshop/profile/{id}', [\App\Http\Controllers\AuthWorkshopProviderController::class, 'profile'])
+    ->name('workshop.profile');
+// تحديث بيانات المزود
+Route::put('/workshop/{id}', [\App\Http\Controllers\AuthWorkshopProviderController::class, 'update'])
+    ->name('workshop.update');
+ Route::post('/wsUploadImgs', [\App\Http\Controllers\WorkshopProviderController::class, 'wsUploadImgs'])->name('ws.uploadImgs');
+    Route::delete('/wsDelImg/{id}', [\App\Http\Controllers\WorkshopProviderController::class, 'wsDelImg'])->name('ws.delImg');
+// تحديث صورة المزود
+Route::post('/workshop/{id}/update-image', [\App\Http\Controllers\AuthWorkshopProviderController::class, 'updateImage'])
+    ->name('workshop.updateImage');
+// -------------------------
+// Workshops Provider Logout
+// -------------------------
+Route::post('/providers/workshops/logout', 
+    [\App\Http\Controllers\AuthWorkshopProviderController::class, 'logoutWorkshops']
+)->name('providers.workshops.logout');
+
+Route::get('/workshops/dashboard', [\App\Http\Controllers\WorkshopProviderController::class, 'index'])->name('workshops.dashboard');
+Route::get('/provider/{workshop}', [\App\Http\Controllers\WorkshopProviderController::class, 'show'])
+     ->name('workshops.show.provider');
 
 /*
 |--------------------------------------------------------------------------

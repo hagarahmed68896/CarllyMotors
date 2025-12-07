@@ -92,13 +92,20 @@
 
 <body>
 
-
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm navbar-top-bar">
     <div class="container-fluid d-flex align-items-center">
 
         {{-- Logo always visible --}}
-<a class="navbar-brand d-flex align-items-center" 
-   href="{{ auth()->check() ? route('cars.dashboard') : route('home') }}">
+   <a class="navbar-brand d-flex align-items-center" 
+   href="@auth
+            {{ auth()->user()->usertype === 'dealer' 
+                ? route('cars.dashboard') 
+                : (auth()->user()->usertype === 'workshop_provider' 
+                    ? route('workshops.dashboard') 
+                    : route('home')) }}
+        @else
+            {{ route('home') }}
+        @endauth">
     <img src="{{ asset('carllymotorsmainlogo_dark.png') }}" 
          alt="Carl Motors Logo" 
          class="img-fluid" 
@@ -107,83 +114,104 @@
 
 
         {{-- Toggler for mobile --}}
-        <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
-            aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler border-0 d-lg-none" 
+                type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
             <i class="fas fa-bars fs-4"></i>
         </button>
 
-     <div class="collapse navbar-collapse" id="navbarMenu">
-    {{-- Centered menu items --}}
-@php
-    $activeType = request()->route('carType');
-@endphp
+        <div class="collapse navbar-collapse" id="navbarMenu">
 
-<ul class="navbar-nav mx-auto d-flex align-items-center gap-2 gap-lg-4 mb-0">
- @auth
+            {{-- CENTER MENU BASED ON USER ROLE --}}
+        <ul class="navbar-nav mx-auto d-flex align-items-center gap-3 mb-0">
+    @auth
+        @if(auth()->user()->usertype === 'dealer')
+            <li class="nav-item">
+                <a href="{{ route('my.cars', ['carType' => 'used']) }}" class="nav-link-provider">
+                    Used/New
+                </a>
+            </li>
 
-    <li class="nav-item">
-        <a href="{{ route('my.cars', ['carType' => 'used']) }}"
-           class="nav-link-provider {{ $activeType === 'used' ? 'active' : '' }}">
-           Used/New
-        </a>
-    </li>
+            <li class="nav-item">
+                <a href="{{ route('my.cars', ['carType' => 'imported']) }}" class="nav-link-provider">
+                    Imported
+                </a>
+            </li>
 
-    <li class="nav-item">
-        <a href="{{ route('my.cars', ['carType' => 'imported']) }}"
-           class="nav-link-provider {{ $activeType === 'imported' ? 'active' : '' }}">
-           Imported
-        </a>
-    </li>
-
-    <li class="nav-item">
-        <a href="{{ route('my.cars', ['carType' => 'auction']) }}"
-           class="nav-link-provider {{ $activeType === 'auction' ? 'active' : '' }}">
-           Auction
-        </a>
-    </li>
-
- @endauth
+            <li class="nav-item">
+                <a href="{{ route('my.cars', ['carType' => 'auction']) }}" class="nav-link-provider">
+                    Auction
+                </a>
+            </li>
+        @endif
+    @endauth
 </ul>
 
-    {{-- Right side menu: Login/Profile --}}
-    <ul class="navbar-nav d-flex align-items-center gap-2 gap-lg-4 mb-0">
-        @guest
+@auth
+    @if(auth()->user()->usertype === 'workshop_provider')
+        <ul class="navbar-nav ms-auto d-flex align-items-center gap-3 mb-0">
             <li class="nav-item">
-                <a class="custom-btn-provider ms-2 {{ request()->routeIs('login') ? 'active' : '' }}" 
-                   href="{{ route('login') }}">
-                    <i class="fas fa-sign-in-alt me-1"></i> Login
+                <a href="{{ route('workshops.myWorkshop') }}" class="nav-link-provider">
+                    My Workshop
                 </a>
             </li>
-        @endguest
+        </ul>
+    @endif
+@endauth
 
-        @auth
-            <li class="nav-item dropdown">
-                <a class="nav-link-provider dropdown-toggle text-dark fw-semibold d-flex align-items-center" 
-                   href="#" data-bs-toggle="dropdown">
-                    <i class="fas fa-user me-1"></i> Profile
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
-                    <li>
-                        <a style="text-decoration: none" href="{{ route('profile', auth()->user()->id) }}" class="dropdown-item-provider">
-                            <i class="fas fa-user-circle me-2" ></i> My Profile
+
+
+            {{-- RIGHT SIDE: LOGIN / PROFILE --}}
+            <ul class="navbar-nav d-flex align-items-center gap-3 mb-0">
+
+                @guest
+                    <li class="nav-item">
+                        <a class="custom-btn-provider" href="{{ route('providers.cars.login') }}">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
                         </a>
                     </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <form method="post" action="{{ route('providers.logout') }}">
-                            @csrf
-                            <button class="dropdown-item-provider" 
-                            style="border: 0; background-color: inherit; width: 100%;" type="submit">
-                                <i class="fas fa-sign-out-alt me-2"></i> Logout
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </li>
-        @endauth
-    </ul>
-</div>
+                @endguest
 
+                @auth
+                    <li class="nav-item dropdown">
+                        <a class="nav-link-provider dropdown-toggle fw-semibold" href="#" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i> Profile
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
+                          <li>
+    @if(auth()->user()->usertype === 'workshop_provider')
+        {{-- WORKSHOP PROVIDER PROFILE --}}
+        <a href="{{ route('workshop.profile', auth()->id()) }}" 
+           class="dropdown-item-provider" style="text-decoration: none">
+            <i class="fas fa-user-circle me-2"></i> My Profile
+        </a>
+    @else
+        {{-- DEALER PROFILE --}}
+        <a href="{{ route('provider.profile', auth()->id()) }}" 
+           class="dropdown-item-provider" style="text-decoration: none">
+            <i class="fas fa-user-circle me-2"></i> My Profile
+        </a>
+    @endif
+</li>
+
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <form method="post" action="{{ route('providers.logout') }}">
+                                    @csrf
+                                    <button class="dropdown-item-provider w-100" style="border:0; background:none;">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @endauth
+
+            </ul>
+
+        </div>
     </div>
 </nav>
 
@@ -202,13 +230,15 @@
             <div class="row footer-links g-4 text-md-start">
                 <!-- Brand Column -->
                 <div class="col-12 col-md-4">
-                    <a href="{{ route('home') }}" class="footer-logo d-block mb-3">
-                        <img src="{{ asset('carllymotors_logo_white-2048x526.png') }}" 
-                             alt="AutoDecar" 
-                             class="img-fluid"
-                             style="max-width: 150px;"
-                             loading="lazy">
-                    </a>
+              <a class="footer-logo d-block mb-3"
+   href="{{ auth()->check() ? route('cars.dashboard') : route('home') }}">
+    <img src="{{ asset('carllymotors_logo_white-2048x526.png') }}" 
+         alt="AutoDecar"
+         class="img-fluid"
+         style="max-width: 150px;"
+         loading="lazy">
+</a>
+
                     <p class=" mb-3">Your trusted partner for buying and selling cars in the UAE. Find your perfect car or sell your current one with ease.</p>
                     
                     <!-- Social Media Links -->
@@ -272,7 +302,7 @@
 
         </li>
         <li>
-            <a href="">
+           <a href="{{ route('providers.workshops.login') }}">
                 <i class="fas fa-chevron-right me-2"></i>Workshops Provider
             </a>
         </li>
