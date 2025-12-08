@@ -10,6 +10,16 @@
       method="POST" enctype="multipart/form-data">
         @csrf
         @method('POST')
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <strong>Please fix the following errors:</strong>
+        <ul class="mt-2 mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
         <div class="row">
 
@@ -238,39 +248,74 @@ document.addEventListener("DOMContentLoaded", function() {
 <div class="col-12 mb-4">
     <label class="form-label fw-semibold">Car Brand</label>
 
-    <!-- Custom dropdown -->
     <div class="dropdown-container">
         <input type="text" id="brandSearch" placeholder="Select brands..." readonly class="form-control">
+
         <div id="brandDropdown" class="dropdown-list">
-            <div class="dropdown-item" data-value="all">All Brands</div>
-            @foreach($selectedBrands as $id => $brand)
-               <div class="dropdown-item" data-value="{{ $id }}">{{ $brand['name'] ?? $brand->name }}</div>
+
+            <div class="dropdown-actions p-2 d-flex gap-2 border-bottom">
+                <button type="button" id="selectAllBrands" class="btn border-radius w-50" 
+                    style="color: #163155; border:1px solid #163155; border-radius: 12px;">Select All</button>
+
+                <button type="button" id="clearBrands" class="btn btn-outline-danger border-radius w-50">
+                    Clear All
+                </button>
+            </div>
+
+            {{-- ⭐ هنا نعرض كل البراندات --}}
+            @foreach($brands as $brand)
+                <div class="dropdown-item" 
+                     data-value="{{ $brand->id }}"
+                     data-name="{{ $brand->name }}">
+                    <span>{{ $brand->name }}</span>
+                    <span class="check-mark">✔</span>
+                </div>
             @endforeach
+
         </div>
     </div>
 
-    <!-- Selected brands appear here -->
+    {{-- ⭐ هنا تظهر البراندات المختارة كـ Tags --}}
     <div id="selectedBrandsContainer" class="mt-2 d-flex flex-wrap gap-2"></div>
 
-    <!-- Hidden input to submit selected brand IDs -->
-{{-- <input type="hidden" name="brand_ids" id="brandIdsInput" value=""> --}}
-<div id="brandHiddenInputs"></div>
-
+    {{-- ⭐ هنا نخزن الـ IDs --}}
+    <div id="brandHiddenInputs"></div>
 </div>
+
 
 <style>
 .dropdown-container { position: relative; width: 100%; }
 #brandSearch { cursor: pointer; }
+
 .dropdown-list {
     position: absolute;
     top: 100%; left: 0;
-    width: 100%; max-height: 200px;
+    width: 100%; max-height: 200px; /* يمكن زيادة هذا إذا كنت تريد مساحة أكبر للأزرار */
     overflow-y: auto; border: 1px solid #ccc;
     border-radius: 6px; background: #fff; display: none; z-index: 10;
 }
-.dropdown-item { padding: 8px 12px; cursor: pointer; }
+
+/* تحديث CSS لتطبيق تنسيق البوتستراب d-flex, gap-2, p-2, border-bottom على الـ div الجديد */
+.dropdown-actions {
+    /* لضمان أن الأزرار تبقى في الأعلى ولا تتحرك عند التمرير */
+    position: sticky;
+    top: 0;
+    background: #fff; /* تأكد من أن الخلفية بيضاء لإخفاء العناصر التي تمر من تحتها */
+    z-index: 11;
+}
+
+.dropdown-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
 .dropdown-item.selected { background-color: #cce0ff; }
 .dropdown-item:hover { background-color: #e8f0ff; color: #163155; }
+
+.check-mark { display: none; color: #0d6efd; font-weight: bold; }
+.dropdown-item.selected .check-mark { display: inline; }
 
 .brand-tag {
     background-color: #e8f0ff; color: #163155;
@@ -286,15 +331,32 @@ document.addEventListener("DOMContentLoaded", function() {
 </style>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
     const brandSearch = document.getElementById("brandSearch");
     const brandDropdown = document.getElementById("brandDropdown");
     const selectedContainer = document.getElementById("selectedBrandsContainer");
     const hiddenInputsContainer = document.getElementById("brandHiddenInputs");
 
-    // ✅ نبدأ بالـ brands المختارة مسبقًا من السيرفر
+    // مُعرفات الأزرار لم تتغير، لذا لا تحتاج لتغييرها في JS.
+    const btnSelectAll = document.getElementById("selectAllBrands");
+    const btnClear = document.getElementById("clearBrands");
+
+    // Brands from backend
     let selectedBrands = @json($selectedBrands ?? []);
 
+    // **التغيير هنا**: يجب أن نستخدم مُحدد (Selector) أدق للحصول على العناصر القابلة للاختيار فقط،
+    // واستبعاد الـ div الخاص بالأزرار (#brandDropdown يحتوي الآن على div الأزرار بالإضافة للعناصر).
+    const allBrandsItems = brandDropdown.querySelectorAll(".dropdown-item");
+
+    // All brands list (id + name)
+    const allBrands = [...allBrandsItems].map(item => ({
+        id: item.dataset.value,
+        name: item.querySelector("span").innerText
+    }));
+
+    // ================================
+    // Render Selected Brands
+    // ================================
     function updateSelected() {
         selectedContainer.innerHTML = '';
         hiddenInputsContainer.innerHTML = '';
@@ -312,7 +374,7 @@ document.addEventListener("DOMContentLoaded", function() {
             hiddenInputsContainer.appendChild(input);
         });
 
-        // زر إزالة البراند
+        // Remove individual brand
         selectedContainer.querySelectorAll("button").forEach(btn => {
             btn.addEventListener("click", function() {
                 const id = this.dataset.id;
@@ -324,53 +386,74 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function updateDropdownSelection() {
-        brandDropdown.querySelectorAll(".dropdown-item").forEach(item => {
+        // **التغيير هنا**: استخدام allBrandsItems بدلاً من brandDropdown.querySelectorAll(".dropdown-item")
+        // لضمان أننا نتحقق من حالة العناصر القابلة للاختيار فقط
+        allBrandsItems.forEach(item => {
             const id = item.dataset.value;
-            if(id === 'all') return;
             item.classList.toggle('selected', selectedBrands.some(b => b.id == id));
         });
     }
 
-    // Initial render
     updateSelected();
     updateDropdownSelection();
 
+    // ================================
     // Dropdown toggle
+    // ================================
     brandSearch.addEventListener("click", () => {
-        brandDropdown.style.display = brandDropdown.style.display === 'block' ? 'none' : 'block';
+        brandDropdown.style.display =
+            brandDropdown.style.display === 'block' ? 'none' : 'block';
     });
 
-    // Click on dropdown items
-    brandDropdown.querySelectorAll(".dropdown-item").forEach(item => {
+    // ================================
+    // Click dropdown item (toggle)
+    // ================================
+    // **التغيير هنا**: استخدام allBrandsItems
+    allBrandsItems.forEach(item => {
         item.addEventListener("click", () => {
             const id = item.dataset.value;
-            const name = item.textContent;
+            const name = item.querySelector("span").innerText;
 
-            if(id === 'all') {
-                selectedBrands = [];
-                brandDropdown.querySelectorAll('.dropdown-item').forEach(i => {
-                    if(i.dataset.value !== 'all') selectedBrands.push({id: i.dataset.value, name: i.textContent});
-                });
+            const exists = selectedBrands.find(b => b.id == id);
+            if (exists) {
+                selectedBrands = selectedBrands.filter(b => b.id != id);
             } else {
-                if(!selectedBrands.find(b => b.id == id)) {
-                    selectedBrands.push({id, name});
-                }
+                selectedBrands.push({id, name});
             }
+
             updateSelected();
             updateDropdownSelection();
         });
     });
 
-    // Close dropdown when clicking outside
+    // ================================
+    // Select All button
+    // ================================
+    btnSelectAll.addEventListener("click", () => {
+        selectedBrands = allBrands.map(b => ({id: b.id, name: b.name}));
+        updateSelected();
+        updateDropdownSelection();
+    });
+
+    // ================================
+    // Clear All button
+    // ================================
+    btnClear.addEventListener("click", () => {
+        selectedBrands = [];
+        updateSelected();
+        updateDropdownSelection();
+    });
+
+    // ================================
+    // Close dropdown on outside click
+    // ================================
     document.addEventListener("click", function(e) {
-        if(!brandSearch.contains(e.target) && !brandDropdown.contains(e.target)) {
+        if (!brandSearch.contains(e.target) && !brandDropdown.contains(e.target)) {
             brandDropdown.style.display = 'none';
         }
     });
 });
-
 </script>
-
 
 
 
@@ -378,7 +461,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="col-md-6 mb-3">
                 <label class="form-label fw-semibold">Workshop Name</label>
                 <input type="text" name="workshop_name" class="form-control" placeholder="Enter Workshop Name"
-                       value="{{ $workshop->workshop_name }}">
+                       value="{{ $workshop->workshop_name }}" required readonly>
             </div>
 
             <div class="col-md-6 mb-3">
@@ -404,6 +487,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="input-group">
         <span class="input-group-text">+971</span>
         <input 
+            required
             type="tel" 
             name="whatsapp_number" 
             class="form-control" 
@@ -637,10 +721,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     @php
         // جلب الـ IDs المحفوظة من العلاقة many-to-many مباشرة
-$saved = $workshop->categories()->pluck('workshop_categories.id')->toArray();
+        $saved = $workshop->categories()->pluck('workshop_categories.id')->toArray();
     @endphp
 
-    <div class="row g-3">
+    <div class="d-flex flex-wrap gap-3 icon-card-container">
         @foreach($categories as $category)
             @php
                 $img = $category->image
@@ -648,73 +732,139 @@ $saved = $workshop->categories()->pluck('workshop_categories.id')->toArray();
                     : 'https://via.placeholder.com/60';
             @endphp
 
-            <div class="col-6 col-md-4 col-lg-2">
-                <label class="service-option w-100" style="cursor:pointer;">
-                    <input type="checkbox" 
-                           name="workshop_categories[]" 
-                           value="{{ $category->id }}"
-                           class="d-none"
-                           {{ in_array($category->id, $saved) ? 'checked' : '' }}>
+            <label class="service-option-large" style="cursor:pointer;">
+                <input type="checkbox" 
+                       name="workshop_categories[]" 
+                       value="{{ $category->id }}"
+                       class="d-none"
+                       {{ in_array($category->id, $saved) ? 'checked' : '' }}>
 
-                    <div class="border p-2 rounded-3 text-center service-workshopd 
-                                {{ in_array($category->id, $saved) ? 'selected-service' : '' }}">
+                <div class="icon-card text-center border rounded-3 
+                             {{ in_array($category->id, $saved) ? 'selected-service' : '' }}">
 
-                        <div style="width: 60px; height: 60px; margin: 0 auto; overflow:hidden; border-radius:8px;">
-                            <img src="{{ $img }}" 
-                                 alt="{{ $category->name }}" 
-                                 style="width: 100%; height: 100%; object-fit: cover;">
-                        </div>
-
-                        <div class="fw-semibold mt-2" style="font-size: 0.85rem; white-space: normal; word-break: break-word;">
-                            {{ $category->name }}
-                        </div>
+                    <div class="large-icon-wrapper mx-auto mb-2">
+                        <img src="{{ $img }}" 
+                             alt="{{ $category->name }}" 
+                             style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                </label>
-            </div>
+
+                    <div class="fw-semibold card-text-category">
+                        {{ $category->name }}
+                    </div>
+                </div>
+            </label>
         @endforeach
     </div>
 </div>
 
 <style>
+/* ------------------------------------------- */
+/* توحيد حجم البطاقة والأيقونة (نمط الصورة المرفقة) */
+/* ------------------------------------------- */
+
+/* حجم الأيقونة الموحد (70x70) - للشاشات الكبيرة والمتوسطة */
+.large-icon-wrapper {
+    width: 70px; 
+    height: 70px; 
+    overflow: hidden; 
+    border-radius: 8px;
+    background-color: transparent;
+}
+
+/* تنسيق البطاقة المربعة (130x130) - للشاشات الكبيرة والمتوسطة */
+.icon-card {
+    width: 130px; 
+    height: 130px;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    cursor: pointer;
+    transition: all 0.2s; 
+    padding: 10px;
+    background-color: #f8f9fa; 
+}
+
+.card-text-category {
+    font-size: 0.9rem;
+    line-height: 1.2;
+    padding-top: 5px;
+    white-space: normal; 
+    word-break: break-word;
+}
+
 .selected-service {
     border: 2px solid #163155 !important;
     background-color: #e8f0ff !important;
     box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
 }
 
-/* تصغير الكارت والصورة على الشاشات الكبيرة فقط */
+/* ======================================== */
+/* 🎯 التعديل النهائي لضمان عمودين على الشاشات الصغيرة جداً (< 576px) */
+/* ======================================== */
+@media (max-width: 575.98px) {
+    /* تقليص حجم البطاقة إلى 100x100 بكسل */
+    .icon-card {
+        width: 100px; 
+        height: 100px;
+        padding: 5px; /* تقليل الحشو الداخلي لأقصى حد */
+    }
+    
+    /* تقليص حجم الأيقونة إلى 50x50 بكسل */
+    .large-icon-wrapper {
+        width: 50px; 
+        height: 50px; 
+    }
+    
+    .card-text-category {
+        font-size: 0.75rem; /* تقليل حجم النص */
+    }
+    
+    .icon-card-container {
+        /* استخدام justify-content: space-between لتوزيع البطاقات على كامل العرض المتاح */
+        justify-content: space-between !important; 
+        gap: 0.2rem !important; /* تقليل التباعد بين البطاقات */
+        padding: 0 5px; /* إضافة حشو بسيط للحاوية الأم */
+    }
+}
+
+/* ------------------------------------------- */
+/* ضمان عدم تأثير قواعد الشاشات الكبيرة السابقة */
+/* ------------------------------------------- */
 @media (min-width: 992px) {
-    .service-workshopd {
-        padding: 10px !important;
-        transform: scale(0.85);
+    .icon-card {
+        transform: none !important; 
+        padding: 10px; 
     }
-
-    .service-workshopd img {
-        width: 50px !important;
-        height: 50px !important;
+    
+    .large-icon-wrapper {
+        width: 70px !important;
+        height: 70px !important;
     }
-
-    .service-workshopd .fw-semibold {
-        font-size: 0.8rem !important;
+    
+    .card-text-category {
+        font-size: 0.9rem !important;
     }
 }
 </style>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".service-option input[type='checkbox']").forEach(function (checkbox) {
+    document.querySelectorAll("input[type='checkbox'][name='workshop_categories[]']").forEach(function (checkbox) {
         checkbox.addEventListener("change", function () {
-            let workshopd = this.closest(".service-option").querySelector(".service-workshopd");
+
+            // الوصول للكارت اللي جوّا الليبل
+            let card = this.closest("label").querySelector(".icon-card");
 
             if (this.checked) {
-                workshopd.classList.add("selected-service");
+                card.classList.add("selected-service");
             } else {
-                workshopd.classList.remove("selected-service");
+                card.classList.remove("selected-service");
             }
         });
     });
 });
 </script>
+
 
 
 
@@ -755,6 +905,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 
 @endsection

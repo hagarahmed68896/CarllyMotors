@@ -102,7 +102,7 @@ button.btn-secondary, button.btn-primary {
             <!-- ✅ STEP 1 — Phone Input -->
        <!-- STEP 1 — User Info + Phone Input -->
 <div class="step step-1 text-center">
-    <h3 class="mb-4" style="color:#163155;">Enter Your Details</h3>
+    <h3 class="mb-4" style="color:#163155;">Car Dealer Register</h3>
     
     <div class="mb-2 text-start">
         <label for="fname" class="form-label fw-bold">First Name</label>
@@ -153,8 +153,18 @@ button.btn-secondary, button.btn-primary {
 </script>
     <div id="recaptcha-container"></div>
 
-    <button type="button" class="btn rounded-4 w-100 mb-2" style="background-color: #163155; color: white;" onclick="sendOTP()">Send OTP</button>
-
+<button type="button" 
+        class="btn rounded-4 w-100 mb-2" 
+        style="background-color: #163155; color: white;" 
+        onclick="sendOTP()"
+        id="otpButton">
+    <span class="spinner-border spinner-border-sm me-2" 
+          role="status" 
+          aria-hidden="true" 
+          id="otpSpinner" 
+          style="display: none;"></span>
+    <span id="otpButtonText">Send OTP</span>
+</button>
 <div class="login-link mt-3 text-center">
     Already have an account? 
     <a href="{{ route('providers.cars.login') }}">Login</a>
@@ -244,11 +254,30 @@ function setupReCaptcha() {
     recaptchaVerifier.render().catch(() => {});
   }
 }
+/**
+ * تفعيل حالة التحميل للزرار
+ */
+function setLoadingState(isLoading) {
+    const button = document.getElementById('otpButton');
+    const spinner = document.getElementById('otpSpinner');
+    const buttonText = document.getElementById('otpButtonText');
 
+    if (isLoading) {
+        button.disabled = true;
+        spinner.style.display = 'inline-block';
+        buttonText.textContent = 'Sending...';
+    } else {
+        button.disabled = false;
+        spinner.style.display = 'none';
+        buttonText.textContent = 'Send OTP'; // أو أي نص آخر تريده بعد الانتهاء
+    }
+}
 /* ================================================================
    🔹 إرسال OTP
 ================================================================ */
 function sendOTP() {
+  // ⭐ تفعيل حالة التحميل قبل بدء العملية ⭐
+    setLoadingState(true);
   setupReCaptcha();
 
   const phoneInput = document.getElementById("phone");
@@ -262,6 +291,7 @@ function sendOTP() {
   // ✅ تأكد من وجود الكود الدولي
   if (!phoneNumber.startsWith('+')) {
     phoneNumber = '+971' + phoneNumber.replace(/^0+/, '');
+    setLoadingState(false);
   }
 
   console.log("📞 Full phone number:", phoneNumber);
@@ -295,6 +325,7 @@ if (testPhones[phoneNumber]) {
 
     startCountdown(30);
     showStep(2);
+    setLoadingState(false);
     return;
 }
 
@@ -326,7 +357,7 @@ if (testPhones[phoneNumber]) {
     // alert("🧪 Debug OTP generated — check console!");
     startCountdown(30);
         showStep(2); // ✅ move to Step 2 in debug mode
-
+setLoadingState(false);
     return;
   }
 
@@ -345,11 +376,16 @@ if (testPhones[phoneNumber]) {
           showStep(2); // ✅ move to Step 2 in debug mode
 
     })
-    .catch((error) => {
-      console.error("❌ Error sending OTP:", error);
-    //   alert(error.message || "Error sending OTP");
-      try { grecaptcha && grecaptcha.reset(); } catch (e) {}
+  .catch((err) => {
+    console.error("❌ OTP Error:", err);
+    showFirebaseError(err);
+    try { grecaptcha.reset(); } catch(e){}
+})
+    .finally(() => {
+        // ⭐ إيقاف حالة التحميل بعد انتهاء العملية ⭐
+        setLoadingState(false);
     });
+;
 }
 
 /* ================================================================
@@ -389,8 +425,8 @@ function verifyOTP() {
         alert("OTP expired. Please resend.");
         document.getElementById("resend-otp").disabled = false;
       } else {
-        alert(error.message || "Invalid OTP");
-      }
+   console.error(err);
+    showFirebaseError(err);      }
     });
 }
 
@@ -480,7 +516,46 @@ function showStep(stepNumber) {
   progressBar.style.width = progress + '%';
   progressBar.setAttribute('aria-valuenow', progress);
 }
+function showFirebaseError(error) {
+    let message = "Something went wrong. Please try again.";
 
+    switch (error.code) {
+        case "auth/invalid-phone-number":
+            message = "The phone number is invalid. Please enter a correct mobile number.";
+            break;
+
+        case "auth/missing-phone-number":
+            message = "Please enter a phone number first.";
+            break;
+
+        case "auth/too-many-requests":
+            message = "Too many attempts. Please wait and try again.";
+            break;
+
+        case "auth/quota-exceeded":
+            message = "SMS quota exceeded for today. Try again later.";
+            break;
+
+        case "auth/captcha-check-failed":
+            message = "reCAPTCHA verification failed. Refresh the page and try again.";
+            break;
+
+        case "auth/invalid-verification-code":
+            message = "Incorrect code. Please enter the correct OTP.";
+            break;
+
+        case "auth/session-expired":
+            message = "The OTP code expired. Request a new one.";
+            break;
+
+        default:
+            message = error.message || "Unexpected error.";
+    }
+
+    const box = document.getElementById("otpError");
+    box.innerText = message;
+    box.style.display = "block";
+}
 
 </script>
 @endsection

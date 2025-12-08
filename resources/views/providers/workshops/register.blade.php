@@ -102,7 +102,7 @@ button.btn-secondary, button.btn-primary {
             <!-- ✅ STEP 1 — Phone Input -->
        <!-- STEP 1 — User Info + Phone Input -->
 <div class="step step-1 text-center">
-    <h3 class="mb-4" style="color:#163155;">Enter Your Details</h3>
+    <h3 class="mb-4" style="color:#163155;">Workshop Register</h3>
     
     <div class="mb-2 text-start">
         <label for="fname" class="form-label fw-bold">First Name</label>
@@ -152,9 +152,20 @@ button.btn-secondary, button.btn-primary {
 
 </script>
     <div id="recaptcha-container"></div>
+<div id="otpError" style="display:none;" class="alert alert-danger mt-2"></div>
 
-    <button type="button" class="btn rounded-4 w-100 mb-2" style="background-color: #163155; color: white;" onclick="sendOTP()">Send OTP</button>
-
+<button type="button" 
+        class="btn rounded-4 w-100 mb-2" 
+        style="background-color: #163155; color: white;" 
+        onclick="sendOTP()"
+        id="otpButton">
+    <span class="spinner-border spinner-border-sm me-2" 
+          role="status" 
+          aria-hidden="true" 
+          id="otpSpinner" 
+          style="display: none;"></span>
+    <span id="otpButtonText">Send OTP</span>
+</button>
 <div class="login-link mt-3 text-center">
     Already have an account? 
     <a href="{{ route('providers.workshops.login') }}">Login</a>
@@ -204,7 +215,9 @@ button.btn-secondary, button.btn-primary {
 <script>
 /* global firebase, $, window */
 
-// ✅ إعداد Firebase الصحيح
+// ============================
+//  Firebase Config
+// ============================
 const firebaseConfig = {
     apiKey: "AIzaSyDV5bqNaUUDmB3SBawLc7HXBI2WvAcOvV8",
     authDomain: "carlly-de5a1.firebaseapp.com",
@@ -214,87 +227,134 @@ const firebaseConfig = {
     appId: "1:336138983965:web:edd47ae145c033f05a44f4",
     measurementId: "G-416GMZTRZT"
 };
-console.log("🔍 Firebase Config:", firebaseConfig);
 
-// ✅ تهيئة Firebase
 firebase.initializeApp(firebaseConfig);
 
 let recaptchaVerifier;
 let lastConfirmationResult = null;
 
-/* ================================================================
-   🔹 Helper: نتحقق هل الوضع تطوير محلي أو Debug مفعّل
-================================================================ */
+// ============================
+// Debug Mode Helper
+// ============================
 function isDebugMode() {
   const checkbox = document.querySelector('#use-debug');
-  return (checkbox && checkbox.checked) || location.hostname.includes('localhost') || location.hostname.includes('127.0.0.1');
+  return (checkbox && checkbox.checked) ||
+         location.hostname.includes("localhost") ||
+         location.hostname.includes("127.0.0.1");
 }
 
-/* ================================================================
-   🔹 إعداد reCAPTCHA (غير مرئي)
-================================================================ */
+// ============================
+// Setup Invisible reCAPTCHA
+// ============================
 function setupReCaptcha() {
   if (!recaptchaVerifier) {
     recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
       size: 'invisible',
-      callback: function () {
-        console.log('reCAPTCHA verified ✅');
-      }
+      callback: () => console.log("reCAPTCHA verified")
     });
     recaptchaVerifier.render().catch(() => {});
   }
 }
+/**
+ * تفعيل حالة التحميل للزرار
+ */
+function setLoadingState(isLoading) {
+    const button = document.getElementById('otpButton');
+    const spinner = document.getElementById('otpSpinner');
+    const buttonText = document.getElementById('otpButtonText');
 
-/* ================================================================
-   🔹 إرسال OTP
-================================================================ */
+    if (isLoading) {
+        button.disabled = true;
+        spinner.style.display = 'inline-block';
+        buttonText.textContent = 'Sending...';
+    } else {
+        button.disabled = false;
+        spinner.style.display = 'none';
+        buttonText.textContent = 'Send OTP'; // أو أي نص آخر تريده بعد الانتهاء
+    }
+}
+// ============================
+// Send OTP
+// ============================
 function sendOTP() {
+// ⭐ تفعيل حالة التحميل قبل بدء العملية ⭐
+    setLoadingState(true);
   setupReCaptcha();
 
-  const phoneInput = document.getElementById("phone");
-  let phoneNumber = phoneInput ? phoneInput.value.trim() : '';
+  let phoneNumber = $("#phone").val().trim();
 
   if (!phoneNumber) {
+    setLoadingState(false);
     alert("Please enter phone number");
     return;
   }
 
-  // 🔹 تأكد من الكود الدولي
   if (!phoneNumber.startsWith('+')) {
     phoneNumber = '+971' + phoneNumber.replace(/^0+/, '');
   }
 
-  console.log("📞 User phone input:", phoneNumber);
+  console.log("📞 Full phone:", phoneNumber);
 
-  /* ======================================================
-       ⭐⭐  HARD CODED NUMBER FOR PRODUCTION ⭐⭐
-     ====================================================== */
-  if (!isDebugMode()) {
-    phoneNumber = "+971599999999"; // ← دخّلي رقمك الثابت هنا
-    console.log("📌 Using HARDCODED PHONE:", phoneNumber);
+  // ===============================
+  // ⭐ TEST NUMBERS ALWAYS ALLOWED  
+  // ===============================
+  const testPhones = {
+      "+971555555555": "123456",
+      "+971500000000": "654321"
+  };
+
+  if (testPhones[phoneNumber]) {
+      console.log("🧪 TEST PHONE USED:", phoneNumber);
+
+      lastConfirmationResult = {
+          _isFake: true,
+          _fakeOtp: testPhones[phoneNumber],
+          confirm(code) {
+              return new Promise((resolve, reject) => {
+                  if (code === this._fakeOtp) {
+                      resolve({
+                          user: {
+                              getIdToken: () => Promise.resolve("FAKE_TEST_TOKEN"),
+                              phoneNumber,
+                              uid: "TEST_UID_" + Math.random().toString(36).substring(2, 8)
+                          }
+                      });
+                  } else {
+                      reject({ message: "Invalid test code" });
+                  }
+              });
+          }
+      };
+
+      startCountdown(30);
+      showStep(2);
+      setLoadingState(false);
+      return;
   }
 
-  /* ====================================================== */
-
-  // 🔹 وضع DEBUG محلي
+  // ===============================
+  // ⭐ DEBUG MODE → FAKE OTP  
+  // ===============================
   if (isDebugMode()) {
+
     const fakeOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log("🧪 (DEBUG) Fake OTP for", phoneNumber, "is:", fakeOtp);
+    console.log("🧪 Debug OTP:", fakeOtp);
 
     lastConfirmationResult = {
       _isFake: true,
       _fakeOtp: fakeOtp,
-      confirm: function (code) {
+      confirm(code) {
         return new Promise((resolve, reject) => {
-          if (String(code) === String(this._fakeOtp)) {
-            const fakeUser = {
-              getIdToken: () => Promise.resolve('FAKE_ID_TOKEN'),
-              phoneNumber,
-              uid: 'FAKE_UID_' + Math.random().toString(36).substring(2, 8)
-            };
-            resolve({ user: fakeUser });
+          if (code === this._fakeOtp) {
+            resolve({
+              user: {
+                getIdToken: () => Promise.resolve("FAKE_DEV_TOKEN"),
+                phoneNumber,
+                uid: "DEV_UID_" + Math.random().toString(36).substring(2, 8)
+              }
+            });
           } else {
-            reject({ code: 'auth/invalid-verification-code', message: 'Invalid debug OTP code.' });
+            reject({ message: "Invalid debug code" });
           }
         });
       }
@@ -302,29 +362,39 @@ function sendOTP() {
 
     startCountdown(30);
     showStep(2);
+    setLoadingState(false);
     return;
   }
 
-  // 🔹 الوضع الحقيقي
+  // ===============================
+  // ⭐ REAL OTP (Production)  
+  // ===============================
   firebase.auth().signInWithPhoneNumber(phoneNumber, recaptchaVerifier)
     .then((confirmationResult) => {
-      lastConfirmationResult = confirmationResult;
-      console.log("✅ confirmationResult:", confirmationResult);
-      startCountdown(30);
-      showStep(2);
+        lastConfirmationResult = confirmationResult;
+        console.log("📨 OTP sent:", confirmationResult);
+
+        startCountdown(30);
+        showStep(2);
     })
-    .catch((error) => {
-      console.error("❌ Error sending OTP:", error);
-      try { grecaptcha && grecaptcha.reset(); } catch (e) {}
+   .catch((err) => {
+    console.error("❌ OTP Error:", err);
+    showFirebaseError(err);
+    try { grecaptcha.reset(); } catch(e){}
+})
+    .finally(() => {
+        // ⭐ إيقاف حالة التحميل بعد انتهاء العملية ⭐
+        setLoadingState(false);
     });
+
 }
 
-/* ================================================================
-   🔹 التحقق من الكود (OTP)
-================================================================ */
+// ============================
+// Verify OTP
+// ============================
 function verifyOTP() {
-  const otpInput = document.getElementById("otp");
-  const code = otpInput ? otpInput.value.trim() : '';
+
+  const code = $("#otp").val().trim();
 
   if (!code) {
     alert("Please enter OTP");
@@ -332,102 +402,139 @@ function verifyOTP() {
   }
 
   if (!lastConfirmationResult) {
-    alert("No OTP request found. Please request OTP first.");
+    alert("No OTP request found");
     return;
   }
 
-  // 🔹 Debug
+  // ⭐ Fake mode
   if (lastConfirmationResult._isFake) {
     lastConfirmationResult.confirm(code)
-      .then((result) => handleVerifiedFirebaseUser(result.user))
-      .catch((err) => alert(err.message));
+      .then(res => handleVerifiedFirebaseUser(res.user))
+      .catch(err => alert(err.message));
     return;
   }
 
-  // 🔹 حقيقي
+  // ⭐ Real mode
   lastConfirmationResult.confirm(code)
-    .then((result) => handleVerifiedFirebaseUser(result.user))
-    .catch((error) => {
-      console.error("❌ verifyOTP error:", error);
-      if (error.code === "auth/code-expired") {
-        alert("OTP expired. Please resend.");
-        document.getElementById("resend-otp").disabled = false;
-      } else {
-        alert(error.message || "Invalid OTP");
-      }
-    });
+    .then(res => handleVerifiedFirebaseUser(res.user))
+   .catch(err => {
+    console.error(err);
+    showFirebaseError(err);
+});
+
 }
 
-/* ================================================================
-   🔹 بعد التحقق — إرسال التوكن للباك إند
-================================================================ */
+// ============================
+// After verification → send token to backend
+// ============================
 function handleVerifiedFirebaseUser(user) {
-  return user.getIdToken().then(function (idToken) {
+
+  user.getIdToken().then(idToken => {
 
     return $.ajax({
       url: "/verify-token-workshop",
       method: "POST",
-      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      headers: { "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content") },
       data: {
         token: idToken,
-        phone: user.phoneNumber || $('#phone').val() || null,
-        fname: $('#fname').val(),
-        lname: $('#lname').val(),
-        email: $('#email').val()
-      },
-    }).then(function (response) {
-
-      if (response.success) {
-        showStep(3);
-        window.location.href = response.redirect || "/";
-      } else {
-        document.getElementById("otpError").innerText = response.error;
+        phone: user.phoneNumber,
+        fname: $("#fname").val(),
+        lname: $("#lname").val(),
+        email: $("#email").val()
       }
-
     });
+
+  }).then(response => {
+
+    if (response.success) {
+      showStep(3);
+      window.location.href = response.redirect;
+    } else {
+      $("#otpError").text(response.error).show();
+    }
+
+  }).catch(err => {
+    console.error(err);
+    $("#otpError").text("Server error").show();
   });
 }
 
-/* ================================================================
-   🔹 العداد (Countdown)
-================================================================ */
-function startCountdown(seconds) {
-  const countdownElement = document.getElementById("countdown");
-  const resendButton = document.getElementById("resend-otp");
+// ============================
+// Countdown Timer
+// ============================
+function startCountdown(s) {
+  $("#resend-otp").prop("disabled", true);
+  $("#countdown").text(s);
 
-  resendButton.disabled = true;
-  countdownElement.innerText = seconds;
-
-  const interval = setInterval(() => {
-    seconds--;
-    if (seconds > 0) {
-      countdownElement.innerText = seconds;
-    } else {
-      clearInterval(interval);
-      resendButton.disabled = false;
-      countdownElement.innerText = "Expired!";
+  const timer = setInterval(() => {
+    s--;
+    if (s > 0) $("#countdown").text(s);
+    else {
+      clearInterval(timer);
+      $("#countdown").text("Expired!");
+      $("#resend-otp").prop("disabled", false);
     }
   }, 1000);
 }
 
-function showStep(stepNumber) {
-  document.querySelectorAll('.step').forEach(step => step.style.display = 'none');
-  const stepElement = document.querySelector(`.step-${stepNumber}`);
-  if (stepElement) stepElement.style.display = 'block';
+// ============================
+// Show Step UI
+// ============================
+function showStep(n) {
+  $(".step").hide();
+  $(`.step-${n}`).show();
 
-  const circles = document.querySelectorAll('.step-circle');
-  circles.forEach((circle, index) => {
-    if (index < stepNumber) circle.classList.add('active');
-    else circle.classList.remove('active');
+  const circles = document.querySelectorAll(".step-circle");
+  circles.forEach((c, i) => {
+    if (i < n) c.classList.add("active");
+    else c.classList.remove("active");
   });
 
-  const progressBar = document.querySelector('.progress-bar');
-  const totalSteps = circles.length;
-  const progress = ((stepNumber - 1) / (totalSteps - 1)) * 100;
-  progressBar.style.width = progress + '%';
-  progressBar.setAttribute('aria-valuenow', progress);
+  const progress = ((n - 1) / (circles.length - 1)) * 100;
+  $(".progress-bar").css("width", progress + "%");
+}
+function showFirebaseError(error) {
+    let message = "Something went wrong. Please try again.";
+
+    switch (error.code) {
+        case "auth/invalid-phone-number":
+            message = "The phone number is invalid. Please enter a correct mobile number.";
+            break;
+
+        case "auth/missing-phone-number":
+            message = "Please enter a phone number first.";
+            break;
+
+        case "auth/too-many-requests":
+            message = "Too many attempts. Please wait and try again.";
+            break;
+
+        case "auth/quota-exceeded":
+            message = "SMS quota exceeded for today. Try again later.";
+            break;
+
+        case "auth/captcha-check-failed":
+            message = "reCAPTCHA verification failed. Refresh the page and try again.";
+            break;
+
+        case "auth/invalid-verification-code":
+            message = "Incorrect code. Please enter the correct OTP.";
+            break;
+
+        case "auth/session-expired":
+            message = "The OTP code expired. Request a new one.";
+            break;
+
+        default:
+            message = error.message || "Unexpected error.";
+    }
+
+    const box = document.getElementById("otpError");
+    box.innerText = message;
+    box.style.display = "block";
 }
 
 </script>
+
 
 @endsection

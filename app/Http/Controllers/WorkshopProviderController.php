@@ -51,50 +51,48 @@ public function index() {
 
 
 
-  public function myWorkshop(Request $request)
-    {
-        $user = auth()->user();
+ public function myWorkshop(Request $request)
+{
+    $user = auth()->user();
 
-        // نجيب الورشة المرتبطة باليوزر
-        $workshop = $user->workshop_provider;
+    // نجيب الورشة المرتبطة باليوزر
+    $workshop = $user->workshop_provider;
 
-        if (!$workshop) {
-            return redirect()->back()->with('error', 'No workshop found for this user.');
-        }
-
-        // ⭐ Load all categories
-        $categories = \App\Models\WorkshopCategory::latest('id')->get();
-
-        // ⭐ Load all car brands
-        $brandsQuery = CarBrand::orderBy('name');
-
-        // If a brand_id is passed, filter brands related to this workshop
-      // جلب البراندات المختارة للورشة
-$selectedBrands = $workshop->brands->map(function($b) {
-    return ['id' => $b->id, 'name' => $b->name];
-});
-
-
-        // ----------------------------------------------------
-        // ✅ FIX 1: تحميل أيام العمل من جدول workshop_days وتجهيزها للعرض
-        // ----------------------------------------------------
-        $workingDaysRecords = WorkshopDay::where('workshop_provider_id', $workshop->id)->get();
-
-        // تحويل السجلات إلى الهيكل الذي يتوقعه الـ Blade والـ JavaScript
-        $saved_days_for_js = $workingDaysRecords->mapWithKeys(function ($item) {
-            return [
-                $item->day => [
-                    'from' => $item->from,
-                    'to' => $item->to,
-                ]
-            ];
-        })->toArray(); 
-        // ----------------------------------------------------
-
-
-        // تمرير البيانات الإضافية للـ view
-        return view('providers.workshops.my_workshop', compact('workshop', 'categories', 'selectedBrands', 'saved_days_for_js'));
+    if (!$workshop) {
+        return redirect()->back()->with('error', 'No workshop found for this user.');
     }
+
+    // ⭐ Load all categories
+    $categories = \App\Models\WorkshopCategory::latest('id')->get();
+
+    // ⭐ Load all car brands
+    $brands = CarBrand::orderBy('name')->get();
+
+    // ⭐ Load selected brands for this workshop
+    $selectedBrands = $workshop->brands->map(function($b) {
+        return ['id' => $b->id, 'name' => $b->name];
+    });
+
+    // ⭐ Load working days
+    $workingDaysRecords = WorkshopDay::where('workshop_provider_id', $workshop->id)->get();
+
+    $saved_days_for_js = $workingDaysRecords->mapWithKeys(function ($item) {
+        return [
+            $item->day => [
+                'from' => $item->from,
+                'to' => $item->to,
+            ]
+        ];
+    })->toArray();
+
+    return view('providers.workshops.my_workshop', compact(
+        'workshop',
+        'categories',
+        'brands',
+        'selectedBrands',
+        'saved_days_for_js'
+    ));
+}
 
 
   public function update(Request $request, $id)
@@ -104,6 +102,25 @@ $selectedBrands = $workshop->brands->map(function($b) {
     if ($workshop->user_id != auth()->id()) {
         return back()->with('error', 'Unauthorized');
     }
+
+$request->validate([
+    'workshop_name' => 'required|string|max:255',
+    'owner' => 'nullable|string|max:255',
+    'employee' => 'nullable|string|max:255',
+    'tax_number' => 'nullable|string|max:255',
+    'whatsapp_number' => 'required|string|max:20',
+
+    // brands
+    'brands' => 'required|array|min:1',
+    'brands.*' => 'exists:car_brands,id',
+
+    // categories (اسمك الحقيقي)
+    'workshop_categories' => 'required|array|min:1',
+    'workshop_categories.*' => 'exists:workshop_categories,id',
+
+    // working days (hidden json)
+    'working_days' => 'required',
+]);
 
 
     // -------------------------------
@@ -201,105 +218,6 @@ $workshop->categories()->sync($categoryIds);
     return back()->with('success', 'Workshop updated successfully!');
 }
 
- // رفع الصور
-//  public function wsUploadImgs(Request $request)
-// {
-//     try {
-//         // -------------------------------
-//         // Validate request
-//         // -------------------------------
-//         $request->validate([
-//             'workshop_id' => 'required|exists:workshop_providers,id',
-//             'images.*'    => 'required|image|mimes:jpg,jpeg,png,gif|max:5120', // 5MB
-//         ]);
-
-//         $workshop = \App\Models\WorkshopProvider::findOrFail($request->workshop_id);
-
-//         if (! $request->hasFile('images')) {
-//             return response()->json([
-//                 'status'  => false,
-//                 'message' => 'No images uploaded.',
-//             ]);
-//         }
-
-//         $uploadedImages = [];
-//         $images = $request->file('images');
-//         $maxImages = 5; // الحد الأقصى للصور
-//         $images = array_slice($images, 0, $maxImages);
-
-//         foreach ($images as $index => $uploadedImage) {
-
-//             // حفظ الصورة على R2
-//             $imgName = time() . '_' . $index . '.' . $uploadedImage->getClientOriginalExtension();
-//             $imagePath = $uploadedImage->storeAs('workshops', $imgName, 'r2');
-
-//             // حفظ الصورة في جدول images
-//             $img = $workshop->images()->create([
-//                 'image' => $imagePath,
-//             ]);
-
-//             $uploadedImages[] = [
-//                 'id'    => $img->id,
-//                 'image' => env('CLOUDFLARE_R2_URL') . '/' . $img->image,
-//             ];
-//         }
-
-//         // تحديث عدد الصور الحالية
-//         $workshop->current = $workshop->images()->count();
-//         $workshop->save();
-
-//         return response()->json([
-//             'status'  => true,
-//             'message' => 'Images uploaded successfully!',
-//             'data'    => $uploadedImages,
-//         ]);
-
-//     } catch (\Illuminate\Validation\ValidationException $ve) {
-//         return response()->json([
-//             'status'  => false,
-//             'message' => $ve->errors(),
-//         ]);
-//     } catch (\Exception $e) {
-//         \Log::error($e); // سجل أي خطأ
-//         return response()->json([
-//             'status'  => false,
-//             'message' => $e->getMessage(),
-//                     'trace'   => $e->getTraceAsString(), // هنا هتشوف السطر اللي خطأ فيه
-
-//         ]);
-//     }
-// }
-
-
-//     // حذف الصور
-//     public function wsDelImg($id)
-//     {
-//         try {
-//             $img = Image::findOrFail($id);
-
-//             if (Storage::disk('r2')->exists($img->image)) {
-//                 Storage::disk('r2')->delete($img->image);
-//             }
-
-//             $workshop = WorkshopProvider::findOrFail($img->workshop_provider_id);
-//             $workshop->current = max(0, $workshop->current - 1);
-//             $workshop->save();
-
-//             $img->delete();
-
-//             return response()->json([
-//                 'status'  => true,
-//                 'message' => "Image removed successfully!",
-//                 'data'    => null,
-//             ]);
-
-//         } catch (\Exception $e) {
-//             return response()->json([
-//                 'status'  => false,
-//                 'message' => $e->getMessage(),
-//             ]);
-//         }
-//     }
 
  public function show(WorkshopProvider $workshop)
 {

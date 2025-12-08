@@ -97,7 +97,7 @@ input:focus {
 
 <div class="login">
     <div class="login-form card p-4">
-        <h5 class="text-center">Login</h5>
+<h5 class="text-center">Workshop Login</h5>
         <div id="phone-error" class="text-danger mb-2" style="display:none;"></div>
 
         <div id="phone-container">
@@ -106,6 +106,7 @@ input:focus {
                 <input type="text" class="form-control" id="phone" name="phone" placeholder="5xxxxxxxx" maxlength="9" required>
             </div>
             <div id="recaptcha-container"></div>
+            <div id="firebase-error" class="alert alert-danger mt-2" style="display:none;"></div>
             <button type="button" class="btn bg-carlly" onclick="sendOTP()">Send OTP</button>
         </div>
 
@@ -224,7 +225,10 @@ function sendOTP() {
             $('#otp-container').show();
             startCountdown(30);
         })
-        .catch(err => { console.error(err); showError("Error sending OTP. Try again."); });
+        .catch(err => {
+            console.error("OTP SEND ERROR:", err);
+            showFirebaseError(err);
+        });
 }
 
 // ===== VERIFY OTP =====
@@ -236,7 +240,10 @@ function verifyOTP() {
 
     lastConfirmationResult.confirm(code)
         .then(result => handleVerifiedFirebaseUser(result.user))
-        .catch(err => { console.error(err); showError("Invalid OTP"); });
+        .catch(err => {
+            console.error("OTP VERIFY ERROR:", err);
+            showFirebaseError(err);
+        });
 }
 
 // ===== HANDLE VERIFIED USER =====
@@ -307,6 +314,46 @@ phoneInput.addEventListener("input", function () {
 
     this.value = value;
 });
+function showFirebaseError(err) {
+    let message = "Something went wrong. Try again.";
+
+    if (!err) err = {};
+
+    switch (err.code) {
+        case "auth/invalid-phone-number":
+            message = "The phone number format is invalid.";
+            break;
+
+        case "auth/missing-phone-number":
+            message = "Please enter your phone number.";
+            break;
+
+        case "auth/too-many-requests":
+            message = "Too many attempts. Please wait before trying again.";
+            break;
+
+        case "auth/quota-exceeded":
+            message = "SMS sending limit exceeded. Try later.";
+            break;
+
+        case "auth/captcha-check-failed":
+            message = "reCAPTCHA verification failed.";
+            break;
+
+        case "auth/invalid-verification-code":
+            message = "Incorrect OTP code.";
+            break;
+
+        case "auth/session-expired":
+            message = "OTP expired. Request a new one.";
+            break;
+
+        default:
+            message = err.message || "Unexpected error.";
+    }
+
+    $("#firebase-error").text(message).show();
+}
 
 </script>
 

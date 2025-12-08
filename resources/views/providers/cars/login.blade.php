@@ -97,7 +97,7 @@ input:focus {
 
 <div class="login">
     <div class="login-form card p-4">
-        <h5 class="text-center">Login</h5>
+<h5 class="text-center">Car Dealer Login</h5>
         <div id="phone-error" class="text-danger mb-2" style="display:none;"></div>
 
         <div id="phone-container">
@@ -106,6 +106,7 @@ input:focus {
                 <input type="text" class="form-control" id="phone" name="phone" placeholder="5xxxxxxxx" maxlength="9" required>
             </div>
             <div id="recaptcha-container"></div>
+                        <div id="firebase-error" class="alert alert-danger mt-2" style="display:none;"></div>
             <button type="button" class="btn bg-carlly" onclick="sendOTP()">Send OTP</button>
         </div>
 
@@ -223,8 +224,10 @@ function sendOTP() {
             $('#otp-container').show();
             startCountdown(30);
         })
-        .catch(err => { console.error(err); showError("Error sending OTP. Try again."); });
-}
+       .catch(err => {
+            console.error("OTP SEND ERROR:", err);
+            showFirebaseError(err);
+        });}
 
 // ===== VERIFY OTP =====
 function verifyOTP() {
@@ -235,8 +238,10 @@ function verifyOTP() {
 
     lastConfirmationResult.confirm(code)
         .then(result => handleVerifiedFirebaseUser(result.user))
-        .catch(err => { console.error(err); showError("Invalid OTP"); });
-}
+      .catch(err => {
+            console.error("OTP VERIFY ERROR:", err);
+            showFirebaseError(err);
+        });}
 
 // ===== HANDLE VERIFIED USER =====
 function handleVerifiedFirebaseUser(user) {
