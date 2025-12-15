@@ -8,11 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Factory;
 use App\Models\Image;
-
-class AuthWorkshopProviderController extends Controller
+class AuthsparepartsProviderController extends Controller
 {
-    
-   protected $firebaseAuth;
+       protected $firebaseAuth;
 
     public function __construct()
     {
@@ -22,7 +20,7 @@ class AuthWorkshopProviderController extends Controller
     }
 
     public function verifyToken(Request $request)
-{
+    {
     try {
         $idTokenString = $request->input('token');
 
@@ -31,17 +29,11 @@ class AuthWorkshopProviderController extends Controller
         $lname = $request->input('lname');
         $frontendPhone = $request->input('phone');
         $frontendEmail = $request->input('email');
-        $workshopName = $request->input('workshop_name');
+        $companyName = $request->input('company_name');
 
 
         // ========== DEBUG MODE ==========
-            if (
-            $idTokenString === 'FAKE_ID_TOKEN_FOR_DEV' ||
-            $idTokenString === 'FAKE_TEST_TOKEN' ||
-            $idTokenString === 'FAKE_DEV_TOKEN' ||
-            $request->boolean('debug')
-        ) {
-
+        if ($idTokenString === 'FAKE_ID_TOKEN_FOR_DEV' || $request->boolean('debug')) {
 
             $uid = $request->input('uid') ?? 'DEBUG_UID_' . uniqid();
 
@@ -62,22 +54,20 @@ class AuthWorkshopProviderController extends Controller
                     'email' => $frontendEmail,
                     'phone' => $frontendPhone,
                     'password' => bcrypt('123456'),
-                    'userType' => 'workshop_provider',
+                    'userType' => 'shop_dealer',
                 ]
             );
-            // Create workshop profile only once
-            if (!$user->workshop_provider) {
-                $user->workshop_provider()->create([
-                    'workshop_name'    => $workshopName,
-                    'address' => '',
-                    'workshop_logo'     => 'icon/notfound.png',
-                    'owner' => $fname . ' ' . $lname,
-                    'whatsapp_number' => $frontendPhone,
+            // Create dealer profile only once
+            if (!$user->dealer) {
+                $user->dealer()->create([
+                    'company_name'    => $companyName,
+                    'company_address' => '',
+                    'company_img'     => 'icon/notfound.png',
                 ]);
             }
 
             Auth::login($user);
-            return response()->json(['success' => true, 'redirect' => route('workshops.dashboard')]);
+            return response()->json(['success' => true, 'redirect' => route('spareparts.dashboard')]);
         }
 
         // ========== REAL FIREBASE MODE ==========
@@ -106,23 +96,20 @@ class AuthWorkshopProviderController extends Controller
                 'email' => $email,
                 'phone' => $phone,
                 'password' => bcrypt('123456'),
-                'userType' => 'workshop_provider',
+                'userType' => 'shop_dealer',
             ]
         );
-        // Create workshop profile only once
-        if (!$user->workshop_provider) {
-            $user->workshop_provider()->create([
-                'workshop_name'    => $workshopName,
-                'address' => '',
-                'workshop_logo'     => 'icon/notfound.png',
-                'owner' => $fname . ' ' . $lname,
-                'whatsapp_number' => $frontendPhone,
-
+        // Create dealer profile only once
+        if (!$user->dealer) {
+            $user->dealer()->create([
+                'company_name'    => $companyName,
+                'company_address' => '',
+                'company_img'     => 'icon/notfound.png',
             ]);
         }
 
         Auth::login($user);
-        return response()->json(['success' => true, 'redirect' => route('workshops.dashboard')]);
+        return response()->json(['success' => true, 'redirect' => route('spareparts.dashboard')]);
 
     } catch (\Throwable $e) {
         \Log::error('Firebase verify error: ' . $e->getMessage());
@@ -130,7 +117,7 @@ class AuthWorkshopProviderController extends Controller
     }
 }
 
-public function verifyWorkshopLoginToken(Request $request)
+public function verifyCarsLoginToken(Request $request)
 {
     try {
         $idToken = $request->input('token');
@@ -142,8 +129,8 @@ public function verifyWorkshopLoginToken(Request $request)
             return response()->json(['success'=>false,'error'=>'Invalid phone number'], 422);
         }
 
-        // ===== جلب كل الـ workshops مع رقم موجود =====
-        $users = allUsersModel::where('usertype', 'workshop_provider')
+        // ===== جلب كل الـ dealers مع رقم موجود =====
+        $users = allUsersModel::where('usertype', 'shop_dealer')
             ->whereNotNull('phone')
             ->get();
 
@@ -154,14 +141,14 @@ public function verifyWorkshopLoginToken(Request $request)
         });
 
         if (!$user) {
-            return response()->json(['success'=>false,'error'=>'Phone not registered '], 404);
+            return response()->json(['success'=>false,'error'=>'Phone not registered as spareparts dealer'], 404);
         }
 
         // ===== تسجيل الدخول =====
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
 
-        return response()->json(['success'=>true,'redirect'=>route('workshops.dashboard')]);
+        return response()->json(['success'=>true,'redirect'=>route('spareparts.dashboard')]);
 
     } catch (\Throwable $e) {
         \Log::error("Firebase login verify error: ".$e->getMessage());
@@ -169,38 +156,16 @@ public function verifyWorkshopLoginToken(Request $request)
     }
 }
 
-public function login()
-{
-    // لو أي يوزر مسجل دخول
-    if (auth()->check()) {
 
-        // جلب نوع اليوزر من جدول allusers
-        $user = auth()->user(); // أو حسب الـ model اللي مربوط بالجدول allusers
-        $userType = $user->usertype; // افترضنا إن العمود اسمه 'usertype'
 
-        if ($userType === 'workshop_provider') {
-            // لو اليوزر provider → روح للـ dashboard الخاص بالـ provider
-            return redirect()->route('workshops.dashboard');
-        } else {
-            // لو user من نوع مختلف → اعمل logout
-            auth()->logout();
-            session()->flush();
-            return redirect()->route('providers.workshops.login'); // صفحة login للـ provider
-        }
-    }
-
-    // لو مش مسجل دخول → عرض صفحة login للـ provider
-    return view('providers.workshops.login');
-}
-
-// ===== Logout =====
-public function logout(Request $request)
+    // ===== Logout =====
+    public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('providers.workshops.login');
+        return redirect()->route('providers.spareparts.login');
     }
 
 
@@ -208,9 +173,9 @@ public function logout(Request $request)
     {
         if ($id == auth()->user()->id) {
             $user = allUsersModel::find($id);
-            return view('providers.workshops.profile', compact('user'));
+            return view('providers.spareParts.profile', compact('user'));
         } else {
-            return redirect()->route('providers.workshops.login');
+            return redirect()->route('providers.spareparts.login');
         }
 
     }
@@ -220,7 +185,7 @@ public function update(Request $request, $id)
 {
     try {
         if ($id != auth()->user()->id) {
-            return redirect()->route('providers.workshops.login');
+            return redirect()->route('providers.spareparts.login');
         }
 
         $user = allUsersModel::findOrFail($id);
@@ -242,19 +207,19 @@ public function update(Request $request, $id)
             'location' => $request->location,
             'lat'      => $request->latitude,
             'lng'      => $request->longitude,
-        ]); 
+        ]);
 
         // ================= تحديث بيانات الديلر =================
-        if ($user->workshop_provider) {
-            $user->workshop_provider->update([
-                'workshop_name'    => $request->workshop_name ?? $user->workshop_provider->workshop_name,
-                'address' => $request->location,
+        if ($user->dealer) {
+            $user->dealer->update([
+                'company_name'    => $request->company_name ?? $user->dealer->company_name,
+                'company_address' => $request->location,
             ]);
         } else {
-            $user->workshop_provider()->create([
-                'workshop_name'    => $request->workshop_name,
-                'address' => $request->location,
-                'workshop_logo'     => 'icon/notfound.png',
+            $user->dealer()->create([
+                'company_name'    => $request->company_name,
+                'company_address' => $request->location,
+                'company_img'     => 'icon/notfound.png',
             ]);
         }
 
@@ -269,16 +234,16 @@ public function update(Request $request, $id)
             $file = $request->file('image');
             $filename = 'user_' . time() . '.' . $file->getClientOriginalExtension();
 
-            if (!file_exists(public_path('workshops'))) {
-                mkdir(public_path('workshops'), 0755, true);
+            if (!file_exists(public_path('dealers'))) {
+                mkdir(public_path('dealers'), 0755, true);
             }
 
-            $file->move(public_path('workshops'), $filename);
+            $file->move(public_path('dealers'), $filename);
 
-            $user->update(['image' => 'workshops/' . $filename]);
+            $user->update(['image' => 'dealers/' . $filename]);
         }
 
-        return redirect()->route('workshops.dashboard')->with('success', 'Profile updated successfully!');
+        return redirect()->route('spareparts.dashboard')->with('success', 'Profile updated successfully!');
 
     } catch (\Exception $e) {
         return redirect()->back()->with('error', $e->getMessage());
@@ -305,9 +270,9 @@ public function updateImage(Request $request, $id)
 
             $user->update(['image' => null]);
 
-            if ($user->workshop_provider && $user->workshop_provider->workshop_logo && file_exists(public_path($user->workshop_provider->workshop_logo))) {
-                unlink(public_path($user->workshop_provider->workshop_logo));
-                $user->workshop_provider()->update(['workshop_logo' => null]);
+            if ($user->dealer && $user->dealer->company_img && file_exists(public_path($user->dealer->company_img))) {
+                unlink(public_path($user->dealer->company_img));
+                $user->dealer->update(['company_img' => null]);
             }
 
             return response()->json([
@@ -326,25 +291,25 @@ public function updateImage(Request $request, $id)
             unlink(public_path($user->image));
         }
 
-        if ($user->workshop_provider && $user->workshop_provider->workshop_logo && file_exists(public_path($user->workshop_provider->workshop_logo))) {
-            unlink(public_path($user->workshop_provider->workshop_logo));
+        if ($user->dealer && $user->dealer->company_img && file_exists(public_path($user->dealer->company_img))) {
+            unlink(public_path($user->dealer->company_img));
         }
 
         $file = $request->file('image');
         $filename = time() . '.' . $file->getClientOriginalExtension();
 
-        if (!file_exists(public_path('workshops'))) {
-            mkdir(public_path('workshops'), 0755, true);
+        if (!file_exists(public_path('dealers'))) {
+            mkdir(public_path('dealers'), 0755, true);
         }
 
-        $file->move(public_path('workshops'), $filename);
+        $file->move(public_path('dealers'), $filename);
 
-        $path = 'workshops/' . $filename;
+        $path = 'dealers/' . $filename;
 
         $user->update(['image' => $path]);
 
-        if ($user->workshop_provider) {
-            $user->workshop_provider->update(['workshop_logo' => $path]);
+        if ($user->dealer) {
+            $user->dealer->update(['company_img' => $path]);
         }
 
         return response()->json([
@@ -362,54 +327,25 @@ public function updateImage(Request $request, $id)
 
 public function deleteProfile($id)
 {
-    // Ensure the authenticated user is the one deleting the profile
+    // 1. Ensure the authenticated user is the one they are trying to delete
     if ($id != auth()->user()->id) {
-        return redirect()->route('workshops.dashboard')
-            ->with('error', 'Unauthorized action.');
+        // You might redirect with an error message or throw an unauthorized exception
+        return redirect()->route('spareparts.dashboard')->with('error', 'Unauthorized action.');
     }
 
     $user = allUsersModel::find($id);
 
     if (!$user) {
-        return redirect()->route('workshops.dashboard')
-            ->with('error', 'User not found.');
+        return redirect()->route('spareparts.dashboard')->with('error', 'User not found.');
     }
 
-    // ================================
-    // DELETE RELATED WORKSHOP PROVIDER
-    // ================================
-    if ($user->workshop_provider) {
-
-        // Delete workshop image if exists
-        if ($user->workshop_provider->workshop_logo &&
-            file_exists(public_path($user->workshop_provider->workshop_logo))) {
-
-            unlink(public_path($user->workshop_provider->workshop_logo));
-        }
-
-        // Delete the workshop provider row
-        $user->workshop_provider()->delete();
-    }
-
-    // ================================
-    // DELETE USER IMAGE
-    // ================================
-    if ($user->image && file_exists(public_path($user->image))) {
-        unlink(public_path($user->image));
-    }
-
-    // ================================
-    // DELETE USER
-    // ================================
+    // 2. Perform the deletion
     $user->delete();
 
-    // ================================
-    // LOGOUT
-    // ================================
+    // 3. Log the user out after deletion
     auth()->logout();
 
-    return redirect('/')
-        ->with('success', 'Your profile has been successfully deleted.');
+    // 4. Redirect to the homepage or login page with a success message
+    return redirect('/')->with('success', 'Your profile has been successfully deleted.');
 }
-
 }

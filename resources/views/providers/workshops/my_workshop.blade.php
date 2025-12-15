@@ -461,7 +461,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="col-md-6 mb-3">
                 <label class="form-label fw-semibold">Workshop Name</label>
                 <input type="text" name="workshop_name" class="form-control" placeholder="Enter Workshop Name"
-                       value="{{ $workshop->workshop_name }}" required readonly>
+                       value="{{ $workshop->workshop_name }}" required>
             </div>
 
             <div class="col-md-6 mb-3">

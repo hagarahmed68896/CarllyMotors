@@ -96,13 +96,14 @@
     <div class="container-fluid d-flex align-items-center">
 
         {{-- Logo always visible --}}
-   <a class="navbar-brand d-flex align-items-center" 
+  <a class="navbar-brand d-flex align-items-center" 
    href="@auth
-            {{ auth()->user()->usertype === 'dealer' 
-                ? route('cars.dashboard') 
-                : (auth()->user()->usertype === 'workshop_provider' 
-                    ? route('workshops.dashboard') 
-                    : route('home')) }}
+            {{
+                auth()->user()->usertype === 'dealer' ? route('cars.dashboard') :
+                (auth()->user()->usertype === 'workshop_provider' ? route('workshops.dashboard') :
+                (auth()->user()->usertype === 'shop_dealer' ? route('spareparts.dashboard') :
+                route('home')))
+            }}
         @else
             {{ route('home') }}
         @endauth">
@@ -111,6 +112,7 @@
          class="img-fluid" 
          style="max-height: 45px;">
 </a>
+
 
 
         {{-- Toggler for mobile --}}
@@ -157,8 +159,20 @@
         </ul>
     @endif
 @endauth
+@auth
+    @if(auth()->user()->usertype === 'shop_dealer')
+        <ul class="navbar-nav ms-auto d-flex align-items-center gap-3 mb-0">
+            <li class="nav-item">
 
+                <a href="{{ route('spareparts.create') }}" 
+                   class="nav-link-provider">
+                    Add Spare Parts
+                </a>
 
+</li>
+        </ul>
+    @endif
+@endauth
 
             {{-- RIGHT SIDE: LOGIN / PROFILE --}}
             <ul class="navbar-nav d-flex align-items-center gap-3 mb-0">
@@ -182,6 +196,12 @@
     @if(auth()->user()->usertype === 'workshop_provider')
         {{-- WORKSHOP PROVIDER PROFILE --}}
         <a href="{{ route('workshop.profile', auth()->id()) }}" 
+           class="dropdown-item-provider" style="text-decoration: none">
+            <i class="fas fa-user-circle me-2"></i> My Profile
+        </a>
+    @elseif(auth()->user()->usertype === 'shop_dealer')
+        {{-- SPARE PARTS DEALER PROFILE --}}
+        <a href="{{ route('spareparts.profile', auth()->id()) }}" 
            class="dropdown-item-provider" style="text-decoration: none">
             <i class="fas fa-user-circle me-2"></i> My Profile
         </a>
@@ -307,7 +327,7 @@
             </a>
         </li>
         <li>
-            <a href="">
+            <a href="{{ route('providers.spareparts.login') }}">
                 <i class="fas fa-chevron-right me-2"></i>Spare Parts Provider
             </a>
         </li>

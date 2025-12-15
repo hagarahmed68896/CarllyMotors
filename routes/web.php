@@ -289,6 +289,55 @@ Route::get('/workshops/dashboard', [\App\Http\Controllers\WorkshopProviderContro
 Route::get('/provider/{workshop}', [\App\Http\Controllers\WorkshopProviderController::class, 'show'])
      ->name('workshops.show.provider');
 
+
+// --------------------------
+// spareparts Provider 
+//---------------------------
+Route::get('/provider/spareparts/login', [\App\Http\Controllers\SparepartsProviderController::class, 'login'])->name('providers.spareparts.login');
+Route::post('/verify-token-spareparts', [\App\Http\Controllers\AuthsparepartsProviderController::class, 'verifyToken']);
+
+Route::post('/verify-login-token-spareparts', [\App\Http\Controllers\AuthsparepartsProviderController::class, 'verifyCarsLoginToken']);
+
+
+Route::get('/providers/spareparts/register', function () {
+    return view('providers.spareParts.register');
+})->name('providers.spareparts.register');
+// عرض بروفايل المزود
+Route::get('/spareparts/profile/{id}', [\App\Http\Controllers\AuthsparepartsProviderController::class, 'profile'])
+    ->name('spareparts.profile');
+// تحديث بيانات المزود
+Route::put('/spareparts/provider/{id}', [\App\Http\Controllers\AuthsparepartsProviderController::class, 'update'])
+    ->name('spareparts.update');
+
+// تحديث صورة المزود
+Route::post('/spareparts/{id}/update-image', [\App\Http\Controllers\AuthsparepartsProviderController::class, 'updateImage'])
+    ->name('spareparts.updateImage');
+Route::post('/spareparts/providers/logout', [\App\Http\Controllers\AuthsparepartsProviderController::class, 'logout'])->name('spareparts.logout');
+
+Route::get('/spareparts/dashboard', [\App\Http\Controllers\SparepartsProviderController::class, 'index'])->name('spareparts.dashboard');
+Route::get('/provider/spareparts/create', [\App\Http\Controllers\SparepartsProviderController::class, 'create'])->name('spareparts.create');
+Route::post('/provider/spareparts/store', [\App\Http\Controllers\SparepartsProviderController::class, 'store'])->name('spareparts.store');
+
+// صفحة تعديل السبير بار
+Route::get('/provider/spareparts/{id}/edit',
+    [\App\Http\Controllers\SparepartsProviderController::class, 'edit']
+)->name('spareparts.edit');
+
+// حفظ التعديل (Update)
+Route::put('/provider/spareparts/{id}/update',
+    [\App\Http\Controllers\SparepartsProviderController::class, 'update']
+)->name('spareparts.update');
+
+// حذف السبير بار
+Route::delete('/provider/spareparts/{id}',
+    [\App\Http\Controllers\SparepartsProviderController::class, 'destroy']
+)->name('spareparts.delete');
+
+
+
+
+
+
 /*
 |--------------------------------------------------------------------------
 | 📱 App Redirect Routes - For WhatsApp/Social Media Deep Links

@@ -1,10 +1,14 @@
 @extends('layouts.CarProvider')
 
 @section('content')
-  <div class="container-fluid p-0 position-relative mb-2" style="z-index: 2;">
-    <img src="{{ asset('3.jpg') }}" alt="Cars" class="w-100 img-fluid object-fit-cover" style="max-height: 550px; object-position: center;">
-  </div>
-   <div class="container text-center mt-5">
+<div style="width: 100%; margin: 0; padding: 0;">
+    <img src="{{ asset('31.jpg') }}"
+         style="display: block; width: 100%; height: auto; max-height: 400px; object-fit: cover;">
+</div>
+
+
+
+   <div class="container text-center mt-4">
     <h2 class="fw-bold mb-4" style="color: #163155;">My Workshop</h2>
           <div class="custom-container">
                <div class="row g-4">

@@ -102,7 +102,7 @@ button.btn-secondary, button.btn-primary {
             <!-- ✅ STEP 1 — Phone Input -->
        <!-- STEP 1 — User Info + Phone Input -->
 <div class="step step-1 text-center">
-    <h3 class="mb-4" style="color:#163155;">Workshop Register</h3>
+    <h3 class="mb-4" style="color:#163155;">SpareParts Dealer Register</h3>
     
     <div class="mb-2 text-start">
         <label for="fname" class="form-label fw-bold">First Name</label>
@@ -168,7 +168,7 @@ button.btn-secondary, button.btn-primary {
 </button>
 <div class="login-link mt-3 text-center">
     Already have an account? 
-    <a href="{{ route('providers.workshops.login') }}">Login</a>
+    <a href="{{ route('providers.spareparts.login') }}">Login</a>
 </div>
 
 <style>
@@ -299,8 +299,8 @@ function sendOTP() {
   // ⭐ TEST NUMBERS ALWAYS ALLOWED  
   // ===============================
   const testPhones = {
-      "+971555555555": "123456",
-      "+971500000000": "654321"
+      "+971522222222": "123456",
+      "+971566666666": "654321"
   };
 
   if (testPhones[phoneNumber]) {
@@ -335,36 +335,49 @@ function sendOTP() {
   // ===============================
   // ⭐ DEBUG MODE → FAKE OTP  
   // ===============================
-  if (isDebugMode()) {
+// ===============================
+// ⭐ DEBUG MODE → FAKE OTP + REAL TOKEN  
+// ===============================
+if (isDebugMode()) {
 
     const fakeOtp = Math.floor(100000 + Math.random() * 900000).toString();
     console.log("🧪 Debug OTP:", fakeOtp);
 
-    lastConfirmationResult = {
-      _isFake: true,
-      _fakeOtp: fakeOtp,
-      confirm(code) {
-        return new Promise((resolve, reject) => {
-          if (code === this._fakeOtp) {
-            resolve({
-              user: {
-                getIdToken: () => Promise.resolve("FAKE_DEV_TOKEN"),
-                phoneNumber,
-                uid: "DEV_UID_" + Math.random().toString(36).substring(2, 8)
-              }
-            });
-          } else {
-            reject({ message: "Invalid debug code" });
-          }
-        });
-      }
-    };
+    // نعمل تسجيل دخول مجهول للحصول على توكن Firebase حقيقي
+    firebase.auth().signInAnonymously().then(result => {
+        result.user.getIdToken(true).then(realToken => {
 
-    startCountdown(30);
-    showStep(2);
-    setLoadingState(false);
+            lastConfirmationResult = {
+                _isFake: true,
+                _fakeOtp: fakeOtp,
+                _realToken: realToken,
+                phoneNumber,
+                confirm(code) {
+                    return new Promise((resolve, reject) => {
+                        if (code === fakeOtp) {
+                            resolve({
+                                user: {
+                                    phoneNumber,
+                                    uid: result.user.uid,
+                                    getIdToken: () => Promise.resolve(realToken)
+                                }
+                            });
+                        } else {
+                            reject({ message: "Invalid debug code" });
+                        }
+                    });
+                }
+            };
+
+            startCountdown(30);
+            showStep(2);
+            setLoadingState(false);
+        });
+    });
+
     return;
-  }
+}
+
 
   // ===============================
   // ⭐ REAL OTP (Production)  
@@ -393,35 +406,38 @@ function sendOTP() {
 // Verify OTP
 // ============================
 function verifyOTP() {
+    const code = $("#otp").val().trim();
 
-  const code = $("#otp").val().trim();
+    if (!code) {
+        alert("Please enter OTP");
+        return;
+    }
 
-  if (!code) {
-    alert("Please enter OTP");
-    return;
-  }
+    if (!lastConfirmationResult) {
+        alert("No OTP request found");
+        return;
+    }
 
-  if (!lastConfirmationResult) {
-    alert("No OTP request found");
-    return;
-  }
+    // Fake mode
+    if (lastConfirmationResult._isFake) {
+        lastConfirmationResult.confirm(code)
+            .then(res => handleVerifiedFirebaseUser(res.user))
+            .catch(err => alert(err.message));
+        return;
+    }
 
-  // ⭐ Fake mode
-  if (lastConfirmationResult._isFake) {
-    lastConfirmationResult.confirm(code)
-      .then(res => handleVerifiedFirebaseUser(res.user))
-      .catch(err => alert(err.message));
-    return;
-  }
+    // REAL mode (fixed)
+    const credential = firebase.auth.PhoneAuthProvider.credential(
+        lastConfirmationResult.verificationId,
+        code
+    );
 
-  // ⭐ Real mode
-  lastConfirmationResult.confirm(code)
-    .then(res => handleVerifiedFirebaseUser(res.user))
-   .catch(err => {
-    console.error(err);
-    showFirebaseError(err);
-});
-
+    firebase.auth().signInWithCredential(credential)
+        .then(result => handleVerifiedFirebaseUser(result.user))
+        .catch(err => {
+            console.error(err);
+            showFirebaseError(err);
+        });
 }
 
 // ============================
@@ -432,7 +448,7 @@ function handleVerifiedFirebaseUser(user) {
   user.getIdToken().then(idToken => {
 
     return $.ajax({
-      url: "/verify-token-workshop",
+      url: "/verify-token-spareparts",
       method: "POST",
       headers: { "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content") },
       data: {
@@ -441,8 +457,7 @@ function handleVerifiedFirebaseUser(user) {
         fname: $("#fname").val(),
         lname: $("#lname").val(),
         email: $("#email").val(),
-        workshop_name: $("#cname").val(),
-        
+        company_name: $("#cname").val()
       }
     });
 

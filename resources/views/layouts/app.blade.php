@@ -140,7 +140,7 @@
             </a>
         </li>
         <li>
-            <a href="">
+            <a href="{{ route('providers.spareparts.login') }}">
                 <i class="fas fa-chevron-right me-2"></i>Spare Parts Provider
             </a>
         </li>
