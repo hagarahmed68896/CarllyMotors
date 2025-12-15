@@ -153,14 +153,53 @@
 
                 @auth
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-dark fw-semibold d-flex align-items-center" href="#" data-bs-toggle="dropdown">
-                        <i class="fas fa-user me-1"></i> Profile
-                    </a>
+               <a class="nav-link dropdown-toggle profile-link d-flex align-items-center"
+   href="#"
+   data-bs-toggle="dropdown">
+<img id="profileImage"
+     src="{{ auth()->user()->image ? asset(auth()->user()->image) : asset('user-201.png') }}"
+     class="profile-avatar rounded-circle shadow-sm"
+     onerror="this.onerror=null;this.src='{{ asset('user-201.png') }}';">
+
+</a>
+<style>
+    .profile-link,
+.profile-link:hover,
+.profile-link:focus,
+.profile-link:active {
+    text-decoration: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* إزالة سهم Bootstrap */
+.profile-link::after {
+    display: none !important;
+}
+
+.profile-avatar {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.profile-link:hover .profile-avatar {
+    border-color: #792222;
+}
+
+.profile-link.show .profile-avatar {
+    border-color: #792222;
+}
+
+</style>
                     <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
                         <li>
                             <a href="{{ route('profile', auth()->user()->id) }}" class="dropdown-item">
                                 <i class="fas fa-user-circle me-2"></i> My Profile
-                            </a>
+                            </a>                    
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>

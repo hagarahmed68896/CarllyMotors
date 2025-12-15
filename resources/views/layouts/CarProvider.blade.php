@@ -187,9 +187,52 @@
 
                 @auth
                     <li class="nav-item dropdown">
-                        <a class="nav-link-provider dropdown-toggle fw-semibold" href="#" data-bs-toggle="dropdown">
-                            <i class="fas fa-user me-1"></i> Profile
-                        </a>
+<a class="nav-link-provider dropdown-toggle profile-link"
+   href="#"
+   data-bs-toggle="dropdown">
+
+    <img src="{{ auth()->user()->image ?? asset('user-201.png') }}"
+         alt="Profile"
+         class="profile-avatar"
+          onerror="this.onerror=null;this.src='{{ asset('user-201.png') }}';">
+
+</a>
+
+<style>
+    .profile-link,
+.profile-link:hover,
+.profile-link:focus,
+.profile-link:active {
+    text-decoration: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* إزالة سهم Bootstrap */
+.profile-link::after {
+    display: none !important;
+}
+
+.profile-avatar {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.profile-link:hover .profile-avatar {
+    border-color: #3b82f6;
+}
+
+.profile-link.show .profile-avatar {
+    border-color: #2563eb;
+}
+
+</style>
+
+
 
                         <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
                           <li>

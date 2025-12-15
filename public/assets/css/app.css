@@ -284,11 +284,19 @@ body {
 
 
 
+
+
+
+
 }
 .main-content {
   flex: 1;
   order: 1;
   /* Content on left */
+
+
+
+
 
 
 
@@ -468,6 +476,10 @@ body {
 
 
 
+
+
+
+
 }
 .modal-content {
   background-color: #ffffff;
@@ -606,6 +618,10 @@ to {
   font-weight: 700;
   /* color: var(--primary-color);
   */
+
+
+
+
 
 
 
@@ -843,8 +859,8 @@ to {
 }
 .dropdown-item:hover,
 .dropdown-item:focus {
-  background: var(--primary-color);
-  color: white;
+  background: var(--primary-color) !important;
+  color: white !important;
   transform: translateX(5px);
   
 }
