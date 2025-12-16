@@ -249,6 +249,7 @@ public function update(Request $request, $id)
             $user->workshop_provider->update([
                 'workshop_name'    => $request->workshop_name ?? $user->workshop_provider->workshop_name,
                 'address' => $request->location,
+                'branch'          => $request->city,
             ]);
         } else {
             $user->workshop_provider()->create([
