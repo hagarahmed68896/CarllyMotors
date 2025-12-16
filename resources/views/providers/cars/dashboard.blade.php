@@ -160,10 +160,31 @@
                      <!-- Actions -->
 <div class="d-flex align-items-center gap-2 mt-2 flex-nowrap" style="flex-wrap: nowrap !important;">
     <!-- Edit -->
-    <a href="{{ route('provider.cars.edit', $car->id) }}" class="btn btn-outline-primary rounded-4 flex-fill text-nowrap">
+    <a href="{{ route('provider.cars.edit', $car->id) }}" class="btn edit-btn rounded-4 flex-fill text-nowrap">
         <i class="fas fa-edit me-1"></i> Edit
     </a>
+<style>
+    .edit-btn {
+    border: 1px solid #163155;
+    border-radius: 18px;
+    color: #163155;
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
 
+.edit-btn:hover {
+    background-color: #163155;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(22, 49, 85, 0.25);
+    text-decoration: none;
+}
+
+.edit-btn:hover svg {
+    color: #fff;
+}
+
+</style>
     <!-- Delete Button (Triggers Modal) -->
     <button type="button" class="btn btn-outline-danger rounded-4 flex-fill text-nowrap"
         data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ $car->id }}">
@@ -237,6 +258,31 @@
             </div>
         @endforelse
     </div>
+<div class="d-flex justify-content-center mt-5 spareparts-pagination">
+    {{ $carlisting->links('pagination::bootstrap-5') }}
+</div>
+<style>
+/* ===== SPARE PARTS PAGINATION OVERRIDE ===== */
+.spareparts-pagination .pagination .page-item .page-link {
+    color: #163155 !important;
+    border-color: #163155 !important;
+}
+
+.spareparts-pagination .pagination .page-item.active .page-link {
+    background-color: #163155 !important;
+    border-color: #163155 !important;
+    color: #fff !important;
+}
+
+.spareparts-pagination .pagination .page-item:hover .page-link {
+    background-color: #163155 !important;
+    color: #fff !important;
+}
+
+.spareparts-pagination .pagination .page-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(22, 49, 85, 0.25) !important;
+}
+</style>
 
 
 </div>

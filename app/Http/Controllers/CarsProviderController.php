@@ -47,10 +47,11 @@ public function myCarListing(Request $request, $carType = 'used')
 {
     $user = auth()->user();
 
-    $query = $user->cars()->with('images')->latest();
-    $query->where('car_type', $carType);
-
-    $carlisting = $query->get();
+    $carlisting = $user->cars()
+        ->with('images')
+        ->where('car_type', $carType)
+        ->latest()
+        ->paginate(12); // عدل الرقم حسب التصميم
 
     return view('providers.cars.dashboard', compact('carlisting', 'carType'));
 }

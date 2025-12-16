@@ -43,7 +43,9 @@ public function index() {
     $user = auth()->user();
 
     // Get spare parts that belong to this user
-    $spareParts = SparePart::where('user_id', $user->id)->get();
+    $spareParts = SparePart::where('user_id', $user->id)->latest()
+    ->paginate(12);
+
 
     // Optional: if you want the shop info as well
     $sparepartsShop = $user->dealer; // if you have a dealer relationship

@@ -87,6 +87,11 @@
             <p class="text-muted">No spare parts found.</p>
         @endforelse
     </div>
+ <div class="d-flex justify-content-center mt-5 spareparts-pagination">
+    {{ $spareParts->links('pagination::bootstrap-5') }}
+</div>
+
+
 </div>
 
 {{-- ================= DELETE MODAL ================= --}}
@@ -125,6 +130,28 @@
         </div>
     </div>
 </div>
+<style>
+/* ===== SPARE PARTS PAGINATION OVERRIDE ===== */
+.spareparts-pagination .pagination .page-item .page-link {
+    color: #163155 !important;
+    border-color: #163155 !important;
+}
+
+.spareparts-pagination .pagination .page-item.active .page-link {
+    background-color: #163155 !important;
+    border-color: #163155 !important;
+    color: #fff !important;
+}
+
+.spareparts-pagination .pagination .page-item:hover .page-link {
+    background-color: #163155 !important;
+    color: #fff !important;
+}
+
+.spareparts-pagination .pagination .page-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(22, 49, 85, 0.25) !important;
+}
+</style>
 
 {{-- ================= STYLES ================= --}}
 <style>
