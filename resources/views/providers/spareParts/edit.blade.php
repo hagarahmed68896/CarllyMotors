@@ -439,21 +439,19 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Laravel variables passed from PHP
+        // Laravel variables
         const brandModels = @json($brandModels ?? []);
-        const allYears = @json($selectedYears ?? []);
+        const allYears = @json($selectedYears ?? []); // Note: Usually this should be a list of all possible years
         
-        // القيم المحددة مسبقًا
         const selectedBrand = @json($selectedBrand ?? null);
         const selectedModels = @json($selectedModels ?? []);
         const selectedYears = @json($selectedYears ?? []).map(y => y.toString());
-        // ... (بقية المتغيرات) ...
 
         /* -------------------------------------------------------
-         * Initialize Choices.js
+         * 1. Initialize Choices.js
          * -------------------------------------------------------- */
-        const brandSelect = new Choices('#brand', { /* ... */ });
-        const citySelect = new Choices('#citySelect', { /* ... */ });
+        const brandSelect = new Choices('#brand', { searchEnabled: true, itemSelectText: '' });
+        const citySelect = new Choices('#citySelect', { searchEnabled: true, itemSelectText: '' });
 
         const modelSelect = new Choices('#model', {
             searchEnabled: true, shouldSort: false, placeholderValue: 'Select Model(s)',
@@ -464,274 +462,169 @@
             searchEnabled: true, shouldSort: false, placeholderValue: 'Select Year(s)',
             itemSelectText: '', removeItemButton: true, delimiter: ','
         });
-        
-        // Enable/Disable helper
+
+        /* -------------------------------------------------------
+         * 2. Helper Functions
+         * -------------------------------------------------------- */
         function toggleChoicesDisabled(instance, disabled) {
-            if (disabled) {
-                instance.disable();
-            } else {
-                instance.enable();
-            }
+            if (disabled) { instance.disable(); } else { instance.enable(); }
             instance.containerOuter.element.classList.toggle('is-disabled', disabled);
         }
 
-        // دالة مساعدة لتحديد الخيارات في الـ Select الأصلي
-        // هذه الدالة مهمة جداً لضمان إرسال البيانات الصحيحة عند إرسال النموذج.
         function setSelectedOptions(selectElementId, valuesToSelect) {
             const selectElement = document.getElementById(selectElementId);
+            if (!selectElement) return;
             Array.from(selectElement.options).forEach(opt => {
-                // إلغاء تحديد الجميع أولاً
-                opt.selected = false;
-                // ثم تحديد القيم المطلوبة
-                if (valuesToSelect.includes(opt.value)) {
-                    opt.selected = true;
-                }
+                opt.selected = valuesToSelect.includes(opt.value.toString());
             });
         }
 
-        // إيقاف التشغيل المبدئي
-        toggleChoicesDisabled(modelSelect, true);
-        toggleChoicesDisabled(yearSelect, true);
-        
+        /**
+         * Core logic to handle "Select All" vs Individual Tags
+         */
+        function handleSelectAllLogic(instance, selectId, allValues, selectAllKey) {
+            let selectedValues = instance.getValue(true);
+            const hasSelectAll = selectedValues.includes(selectAllKey);
+
+            if (hasSelectAll) {
+                if (selectedValues.length > 1) {
+                    const lastSelected = selectedValues[selectedValues.length - 1];
+                    if (lastSelected === selectAllKey) {
+                        // User clicked "Select All" -> Clear others, keep only this tag
+                        instance.removeActiveItems();
+                        instance.setChoiceByValue([selectAllKey]);
+                        setSelectedOptions(selectId, allValues);
+                    } else {
+                        // User had "Select All" and clicked a specific item -> Remove "Select All"
+                        let individualSelection = selectedValues.filter(v => v !== selectAllKey);
+                        instance.removeActiveItems();
+                        instance.setChoiceByValue(individualSelection);
+                        setSelectedOptions(selectId, individualSelection);
+                    }
+                } else {
+                    // Only "Select All" tag exists
+                    setSelectedOptions(selectId, allValues);
+                }
+            } else {
+                // Individual selection: Check if all items are manually selected
+                const allSelectedManually = allValues.length > 0 && allValues.every(v => selectedValues.includes(v.toString()));
+                if (allSelectedManually) {
+                    instance.removeActiveItems();
+                    instance.setChoiceByValue([selectAllKey]);
+                    setSelectedOptions(selectId, allValues);
+                } else {
+                    setSelectedOptions(selectId, selectedValues);
+                }
+            }
+        }
 
         /* -------------------------------------------------------
-         * 2.1 SELECT ALL for Models Logic (On Change)
+         * 3. Event Listeners (Remove & Change)
          * -------------------------------------------------------- */
-         document.getElementById("model").addEventListener("change", function () {
-            const selectElement = this;
-            const selectedValues = modelSelect.getValue(true);
-            
-            // قائمة جميع الموديلات المتاحة في القائمة (عدا Select All)
+
+        // Model Removal Logic
+        modelSelect.passedElement.element.addEventListener('removeItem', (e) => {
+            if (e.detail.value === 'select_all_models') {
+                setSelectedOptions("model", []);
+                modelSelect.removeActiveItems();
+            }
+        });
+
+        // Year Removal Logic
+        yearSelect.passedElement.element.addEventListener('removeItem', (e) => {
+            if (e.detail.value === 'select_all_years') {
+                setSelectedOptions("yearSelect", []);
+                yearSelect.removeActiveItems();
+            }
+        });
+
+        // Model Change
+        document.getElementById("model").addEventListener("change", function () {
             const allCurrentModels = modelSelect.config.choices
                 .filter(c => c.value !== 'select_all_models' && c.value !== '')
                 .map(c => c.value);
-
-            if (selectedValues.includes("select_all_models")) {
-                
-                // 1. تحديد جميع الموديلات في الـ <select> الأصلي للحفظ
-                setSelectedOptions("model", allCurrentModels);
-
-                // 2. تحديث واجهة Choices.js (لإنشاء Tag Select All فقط)
-                modelSelect.removeActiveItems();
-                modelSelect.setChoiceByValue(["select_all_models"]);
-            } else if (selectedValues.length === 0) {
-                // إلغاء تحديد الجميع في الـ <select> الأصلي
-                setSelectedOptions("model", []);
-            } else {
-                // تحديد القيم الفردية في الـ <select> الأصلي للحفظ
-                setSelectedOptions("model", selectedValues.filter(v => v !== 'select_all_models'));
-
-                // التأكد من إزالة Tag Select All إذا اختاروا شيئاً آخر
-                modelSelect.removeActiveItemsByValue('select_all_models');
-            }
             
-            // استدعاء handleModelChange لتحديث قائمة السنوات بناءً على الاختيار الجديد
-            // نمرر القيم التي تم تحديدها بالفعل في الـ <select> الأصلي
-            handleModelChange(setSelectedOptions("model", selectedValues.filter(v => v !== 'select_all_models')), false);
+            handleSelectAllLogic(modelSelect, "model", allCurrentModels, 'select_all_models');
+            
+            // Trigger Year Update
+            const currentSelected = modelSelect.getValue(true);
+            handleModelChange(currentSelected, false);
         });
 
-    /* -------------------------------------------------------
- * 3.1 SELECT ALL for Years Logic (On Change) - *تم التصحيح هنا*
- * -------------------------------------------------------- */
- document.getElementById("yearSelect").addEventListener("change", function () {
-    const selectElement = this;
-    const selectedValues = yearSelect.getValue(true);
-    
-    // قائمة جميع السنوات المتاحة في القائمة (عدا Select All)
-    const allCurrentYears = yearSelect.config.choices
-        .filter(c => c.value !== 'select_all_years' && c.value !== '')
-        .map(c => c.value);
+        // Year Change
+        document.getElementById("yearSelect").addEventListener("change", function () {
+            const allAvailableYears = yearSelect.config.choices
+                .filter(c => c.value !== 'select_all_years' && c.value !== '')
+                .map(c => c.value.toString());
 
-
-    if (selectedValues.includes("select_all_years")) {
-        
-        // 1. تحديد جميع السنوات في الـ <select> الأصلي للحفظ
-        setSelectedOptions("yearSelect", allCurrentYears);
-        
-        // 2. تحديث واجهة Choices.js (لإنشاء Tag Select All فقط)
-        yearSelect.removeActiveItems();
-        // إعادة تعيين 'select_all_years' لضمان ظهوره كـ tag وحيد
-        yearSelect.setChoiceByValue(["select_all_years"]);
-
-    } else if (selectedValues.length === 0) {
-        // إلغاء تحديد الجميع في الـ <select> الأصلي
-        setSelectedOptions("yearSelect", []);
-    } else {
-        // تحديد القيم الفردية في الـ <select> الأصلي للحفظ
-        // تأكد من فلترة 'select_all_years' في حالة كان موجوداً بالخطأ
-        const finalSelection = selectedValues.filter(v => v !== 'select_all_years');
-        setSelectedOptions("yearSelect", finalSelection);
-
-        // التأكد من إزالة Tag Select All إذا اختاروا شيئاً آخر
-        yearSelect.removeActiveItemsByValue('select_all_years');
-    }
-});
+            handleSelectAllLogic(yearSelect, "yearSelect", allAvailableYears, 'select_all_years');
+        });
 
         /* -------------------------------------------------------
-         * 1️⃣ BRAND CHANGE EVENT (معالجة التعبئة المسبقة للموديلات)
+         * 4. Cascading Logic (Brand -> Model -> Year)
          * -------------------------------------------------------- */
+
         function handleBrandChange(brand, initialLoad = false) {
-            
             if (!initialLoad) {
                 modelSelect.clearStore();
                 yearSelect.clearStore();
                 toggleChoicesDisabled(yearSelect, true);
             }
-            
-            if (brand && brandModels[brand]) {
-                
-                const allModelValues = brandModels[brand]; 
-                
-                // لا نستخدم التصفية هنا، نترك Choices.js يتعامل مع القائمة الكاملة
-                let modelChoices = allModelValues.map(m => ({
-                    value: m,
-                    label: m,
-                    selected: false // لا تحديد مبدئي في Choices.js
-                }));
 
-                const finalModelChoices = [
-                    { value: 'select_all_models', label: 'Select All', customProperties: { class: 'text-primary fw-bold' }, selected: false },
-                    ...modelChoices
+            if (brand && brandModels[brand]) {
+                const models = brandModels[brand];
+                const choices = [
+                    { value: 'select_all_models', label: 'Select All', customProperties: { class: 'text-primary fw-bold' } },
+                    ...models.map(m => ({ value: m, label: m }))
                 ];
-                
-                // تحديث قائمة الخيارات المتاحة
-                modelSelect.setChoices(finalModelChoices, 'value', 'label', true);
+
+                modelSelect.setChoices(choices, 'value', 'label', true);
                 toggleChoicesDisabled(modelSelect, false);
-                
-                // 🚨 خطوة 2: معالجة التعبئة المسبقة (Pre-selection)
+
                 if (initialLoad && selectedModels.length > 0) {
-                    
-                    const isSelectAll = allModelValues.length > 0 && 
-                                        selectedModels.length === allModelValues.length && 
-                                        allModelValues.every(val => selectedModels.includes(val));
-                    
-                    setTimeout(() => {
-                        
-                        // 1. تحديد القيم في الـ <select> الأصلي للحفظ (سواء كانت Select All أو فردية)
-                        // هذا يضمن إرسال جميع القيم الفردية الصحيحة للخادم
-                        setSelectedOptions("model", selectedModels);
-                        
-                        // 2. تحديث واجهة Choices.js (لإنشاء Tags)
-                        if (isSelectAll) {
-                            // ننشئ Tag واحد هو "Select All"
-                            modelSelect.setChoiceByValue(["select_all_models"]);
-                        } else {
-                            // ننشئ Tags فردية
-                            modelSelect.setChoiceByValue(selectedModels);
-                        }
-                        
-                        // استدعاء منطق تغيير الموديل لإعداد حقل السنة
-                        // نمرر القيم الفردية المحددة مسبقاً (سواء كانت جميعها أو جزء منها)
-                        handleModelChange(selectedModels, true); 
-                    }, 50); 
+                    const isFull = models.length > 0 && models.every(m => selectedModels.includes(m));
+                    setSelectedOptions("model", selectedModels);
+                    modelSelect.setChoiceByValue(isFull ? ["select_all_models"] : selectedModels);
+                    handleModelChange(selectedModels, true);
                 }
             }
         }
-        
-        brandSelect.passedElement.element.addEventListener('change', function () {
-            let brand = this.value.toLowerCase().trim();
-            handleBrandChange(brand, false);
-        });
 
+        function handleModelChange(selectedValues, initialLoad = false) {
+            if (!initialLoad) {
+                yearSelect.clearStore();
+                toggleChoicesDisabled(yearSelect, true);
+                setSelectedOptions("yearSelect", []);
+            }
 
-    /* -------------------------------------------------------
- * 2️⃣ MODEL CHANGE EVENT (معالجة التعبئة المسبقة للسنوات)
- * -------------------------------------------------------- */
-/* -------------------------------------------------------
- * 2️⃣ MODEL CHANGE EVENT (معالجة التعبئة المسبقة للسنوات)
- * -------------------------------------------------------- */
-function handleModelChange(selectedValues, initialLoad = false) {
-    
-    if (!initialLoad) {
-        yearSelect.clearStore();
-        toggleChoicesDisabled(yearSelect, true);
-        setSelectedOptions("yearSelect", []);
-    }
-    
-    // ... (تحديد القيم المحددة للموديل) ...
-    const selectedModelValues = selectedValues.includes('select_all_models') 
-        ? brandModels[selectedBrand] 
-        : selectedValues.filter(v => v !== 'select_all_models'); 
+            // In this logic, we assume selectedYears are passed from PHP globally
+            if (selectedValues.length > 0) {
+                const yearChoices = [
+                    { value: 'select_all_years', label: 'Select All', customProperties: { class: 'text-primary fw-bold' } },
+                    ...selectedYears.map(y => ({ value: y, label: y })) // Adjust this if years depend on models
+                ];
 
+                yearSelect.setChoices(yearChoices, 'value', 'label', true);
+                toggleChoicesDisabled(yearSelect, false);
 
-    if (selectedModelValues && selectedModelValues.length > 0) {
-        
-        // 🚨 الخطوة 1: إعادة تهيئة الخيارات بناءً على ما هو موجود في PHP
-   let yearChoices = selectedYears.map(y => ({
-    value: y,
-    label: y,
-    selected: false
-}));
-
-
-        const finalYearChoices = [
-            { value: 'select_all_years', label: 'Select All', customProperties: { class: 'text-primary fw-bold' }, selected: false },
-            ...yearChoices
-        ];
-        
-        yearSelect.setChoices(finalYearChoices, 'value', 'label', true);
-        toggleChoicesDisabled(yearSelect, false);
-
-        
-        // 🚨 الخطوة 2: استخراج قائمة السنوات المتاحة *فعلياً* من Choices.js
-        // const availableYears = yearSelect.config.choices
-        //     .filter(c => c.value !== 'select_all_years' && c.value !== '')
-        //     .map(c => c.value.toString()); // التأكد من أنها سلاسل نصية
-
-
-        // // 🚨 خطوة 3: معالجة التعبئة المسبقة (Pre-selection)
-        // if (initialLoad && selectedYears.length > 0) {
-            
-        //     // المقارنة الآن تتم بين availableYears (من Choices.js) و selectedYears (من DB)
-        //     const isSelectAll = availableYears.length > 0 && 
-        //                         selectedYears.length === availableYears.length && 
-        //                         availableYears.every(val => selectedYears.includes(val));
-            
-        //     setTimeout(() => {
-                
-        //         setSelectedOptions("yearSelect", selectedYears); 
-
-        //         if (isSelectAll) {
-        //             yearSelect.setChoiceByValue(["select_all_years"]);
-        //         } else {
-        //             yearSelect.setChoiceByValue(selectedYears);
-        //         }
-        //     }, 50); 
-        // }
-
-        setTimeout(() => {
-    setSelectedOptions("yearSelect", selectedYears);
-    yearSelect.setChoiceByValue(selectedYears);
-}, 50);
-
-    }
-}
-        
-        modelSelect.passedElement.element.addEventListener('change', function () {
-            const selectedValues = modelSelect.getValue(true);
-            handleModelChange(selectedValues, false);
-        });
-        
-        // ... (منطق Category Selection) ...
-        const categoryIcons = document.querySelectorAll('.category-icon');
-        const categoryInput = document.getElementById('categoryInput');
-
-        categoryIcons.forEach(icon => {
-            icon.addEventListener('click', function () {
-                categoryIcons.forEach(i => i.classList.remove('selected'));
-                this.classList.add('selected');
-                const categoryId = this.dataset.id;
-                categoryInput.value = categoryId;
-            });
-        });
-
-        /* -------------------------------------------------------
-         * 4️⃣ RUN LOGIC IF BRAND PRE-SELECTED (للتعبئة المسبقة)
-         * -------------------------------------------------------- */
-        if (selectedBrand) {
-            handleBrandChange(selectedBrand, true);
+                setTimeout(() => {
+                    const availableYears = yearChoices.filter(c => c.value !== 'select_all_years').map(c => c.value);
+                    const isFull = availableYears.length > 0 && availableYears.every(y => selectedYears.includes(y));
+                    
+                    setSelectedOptions("yearSelect", selectedYears);
+                    yearSelect.setChoiceByValue(isFull ? ["select_all_years"] : selectedYears);
+                }, 50);
+            }
         }
 
+        // Initialize
+        brandSelect.passedElement.element.addEventListener('change', function () {
+            handleBrandChange(this.value.toLowerCase().trim(), false);
+        });
+
+        if (selectedBrand) {
+            handleBrandChange(selectedBrand.toLowerCase(), true);
+        }
     });
 </script>
 @endsection
