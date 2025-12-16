@@ -6,16 +6,24 @@
     <h2 class="fw-bold mb-4" style="color: #163155;">Add New Part</h2>
     <form id="createPartForm" method="POST" action="{{ route('spareparts.store') }}" enctype="multipart/form-data">
         @csrf
-
+@if ($errors->any())
+    <div class="alert alert-danger mb-4">
+        <h5 class="fw-bold">Please correct the following errors:</h5>
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
         {{-- 1. Car Brand (Select-One) --}}
         <div class="mb-3">
             <label class="form-label fw-semibold small text-muted">Car Brand</label>
-            <select class="form-select rounded-4" id="brand" name="brand" required>
+            <select class="form-select rounded-4" id="brand" name="brand" >
                 <option value="">All Brands</option>
                 @foreach($sortedMakes as $make)
                 @php $normalizedMake = strtolower(trim($make)); @endphp
-                <option value="{{ $normalizedMake }}" {{ strtolower(request('brand'))==$normalizedMake ? 'selected' : ''
-                    }}>
+            <option value="{{ $normalizedMake }}" {{ old('brand') == $normalizedMake ? 'selected' : '' }}> 
                     {{ $make }}
                 </option>
                 @endforeach
@@ -26,7 +34,7 @@
         <div class="mb-3">
             <label class="form-label fw-semibold small text-muted">Model</label>
             {{-- تم التأكد من وجود disabled و multiple و name="model[]" --}}
-       <select class="form-select rounded-4" id="model" name="model[]" disabled multiple required>
+       <select class="form-select rounded-4" id="model" name="model[]" disabled multiple >
     <option value="select_all_models" class="text-primary fw-bold">Select All</option>
 
     {{-- <option value="">Select Model(s)</option> --}}
@@ -48,14 +56,16 @@
         $years = range($currentYear, 1984); // من السنة القادمة إلى 1984
     @endphp
 
-    <select class="form-select rounded-4" id="yearSelect" name="year[]" disabled multiple required>
+    <select class="form-select rounded-4" id="yearSelect" name="year[]" disabled multiple >
         <option value="select_all_years" class="text-primary fw-bold">
             Select All
         </option>
 
-        @foreach($years as $year)
-            <option value="{{ $year }}">{{ $year }}</option>
-        @endforeach
+       @foreach($years as $year)
+        <option value="{{ $year }}" {{ in_array($year, old('year', [])) ? 'selected' : '' }}>
+            {{ $year }}
+        </option>
+       @endforeach
     </select>
 </div>
 
@@ -289,25 +299,21 @@
         {{-- City and other fields (باقي الحقول لم يتم تغييرها) --}}
 <div class="mb-3">
     <label class="form-label fw-semibold small text-muted">City</label>
-      @php
-        // 📌 مدن الإمارات الثابتة فقط
+    @php
         $uaeCities = [
-            'Dubai',
-            'Abu Dhabi',
-            'Sharjah',
-            'Ras Al Khaimah',
-            'Fujairah',
-            'Ajman',
-            'Umm Al Quwain',
-            'Al Ain',
+            'Dubai', 'Abu Dhabi', 'Sharjah', 'Ras Al Khaimah',
+            'Fujairah', 'Ajman', 'Umm Al Quwain', 'Al Ain',
         ];
-
-        sort($uaeCities); // ترتيب أبجدي
+        sort($uaeCities);
     @endphp
-    <select class="form-select rounded-4" id="citySelect" name="city" required>
+
+    <select class="form-select rounded-4" id="citySelect" name="city">
         <option value="">Select City</option>
+        {{-- تأكد من استخدام المتغير الصحيح هنا (سواء uaeCities أو cities القادمة من الـ Controller) --}}
         @foreach($cities as $city)
-        <option value="{{ $city }}">{{ $city }}</option>
+            <option value="{{ $city }}" {{ old('city') == $city ? 'selected' : '' }}>
+                {{ $city }}
+            </option>
         @endforeach
     </select>
 </div>
@@ -318,18 +324,12 @@
 
             <div class="d-flex gap-3 mt-1">
 
-                <div class="condition-btn" data-value="New">
-                    New
-                </div>
-
-                <div class="condition-btn" data-value="Used">
-                    Used
-                </div>
+                <div class="condition-btn {{ old('part_type') == 'New' ? 'selected' : '' }}" data-value="New">New</div>
+                <div class="condition-btn {{ old('part_type') == 'Used' ? 'selected' : '' }}" data-value="Used">Used</div>
 
             </div>
 
-            <input type="hidden" name="part_type" id="conditionInput" required>
-        </div>
+<input type="hidden" name="part_type" id="conditionInput" value="{{ old('part_type') }}">        </div>
 
         <style>
             .condition-btn {
@@ -390,7 +390,7 @@
                 ? config('app.file_base_url') . Str::after($category->image, url('/') . '/')
                 : 'https://via.placeholder.com/60';
                 @endphp
-                <div class="text-center category-icon flex-shrink-0" data-id="{{ $category->id }}"
+                <div class="text-center category-icon {{ old('category') == $category->id ? 'selected' : '' }}" flex-shrink-0" data-id="{{ $category->id }}"
                     data-name="{{ $category->name }}" data-subs='@json($category->subcategories)'>
                     <img src="{{ $img }}" class="rounded mb-1" width="60" height="60">
                     <div style="font-size:0.75rem;">{{ $category->name }}</div>
@@ -398,7 +398,7 @@
                 @endforeach
             </div>
 
-            <input type="hidden" name="category" id="categoryInput" required>
+<input type="hidden" name="category" id="categoryInput" value="{{ old('category') }}">
         </div>
 
         {{-- <div class="mb-3">
@@ -416,242 +416,133 @@
 </div>
 
         {{-- 🚨 هذا هو جزء JavaScript الصحيح والنهائي 🚨 --}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-/* -------------------------------------------------------
-      2.1 SELECT ALL for Models Logic
-    -------------------------------------------------------- */
-  /* -------------------------------------------------------
-      2.1 SELECT ALL for Models Logic (New Logic)
-    -------------------------------------------------------- */
-    document.getElementById("model").addEventListener("change", function () {
-        const selectElement = this;
-        const selectedValues = modelSelect.getValue(true); // استخدام getValue للحصول على القيم المحددة في الواجهة
-
-        if (selectedValues.includes("select_all_models")) {
-            // 1. تحديد جميع الخيارات في حقل HTML الأصلي (لإرسالها للسيرفر)
-            const allValues = [];
-            Array.from(selectElement.options).forEach(opt => {
-                if (opt.value !== "select_all_models" && opt.value !== "") {
-                    opt.selected = true;
-                    allValues.push(opt.value);
-                } else {
-                    opt.selected = false; // إلغاء تحديد "Select All" في الخلفية
-                }
-            });
-
-            // 2. إزالة كل الـ Tags من الواجهة
-            modelSelect.removeActiveItems();
-
-            // 3. عرض "Select All" فقط كـ Tag في الواجهة
-            // نحدد القيمة الوهمية هنا فقط للواجهة الرسومية
-            modelSelect.setChoiceByValue(["select_all_models"]);
-
-        } else if (selectedValues.length === 0) {
-            // لو المستخدم ألغى كل التحديدات، نتأكد من إزالة Tag "Select All" لو كانت موجودة
-            Array.from(selectElement.options).forEach(opt => opt.selected = false);
-        } else {
-            // لو تم اختيار عناصر عادية بعد إلغاء "Select All"، نتأكد من إلغاء تحديد "Select All" في الواجهة
-            modelSelect.removeActiveItemsByValue('select_all_models');
-        }
-    });
-    /* -------------------------------------------------------
-      3.1 SELECT ALL for Years Logic
-    -------------------------------------------------------- */
-   /* -------------------------------------------------------
-      3.1 SELECT ALL for Years Logic (New Logic)
-    -------------------------------------------------------- */
-    document.getElementById("yearSelect").addEventListener("change", function () {
-        const selectElement = this;
-        const selectedValues = yearSelect.getValue(true); // استخدام getValue للحصول على القيم المحددة في الواجهة
-
-        if (selectedValues.includes("select_all_years")) {
-            // 1. تحديد جميع الخيارات في حقل HTML الأصلي (لإرسالها للسيرفر)
-            const allValues = [];
-            Array.from(selectElement.options).forEach(opt => {
-                if (opt.value !== "select_all_years" && opt.value !== "") {
-                    opt.selected = true;
-                    allValues.push(opt.value);
-                } else {
-                    opt.selected = false; // إلغاء تحديد "Select All" في الخلفية
-                }
-            });
-
-            // 2. إزالة كل الـ Tags من الواجهة
-            yearSelect.removeActiveItems();
-
-            // 3. عرض "Select All" فقط كـ Tag في الواجهة
-            // نحدد القيمة الوهمية هنا فقط للواجهة الرسومية
-            yearSelect.setChoiceByValue(["select_all_years"]);
-
-        } else if (selectedValues.length === 0) {
-            // لو المستخدم ألغى كل التحديدات، نتأكد من إزالة Tag "Select All" لو كانت موجودة
-            Array.from(selectElement.options).forEach(opt => opt.selected = false);
-        } else {
-            // لو تم اختيار عناصر عادية بعد إلغاء "Select All"، نتأكد من إلغاء تحديد "Select All" في الواجهة
-            yearSelect.removeActiveItemsByValue('select_all_years');
-        }
-    });
-    // Laravel variables
+      <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. المتغيرات الأساسية
     const brandModels = @json($brandModels ?? []);
     const allYears = @json($years ?? []);
+    const oldBrand = @json(old('brand'));
+    const oldModels = @json(old('model', []));
+    const oldYears = @json(old('year', []));
 
-    // Initialize Choices.js
-    const brandSelect = new Choices('#brand', {
-        searchEnabled: true,
-        shouldSort: false,
-        itemSelectText: '',
-        removeItemButton: false
-    });
+    // 2. تهيئة Choices.js
+    const brandSelect = new Choices('#brand', { searchEnabled: true, shouldSort: false, itemSelectText: '' });
+    const citySelect = new Choices('#citySelect', { searchEnabled: true, shouldSort: false, itemSelectText: '' });
+    const modelSelect = new Choices('#model', { searchEnabled: true, shouldSort: false, removeItemButton: true, placeholderValue: 'Select Model(s)' });
+    const yearSelect = new Choices('#yearSelect', { searchEnabled: true, shouldSort: false, removeItemButton: true, placeholderValue: 'Select Year(s)' });
 
-    // 🚨 أضف هذا الكود ضمن تهيئة Choices.js 🚨
-const citySelect = new Choices('#citySelect', {
-    searchEnabled: true,
-    shouldSort: false,
-    itemSelectText: '',
-    removeItemButton: false, // لا نريد زر حذف لأنه اختيار واحد (Select-One)
-    placeholderValue: 'Select City'
-});
-
-    const modelSelect = new Choices('#model', {
-        searchEnabled: true,
-        shouldSort: false,
-        placeholderValue: 'Select Model(s)',
-        itemSelectText: '',
-        removeItemButton: true,
-        delimiter: ','
-    });
-
-    const yearSelect = new Choices('#yearSelect', {
-        searchEnabled: true,
-        shouldSort: false,
-        placeholderValue: 'Select Year(s)',
-        itemSelectText: '',
-        removeItemButton: true,
-        delimiter: ','
-    });
-
-    // Enable/Disable helper
     function toggleChoicesDisabled(instance, disabled) {
-        if (disabled) {
-            instance.disable();
-        } else {
-            instance.enable();
-        }
+        disabled ? instance.disable() : instance.enable();
         instance.containerOuter.element.classList.toggle('is-disabled', disabled);
     }
 
-    // Disable model & year initially
-    toggleChoicesDisabled(modelSelect, true);
-    toggleChoicesDisabled(yearSelect, true);
-
-
-    /* -------------------------------------------------------
-       1️⃣ BRAND CHANGE EVENT — using Choices events
-    -------------------------------------------------------- */
-    brandSelect.passedElement.element.addEventListener('change', function () {
-        let brand = this.value.toLowerCase().trim();
-
-        // Reset model + year
-        modelSelect.clearStore();
-        modelSelect.setChoiceByValue([]);
-        yearSelect.clearStore();
-        yearSelect.setChoiceByValue([]);
-        toggleChoicesDisabled(modelSelect, true);
-        toggleChoicesDisabled(yearSelect, true);
-
+    // 3. دالة بناء الموديلات (لإعادة استخدامها)
+    function updateModelChoices(brandName, selectedItems = []) {
+        let brand = brandName.toLowerCase().trim();
         if (brand && brandModels[brand]) {
             let modelChoices = brandModels[brand].map(m => ({
                 value: m,
-                label: m
+                label: m,
+                selected: selectedItems.includes(m)
             }));
 
-// Add Select All option before the fetched models
             const finalModelChoices = [
-                { value: 'select_all_models', label: 'Select All', customProperties: { class: 'text-primary fw-bold' }, selected: false },
+                { value: 'select_all_models', label: 'Select All', selected: selectedItems.includes('select_all_models'), customProperties: { class: 'text-primary fw-bold' } },
                 ...modelChoices
             ];
-            
-            modelSelect.setChoices(finalModelChoices, 'value', 'label', true);            toggleChoicesDisabled(modelSelect, false);
+            modelSelect.clearChoices();
+            modelSelect.setChoices(finalModelChoices, 'value', 'label', true);
+            toggleChoicesDisabled(modelSelect, false);
+            return true;
         }
-    });
-
-
-    /* -------------------------------------------------------
-       2️⃣ MODEL CHANGE EVENT — using Choices events
-    -------------------------------------------------------- */
-    modelSelect.passedElement.element.addEventListener('change', function () {
-        const selectedModels = modelSelect.getValue(true);
-
-        yearSelect.clearStore();
-        yearSelect.setChoiceByValue([]);
-        toggleChoicesDisabled(yearSelect, true);
-
-        if (selectedModels && selectedModels.length > 0) {
-            let yearChoices = allYears.map(y => ({
-                value: y,
-                label: y
-            }));
-
-// Add Select All option before the available years
-            const finalYearChoices = [
-                { value: 'select_all_years', label: 'Select All', customProperties: { class: 'text-primary fw-bold' }, selected: false },
-                ...yearChoices
-            ];
-            
-            yearSelect.setChoices(finalYearChoices, 'value', 'label', true);            toggleChoicesDisabled(yearSelect, false);
-        }
-    });
-
-
-    /* -------------------------------------------------------
-       3️⃣ CATEGORY SELECTION
-    -------------------------------------------------------- */
-    const categoryIcons = document.querySelectorAll('.category-icon');
-    const categoryInput = document.getElementById('categoryInput');
-    const subcategorySelect = document.getElementById('subcategorySelect');
-
-    categoryIcons.forEach(icon => {
-        icon.addEventListener('click', function () {
-
-            categoryIcons.forEach(i => i.classList.remove('selected'));
-            this.classList.add('selected');
-
-            const categoryId = this.dataset.id;
-            const subs = JSON.parse(this.dataset.subs);
-
-            categoryInput.value = categoryId;
-
-            subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
-
-            subs.forEach(sub => {
-                let opt = document.createElement('option');
-                opt.value = sub.id;
-                opt.textContent = sub.name;
-                subcategorySelect.appendChild(opt);
-            });
-        });
-    });
-
-
-    /* -------------------------------------------------------
-       4️⃣ VIN Show/Hide
-    -------------------------------------------------------- */
-    document.querySelector('select[name="part_type"]').addEventListener('change', function () {
-        const vinField = document.querySelector('#vinWrapper');
-        if (vinField) {
-            vinField.style.display = this.value === 'New' ? 'block' : 'none';
-        }
-    });
-
-
-    /* -------------------------------------------------------
-       5️⃣ Run logic if brand pre-selected
-    -------------------------------------------------------- */
-    if (brandSelect.getValue(true)) {
-        brandSelect.passedElement.element.dispatchEvent(new Event('change'));
+        toggleChoicesDisabled(modelSelect, true);
+        return false;
     }
 
+    // 4. دالة بناء السنوات
+    function updateYearChoices(selectedItems = []) {
+        let yearChoices = allYears.map(y => ({
+            value: y.toString(),
+            label: y.toString(),
+            selected: selectedItems.includes(y.toString())
+        }));
+
+        const finalYearChoices = [
+            { value: 'select_all_years', label: 'Select All', selected: selectedItems.includes('select_all_years'), customProperties: { class: 'text-primary fw-bold' } },
+            ...yearChoices
+        ];
+        yearSelect.clearChoices();
+        yearSelect.setChoices(finalYearChoices, 'value', 'label', true);
+        toggleChoicesDisabled(yearSelect, false);
+    }
+
+    // 5. منطق التحميل الأولي (Old Data) - يعمل مرة واحدة عند فتح الصفحة
+    if (oldBrand) {
+        const hasModels = updateModelChoices(oldBrand, oldModels);
+        if (hasModels && oldModels.length > 0) {
+            updateYearChoices(oldYears);
+        }
+    } else {
+        toggleChoicesDisabled(modelSelect, true);
+        toggleChoicesDisabled(yearSelect, true);
+    }
+
+    // 6. الأحداث (Events)
+    // تغيير البراند
+    brandSelect.passedElement.element.addEventListener('change', function () {
+        updateModelChoices(this.value);
+        yearSelect.clearStore();
+        toggleChoicesDisabled(yearSelect, true);
+    });
+
+    // منطق Select All للموديلات
+    modelSelect.passedElement.element.addEventListener('change', function () {
+        const selectedValues = modelSelect.getValue(true);
+        if (selectedValues.includes("select_all_models")) {
+            // تنفيذ منطق اختيار الكل
+            Array.from(this.options).forEach(opt => {
+                if (opt.value !== "select_all_models" && opt.value !== "") opt.selected = true;
+            });
+            modelSelect.removeActiveItems();
+            modelSelect.setChoiceByValue(["select_all_models"]);
+        } else if (selectedValues.length === 0) {
+            Array.from(this.options).forEach(opt => opt.selected = false);
+        } else {
+            modelSelect.removeActiveItemsByValue('select_all_models');
+        }
+        
+        // تحديث السنوات بناءً على الموديل المختار
+        if (selectedValues.length > 0) {
+            updateYearChoices();
+        } else {
+            toggleChoicesDisabled(yearSelect, true);
+        }
+    });
+
+    // منطق Select All للسنوات
+    yearSelect.passedElement.element.addEventListener('change', function () {
+        const selectedValues = yearSelect.getValue(true);
+        if (selectedValues.includes("select_all_years")) {
+            Array.from(this.options).forEach(opt => {
+                if (opt.value !== "select_all_years" && opt.value !== "") opt.selected = true;
+            });
+            yearSelect.removeActiveItems();
+            yearSelect.setChoiceByValue(["select_all_years"]);
+        } else if (selectedValues.length === 0) {
+            Array.from(this.options).forEach(opt => opt.selected = false);
+        } else {
+            yearSelect.removeActiveItemsByValue('select_all_years');
+        }
+    });
+
+    // 7. Category Selection
+    document.querySelectorAll('.category-icon').forEach(icon => {
+        icon.addEventListener('click', function () {
+            document.querySelectorAll('.category-icon').forEach(i => i.classList.remove('selected'));
+            this.classList.add('selected');
+            document.getElementById('categoryInput').value = this.dataset.id;
+        });
+    });
 });
-        </script>
+</script>
 @endsection

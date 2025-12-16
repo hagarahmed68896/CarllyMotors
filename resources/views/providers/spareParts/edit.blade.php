@@ -9,7 +9,16 @@
     <form id="editPartForm" method="POST" action="{{ route('spareparts.update', $part->id) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT') {{-- مهم جداً لتجاوز متطلبات Laravel --}}
-
+@if ($errors->any())
+    <div class="alert alert-danger mb-4">
+        <h5 class="fw-bold">Please correct the following errors:</h5>
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
         {{-- متغيرات مساعدة لاستخدامها في JavaScript --}}
         @php
             // تحويل القيم المخزنة في قاعدة البيانات إلى مصفوفات جاهزة لـ JavaScript
@@ -35,7 +44,7 @@
         <div class="mb-3">
             <label class="form-label fw-semibold small text-muted">Car Brand</label>
             {{-- تحديث: استخدام $selectedBrand للمقارنة --}}
-            <select class="form-select rounded-4" id="brand" name="brand" required>
+            <select class="form-select rounded-4" id="brand" name="brand" >
                 <option value="">All Brands</option>
                 @foreach($sortedMakes as $make)
                 @php $normalizedMake = strtolower(trim($make)); @endphp
@@ -50,34 +59,29 @@
 {{-- 2. Model (Multi-Select) --}}
 <div class="mb-3">
     <label class="form-label fw-semibold small text-muted">Model</label>
-    <select class="form-select rounded-4" id="model" name="model[]" multiple required>
-        <option value="select_all_models" class="text-primary fw-bold">
-            Select All
-        </option>
-        @foreach($brandModels[$selectedBrand] ?? [] as $model)
-            {{-- يجب أن تكون فارغة من 'selected' --}}
-            <option value="{{ $model }}">
-                {{ $model }}
-            </option>
-        @endforeach
-    </select>
+    <div class="@error('model') is-invalid-wrapper @enderror">
+        <select class="form-select rounded-4" id="model" name="model[]" multiple>
+            <option value="select_all_models" class="text-primary fw-bold">Select All</option>
+            {{-- JavaScript will fill this based on Brand --}}
+        </select>
+    </div>
+    @error('model') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
 </div>
 
 {{-- 3. Year (Multi-Select) --}}
 <div class="mb-3">
     <label class="form-label fw-semibold small text-muted">Year</label>
-    {{-- ... (متغيرات السنوات) ... --}}
-    <select class="form-select rounded-4" id="yearSelect" name="year[]" multiple required>
-        <option value="select_all_years" class="text-primary fw-bold">
-            Select All
-        </option>
-        @foreach($years as $year)
-            {{-- يجب أن تكون فارغة من 'selected' --}}
-            <option value="{{ $year }}">
-                {{ $year }}
-            </option>
-        @endforeach
-    </select>
+    <div class="@error('year') is-invalid-wrapper @enderror">
+        <select class="form-select rounded-4" id="yearSelect" name="year[]" multiple>
+            <option value="select_all_years" class="text-primary fw-bold">Select All</option>
+            {{-- We fill this with ALL possible years --}}
+            @php $currentY = date('Y') + 1; @endphp
+            @for ($y = $currentY; $y >= 1984; $y--)
+                <option value="{{ $y }}">{{ $y }}</option>
+            @endfor
+        </select>
+    </div>
+    @error('year') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
 </div>
 
         {{-- Links and Scripts (نفس الكود) --}}
@@ -310,7 +314,7 @@
         {{-- City and other fields --}}
         <div class="mb-3">
             <label class="form-label fw-semibold small text-muted">City</label>
-            <select class="form-select rounded-4" id="citySelect" name="city" required>
+            <select class="form-select rounded-4" id="citySelect" name="city" >
                 <option value="">Select City</option>
                 @foreach($cities as $city)
                     {{-- تحديث: تحديد القيمة المخزنة --}}
@@ -416,7 +420,7 @@
 
             {{-- تحديث: تعبئة القيمة المخزنة --}}
 <input type="hidden" name="category" id="categoryInput"
-       value="{{ $part->category_id ?? '' }}" required>
+       value="{{ $part->category_id ?? '' }}" >
         </div>
 
         {{-- Subcategory (إذا كنت تستخدمها - لم تكن موجودة في الـ HTML الرئيسي لصفحة الإنشاء لكن سأضيفها للاكتمال) --}}

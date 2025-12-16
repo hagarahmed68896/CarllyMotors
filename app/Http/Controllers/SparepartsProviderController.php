@@ -141,101 +141,90 @@ $cities = CarListingModel::select('city')
 
 public function store(Request $request)
 {
-    /* -----------------------------------------------
-     | 1) VALIDATION
-     ----------------------------------------------- */
+    // 1. التحقق من البيانات (خارج الـ try-catch)
+    // إذا فشل التحقق، سيقوم Laravel تلقائياً بالتحويل للخلف مع رسائل الخطأ
     $validated = $request->validate([
         'brand'       => 'required|string',
-        'model'       => 'required|array',
+        'model'       => 'required|array|min:1',
         'model.*'     => 'string',
-        'year'        => 'required|array',
+        'year'        => 'required|array|min:1',
         'year.*'      => 'string',
         'city'        => 'required|string',
         'part_type'   => 'required|string|in:New,Used',
-        'vin_number'  => 'nullable|string',
-        'category'    => 'required|integer',
+        'vin_number'  => $request->part_type === 'New' ? 'required|string' : 'nullable|string',
+        'category'    => 'required|integer|exists:sparepart_categories,id',
+    ], [
+        // رسائل مخصصة اختيارية لجعل التنبيهات أوضح للمستخدم
+        'model.required' => 'Please select at least one car model.',
+        'year.required'  => 'Please select at least one year.',
+        'vin_number.required' => 'VIN Number is required for new parts.',
     ]);
 
-    /* -----------------------------------------------
-     | 2) CATEGORY
-     ----------------------------------------------- */
-    $category = SparepartCategory::find($validated['category']);
-    $categoryName = $category ? $category->name : '';
+    try {
+        /* -----------------------------------------------
+         | 2) CATEGORY NAME (للـ Title)
+         ----------------------------------------------- */
+        $category = SparepartCategory::find($validated['category']);
+        $categoryName = $category ? $category->name : '';
 
-    /* -----------------------------------------------
-     | 3) CREATE SPARE PART
-     ----------------------------------------------- */
-    $sparePart = new SparePart();
-    $sparePart->brand = $validated['brand'];
+        /* -----------------------------------------------
+         | 3) INITIALIZE OBJECT
+         ----------------------------------------------- */
+        $sparePart = new SparePart();
+        $sparePart->user_id = auth()->id();
+        $sparePart->brand = $validated['brand'];
+        $sparePart->category_id = $validated['category'];
 
-    /* =================================================
-     | MODELS (SELECT ALL FIXED)
-     ================================================= */
-    $models = $validated['model'];
+        /* =================================================
+         | 4) MODELS LOGIC
+         ================================================= */
+        $models = $validated['model'];
+        if (in_array('select_all_models', $models)) {
+            $brandName = strtolower(trim($validated['brand']));
+            $models = CarListingModel::whereNotNull('listing_model')
+                ->whereRaw('LOWER(TRIM(listing_type)) = ?', [$brandName])
+                ->pluck('listing_model')
+                ->unique()
+                ->values()
+                ->toArray();
+        } else {
+            $models = array_filter($models, fn($m) => $m !== 'select_all_models');
+        }
+        $sparePart->car_model = json_encode(array_values($models));
 
-    if (in_array('select_all_models', $models)) {
+        /* =================================================
+         | 5) YEARS LOGIC
+         ================================================= */
+        $years = $validated['year'];
+        if (in_array('select_all_years', $years)) {
+            $currentYear = date('Y') + 1;
+            $years = range($currentYear, 1984);
+            $years = array_map('strval', $years); // تحويل السنوات لنصوص لتوحيد النوع
+        } else {
+            $years = array_filter($years, fn($y) => $y !== 'select_all_years');
+        }
+        $sparePart->year = json_encode(array_values($years));
 
-        $brand = strtolower(trim($validated['brand']));
+        /* -----------------------------------------------
+         | 6) FINAL FIELDS & SAVE
+         ----------------------------------------------- */
+        $sparePart->city       = $validated['city'];
+        $sparePart->part_type  = $validated['part_type'];
+        $sparePart->vin_number = $validated['vin_number'] ?? null;
+        $sparePart->title      = $validated['brand'] . ($categoryName ? " - {$categoryName}" : '');
 
-        $models = CarListingModel::whereNotNull('listing_model')
-            ->whereRaw('LOWER(TRIM(listing_type)) = ?', [$brand])
-            ->pluck('listing_model')
-            ->unique()
-            ->values()
-            ->toArray();
+        $sparePart->save();
 
-    } else {
-        $models = array_filter(
-            $models,
-            fn ($m) => $m !== 'select_all_models'
-        );
+        return redirect()
+            ->route('spareparts.dashboard')
+            ->with('success', 'Spare part has been added successfully!');
+
+    } catch (\Exception $e) {
+        // في حال حدوث خطأ في قاعدة البيانات أو السيرفر
+        return back()
+            ->withInput() // الحفاظ على ما كتبه المستخدم في الحقول
+            ->with('error', 'Something went wrong: ' . $e->getMessage());
     }
-
-    $sparePart->car_model = json_encode(array_values($models));
-
-    /* =================================================
-     | YEARS (MATCHES FORM RANGE EXACTLY)
-     ================================================= */
-    $years = $validated['year'];
-
-    if (in_array('select_all_years', $years)) {
-
-        // SAME YEARS AS FORM
-        $currentYear = date('Y') + 1;
-        $years = range($currentYear, 1984);
-
-    } else {
-        $years = array_filter(
-            $years,
-            fn ($y) => $y !== 'select_all_years'
-        );
-    }
-
-    $sparePart->year = json_encode(array_values($years));
-
-    /* -----------------------------------------------
-     | OTHER FIELDS
-     ----------------------------------------------- */
-    $sparePart->city        = $validated['city'];
-    $sparePart->part_type   = $validated['part_type'];
-    $sparePart->vin_number  = $validated['vin_number'] ?? null;
-    $sparePart->category_id = $validated['category'];
-
-    /* -----------------------------------------------
-     | TITLE
-     ----------------------------------------------- */
-    $sparePart->title = $validated['brand']
-        . ($categoryName ? " - {$categoryName}" : '');
-
-    $sparePart->user_id = auth()->id();
-    $sparePart->save();
-
-    /* -----------------------------------------------
-     | REDIRECT
-     ----------------------------------------------- */
-    return redirect()
-        ->route('spareparts.dashboard')
-        ->with('success', 'Spare part has been added successfully!');
 }
 
 
@@ -303,28 +292,24 @@ public function edit($id)
 
 public function update(Request $request, $id)
 {
+    // 1. Find the record
+    $sparePart = SparePart::findOrFail($id);
+
+    // 2. Validation (Strictly Required)
+    // Note: We move this OUTSIDE the try-catch so Laravel handles errors normally
+    $validated = $request->validate([
+        'brand'     => 'required|string',
+        'model'     => 'required|array|min:1', // Must select at least one
+        'model.*'   => 'string',
+        'year'      => 'required|array|min:1', // Must select at least one
+        'year.*'    => 'string',
+        'city'      => 'required|string',
+        'part_type' => 'required|string|in:New,Used',
+        'category'  => 'required|integer|exists:sparepart_categories,id',
+        'vin_number'=> $request->part_type === 'New' ? 'required|string' : 'nullable|string',
+    ]);
+
     try {
-
-        /* -----------------------------------------------
-         | 1) FIND SPARE PART
-         ----------------------------------------------- */
-        $sparePart = SparePart::findOrFail($id);
-
-        /* -----------------------------------------------
-         | 2) VALIDATION
-         ----------------------------------------------- */
-        $validated = $request->validate([
-            'brand'       => 'required|string',
-            'model'       => 'nullable|array',
-            'model.*'     => 'string',
-            'year'        => 'nullable|array',
-            'year.*'      => 'string',
-            'city'        => 'required|string',
-            'part_type'   => 'required|string|in:New,Used',
-            'vin_number'  => 'nullable|string',
-            'category'    => 'required|integer',
-        ]);
-
         /* -----------------------------------------------
          | 3) CATEGORY & BRAND
          ----------------------------------------------- */
@@ -335,68 +320,48 @@ public function update(Request $request, $id)
         $sparePart->category_id = $validated['category'];
 
         /* =================================================
-         | 4) MODELS (ONLY IF SENT)
+         | 4) MODELS
          ================================================= */
-        if ($request->filled('model')) {
+        $models = $validated['model'];
 
-            $models = $validated['model'];
-
-            if (in_array('select_all_models', $models)) {
-
-                $brand = strtolower(trim($validated['brand']));
-
-                $models = CarListingModel::whereNotNull('listing_model')
-                    ->whereRaw('LOWER(TRIM(listing_type)) = ?', [$brand])
-                    ->pluck('listing_model')
-                    ->unique()
-                    ->values()
-                    ->toArray();
-
-            } else {
-                $models = array_filter(
-                    $models,
-                    fn ($m) => $m !== 'select_all_models'
-                );
-            }
-
-            $sparePart->car_model = json_encode(array_values($models));
+        if (in_array('select_all_models', $models)) {
+            $brand = strtolower(trim($validated['brand']));
+            $models = CarListingModel::whereNotNull('listing_model')
+                ->whereRaw('LOWER(TRIM(listing_type)) = ?', [$brand])
+                ->pluck('listing_model')
+                ->unique()
+                ->values()
+                ->toArray();
+        } else {
+            $models = array_filter($models, fn($m) => $m !== 'select_all_models');
         }
+        $sparePart->car_model = json_encode(array_values($models));
 
         /* =================================================
-         | 5) YEARS (ONLY IF SENT)
+         | 5) YEARS
          ================================================= */
-        if ($request->filled('year')) {
+        $years = $validated['year'];
 
-            $years = $validated['year'];
-
-            if (in_array('select_all_years', $years)) {
-
-                $currentYear = date('Y') + 1;
-                $years = range($currentYear, 1984);
-                $years = array_map('strval', $years);
-
-            } else {
-                $years = array_filter(
-                    $years,
-                    fn ($y) => $y !== 'select_all_years'
-                );
-            }
-
-            $sparePart->year = json_encode(array_values($years));
+        if (in_array('select_all_years', $years)) {
+            $currentYear = date('Y') + 1;
+            $years = range($currentYear, 1984);
+            $years = array_map('strval', $years);
+        } else {
+            $years = array_filter($years, fn($y) => $y !== 'select_all_years');
         }
+        $sparePart->year = json_encode(array_values($years));
 
         /* -----------------------------------------------
          | 6) OTHER FIELDS
          ----------------------------------------------- */
         $sparePart->city       = $validated['city'];
-        $sparePart->part_type = $validated['part_type'];
+        $sparePart->part_type  = $validated['part_type'];
         $sparePart->vin_number = $validated['vin_number'] ?? null;
 
         /* -----------------------------------------------
          | 7) TITLE
          ----------------------------------------------- */
-        $sparePart->title =
-            $validated['brand'] . ($categoryName ? " - $categoryName" : '');
+        $sparePart->title = $validated['brand'] . ($categoryName ? " - $categoryName" : '');
 
         /* -----------------------------------------------
          | 8) SAVE
@@ -407,14 +372,11 @@ public function update(Request $request, $id)
             ->route('spareparts.dashboard')
             ->with('success', 'Spare part updated successfully!');
 
-    } catch (\Throwable $e) {
-
-        // 🔴 ده هيوريك الايرور الحقيقي
-        dd([
-            'message' => $e->getMessage(),
-            'file'    => $e->getFile(),
-            'line'    => $e->getLine(),
-        ]);
+    } catch (\Exception $e) {
+        // Only catch actual system/database errors here
+        return back()
+            ->withInput()
+            ->with('error', 'System Error: ' . $e->getMessage());
     }
 }
 
