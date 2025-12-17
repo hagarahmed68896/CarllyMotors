@@ -11,6 +11,10 @@ class ContactController extends Controller
         return view('contact-us.contactus');
     }
 
+      public function providerIndex()
+    {
+        return view('providers.contactus');
+    }
     public function store(Request $request)
     {
         try{

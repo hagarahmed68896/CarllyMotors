@@ -108,16 +108,18 @@ $cities = CarListingModel::select('city')
     | 5) MODELS (زي index)
     ----------------------------------------------- */
   // BRAND → MODELS RELATIONS
-    $brandModels = CarListingModel::select('listing_type', 'listing_model')
-        ->whereNotNull('listing_type')
-        ->whereNotNull('listing_model')
-        ->get()
-        ->groupBy(function($item) {
-            return strtolower(trim($item->listing_type));
-        })
-        ->map(function ($group) {
-            return $group->pluck('listing_model')->unique()->values();
-        });
+  $brandModels = DB::table('brand_models')
+    ->join('car_brands', 'brand_models.brand_id', '=', 'car_brands.id')
+    ->select('brand_models.name as model_name', 'car_brands.name as brand_name')
+    ->get()
+    ->groupBy(function ($item) {
+        // بنحول اسم الماركة لـ lowercase عشان يطابق الـ JavaScript اللي عندك
+        return strtolower(trim($item->brand_name));
+    })
+    ->map(function ($group) {
+        // بنجيب أسماء الموديلات فقط وبنمسح التكرار
+        return $group->pluck('model_name')->unique()->values();
+    });
 
 
     /* -----------------------------------------------

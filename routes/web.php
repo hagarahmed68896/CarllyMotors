@@ -92,6 +92,13 @@ Route::get('/terms', fn() => view('terms'))->name('terms');
 // Route::get('/privacy', fn() => view('privacy'))->name('privacy');
 Route::get('/faqs', fn() => view('faqs'))->name('faqs');
 
+// providers about us
+Route::get('/providers/about-us', fn() => view('providers.aboutus'))->name('providers.aboutus');
+Route::get('/providers/privacy', [SettingController::class, 'providerPrivacy'])->name('providers.privacy');
+Route::get('/providers/terms', [SettingController::class, 'providerTerms'])->name('providers.terms');
+Route::get('/providers/contact-us', [ContactController::class, 'providerIndex'])->name('providers.contacts.index');
+
+// providers terms
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('filters', [HomeController::class, 'filters'])->name('home.filters');

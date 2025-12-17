@@ -345,10 +345,10 @@
                 <div class="col-12 col-md-4">
                     <h5 class="footer-title-provider">About Auto Decar</h5>
                     <ul class="list-unstyled footer-list">
-                        <li><a href="{{ route('aboutus') }}"><i class="fas fa-chevron-right me-2"></i>About us</a></li>
-                        <li><a href="{{ route('contacts.index') }}"><i class="fas fa-chevron-right me-2"></i>Contact us</a></li>
-                        <li><a href="{{ route('terms') }}"><i class="fas fa-chevron-right me-2"></i>Terms & Conditions</a></li>
-                        <li><a href="{{ route('privacy') }}"><i class="fas fa-chevron-right me-2"></i>Privacy Policy</a></li>
+                        <li><a href="{{ route('providers.aboutus') }}"><i class="fas fa-chevron-right me-2"></i>About us</a></li>
+                        <li><a href="{{ route('providers.contacts.index') }}"><i class="fas fa-chevron-right me-2"></i>Contact us</a></li>
+                        <li><a href="{{ route('providers.terms') }}"><i class="fas fa-chevron-right me-2"></i>Terms & Conditions</a></li>
+                        <li><a href="{{ route('providers.privacy') }}"><i class="fas fa-chevron-right me-2"></i>Privacy Policy</a></li>
                     </ul>
                 </div>
 
@@ -385,8 +385,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-12 text-center">
                         <p class="mb-0">
-                            © {{ date('Y') }} Carlly Motors. All rights reserved. 
-                            {{-- <span class="d-none d-md-inline">|</span> --}}
+                           © 2024 by Carsilla                             {{-- <span class="d-none d-md-inline">|</span> --}}
                             {{-- <br class="d-md-none"> --}}
                             {{-- Made with <i class="fas fa-heart text-danger"></i> in UAE --}}
                         </p>

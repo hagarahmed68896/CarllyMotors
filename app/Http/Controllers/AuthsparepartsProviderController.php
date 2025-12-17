@@ -214,6 +214,7 @@ public function update(Request $request, $id)
             $user->dealer->update([
                 'company_name'    => $request->company_name ?? $user->dealer->company_name,
                 'company_address' => $request->location,
+                'company_img'     => $request->company_img ?? $user->dealer->company_img,
             ]);
         } else {
             $user->dealer()->create([

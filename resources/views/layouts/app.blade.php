@@ -155,7 +155,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-12 text-center">
                         <p class="mb-0">
-                            © {{ date('Y') }} Carlly Motors. All rights reserved. 
+                            © 2024 by Carsilla 
                             {{-- <span class="d-none d-md-inline">|</span> --}}
                             {{-- <br class="d-md-none"> --}}
                             {{-- Made with <i class="fas fa-heart text-danger"></i> in UAE --}}

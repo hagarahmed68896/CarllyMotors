@@ -106,12 +106,12 @@ input:focus {
                 <input type="text" class="form-control" id="phone" name="phone" placeholder="5xxxxxxxx" maxlength="9" required>
             </div>
             <div id="recaptcha-container"></div>
-            <div id="firebase-error" class="alert alert-danger mt-2" style="display:none;"></div>
             <button type="button" class="btn bg-carlly" onclick="sendOTP()">Send OTP</button>
         </div>
 
         <div id="otp-container">
             <input type="text" id="otp" maxlength="6" placeholder="Enter 6-digit OTP">
+            <div id="firebase-error" class="alert alert-danger mt-2" style="display:none;"></div>
             <p id="otp-timer">OTP expires in <span id="countdown">30</span> seconds</p>
             <button type="button" class="btn bg-carlly text-white mb-2" onclick="verifyOTP()">Verify OTP</button>
             <button type="button" class="btn btn-secondary" id="resend-otp" onclick="sendOTP()" disabled>Resend OTP</button>
@@ -149,7 +149,10 @@ function isDebugMode() {
 }
 
 function showError(msg) { $('#phone-error').text(msg).show(); }
-function hideError() { $('#phone-error').hide().text(''); }
+function hideError() {
+    $('#phone-error').hide().text('');
+    $('#firebase-error').hide().text('');
+}
 
 function formatPhoneRaw() {
     let phone = $('#phone').val().trim();
@@ -186,7 +189,10 @@ function sendOTP() {
                 return new Promise((resolve, reject) => {
                     if (code === this._fakeOtp)
                         resolve({ user: { phoneNumber, _isFake: true, getIdToken: () => Promise.resolve('FAKE_ID_TOKEN_FOR_DEV') } });
-                    else reject({ message: "Invalid debug OTP" });
+                    else reject({
+    code: "auth/invalid-verification-code",
+    message: "Incorrect OTP code."
+});
                 });
             }
         };
@@ -208,7 +214,11 @@ function sendOTP() {
                 return new Promise((resolve, reject) => {
                     if (code === this._fakeOtp)
                         resolve({ user: { phoneNumber, _isFake: true, getIdToken: () => Promise.resolve('FAKE_ID_TOKEN_FOR_DEV') } });
-                    else reject({ message: "Invalid debug OTP" });
+                    else reject({
+    code: "auth/invalid-verification-code",
+    message: "Incorrect OTP code."
+});
+
                 });
             }
         };
