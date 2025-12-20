@@ -45,7 +45,6 @@
             <label class="form-label fw-semibold small text-muted">Car Brand</label>
             {{-- تحديث: استخدام $selectedBrand للمقارنة --}}
             <select class="form-select rounded-4" id="brand" name="brand" >
-                <option value="">All Brands</option>
                 @foreach($sortedMakes as $make)
                 @php $normalizedMake = strtolower(trim($make)); @endphp
                 <option value="{{ $normalizedMake }}" {{ $selectedBrand == $normalizedMake ? 'selected' : '' }}>
@@ -55,33 +54,40 @@
             </select>
         </div>
 
-        {{-- 2. Model (Multi-Select) --}}
-{{-- 2. Model (Multi-Select) --}}
+{{-- 2. Model Dropdown (Multi-Select Checkboxes) --}}
 <div class="mb-3">
     <label class="form-label fw-semibold small text-muted">Model</label>
-    <div class="@error('model') is-invalid-wrapper @enderror">
-        <select class="form-select rounded-4" id="model" name="model[]" multiple>
-            <option value="select_all_models" class="text-primary fw-bold">Select All</option>
-            {{-- JavaScript will fill this based on Brand --}}
-        </select>
+    <div class="dropdown custom-choices-dropdown" id="modelDropdown">
+        <div class="custom-choices-inner dropdown-toggle" id="modelDropdownButton" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            <span class="placeholder-text">Select Model(s)</span>
+        </div>
+        <div class="dropdown-menu shadow rounded-4 p-2" style="width: 100%;">
+            <div class="px-2 pb-2 border-bottom mb-2">
+                <input type="text" class="form-control form-control-sm dropdown-search" placeholder="Search models...">
+            </div>
+            <div class="checkbox-list p-2" id="model-checkbox-container" style="max-height: 250px; overflow-y: auto;">
+                {{-- JavaScript will fill this --}}
+            </div>
+        </div>
     </div>
-    @error('model') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
 </div>
 
-{{-- 3. Year (Multi-Select) --}}
+{{-- 3. Year Dropdown (Multi-Select Checkboxes) --}}
 <div class="mb-3">
     <label class="form-label fw-semibold small text-muted">Year</label>
-    <div class="@error('year') is-invalid-wrapper @enderror">
-        <select class="form-select rounded-4" id="yearSelect" name="year[]" multiple>
-            <option value="select_all_years" class="text-primary fw-bold">Select All</option>
-            {{-- We fill this with ALL possible years --}}
-            @php $currentY = date('Y') + 1; @endphp
-            @for ($y = $currentY; $y >= 1984; $y--)
-                <option value="{{ $y }}">{{ $y }}</option>
-            @endfor
-        </select>
+    <div class="dropdown custom-choices-dropdown" id="yearDropdown">
+        <div class="custom-choices-inner dropdown-toggle" id="yearDropdownButton" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            <span class="placeholder-text">Select Year(s)</span>
+        </div>
+        <div class="dropdown-menu shadow rounded-4 p-2" style="width: 100%;">
+            <div class="px-2 pb-2 border-bottom mb-2">
+                <input type="text" class="form-control form-control-sm dropdown-search" placeholder="Search years...">
+            </div>
+            <div class="checkbox-list p-2" id="year-checkbox-container" style="max-height: 250px; overflow-y: auto;">
+                {{-- JavaScript will fill this --}}
+            </div>
+        </div>
     </div>
-    @error('year') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
 </div>
 
         {{-- Links and Scripts (نفس الكود) --}}
@@ -440,195 +446,223 @@
     </form>
 
 </div>
+<style>
+    /* تغيير لون المربع عند الاختيار */
+    .custom-choices-dropdown .form-check-input:checked {
+        background-color: #163155 !important;
+        border-color: #163155 !important;
+        box-shadow: none; /* إزالة التوهج الأزرق */
+    }
 
+    /* تغيير لون حدود المربع عند التركيز عليه */
+    .custom-choices-dropdown .form-check-input:focus {
+        border-color: #163155;
+        box-shadow: 0 0 0 0.25rem rgba(22, 49, 85, 0.25);
+    }
+</style>
+<style>
+/* جعل الحاوية تبدو كحقل إدخال */
+.custom-choices-inner {
+    background-color: #fff;
+    border: 1px solid #dee2e6; /* نفس لون حدود Bootstrap */
+    border-radius: 0.5rem; /* حواف دائرية */
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    min-height: 42px;
+}
+
+/* تأثير عند تمرير الماوس */
+.custom-choices-inner:hover {
+    border-color: #babbbc;
+}
+
+/* شكل الحقل عندما يكون معطلاً */
+.custom-choices-inner.is-disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* إضافة سهم لأسفل (Chevron) ليعرف المستخدم أنها قائمة */
+.custom-choices-inner::after {
+    content: "";
+    width: 0.8em;
+    height: 0.5em;
+    background-color: #6c757d;
+    clip-path: polygon(100% 0%, 0 0%, 50% 100%); /* رسم سهم صغير */
+    margin-left: 10px;
+}
+
+/* إخفاء السهم الافتراضي لـ Bootstrap إذا وجد */
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+/* تغيير لون الحدود عند اختيار أي عنصر (اختياري) */
+.custom-choices-dropdown .placeholder-text.fw-bold {
+    color: #163155 !important;
+}
+</style>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Laravel variables
-        const brandModels = @json($brandModels ?? []);
-        const allYears = @json($selectedYears ?? []); // Note: Usually this should be a list of all possible years
-        
-        const selectedBrand = @json($selectedBrand ?? null);
-        const selectedModels = @json($selectedModels ?? []);
-        const selectedYears = @json($selectedYears ?? []).map(y => y.toString());
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. البيانات القادمة من لارافل (تأكد من تمريرها من الـ Controller)
+    const brandModels = @json($brandModels ?? []);
+    const allYearsList = @json($years ?? []); 
+    const selectedBrand = @json($selectedBrand ?? null);
+    const selectedModels = @json($selectedModels ?? []).map(m => m.toString());
+    const selectedYears = @json($selectedYears ?? []).map(y => y.toString());
 
-        /* -------------------------------------------------------
-         * 1. Initialize Choices.js
-         * -------------------------------------------------------- */
-        const brandSelect = new Choices('#brand', { searchEnabled: true, itemSelectText: '' });
-        const citySelect = new Choices('#citySelect', { searchEnabled: true, itemSelectText: '' });
+    const activeColor = "#163155";
 
-        const modelSelect = new Choices('#model', {
-            searchEnabled: true, shouldSort: false, placeholderValue: 'Select Model(s)',
-            itemSelectText: '', removeItemButton: true, delimiter: ','
+    // 2. تهيئة البراند والمدينة باستخدام Choices.js (مثل الكريت)
+    const brandSelect = new Choices('#brand', { searchEnabled: true, shouldSort: false, itemSelectText: '' });
+    const citySelect = new Choices('#citySelect', { searchEnabled: true, shouldSort: false, itemSelectText: '' });
+
+    // 3. تهيئة عناصر الموديل والسنة
+    const modelBtn = document.getElementById('modelDropdownButton');
+    const modelContainer = document.getElementById('model-checkbox-container');
+    const yearBtn = document.getElementById('yearDropdownButton');
+    const yearContainer = document.getElementById('year-checkbox-container');
+
+    // 4. دالة البحث الداخلي
+    function setupSearch(dropdownId) {
+        const input = document.querySelector(`#${dropdownId} .dropdown-search`);
+        input.addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const items = document.querySelectorAll(`#${dropdownId} .form-check`);
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(filter) ? "" : "none";
+            });
         });
+    }
+    setupSearch('modelDropdown');
+    setupSearch('yearDropdown');
 
-        const yearSelect = new Choices('#yearSelect', {
-            searchEnabled: true, shouldSort: false, placeholderValue: 'Select Year(s)',
-            itemSelectText: '', removeItemButton: true, delimiter: ','
-        });
-
-        /* -------------------------------------------------------
-         * 2. Helper Functions
-         * -------------------------------------------------------- */
-        function toggleChoicesDisabled(instance, disabled) {
-            if (disabled) { instance.disable(); } else { instance.enable(); }
-            instance.containerOuter.element.classList.toggle('is-disabled', disabled);
+    // 5. دالة تحديث نص الزر
+    function updateButtonLabel(button, container, defaultText) {
+        const checkedCount = container.querySelectorAll('.item-checkbox:checked').length;
+        const placeholder = button.querySelector('.placeholder-text');
+        if (checkedCount > 0) {
+            placeholder.innerText = checkedCount + " Selected";
+            placeholder.classList.add('fw-bold');
+            placeholder.style.color = activeColor;
+        } else {
+            placeholder.innerText = defaultText;
+            placeholder.classList.remove('fw-bold');
+            placeholder.style.color = "";
         }
+    }
 
-        function setSelectedOptions(selectElementId, valuesToSelect) {
-            const selectElement = document.getElementById(selectElementId);
-            if (!selectElement) return;
-            Array.from(selectElement.options).forEach(opt => {
-                opt.selected = valuesToSelect.includes(opt.value.toString());
+    // 6. بناء الـ HTML للـ Checkbox
+    function createCheckboxHTML(name, value, label, isChecked = false, isAll = false) {
+        const cleanId = `chk_${name}_${value.toString().replace(/[^a-z0-9]/gi, '_')}`;
+        return `
+            <div class="form-check p-2 mb-0" style="padding-left: 2.5rem !important;">
+                <input class="form-check-input ${isAll ? 'select-all-trigger' : 'item-checkbox'}" 
+                       type="checkbox" name="${name}[]" 
+                       value="${value}" id="${cleanId}" 
+                       ${isChecked ? 'checked' : ''} style="cursor:pointer;">
+                <label class="form-check-label d-block w-100 ${isAll ? 'fw-bold' : 'small'}" 
+                       for="${cleanId}" style="cursor:pointer; ${isAll ? 'color:' + activeColor + ';' : ''}">
+                    ${label}
+                </label>
+            </div>`;
+    }
+
+    // 7. ربط منطق الاختيار
+    function bindCheckboxLogic(container, type, button, defaultText) {
+        const allBtn = container.querySelector('.select-all-trigger');
+        const items = container.querySelectorAll('.item-checkbox');
+
+        const handleChange = () => {
+            updateButtonLabel(button, container, defaultText);
+            if (type === 'model') toggleYearState();
+        };
+
+        if (allBtn) {
+            allBtn.addEventListener('change', function() {
+                items.forEach(cb => { if(cb.parentElement.style.display !== 'none') cb.checked = allBtn.checked; });
+                handleChange();
             });
         }
 
-        /**
-         * Core logic to handle "Select All" vs Individual Tags
-         */
-        function handleSelectAllLogic(instance, selectId, allValues, selectAllKey) {
-            let selectedValues = instance.getValue(true);
-            const hasSelectAll = selectedValues.includes(selectAllKey);
+        items.forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (!this.checked && allBtn) allBtn.checked = false;
+                handleChange();
+            });
+        });
+    }
 
-            if (hasSelectAll) {
-                if (selectedValues.length > 1) {
-                    const lastSelected = selectedValues[selectedValues.length - 1];
-                    if (lastSelected === selectAllKey) {
-                        // User clicked "Select All" -> Clear others, keep only this tag
-                        instance.removeActiveItems();
-                        instance.setChoiceByValue([selectAllKey]);
-                        setSelectedOptions(selectId, allValues);
-                    } else {
-                        // User had "Select All" and clicked a specific item -> Remove "Select All"
-                        let individualSelection = selectedValues.filter(v => v !== selectAllKey);
-                        instance.removeActiveItems();
-                        instance.setChoiceByValue(individualSelection);
-                        setSelectedOptions(selectId, individualSelection);
-                    }
-                } else {
-                    // Only "Select All" tag exists
-                    setSelectedOptions(selectId, allValues);
-                }
-            } else {
-                // Individual selection: Check if all items are manually selected
-                const allSelectedManually = allValues.length > 0 && allValues.every(v => selectedValues.includes(v.toString()));
-                if (allSelectedManually) {
-                    instance.removeActiveItems();
-                    instance.setChoiceByValue([selectAllKey]);
-                    setSelectedOptions(selectId, allValues);
-                } else {
-                    setSelectedOptions(selectId, selectedValues);
-                }
-            }
+    // 8. تفعيل/تعطيل قائمة السنوات
+    function toggleYearState() {
+        const anyModelSelected = modelContainer.querySelectorAll('.item-checkbox:checked').length > 0;
+        if (anyModelSelected) {
+            yearBtn.classList.remove('is-disabled');
+        } else {
+            yearBtn.classList.add('is-disabled');
+            yearContainer.querySelectorAll('input').forEach(i => i.checked = false);
+            updateButtonLabel(yearBtn, yearContainer, 'Select Year(s)');
         }
+    }
 
-        /* -------------------------------------------------------
-         * 3. Event Listeners (Remove & Change)
-         * -------------------------------------------------------- */
-
-        // Model Removal Logic
-        modelSelect.passedElement.element.addEventListener('removeItem', (e) => {
-            if (e.detail.value === 'select_all_models') {
-                setSelectedOptions("model", []);
-                modelSelect.removeActiveItems();
-            }
-        });
-
-        // Year Removal Logic
-        yearSelect.passedElement.element.addEventListener('removeItem', (e) => {
-            if (e.detail.value === 'select_all_years') {
-                setSelectedOptions("yearSelect", []);
-                yearSelect.removeActiveItems();
-            }
-        });
-
-        // Model Change
-        document.getElementById("model").addEventListener("change", function () {
-            const allCurrentModels = modelSelect.config.choices
-                .filter(c => c.value !== 'select_all_models' && c.value !== '')
-                .map(c => c.value);
-            
-            handleSelectAllLogic(modelSelect, "model", allCurrentModels, 'select_all_models');
-            
-            // Trigger Year Update
-            const currentSelected = modelSelect.getValue(true);
-            handleModelChange(currentSelected, false);
-        });
-
-        // Year Change
-        document.getElementById("yearSelect").addEventListener("change", function () {
-            const allAvailableYears = yearSelect.config.choices
-                .filter(c => c.value !== 'select_all_years' && c.value !== '')
-                .map(c => c.value.toString());
-
-            handleSelectAllLogic(yearSelect, "yearSelect", allAvailableYears, 'select_all_years');
-        });
-
-        /* -------------------------------------------------------
-         * 4. Cascading Logic (Brand -> Model -> Year)
-         * -------------------------------------------------------- */
-
-        function handleBrandChange(brand, initialLoad = false) {
-            if (!initialLoad) {
-                modelSelect.clearStore();
-                yearSelect.clearStore();
-                toggleChoicesDisabled(yearSelect, true);
-            }
-
-            if (brand && brandModels[brand]) {
-                const models = brandModels[brand];
-                const choices = [
-                    { value: 'select_all_models', label: 'Select All', customProperties: { class: 'text-primary fw-bold' } },
-                    ...models.map(m => ({ value: m, label: m }))
-                ];
-
-                modelSelect.setChoices(choices, 'value', 'label', true);
-                toggleChoicesDisabled(modelSelect, false);
-
-                if (initialLoad && selectedModels.length > 0) {
-                    const isFull = models.length > 0 && models.every(m => selectedModels.includes(m));
-                    setSelectedOptions("model", selectedModels);
-                    modelSelect.setChoiceByValue(isFull ? ["select_all_models"] : selectedModels);
-                    handleModelChange(selectedModels, true);
-                }
-            }
+    // 9. تعبئة الموديلات (Edit Mode)
+    function fillModelCheckboxes(brandName, selectedItems = []) {
+        let brand = brandName ? brandName.toLowerCase().trim() : '';
+        modelContainer.innerHTML = '';
+        if (brand && brandModels[brand]) {
+            let html = createCheckboxHTML('model', 'select_all_models', 'Select All', false, true);
+            brandModels[brand].forEach(m => {
+                html += createCheckboxHTML('model', m, m, selectedItems.includes(m.toString()));
+            });
+            modelContainer.innerHTML = html;
+            bindCheckboxLogic(modelContainer, 'model', modelBtn, 'Select Model(s)');
+            updateButtonLabel(modelBtn, modelContainer, 'Select Model(s)');
+            toggleYearState();
         }
+    }
 
-        function handleModelChange(selectedValues, initialLoad = false) {
-            if (!initialLoad) {
-                yearSelect.clearStore();
-                toggleChoicesDisabled(yearSelect, true);
-                setSelectedOptions("yearSelect", []);
-            }
-
-            // In this logic, we assume selectedYears are passed from PHP globally
-            if (selectedValues.length > 0) {
-                const yearChoices = [
-                    { value: 'select_all_years', label: 'Select All', customProperties: { class: 'text-primary fw-bold' } },
-                    ...selectedYears.map(y => ({ value: y, label: y })) // Adjust this if years depend on models
-                ];
-
-                yearSelect.setChoices(yearChoices, 'value', 'label', true);
-                toggleChoicesDisabled(yearSelect, false);
-
-                setTimeout(() => {
-                    const availableYears = yearChoices.filter(c => c.value !== 'select_all_years').map(c => c.value);
-                    const isFull = availableYears.length > 0 && availableYears.every(y => selectedYears.includes(y));
-                    
-                    setSelectedOptions("yearSelect", selectedYears);
-                    yearSelect.setChoiceByValue(isFull ? ["select_all_years"] : selectedYears);
-                }, 50);
-            }
-        }
-
-        // Initialize
-        brandSelect.passedElement.element.addEventListener('change', function () {
-            handleBrandChange(this.value.toLowerCase().trim(), false);
+    // 10. تعبئة السنوات (Edit Mode)
+    function fillYearCheckboxes(selectedItems = []) {
+        yearContainer.innerHTML = '';
+        let html = createCheckboxHTML('year', 'select_all_years', 'Select All', false, true);
+        allYearsList.forEach(y => {
+            html += createCheckboxHTML('year', y.toString(), y.toString(), selectedItems.includes(y.toString()));
         });
+        yearContainer.innerHTML = html;
+        bindCheckboxLogic(yearContainer, 'year', yearBtn, 'Select Year(s)');
+        updateButtonLabel(yearBtn, yearContainer, 'Select Year(s)');
+    }
 
-        if (selectedBrand) {
-            handleBrandChange(selectedBrand.toLowerCase(), true);
-        }
+    // --- الأحداث (Events) ---
+
+    // عند تغيير البراند (باستخدام Choices.js event)
+    brandSelect.passedElement.element.addEventListener('change', function () {
+        fillModelCheckboxes(this.value, []); // تصفير الموديلات عند تغيير البراند
+        fillYearCheckboxes([]); // تصفير السنوات
     });
+
+    // تحميل البيانات المحفوظة (عند فتح صفحة التعديل)
+    if (selectedBrand) {
+        fillModelCheckboxes(selectedBrand.toLowerCase(), selectedModels);
+        fillYearCheckboxes(selectedYears);
+    }
+    
+    // كود اختيار الأقسام (Category) كما هو
+    const categoryInput = document.getElementById('categoryInput');
+    const categoryIcons = document.querySelectorAll('.category-icon');
+    categoryIcons.forEach(icon => {
+        icon.addEventListener('click', function() {
+            categoryIcons.forEach(i => i.classList.remove('selected'));
+            this.classList.add('selected');
+            categoryInput.value = this.getAttribute('data-id');
+        });
+    });
+});
 </script>
 @endsection

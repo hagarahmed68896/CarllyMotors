@@ -217,6 +217,14 @@ public function store(Request $request)
         $sparePart->vin_number = $validated['vin_number'] ?? null;
         $sparePart->title      = $validated['brand'] . ($categoryName ? " - {$categoryName}" : '');
 
+
+if (empty(auth()->user()->dealer->company_address ?? null)) {
+    return redirect()->back()
+        ->withInput() // ضروري جداً للحفاظ على البيانات في الفورم
+        ->with('warning', 'Please set your shop location first.')
+        ->with('showLocationModal', true);
+}
+
         $sparePart->save();
 
         return redirect()
@@ -230,6 +238,37 @@ public function store(Request $request)
             ->with('error', 'Something went wrong: ' . $e->getMessage());
     }
 }
+
+public function updateLocation(Request $request)
+{
+    $request->validate([
+        'location'  => 'required|string',
+        'latitude'  => 'required|numeric',
+        'longitude' => 'required|numeric',
+    ]);
+
+    $user = auth()->user();
+
+    /* -------------------------
+     | 1️⃣ تحديث جدول users
+     ------------------------- */
+    $user->lat  = $request->latitude;
+    $user->lng = $request->longitude;
+    $user->save();
+
+    /* -------------------------
+     | 2️⃣ تحديث جدول dealers
+     ------------------------- */
+    if ($user->dealer) {
+        $user->dealer->company_address = $request->location;
+        $user->dealer->save();
+    }
+
+    return response()->json([
+        'success' => true
+    ]);
+}
+
 
 
 public function edit($id)
@@ -270,12 +309,17 @@ public function edit($id)
 
     $sortedMakes = collect($makes)->sort()->values();
 
-    $brandModels = CarListingModel::select('listing_type', 'listing_model')
-        ->whereNotNull('listing_type')
-        ->whereNotNull('listing_model')
-        ->get()
-        ->groupBy(fn($i) => strtolower(trim($i->listing_type)))
-        ->map(fn($g) => $g->pluck('listing_model')->unique()->values());
+    $brandModels = DB::table('brand_models')
+    ->join('car_brands', 'brand_models.brand_id', '=', 'car_brands.id')
+    ->select('brand_models.name as model_name', 'car_brands.name as brand_name')
+    ->get()
+    ->groupBy(function ($item) {
+        return strtolower(trim($item->brand_name));
+    })
+    ->map(function ($group) {
+        return $group->pluck('model_name')->unique()->values();
+    });
+
 
     $years = CarListingModel::select('listing_year')
         ->distinct()

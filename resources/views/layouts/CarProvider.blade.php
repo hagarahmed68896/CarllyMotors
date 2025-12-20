@@ -233,42 +233,45 @@
 </style>
 
 
+<ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
+    <li>
+        @php
+            $user = auth()->user();
 
-                        <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
-                          <li>
-    @if(auth()->user()->usertype === 'workshop_provider')
-        {{-- WORKSHOP PROVIDER PROFILE --}}
-        <a href="{{ route('workshop.profile', auth()->id()) }}" 
-           class="dropdown-item-provider" style="text-decoration: none">
+            $profileRoute = match ($user->usertype) {
+                'workshop_provider' => route('workshop.profile', $user->id),
+                'shop_dealer'       => route('spareparts.profile', $user->id),
+                default             => route('provider.profile', $user->id),
+            };
+
+            $logoutRoute = match ($user->usertype) {
+                'workshop_provider' => route('workshops.logout'),
+                'shop_dealer'       => route('spareparts.logout'),
+                default             => route('providers.logout'),
+            };
+        @endphp
+
+        <a href="{{ $profileRoute }}"
+           class="dropdown-item-provider"
+           style="text-decoration:none">
             <i class="fas fa-user-circle me-2"></i> My Profile
         </a>
-    @elseif(auth()->user()->usertype === 'shop_dealer')
-        {{-- SPARE PARTS DEALER PROFILE --}}
-        <a href="{{ route('spareparts.profile', auth()->id()) }}" 
-           class="dropdown-item-provider" style="text-decoration: none">
-            <i class="fas fa-user-circle me-2"></i> My Profile
-        </a>
-    @else
-        {{-- DEALER PROFILE --}}
-        <a href="{{ route('provider.profile', auth()->id()) }}" 
-           class="dropdown-item-provider" style="text-decoration: none">
-            <i class="fas fa-user-circle me-2"></i> My Profile
-        </a>
-    @endif
-</li>
+    </li>
 
+    <li><hr class="dropdown-divider"></li>
 
-                            <li><hr class="dropdown-divider"></li>
+    <li>
+        <form method="POST" action="{{ $logoutRoute }}">
+            @csrf
+            <button type="submit"
+                    class="dropdown-item-provider w-100"
+                    style="border:0;background:none;">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+            </button>
+        </form>
+    </li>
+</ul>
 
-                            <li>
-                                <form method="post" action="{{ route('providers.logout') }}">
-                                    @csrf
-                                    <button class="dropdown-item-provider w-100" style="border:0; background:none;">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
                     </li>
                 @endauth
 

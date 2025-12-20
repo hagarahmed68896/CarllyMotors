@@ -20,7 +20,6 @@
         <div class="mb-3">
             <label class="form-label fw-semibold small text-muted">Car Brand</label>
             <select class="form-select rounded-4" id="brand" name="brand" >
-                <option value="">All Brands</option>
                 @foreach($sortedMakes as $make)
                 @php $normalizedMake = strtolower(trim($make)); @endphp
             <option value="{{ $normalizedMake }}" {{ old('brand') == $normalizedMake ? 'selected' : '' }}> 
@@ -30,49 +29,114 @@
             </select>
         </div>
 
-        {{-- 2. Model (Multi-Select) --}}
-        <div class="mb-3">
-            <label class="form-label fw-semibold small text-muted">Model</label>
-            {{-- تم التأكد من وجود disabled و multiple و name="model[]" --}}
-       <select class="form-select rounded-4" id="model" name="model[]" disabled multiple >
-    <option value="select_all_models" class="text-primary fw-bold">Select All</option>
-
-    {{-- <option value="">Select Model(s)</option> --}}
-
-    {{-- إذا كان هناك موديل محدد مسبقًا --}}
-    @if(request('brand') && request('model'))
-        <option value="{{ request('model') }}" selected>{{ request('model') }}</option>
-    @endif
-</select>
-
+{{-- 2. Model Dropdown --}}
+<div class="mb-3">
+    <label class="form-label fw-semibold small text-muted">Model</label>
+    <div class="dropdown custom-choices-dropdown" id="modelDropdown">
+        <div class="custom-choices-inner dropdown-toggle" id="modelDropdownButton" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            <span class="placeholder-text">Select Model(s)</span>
         </div>
+        <div class="dropdown-menu shadow rounded-4 p-2" style="width: 100%;">
+            <div class="px-2 pb-2 border-bottom mb-2">
+                <input type="text" class="form-control form-control-sm dropdown-search" placeholder="Search models...">
+            </div>
+            <div class="checkbox-list p-2" id="model-checkbox-container" style="max-height: 250px; overflow-y: auto;">
+                {{-- يتم تعبئته عبر الجافا سكريبت --}}
+            </div>
+        </div>
+    </div>
+</div>
 
-     {{-- 3. Year (Multi-Select) --}}
+{{-- 3. Year Dropdown --}}
 <div class="mb-3">
     <label class="form-label fw-semibold small text-muted">Year</label>
-
-    @php
-        $currentYear = date('Y') + 1; // السنة القادمة
-        $years = range($currentYear, 1984); // من السنة القادمة إلى 1984
-    @endphp
-
-    <select class="form-select rounded-4" id="yearSelect" name="year[]" disabled multiple >
-        <option value="select_all_years" class="text-primary fw-bold">
-            Select All
-        </option>
-
-       @foreach($years as $year)
-        <option value="{{ $year }}" {{ in_array($year, old('year', [])) ? 'selected' : '' }}>
-            {{ $year }}
-        </option>
-       @endforeach
-    </select>
+    <div class="dropdown custom-choices-dropdown" id="yearDropdown">
+        <div class="custom-choices-inner dropdown-toggle is-disabled" id="yearDropdownButton" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            <span class="placeholder-text">Select Year(s)</span>
+        </div>
+        <div class="dropdown-menu shadow rounded-4 p-2" style="width: 100%;">
+            <div class="px-2 pb-2 border-bottom mb-2">
+                <input type="text" class="form-control form-control-sm dropdown-search" placeholder="Search years...">
+            </div>
+            <div class="checkbox-list p-2" id="year-checkbox-container" style="max-height: 250px; overflow-y: auto;">
+                {{-- يتم تعبئته عبر الجافا سكريبت --}}
+            </div>
+        </div>
+    </div>
 </div>
 
         {{-- Links and Scripts --}}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<style>
+    /* محاكاة شكل Choices.js */
+.custom-choices-inner {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 8px 15px;
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
 
+.custom-choices-inner::after {
+    content: "";
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #163155;
+    position: absolute;
+    right: 15px;
+}
+
+.custom-choices-inner.show, .custom-choices-inner:focus {
+    border-color: #163155;
+    box-shadow: 0 0 0 0.25rem rgba(22, 49, 85, 0.25);
+}
+
+/* حالة التعطيل */
+.custom-choices-inner.is-disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.dropdown-search {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 8px;
+}
+
+.dropdown-search:focus {
+    border-color: #163155;
+    box-shadow: none;
+}
+
+.checkbox-list .form-check:hover {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+/* 1. إخفاء القائمة تماماً حتى لو تم تمرير الماوس فوق الحاوية */
+.custom-choices-dropdown:hover > .dropdown-menu {
+    display: none !important;
+}
+
+/* 2. إظهار القائمة فقط عندما يضيف Bootstrap كلاس show (الذي يضاف عند الضغط فقط) */
+.custom-choices-dropdown > .dropdown-menu.show {
+    display: block !important;
+}
+
+/* 3. تعديل بسيط لزر السنة المعطل للتأكد من أنه لا يستجيب للماوس */
+.custom-choices-inner.is-disabled {
+    pointer-events: none !important;
+    user-select: none;
+}
+</style>
 <style>
 /* ============================================================= */
 /* ===============   Choices.js Custom Styling   =============== */
@@ -300,10 +364,17 @@
 <div class="mb-3">
     <label class="form-label fw-semibold small text-muted">City</label>
     @php
-        $uaeCities = [
-            'Dubai', 'Abu Dhabi', 'Sharjah', 'Ras Al Khaimah',
-            'Fujairah', 'Ajman', 'Umm Al Quwain', 'Al Ain',
-        ];
+     $uaeCities = [
+    'Abu Dhabi',
+    'Ajman',
+    'Al Ain',
+    'Dubai',
+    'Fujairah',
+    'Ras Al Khaimah',
+    'Sharjah',
+    'Umm Al Quwain',
+];
+
         sort($uaeCities);
     @endphp
 
@@ -407,142 +478,410 @@
                 <option value="">Select Subcategory</option>
             </select>
         </div> --}}
+{{-- 4. Location & Map Section --}}
 
-        <button type="submit" class="btn text-white fw-semibold" style="background:#163155;">
+
+   <button type="submit" class="btn text-white fw-semibold" style="background:#163155;">
             Add
-        </button>
+    </button>
     </form>
 
 </div>
+@if(session('showLocationModal'))
 
-        {{-- 🚨 هذا هو جزء JavaScript الصحيح والنهائي 🚨 --}}
-      <script>
+<!-- Modal -->
+<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="locationModalLabel">Add Your Shop Location</h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-muted">Location</label>
+
+                    <div class="input-group mb-2">
+                        <span class="input-group-text bg-white border-end-0 rounded-start-4">
+                            <i class="bi bi-geo-alt"></i>
+                        </span>
+                        <input type="text"
+                               id="location"
+                               name="location"
+                               class="form-control border-start-0 rounded-end-4"
+                               readonly
+                               required
+                               placeholder="Select a location on the map">
+                    </div>
+
+                    <div id="map"
+                         style="height: 350px; width: 100%; border-radius: 15px; border: 1px solid #ced4da;">
+                    </div>
+                </div>
+
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveLocationBtn">
+                    Save Location
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Google Maps -->
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmZpIyIU0nsjNEzzOL4VnrH2YclPvBfpo&callback=initMap">
+</script>
+
+<script>
+// تعريف المتغيرات في النطاق العام لسهولة الوصول إليها
+let map;
+let marker;
+let geocoder;
+
+function initMap() {
+    // 1. تحديد الإحداثيات الافتراضية (دبي كمثال أو القاهرة حسب رغبتك)
+    const defaultLat = 25.276987; 
+    const defaultLng = 55.296249;
+
+    // 2. قراءة القيم المحفوظة من الحقول إن وجدت
+    const savedLat = parseFloat(document.getElementById("latitude").value) || defaultLat;
+    const savedLng = parseFloat(document.getElementById("longitude").value) || defaultLng;
+    const initialLocation = { lat: savedLat, lng: savedLng };
+
+    // 3. تهيئة الخريطة
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: initialLocation,
+        zoom: 12
+    });
+
+    // 4. تهيئة المؤشر (Marker)
+    marker = new google.maps.Marker({
+        position: initialLocation,
+        map: map,
+        draggable: true // السماح بسحب المؤشر
+    });
+
+    geocoder = new google.maps.Geocoder();
+
+    // دالة لتحديث العنوان (نصي) بناءً على الإحداثيات
+    function updateAddress(latLng) {
+        geocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                let neighborhood = "";
+                let city = "";
+                let country = "";
+
+                results[0].address_components.forEach(component => {
+                    if (component.types.includes("sublocality") || component.types.includes("neighborhood")) {
+                        neighborhood = component.long_name;
+                    }
+                    if (component.types.includes("locality")) {
+                        city = component.long_name;
+                    }
+                    if (component.types.includes("country")) {
+                        country = component.long_name;
+                    }
+                });
+
+                // دمج المكونات في نص واحد قصير
+                let shortAddress = [neighborhood, city, country].filter(Boolean).join(", ");
+
+                if (!shortAddress) {
+                    shortAddress = results[0].formatted_address.split(',').slice(-3).join(', ');
+                }
+
+                document.getElementById("location").value = shortAddress;
+            } else {
+                document.getElementById("location").value = 
+                    latLng.lat().toFixed(6) + ", " + latLng.lng().toFixed(6);
+            }
+        });
+    }
+
+    // دالة لتحديث قيم خطوط الطول والعرض في الـ Inputs المخفية
+    function updateLatLngInputs(latLng) {
+        document.getElementById("latitude").value = latLng.lat().toFixed(6);
+        document.getElementById("longitude").value = latLng.lng().toFixed(6);
+    }
+
+    // حدث عند الضغط على الخريطة
+    map.addListener('click', function (e) {
+        marker.setPosition(e.latLng);
+        updateLatLngInputs(e.latLng);
+        updateAddress(e.latLng);
+    });
+
+    // حدث عند سحب المؤشر
+    marker.addListener("dragend", (e) => {
+        updateLatLngInputs(e.latLng);
+        updateAddress(e.latLng);
+    });
+
+    // تشغيل جلب العنوان لأول مرة بناءً على الموقع الابتدائي
+    updateAddress(initialLocation);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. المتغيرات الأساسية
+    // تهيئة المودال
+    const modalEl = document.getElementById('locationModal');
+    const locationModal = new bootstrap.Modal(modalEl, {
+        backdrop: 'static',
+        keyboard: false
+    });
+
+    // حل مشكلة ظهور الماب بشكل ناقص أو رمادي عند فتح المودال
+    modalEl.addEventListener('shown.bs.modal', function () {
+        if (map) {
+            google.maps.event.trigger(map, 'resize');
+            // إعادة التمركز بناءً على القيم الحالية في الحقول
+            const currentLat = parseFloat(document.getElementById("latitude").value) || 25.276987;
+            const currentLng = parseFloat(document.getElementById("longitude").value) || 55.296249;
+            map.setCenter({ lat: currentLat, lng: currentLng });
+        }
+    });
+
+    // إظهار المودال تلقائياً
+    locationModal.show();
+
+    // حدث الضغط على زر الحفظ
+    document.getElementById('saveLocationBtn').addEventListener('click', function () {
+        const latVal = document.getElementById('latitude').value;
+        const lngVal = document.getElementById('longitude').value;
+        const locVal = document.getElementById('location').value;
+
+        if (!latVal || !lngVal) {
+            alert('Please select a location on the map.');
+            return;
+        }
+
+        // إرسال البيانات للخادم
+ // ... داخل حدث الضغط على saveLocationBtn ...
+fetch("{{ route('dealer.update.location') }}", {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+    },
+    body: JSON.stringify({
+        latitude: latVal,
+        longitude: lngVal,
+        location: locVal
+    })
+})
+.then(res => res.json())
+.then(res => {
+    if (res.success) {
+        // 1. إخفاء المودال
+        locationModal.hide();
+
+        // 2. بدلاً من location.reload()، نقوم بإرسال فورم "إضافة قطعة الغيار" تلقائياً
+        // هذا سيجعل الكود يذهب للـ store مرة أخرى، وهذه المرة سيجد العنوان موجوداً ويحفظ البارت
+        document.getElementById('createPartForm').submit(); 
+    } else {
+        alert('Something went wrong, try again.');
+    }
+})
+        .catch(err => {
+            console.error(err);
+            alert('Error communicating with server.');
+        });
+    });
+});
+</script>
+
+@endif
+
+
+<style>
+    /* تغيير لون المربع عند الاختيار */
+    .custom-choices-dropdown .form-check-input:checked {
+        background-color: #163155 !important;
+        border-color: #163155 !important;
+        box-shadow: none; /* إزالة التوهج الأزرق */
+    }
+
+    /* تغيير لون حدود المربع عند التركيز عليه */
+    .custom-choices-dropdown .form-check-input:focus {
+        border-color: #163155;
+        box-shadow: 0 0 0 0.25rem rgba(22, 49, 85, 0.25);
+    }
+    /* 🔥 FIX MODAL LAYER ISSUE */
+    .modal { z-index: 1055 !important; }
+    .modal-backdrop { z-index: 1050 !important; }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
     const brandModels = @json($brandModels ?? []);
     const allYears = @json($years ?? []);
     const oldBrand = @json(old('brand'));
     const oldModels = @json(old('model', []));
     const oldYears = @json(old('year', []));
 
-    // 2. تهيئة Choices.js
+    // تهيئة البراند والمدينة
     const brandSelect = new Choices('#brand', { searchEnabled: true, shouldSort: false, itemSelectText: '' });
     const citySelect = new Choices('#citySelect', { searchEnabled: true, shouldSort: false, itemSelectText: '' });
-    const modelSelect = new Choices('#model', { searchEnabled: true, shouldSort: false, removeItemButton: true, placeholderValue: 'Select Model(s)' });
-    const yearSelect = new Choices('#yearSelect', { searchEnabled: true, shouldSort: false, removeItemButton: true, placeholderValue: 'Select Year(s)' });
 
-    function toggleChoicesDisabled(instance, disabled) {
-        disabled ? instance.disable() : instance.enable();
-        instance.containerOuter.element.classList.toggle('is-disabled', disabled);
-    }
+    const modelBtn = document.getElementById('modelDropdownButton');
+    const modelContainer = document.getElementById('model-checkbox-container');
+    const yearBtn = document.getElementById('yearDropdownButton');
+    const yearContainer = document.getElementById('year-checkbox-container');
 
-    // 3. دالة بناء الموديلات (لإعادة استخدامها)
-    function updateModelChoices(brandName, selectedItems = []) {
-        let brand = brandName.toLowerCase().trim();
-        if (brand && brandModels[brand]) {
-            let modelChoices = brandModels[brand].map(m => ({
-                value: m,
-                label: m,
-                selected: selectedItems.includes(m)
-            }));
-
-            const finalModelChoices = [
-                { value: 'select_all_models', label: 'Select All', selected: selectedItems.includes('select_all_models'), customProperties: { class: 'text-primary fw-bold' } },
-                ...modelChoices
-            ];
-            modelSelect.clearChoices();
-            modelSelect.setChoices(finalModelChoices, 'value', 'label', true);
-            toggleChoicesDisabled(modelSelect, false);
-            return true;
-        }
-        toggleChoicesDisabled(modelSelect, true);
-        return false;
-    }
-
-    // 4. دالة بناء السنوات
-    function updateYearChoices(selectedItems = []) {
-        let yearChoices = allYears.map(y => ({
-            value: y.toString(),
-            label: y.toString(),
-            selected: selectedItems.includes(y.toString())
-        }));
-
-        const finalYearChoices = [
-            { value: 'select_all_years', label: 'Select All', selected: selectedItems.includes('select_all_years'), customProperties: { class: 'text-primary fw-bold' } },
-            ...yearChoices
-        ];
-        yearSelect.clearChoices();
-        yearSelect.setChoices(finalYearChoices, 'value', 'label', true);
-        toggleChoicesDisabled(yearSelect, false);
-    }
-
-    // 5. منطق التحميل الأولي (Old Data) - يعمل مرة واحدة عند فتح الصفحة
-    if (oldBrand) {
-        const hasModels = updateModelChoices(oldBrand, oldModels);
-        if (hasModels && oldModels.length > 0) {
-            updateYearChoices(oldYears);
-        }
-    } else {
-        toggleChoicesDisabled(modelSelect, true);
-        toggleChoicesDisabled(yearSelect, true);
-    }
-
-    // 6. الأحداث (Events)
-    // تغيير البراند
-    brandSelect.passedElement.element.addEventListener('change', function () {
-        updateModelChoices(this.value);
-        yearSelect.clearStore();
-        toggleChoicesDisabled(yearSelect, true);
-    });
-
-    // منطق Select All للموديلات
-    modelSelect.passedElement.element.addEventListener('change', function () {
-        const selectedValues = modelSelect.getValue(true);
-        if (selectedValues.includes("select_all_models")) {
-            // تنفيذ منطق اختيار الكل
-            Array.from(this.options).forEach(opt => {
-                if (opt.value !== "select_all_models" && opt.value !== "") opt.selected = true;
+    // دالة البحث الداخلي
+    function setupSearch(dropdownId) {
+        const input = document.querySelector(`#${dropdownId} .dropdown-search`);
+        input.addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const items = document.querySelectorAll(`#${dropdownId} .form-check`);
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(filter) ? "" : "none";
             });
-            modelSelect.removeActiveItems();
-            modelSelect.setChoiceByValue(["select_all_models"]);
-        } else if (selectedValues.length === 0) {
-            Array.from(this.options).forEach(opt => opt.selected = false);
-        } else {
-            modelSelect.removeActiveItemsByValue('select_all_models');
-        }
-        
-        // تحديث السنوات بناءً على الموديل المختار
-        if (selectedValues.length > 0) {
-            updateYearChoices();
-        } else {
-            toggleChoicesDisabled(yearSelect, true);
-        }
-    });
-
-    // منطق Select All للسنوات
-    yearSelect.passedElement.element.addEventListener('change', function () {
-        const selectedValues = yearSelect.getValue(true);
-        if (selectedValues.includes("select_all_years")) {
-            Array.from(this.options).forEach(opt => {
-                if (opt.value !== "select_all_years" && opt.value !== "") opt.selected = true;
-            });
-            yearSelect.removeActiveItems();
-            yearSelect.setChoiceByValue(["select_all_years"]);
-        } else if (selectedValues.length === 0) {
-            Array.from(this.options).forEach(opt => opt.selected = false);
-        } else {
-            yearSelect.removeActiveItemsByValue('select_all_years');
-        }
-    });
-
-    // 7. Category Selection
-    document.querySelectorAll('.category-icon').forEach(icon => {
-        icon.addEventListener('click', function () {
-            document.querySelectorAll('.category-icon').forEach(i => i.classList.remove('selected'));
-            this.classList.add('selected');
-            document.getElementById('categoryInput').value = this.dataset.id;
         });
+    }
+
+    setupSearch('modelDropdown');
+    setupSearch('yearDropdown');
+
+ function updateButtonLabel(button, container, defaultText) {
+    const checkedCount = container.querySelectorAll('.item-checkbox:checked').length;
+    const placeholder = button.querySelector('.placeholder-text');
+    
+    // اللون الذي تريده عند الاختيار (نفس لون التصميم)
+    const activeColor = "#163155"; 
+
+    if (checkedCount > 0) {
+        placeholder.innerText = checkedCount + " Selected";
+        placeholder.classList.add('fw-bold');
+        
+        // تغيير اللون برمجياً بدلاً من text-primary
+        placeholder.style.color = activeColor; 
+    } else {
+        placeholder.innerText = defaultText;
+        placeholder.classList.remove('fw-bold');
+        
+        // إعادة اللون للوضع الطبيعي (رمادي أو شفاف حسب رغبتك)
+        placeholder.style.color = ""; 
+    }
+}
+
+ function createCheckboxHTML(name, value, label, isChecked = false, isAll = false) {
+    const cleanId = `chk_${name}_${value.toString().replace(/[^a-z0-9]/gi, '_')}`;
+    const highlightColor = "#163155";
+
+    return `
+        <div class="form-check p-2 mb-0" style="padding-left: 2.5rem !important;">
+            <input class="form-check-input ${isAll ? 'select-all-trigger' : 'item-checkbox'}" 
+                    type="checkbox" name="${name}[]" 
+                    value="${value}" id="${cleanId}" 
+                    ${isChecked ? 'checked' : ''}
+                    style="cursor:pointer;">
+            <label class="form-check-label d-block w-100 ${isAll ? 'fw-bold' : 'small'}" 
+                    for="${cleanId}" 
+                    style="cursor:pointer; ${isAll ? 'color:' + highlightColor + ';' : ''}">
+                ${label}
+            </label>
+        </div>`;
+}
+
+    function bindCheckboxLogic(container, type, button, defaultText) {
+        const allBtn = container.querySelector('.select-all-trigger');
+        const items = container.querySelectorAll('.item-checkbox');
+
+        const handleChange = () => {
+            updateButtonLabel(button, container, defaultText);
+            if (type === 'model') toggleYearState();
+        };
+
+        if (allBtn) {
+            allBtn.addEventListener('change', function() {
+                items.forEach(cb => { if(cb.parentElement.style.display !== 'none') cb.checked = allBtn.checked; });
+                handleChange();
+            });
+        }
+
+        items.forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (!this.checked && allBtn) allBtn.checked = false;
+                handleChange();
+            });
+        });
+    }
+
+    function toggleYearState() {
+        const anyModelSelected = modelContainer.querySelectorAll('.item-checkbox:checked').length > 0;
+        if (anyModelSelected) {
+            yearBtn.classList.remove('is-disabled');
+            if (yearContainer.innerHTML.trim() === "") fillYearCheckboxes(oldYears);
+        } else {
+            yearBtn.classList.add('is-disabled');
+            yearContainer.querySelectorAll('input').forEach(i => i.checked = false);
+            updateButtonLabel(yearBtn, yearContainer, 'Select Year(s)');
+        }
+    }
+
+    function fillModelCheckboxes(brandName, selectedItems = []) {
+        let brand = brandName ? brandName.toLowerCase().trim() : '';
+        modelContainer.innerHTML = '';
+        
+        if (brand && brandModels[brand]) {
+            let html = createCheckboxHTML('model', 'select_all_models', 'Select All', selectedItems.includes('select_all_models'), true);
+            brandModels[brand].forEach(m => {
+                html += createCheckboxHTML('model', m, m, selectedItems.includes(m.toString()));
+            });
+            modelContainer.innerHTML = html;
+            bindCheckboxLogic(modelContainer, 'model', modelBtn, 'Select Model(s)');
+            updateButtonLabel(modelBtn, modelContainer, 'Select Model(s)');
+            toggleYearState();
+        }
+    }
+
+    function fillYearCheckboxes(selectedItems = []) {
+        yearContainer.innerHTML = '';
+        let html = createCheckboxHTML('year', 'select_all_years', 'Select All', selectedItems.includes('select_all_years'), true);
+        allYears.forEach(y => {
+            html += createCheckboxHTML('year', y.toString(), y.toString(), selectedItems.includes(y.toString()));
+        });
+        yearContainer.innerHTML = html;
+        bindCheckboxLogic(yearContainer, 'year', yearBtn, 'Select Year(s)');
+        updateButtonLabel(yearBtn, yearContainer, 'Select Year(s)');
+    }
+
+    brandSelect.passedElement.element.addEventListener('change', function () {
+        fillModelCheckboxes(this.value);
+    });
+
+    // تحميل البيانات القديمة
+    const initialBrand = oldBrand || document.getElementById('brand').value;
+    if (initialBrand) {
+        fillModelCheckboxes(initialBrand, oldModels);
+        if (oldModels.length > 0) fillYearCheckboxes(oldYears);
+    }
+
+    // تفعيل اختيار الأقسام (Category Selection)
+const categoryInput = document.getElementById('categoryInput');
+const categoryIcons = document.querySelectorAll('.category-icon');
+
+categoryIcons.forEach(icon => {
+    icon.addEventListener('click', function() {
+        // 1. إزالة كلاس selected من الجميع
+        categoryIcons.forEach(i => i.classList.remove('selected'));
+        
+        // 2. إضافة كلاس selected للعنصر الذي تم الضغط عليه
+        this.classList.add('selected');
+        
+        // 3. تحديث قيمة الـ Hidden Input بمعرف القسم (ID)
+        const categoryId = this.getAttribute('data-id');
+        categoryInput.value = categoryId;
+        
+        console.log("Selected Category ID:", categoryId); // للتأكد في الكونسول
     });
 });
+});
+
 </script>
 @endsection

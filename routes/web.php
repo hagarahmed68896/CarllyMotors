@@ -324,6 +324,7 @@ Route::post('/spareparts/providers/logout', [\App\Http\Controllers\Authsparepart
 Route::get('/spareparts/dashboard', [\App\Http\Controllers\SparepartsProviderController::class, 'index'])->name('spareparts.dashboard');
 Route::get('/provider/spareparts/create', [\App\Http\Controllers\SparepartsProviderController::class, 'create'])->name('spareparts.create');
 Route::post('/provider/spareparts/store', [\App\Http\Controllers\SparepartsProviderController::class, 'store'])->name('spareparts.store');
+Route::post('/dealer/location', [\App\Http\Controllers\SparepartsProviderController::class, 'updateLocation'])->name('dealer.update.location');
 
 // صفحة تعديل السبير بار
 Route::get('/provider/spareparts/{id}/edit',

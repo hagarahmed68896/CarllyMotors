@@ -322,16 +322,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   @php
       // 🏙️ نفس المدن الثابتة مثل المثال الثاني
-      $uaeCities = [
-          'Dubai',
-          'Abu Dhabi',
-          'Sharjah',
-          'Ras Al Khaimah',
-          'Fujairah',
-          'Ajman',
-          'Umm Al Quwain',
-          'Al Ain',
-      ];
+  $uaeCities = [
+    'Abu Dhabi',
+    'Ajman',
+    'Al Ain',
+    'Dubai',
+    'Fujairah',
+    'Ras Al Khaimah',
+    'Sharjah',
+    'Umm Al Quwain',
+];
+
 
       sort($uaeCities); // ✅ ترتيب أبجدي
   @endphp
@@ -842,42 +843,64 @@ $image = asset('carllymotorsmainlogo.png');
                     {{ $dealerName }}
                 </h6>
 
-                @if (!empty($dealer->company_address))
-                    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($dealer->company_address) }}"
-                       target="_blank"
-                       class="text-decoration-none small text-muted">
-                        <i class="fas fa-map-marker-alt text-danger me-1"></i> Location
-                    </a>
-                @endif
+ @if (!empty($dealer->company_address))
+    @php
+        // Split the address by commas
+        $addressParts = explode(',', $dealer->company_address);
+        // Get the 3rd item (index 2), or fallback to 'Location' if it doesn't exist
+        // trim() removes extra spaces around the word
+        $cityName = isset($addressParts[2]) ? trim($addressParts[2]) : 'Location';
+    @endphp
+
+    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($dealer->company_address) }}"
+       target="_blank"
+       class="text-decoration-none small text-muted">
+        <i class="fas fa-map-marker-alt text-danger me-1"></i> {{ $cityName }}
+    </a>
+@endif
             </div>
 
          <div class="actions-dealer d-flex align-items-center justify-content-between gap-2 mt-2 flex-wrap">
 
     @if ($phone !== 'N/A')
-        @php
-            $dealerUrl = route('spareParts.index', [
-                'dealer_id'   => $dealer->id,
-                'make'        => request('make'),
-                'model'       => request('model'),
-                'year'        => request('year'),
-                'category'    => request('category'),
-                'sub-category'=> request('sub-category'),
-                'city'        => request('city'),
-                'condition'   => request('condition'),
-            ]);
+    @php
+// Selected category and subcategory
+$selectedCategory = $mainCategories->firstWhere('id', request('category'));
+$categoryName = $selectedCategory ? $selectedCategory->name : '-';
 
-            $message = "((Carlly Motors))\n\n" .
-                       "مرحباً، أرغب في الاستفسار عن قطع الغيار المتوفّرة لديكم \n\n" .
-                       "I'm interested in buying your spare parts!\n\n" .
-                       "Car Type : " . (request('make') ?? '-') . "\n" .
-                       "Car Model : " . (request('model') ?? '-') . "\n" .
-                       "Car Year : " . (request('year') ?? '-') . "\n" .
-                       "Category : " . (request('category') ?? '-') . "\n" .
-                       "Sub-category : " . (request('sub-category') ?? '-') . "\n" .
-                       "City : " . (request('city') ?? '-') . "\n" .
-                       "Condition : " . (request('condition') ?? '-') . "\n\n" .
-                       "Spare Part Url : " . $dealerUrl;
-        @endphp
+$subcategoryName = '-';
+if ($selectedCategory && request('subcategory')) {
+    $subcategories = collect($selectedCategory->subcategories);
+    $selectedSub = $subcategories->firstWhere('id', request('subcategory'));
+    $subcategoryName = $selectedSub ? $selectedSub->name : '-';
+}
+
+// Dealer URL
+$dealerUrl = route('spareParts.index', [
+    'dealer_id'    => $dealer->id,
+    'make'         => request('make'),
+    'model'        => request('model'),
+    'year'         => request('year'),
+    'category'     => request('category'),
+    'sub-category' => request('subcategory'),
+    'city'         => request('city'),
+    'condition'    => request('condition'),
+]);
+
+// Build WhatsApp message
+$message = "((Carlly Motors))\n\n" .
+           "مرحباً، أرغب في الاستفسار عن قطع الغيار المتوفّرة لديكم \n\n" .
+           "I'm interested in buying your spare parts!\n\n" .
+           "Car Type : " . (request('make') ?? '-') . "\n" .
+           "Car Model : " . (request('model') ?? '-') . "\n" .
+           "Car Year : " . (request('year') ?? '-') . "\n" .
+           "Category : " . $categoryName . "\n" .
+           "Sub-category : " . $subcategoryName . "\n" .
+           "City : " . (request('city') ?? '-') . "\n" .
+           "Condition : " . (request('condition') ?? '-') . "\n\n" .
+           "Spare Part Url : " . $dealerUrl;
+@endphp
+
 
         <!-- زر واتساب -->
         <a href="https://wa.me/{{ $phone }}?text={{ urlencode($message) }}"

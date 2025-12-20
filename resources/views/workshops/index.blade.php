@@ -133,20 +133,38 @@ use Illuminate\Support\Str;
     <form id="filterForm" method="GET"
           action="{{ request()->routeIs('global.search') ? route('global.search') : route('workshops.index') }}">
 
-      <!-- City -->
-      <div class="mb-3">
-        <label class="form-label fw-semibold small text-muted">City</label>
-        <select class="form-select" id="city" name="city" required>
-          <option value="">Select City</option>
-          @foreach($cities as $city)
-            @if(!empty($city))
-              <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-                {{ ucfirst($city) }}
-              </option>
-            @endif
-          @endforeach
-        </select>
-      </div>
+   <!-- City -->
+<div class="mb-3">
+    <label class="form-label fw-semibold small text-muted">City</label>
+
+    @php
+        $uaeCities = [
+            'Abu Dhabi',
+            'Ajman',
+            'Al Ain',
+            'Dubai',
+            'Fujairah',
+            'Ras Al Khaimah',
+            'Sharjah',
+            'Umm Al Quwain',
+        ];
+
+        sort($uaeCities); // ترتيب أبجدي
+    @endphp
+
+    <select class="form-select" id="city" name="city" required>
+        <option value="" {{ empty(request('city')) ? 'selected' : '' }}>
+            Select City
+        </option>
+
+        @foreach($uaeCities as $city)
+            <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+                {{ $city }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
       <!-- Car Brand -->
       <div class="mb-3">

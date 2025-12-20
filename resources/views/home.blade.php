@@ -667,7 +667,7 @@ document.addEventListener('shown.bs.modal', function (event) {
                         @php
                             $image = Str::after($dealer->company_img, url('/') . '/');
                             $dealerName = ucfirst(strtolower($dealer->company_name));
-                            $dealerName = Str::limit($dealerName, 25);
+                            $dealerName = Str::limit($dealerName, 20);
                             $phone = $dealer->user->phone;
                             $shareUrl = request()->path() == 'home'
                                 ? request()->url() . '?dealer_id=' . $dealer->id
@@ -690,14 +690,21 @@ document.addEventListener('shown.bs.modal', function (event) {
                                         <h5 class="fw-bold text-truncate" style="color: var(--primary-color);" title="{{ $dealer->company_name }}">
                                             {{ $dealerName }}
                                         </h5>
-                                        @if($dealer->company_address)
-                                            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($dealer->company_address) }}" 
-                                               class="text-muted small text-decoration-none" 
-                                               target="_blank"
-                                               aria-label="View location on map">
-                                                <i class="fas fa-map-marker-alt me-1"></i>{{ $dealer->user->city ?? 'Location' }}
-                                            </a>
-                                        @endif
+                                     @if (!empty($dealer->company_address))
+    @php
+        // Split the address by commas
+        $addressParts = explode(',', $dealer->company_address);
+        // Get the 3rd item (index 2), or fallback to 'Location' if it doesn't exist
+        // trim() removes extra spaces around the word
+        $cityName = isset($addressParts[2]) ? trim($addressParts[2]) : 'Location';
+    @endphp
+
+    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($dealer->company_address) }}"
+       target="_blank"
+       class="text-decoration-none small text-muted">
+        <i class="fas fa-map-marker-alt text-danger me-1"></i> {{ $cityName }}
+    </a>
+@endif
                                     </div>
 
  <!-- Dealer Actions -->
