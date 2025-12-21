@@ -290,6 +290,9 @@ Route::get('/provider/workshop/my-workshop', [\App\Http\Controllers\WorkshopProv
 Route::post('/workshops/update/{workshop}', 
     [\App\Http\Controllers\WorkshopProviderController::class, 'update']
 )->name('workshops.update');
+Route::post('/workshops/update-location', 
+    [\App\Http\Controllers\WorkshopProviderController::class, 'updateLocation']
+)->name('workshops.updateLocation');
 
 //profile 
 Route::get('/workshop/profile/{id}', [\App\Http\Controllers\AuthWorkshopProviderController::class, 'profile'])

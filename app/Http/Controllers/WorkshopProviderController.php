@@ -279,4 +279,40 @@ $workshop->categories()->sync($categoryIds);
 }
 
 
+
+    public function updateLocation(Request $request)
+    {
+        $request->validate([
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+            'details' => 'nullable|string',
+            'city' => 'nullable|string',
+        ]);
+
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Update User
+        $user->update([
+            'lat' => $request->lat,
+            'lng' => $request->lng,
+            'city' => $request->city ?? $user->city,
+            'location' => $request->details ?? $user->location,
+        ]);
+
+        // Update WorkshopProvider if exists
+        $workshop = $user->workshop_provider;
+        if ($workshop) {
+            $workshop->update([
+                'latitude' => $request->lat,
+                'longitude' => $request->lng,
+                'branch' => $request->city ?? $workshop->branch,
+                'address' => $request->details ?? $workshop->address,
+            ]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Location updated successfully!']);
+    }
 }
