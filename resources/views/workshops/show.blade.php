@@ -8,6 +8,8 @@
     $mapUrl = $workshop->latitude && $workshop->longitude
         ? "https://www.google.com/maps?q={$workshop->latitude},{$workshop->longitude}"
         : null;
+        $defaultImage = asset('carllymotorsmainlogo.png');
+
 @endphp
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
@@ -16,23 +18,33 @@
 <div class="container py-4">
 
  <!-- 🔹 Workshop Main Image & Zoom -->
-@if($images->count() > 0)
-    <div class="position-relative d-flex justify-content-center mb-4" 
-         style="max-height:320px; overflow:hidden; border-radius:16px;">
-        <img src="{{ env('CLOUDFLARE_R2_URL') . $images[0] }}" 
-             class="img-fluid w-100 rounded shadow-sm" 
-             style="object-fit:cover; max-height:320px;" 
-             alt="Workshop Image">
+    <div class="position-relative d-flex justify-content-center mb-4"
+     style="border-radius:16px;">
 
-        <!-- 🔍 Zoom Button -->
-        <button type="button" 
-            class="btn position-absolute" 
-            style="background:#760e13; color:#fff; top:15px; left:15px; border-radius:12px;" 
-            data-bs-toggle="modal" 
+    <img
+        src="{{ $images->count() > 0 ? env('CLOUDFLARE_R2_URL') . $images[0] : $defaultImage }}"
+        class="img-fluid rounded shadow-sm"
+        style="
+            width:100%;
+            height:auto;
+            max-height:320px;
+            object-fit:contain;
+            background:#f5f5f5;
+        "
+        alt="Workshop Image">
+
+    {{-- 🔍 Zoom Button --}}
+    @if($images->count() > 0)
+        <button type="button"
+            class="btn position-absolute"
+            style="background:#760e13; color:#fff; top:15px; left:15px; border-radius:12px;"
+            data-bs-toggle="modal"
             data-bs-target="#workshopImagesModal{{ $workshop->id }}">
             <i class="fas fa-search-plus"></i>
         </button>
-    </div>
+    @endif
+</div>
+
 
     <!-- ✅ Fixed Modal (with header, background & proper layering) -->
     <div class="modal fade" id="workshopImagesModal{{ $workshop->id }}" tabindex="-1"
@@ -102,7 +114,7 @@
                 });
             });
     </script>
-@endif
+
 
 
     <!-- 🔹 Workshop Title -->

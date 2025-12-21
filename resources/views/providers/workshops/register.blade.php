@@ -152,7 +152,6 @@ button.btn-secondary, button.btn-primary {
 
 </script>
     <div id="recaptcha-container"></div>
-<div id="otpError" style="display:none;" class="alert alert-danger mt-2"></div>
 
 <button type="button" 
         class="btn rounded-4 w-100 mb-2" 
@@ -428,9 +427,7 @@ function verifyOTP() {
 // After verification → send token to backend
 // ============================
 function handleVerifiedFirebaseUser(user) {
-
   user.getIdToken().then(idToken => {
-
     return $.ajax({
       url: "/verify-token-workshop",
       method: "POST",
@@ -442,25 +439,30 @@ function handleVerifiedFirebaseUser(user) {
         lname: $("#lname").val(),
         email: $("#email").val(),
         workshop_name: $("#cname").val(),
-        
       }
     });
-
   }).then(response => {
-
+    // This runs for 200 OK
     if (response.success) {
       showStep(3);
       window.location.href = response.redirect;
     } else {
       $("#otpError").text(response.error).show();
     }
-
   }).catch(err => {
-    console.error(err);
-    $("#otpError").text("Server error").show();
+    // ⭐ This runs for 409 Conflict, 422 Unprocessable, etc.
+    console.error("Server Error:", err);
+    
+    let errorMsg = "Server error. Please try again.";
+    
+    // Check if the server sent a specific error JSON (like "Phone already exists")
+    if (err.responseJSON && err.responseJSON.error) {
+      errorMsg = err.responseJSON.error;
+    }
+
+    $("#otpError").text(errorMsg).show();
   });
 }
-
 // ============================
 // Countdown Timer
 // ============================

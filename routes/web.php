@@ -8,6 +8,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\WorkshopController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,6 +92,22 @@ Route::get('/about-us', fn() => view('aboutus'))->name('aboutus');
 Route::get('/terms', fn() => view('terms'))->name('terms');
 // Route::get('/privacy', fn() => view('privacy'))->name('privacy');
 Route::get('/faqs', fn() => view('faqs'))->name('faqs');
+
+
+
+
+Route::get('/test-apicar', function () {
+
+    $response = Http::get('https://admin.apicar.store/home');
+
+    return [
+        'status'  => $response->status(),
+        'headers' => $response->headers(),
+        'body'    => substr($response->body(), 0, 500), // أول 500 حرف
+    ];
+});
+
+
 
 // providers about us
 Route::get('/providers/about-us', fn() => view('providers.aboutus'))->name('providers.aboutus');
@@ -289,7 +306,7 @@ Route::post('/workshop/{id}/update-image', [\App\Http\Controllers\AuthWorkshopPr
 // Workshops Provider Logout
 // -------------------------
 Route::post('/providers/workshops/logout', 
-    [\App\Http\Controllers\AuthWorkshopProviderController::class, 'logoutWorkshops']
+    [\App\Http\Controllers\AuthWorkshopProviderController::class, 'logout']
 )->name('providers.workshops.logout');
 
 Route::get('/workshops/dashboard', [\App\Http\Controllers\WorkshopProviderController::class, 'index'])->name('workshops.dashboard');

@@ -371,7 +371,7 @@ $image = $firstImage
             ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
                 ? $workshop->workshop_logo
                 : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
-            : asset('workshopNotFound.png')
+            : asset('carllymotorsmainlogo.png')
     );
 
 
@@ -386,7 +386,7 @@ $image = $firstImage
         <a href="{{ route('workshops.show', $workshop->id) }}" 
            class="text-decoration-none text-dark d-block">
             <img src="{{ $image }}" 
-                 onerror="this.onerror=null; this.src='{{ asset('workshopNotFound.png') }}';" 
+                 onerror="this.onerror=null; this.src='{{ asset('carllymotorsmainlogo.png') }}';" 
                  class="card-img-top" 
                  alt="Workshop Image" 
                  style="height:200px; object-fit:cover;">

@@ -70,9 +70,10 @@ class AuthWorkshopProviderController extends Controller
                 $user->workshop_provider()->create([
                     'workshop_name'    => $workshopName,
                     'address' => '',
-                    'workshop_logo'     => 'icon/notfound.png',
+                    'workshop_logo' => 'carllymotorsmainlogo.png',
                     'owner' => $fname . ' ' . $lname,
                     'whatsapp_number' => $frontendPhone,
+                    
                 ]);
             }
 
@@ -114,7 +115,7 @@ class AuthWorkshopProviderController extends Controller
             $user->workshop_provider()->create([
                 'workshop_name'    => $workshopName,
                 'address' => '',
-                'workshop_logo'     => 'icon/notfound.png',
+                'workshop_logo'     => 'carllymotorsmainlogo.png',
                 'owner' => $fname . ' ' . $lname,
                 'whatsapp_number' => $frontendPhone,
 

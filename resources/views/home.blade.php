@@ -927,7 +927,7 @@ $image = $firstImage
             ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
                 ? $workshop->workshop_logo
                 : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
-            : asset('workshopNotFound.png')
+            : asset('carllymotorsmainlogo.png')
     );
 
              $mapUrl = $workshop->latitude && $workshop->longitude
@@ -944,7 +944,7 @@ $image = $firstImage
                         <img src="{{ $image }}"
                              alt="{{ $workshop->workshop_name }}"
                              loading="lazy"
-                             onerror="this.src='{{ asset('workshopNotFound.png') }}'"
+                             onerror="this.src='{{ asset('carllymotorsmainlogo.png') }}'"
                              class="img-fluid rounded-4 w-100">
                     </a>
 

@@ -245,7 +245,7 @@
             };
 
             $logoutRoute = match ($user->usertype) {
-                'workshop_provider' => route('workshops.logout'),
+                'workshop_provider' => route('providers.workshops.logout'),
                 'shop_dealer'       => route('spareparts.logout'),
                 default             => route('providers.logout'),
             };
