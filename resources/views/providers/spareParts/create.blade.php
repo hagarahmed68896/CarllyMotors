@@ -381,7 +381,7 @@
     <select class="form-select rounded-4" id="citySelect" name="city">
         <option value="">Select City</option>
         {{-- تأكد من استخدام المتغير الصحيح هنا (سواء uaeCities أو cities القادمة من الـ Controller) --}}
-        @foreach($cities as $city)
+        @foreach($uaeCities as $city)
             <option value="{{ $city }}" {{ old('city') == $city ? 'selected' : '' }}>
                 {{ $city }}
             </option>
@@ -843,9 +843,16 @@ document.addEventListener('DOMContentLoaded', function () {
     function fillYearCheckboxes(selectedItems = []) {
         yearContainer.innerHTML = '';
         let html = createCheckboxHTML('year', 'select_all_years', 'Select All', selectedItems.includes('select_all_years'), true);
-        allYears.forEach(y => {
+        
+        const currentYear = new Date().getFullYear();
+        const startYear = 1984;
+        const endYear = currentYear + 1;
+        
+        // Loop from endYear down to startYear (descending order usually better for recent cars)
+        for (let y = endYear; y >= startYear; y--) {
             html += createCheckboxHTML('year', y.toString(), y.toString(), selectedItems.includes(y.toString()));
-        });
+        }
+        
         yearContainer.innerHTML = html;
         bindCheckboxLogic(yearContainer, 'year', yearBtn, 'Select Year(s)');
         updateButtonLabel(yearBtn, yearContainer, 'Select Year(s)');
