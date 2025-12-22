@@ -366,13 +366,7 @@ $shareUrl = route('workshops.show.web', $workshop->id);
 
 $image = $firstImage
     ? env('CLOUDFLARE_R2_URL') . $firstImage->image
-    : (
-        $workshop->workshop_logo
-            ? (Str::startsWith($workshop->workshop_logo, ['http://', 'https://'])
-                ? $workshop->workshop_logo
-                : env('CLOUDFLARE_R2_URL') . $workshop->workshop_logo)
-            : asset('carllymotorsmainlogo.png')
-    );
+    : asset('carllymotorsmainlogo.png');
 
 
             $mapUrl = $workshop->latitude && $workshop->longitude
